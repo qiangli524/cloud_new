@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="reportForm" extends="global_package">
+		<action name="vmReportForm_*" class="showVmPerformation" method="{1}">
+			<!-- 安徽移动云管理平台，虚拟机列表页面 -->
+			<result name="vmPerformance">/ah/resource/vmhost/vmPerformance.jsp</result>
+			<result name="SHVmPerformance">/ah/resource/vmhost/SHVmPerformance.jsp</result>
+			<result name="SHHostPerformance">/ah/resource/vmhost/SHHostPerformance.jsp</result>
+			<result name="vmPerformanceForAdd">/ah/vmChart/vmPerformanceForAdd.jsp</result>	
+		</action>
+		<action name="vmReportFormChart_*" class="showVmChartAction" method="{1}">
+			<!-- 展现图表页面 -->
+			<result name="showVmDetail">/ah/vmChart/vmPerformationChart.jsp</result>
+			<!-- 添加虚拟机的页面 -->
+			<result name="showVmDetailAdd">/ah/vmChart/vmPerformationChartVmAdd.jsp</result>
+			
+		</action>
+ </package>
+</struts>

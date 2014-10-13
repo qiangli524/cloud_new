@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="HadoopUserDealTask">
+	<typeAlias alias="hudtObj" type="domain.users.HadoopUserDealTaskObj"/>
+	
+	<insert id="insertByObj" parameterClass="hudtObj">
+		insert into tb_hadoop_users_deal_task (id,entity_id,service_type,status,type,deal_count)
+		values(#id#,#entity_id#,#service_type#,#status#,#type#,#deal_count#)
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="hudtObj">
+		delete from tb_hadoop_users_deal_task
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uuidList">
+				entity_id in
+				<iterate property="uuidList" close=")" conjunction="," open="(">
+					#uuidList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+</sqlMap>

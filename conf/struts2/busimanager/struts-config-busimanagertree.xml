@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="busimanagertree" extends="global_package">
+		<action name="busimanager_*"
+				class="busiManagerTreeAction" method="{1}">
+			<result name="list">/busimanager/busiManagerTree.jsp</result>
+			
+			<result name="validateDelete" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="expandNode" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="querynode" type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+ 		<action name="abstractinfo_*" class="abstractInfoAction" method="{1}">
+ 		    <result name="tabs">/busimanager/tabs.jsp</result>
+ 			<result name="all_info">/busimanager/abstractInfo.jsp</result>
+ 			<result name="first_info">/busimanager/abstractInfo.jsp</result>
+ 			<result name="second_info">/busimanager/abstractInfo.jsp</result>
+ 			<result name="resource_info">/busimanager/abstractInfo.jsp</result>
+ 			<result name="resource_info">/busimanager/abstractInfo.jsp</result>
+ 			<result name="all_chart_info">/busimanager/busisyscharts.jsp</result>
+ 			<result name="all_chart_info_center">/busimanager/busisyschartscenter.jsp</result>
+ 			<result name="vmInfo">/busimanager/vmAbstract.jsp</result>
+ 			<result name="businessInfo">/busimanager/businessAbstract.jsp</result>
+ 		</action>
+ 		
+ 		<action name="bmanager_*" class="busiManagerAction" method="{1}">
+ 		    <result name="add_sys_busi_center">/busimanager/addBusiSysCenter.jsp</result>
+ 		    <result name="updateBusiSysCenter">/busimanager/addBusiSysCenter.jsp</result>
+ 		    <result name="addBusiSys">/busimanager/addBusiSys.jsp</result>
+ 		    <result name="updateBizSys">/busimanager/addBusiSys.jsp</result>
+ 		    <result name="addSysApp">/busimanager/addSysApp.jsp</result>
+ 		    <result name="modifySysApp">/busimanager/addSysApp.jsp</result>
+ 		    <result name="addVm">/busimanager/addVm.jsp</result>
+ 		    <result name="vmTopN">/busimanager/topn-vm-charts.jsp</result>
+ 		    <result name="sysVmTopN">/busimanager/sys-topn-vm-charts.jsp</result>
+ 			<result name="user">/busimanager/chooseUser.jsp</result>
+ 			<result name="addBusiness">/busimanager/addBusiness.jsp</result>
+ 			<result name="modifybusiness">/busimanager/addBusiness.jsp</result>
+ 			<result name="success" type="stream">
+ 				<param name="contentType">  
+                    application/vnd.ms-excel
+                </param>  
+    	        <param name="contentDisposition">attachment;filename="${fileName}"</param>
+    	        <param name="bufferSize">4096</param>
+    	        <param name="inputName">downloadFile</param>
+    	    </result>
+    	    <result name="addHostToBusi">/busimanager/addHostToBusi.jsp</result>
+ 		</action>
+ </package>
+</struts>

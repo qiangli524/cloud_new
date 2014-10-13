@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="exampleUser">
+	<typeAlias alias="exampleUserObj" type="com.sitech.basd.dbmanager.domain.dbexampleuser.DBExampleUserObj"/>
+	<typeAlias alias="powerObj" type="com.sitech.basd.dbmanager.domain.dbexampleuser.DBPowerObj"/>
+	<typeAlias alias="purObj" type="com.sitech.basd.dbmanager.domain.dbexampleuser.PowerUserRelationObj"/>
+ 
+	<sql id="paginationStart">
+		<![CDATA[
+                         SELECT * FROM (SELECT VIRTUAL_TABLE.*, ROWNUM ROWNUM_ FROM (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                          )VIRTUAL_TABLE WHERE ROWNUM<=#FIRSTROWNUM#+#PAGESIZE# ) WHERE ROWNUM_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForListBase">
+	SELECT
+		u.ID,
+		u.EXAMPLE_USERNAME,
+		u.EXAMPLE_PASSWORD,
+		u.IS_LOCK,
+		u.IS_SUBMIT,
+		u.EXAMPLE_ID
+	FROM  TB_DB_EXAMPLE_USER u
+		<dynamic prepend="where">
+			<isNotNull property="example_username" prepend="and">
+				u.EXAMPLE_USERNAME like '%'||#example_username#||'%'
+			</isNotNull>
+			<isNotNull property="is_lock">
+				<isGreaterThan prepend="and" property="is_lock" compareValue="0">
+					u.IS_LOCK=#is_lock#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="example_id" prepend="and">
+				u.EXAMPLE_ID = #example_id#
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				u.ID= #id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+    <!-- 查询所有exampleUser-->
+	<select id="queryExampleUserList" parameterClass="exampleUserObj" resultClass="exampleUserObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 增加一条exampleUser记录 -->
+	 <insert id="insertExampleUser" parameterClass="exampleUserObj">
+	 	insert into TB_DB_EXAMPLE_USER
+        (ID,EXAMPLE_USERNAME,EXAMPLE_PASSWORD,IS_LOCK,IS_SUBMIT,EXAMPLE_ID) 
+		values(#id#,#example_username#,#example_password#,#is_lock#,#is_submit#,#example_id#)
+	 </insert>
+	<!-- 更新一条exampleUser记录 -->
+	 <update id="updateExampleUser" parameterClass="exampleUserObj">
+	 	UPDATE TB_DB_EXAMPLE_USER
+	 	<dynamic prepend="set">
+	 	 <isNotEmpty prepend="," property="example_username">
+	 	 	EXAMPLE_USERNAME=#example_username#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty prepend="," property="example_password">
+	 	 	EXAMPLE_PASSWORD=#example_password#
+	 	 </isNotEmpty>
+	 	 <isNotEqual prepend="," property="is_lock" compareValue="0">
+	 	 	IS_LOCK=#is_lock#
+	 	 </isNotEqual>
+	 	 <isNotEqual prepend="," property="is_submit" compareValue="0">
+	 	 	IS_SUBMIT=#is_submit#
+	 	 </isNotEqual>
+	 	</dynamic>
+	 	where ID=#id#
+	 </update>
+	 <!-- 删除一条exampleUser记录 -->
+	 <delete id="deleteExampleUser" parameterClass="exampleUserObj">
+	 	delete from TB_DB_EXAMPLE_USER
+	 	<dynamic prepend="where">
+	 		<isNotNull property="example_id" prepend="and">
+				EXAMPLE_ID = #example_id#
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				ID= #id#
+			</isNotNull>
+		</dynamic>
+	 </delete>
+	<!-- 统计exampleUser记录条数 -->
+	<select id="queryForCount" parameterClass="exampleUserObj" resultClass="int">
+		select count(id)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <select id="queryAllPower" resultClass="powerObj">
+	 	select ID,POWER_NAME from TB_DB_POWER
+	 </select>
+	 
+	<insert id="insertPowerUserRealation" parameterClass="purObj">
+	 	insert into TB_DB_USER_POWER_RELATION (EXAMPLE_USER_ID,POWER_ID) values(#EXAMPLE_USER_ID#,#POWER_ID#)
+	 </insert>
+	 
+	 <select id="queryAllRelation" parameterClass="purObj" resultClass="purObj">
+	 	select distinct EXAMPLE_USER_ID,POWER_ID from TB_DB_USER_POWER_RELATION 
+	 	<dynamic prepend="where">
+	 		<isNotEmpty prepend="and" property="EXAMPLE_USER_ID">
+	 			EXAMPLE_USER_ID = #EXAMPLE_USER_ID#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="POWER_ID">
+	 			POWER_ID = #POWER_ID#
+	 		</isNotEmpty>
+	 	</dynamic> 
+	 </select>
+	 
+	 <select id="queryAllPowerSelf" parameterClass="powerObj" resultClass="powerObj">
+	 	select ID,POWER_NAME from TB_DB_POWER where ID in
+	 	<iterate close=")" open="(" conjunction="," property="pidlist">
+	 		#pidlist[]#
+	 	</iterate>
+	 </select>
+	 
+	 <delete id="exampleUser.delUserPower" parameterClass="purObj">
+	 	delete from TB_DB_USER_POWER_RELATION where EXAMPLE_USER_ID = #EXAMPLE_USER_ID# and POWER_ID = #POWER_ID#
+	 </delete>
+	 
+</sqlMap>

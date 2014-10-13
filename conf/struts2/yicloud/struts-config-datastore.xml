@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="datastore" extends="global_package">
+		<action name="datastore_*"
+				class="dataStoreAction" method="{1}">
+			<result name="list">/yicloud/datastore/listDataStore.jsp</result>
+			<result name="listHostDs">/yicloud/datastore/listHostDs.jsp</result>
+			<result name="addNFSPage">/yicloud/datastore/addNFS.jsp</result>
+			<result name="liststorage">/yicloud/datastore/showDataStore.jsp</result>
+			<result name="liststorage_bj">/yicloud/datastore/showDataStore_bj.jsp</result>
+			
+			<result name="listStoreDevice">/yicloud/datastore/listStoreDevice.jsp</result>
+			<result name="addSDevice">/yicloud/datastore/editStoreDevice.jsp</result>
+			<result name="modSDevice">/yicloud/datastore/editStoreDevice.jsp</result>
+			<result name="saveSDevice" type="redirect">datastore_listStoreDevice.do</result>
+			<result name="delSDevice" type="redirect">datastore_listStoreDevice.do</result>
+			<result name="relevanceSDevice">/yicloud/datastore/relevanceDataStore.jsp</result>
+			<result name="cancleRelevance">/yicloud/datastore/relevanceDataStore.jsp</result>
+			<result name="saveRelevance" type="redirect">datastore_listStoreDevice.do</result>
+			<result name="host_back" >/yicloud/datastore/addHotBackDisk.jsp</result>
+			<result name="disk_group">/yicloud/datastore/addDiskGroup.jsp</result>
+			<result name="add_lun">/yicloud/datastore/addLUN.jsp</result>
+
+			<result name="listStoreHost">/yicloud/datastore/listStoreHost.jsp</result>
+		</action>
+ </package>
+
+</struts>

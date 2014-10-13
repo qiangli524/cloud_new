@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<!--
+		<bean id="loginService"
+		class="com.sitech.basd.sxcloud.service.login.LoginServiceImpl" />
+
+		<bean id="loginAction"
+		class="com.sitech.basd.sxcloud.web.action.LoginAction"
+		singleton="false"> <property name="loginService"> <ref
+		bean="loginService" /> </property> </bean>
+	-->
+	<bean id="baseLoginAction"
+		  class="com.sitech.basd.sxcloud.rsmu.web.system.action.LoginAction"
+		  singleton="false">
+		<!--每个request请求产生新实例[样例 zengls]-->
+		<property name="loginService">
+			<ref bean="loginService"/>
+		</property>
+		<property name="operationService">
+			<ref bean="operationService"/>
+		</property>
+		<property name="functionsService">
+			<ref bean="functionsService"/>
+		</property>
+		<property name="securityConfigService">
+			<ref bean="securityConfigService"/>
+		</property>
+		<property name="naviDisplay">
+			<ref bean="naviDisplay"/>
+		</property>
+	</bean>
+	<!-- com.sitech.basd.sxcloud.web.system.action.LoginAction -->
+
+
+	<!-- com.sitech.basd.sxcloud.web.system.action.UserInfoAction -->
+	<bean id="baseUserInfoAction"
+		  class="com.sitech.basd.sxcloud.rsmu.web.system.action.UserInfoAction"
+		  singleton="false">
+		<property name="userInfoService">
+			<ref bean="userInfoService"/>
+		</property>
+		<property name="operationService">
+			<ref bean="operationService"/>
+		</property>
+		<property name="functionsService">
+			<ref bean="functionsService"/>
+		</property>
+		<property name="appService">
+			<ref bean="appService"/>
+		</property>
+<!-- 		<property name="mysqlTableStatusService"> -->
+<!-- 			<ref bean="mysqlTableStatusService"/> -->
+<!-- 		</property> -->
+	</bean>
+	<!-- com.sitech.basd.sxcloud.web.system.action.UserInfoAction -->
+
+	<!-- com.sitech.basd.sxcloud.web.system.action.BaseLogAction -->
+	<bean id="baseLogAction"
+		  class="com.sitech.basd.sxcloud.rsmu.web.system.action.BaseLogAction"
+		  singleton="false">
+		<property name="operationService">
+			<ref bean="operationService"/>
+		</property>
+		<property name="loginLogService">
+			<ref bean="loginLogService"/>
+		</property>
+		<property name="operationLogService">
+			<ref bean="operationLogService"/>
+		</property>
+		<property name="functionsService">
+			<ref bean="functionsService"/>
+		</property>
+	</bean>
+	<!-- com.sitech.basd.sxcloud.web.system.action.BaseLogAction -->
+
+	<!-- com.sitech.basd.sxcloud.web.system.action.UsergroupAction -->
+	<bean id="baseUsergroupAction"
+		  class="com.sitech.basd.sxcloud.rsmu.web.system.action.UsergroupAction"
+		  singleton="false">
+		<property name="usergroupService">
+			<ref bean="usergroupService"/>
+		</property>
+		<property name="operationService">
+			<ref bean="operationService"/>
+		</property>
+		<property name="userInfoService">
+			<ref bean="userInfoService"/>
+		</property>
+		<property name="functionsService">
+			<ref bean="functionsService"/>
+		</property>
+		<property name="homeService">
+			<ref bean="homeService"/>
+		</property>
+	</bean>
+	<!-- com.sitech.basd.sxcloud.web.system.action.UsergroupAction -->
+
+	<!-- com.sitech.basd.sxcloud.web.system.action.FunctionsAction -->
+	<bean id="baseFunctionsAction"
+		  class="com.sitech.basd.sxcloud.rsmu.web.system.action.FunctionsAction"
+		  singleton="false">
+		<property name="functionsService">
+			<ref bean="functionsService"/>
+		</property>
+		<property name="operationService">
+			<ref bean="operationService"/>
+		</property>
+		<property name="newUIFuncService">
+			<ref bean="newUIFuncService"/>
+		</property>
+	</bean>
+	<!-- getTieleAction需要 -->
+	<bean id="naviDisplay"
+		  class="com.sitech.basd.sxcloud.rsmu.web.util.page.NaviDisplay"
+		  singleton="true">
+		  <property name="tbSysFunctionsDao">
+		  	<ref bean="tbSysFunctionsDao"/>
+		  </property>
+	</bean>
+	<!-- com.sitech.basd.sxcloud.web.system.action.FunctionsAction -->
+	<bean id="securityConfigAction"
+		  class="com.sitech.basd.sxcloud.rsmu.web.system.action.SecurityConfigAction"
+		  singleton="true">
+		  <property name="securityConfigService">
+		  	<ref bean="securityConfigService"/>
+		  </property>
+	</bean>
+</beans>

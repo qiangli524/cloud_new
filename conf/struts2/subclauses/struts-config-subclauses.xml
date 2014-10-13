@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="subclauses"
+			 extends="global_package">
+		<!-- 测试-->
+		<action name="service_*" class="subClausesAction" method="{1}">
+			<result name="subClauseslist">/subclauses/subClausesList.jsp</result>
+			<result name="subClauseslistForPublish">/subclauses/subClausesListForPublish.jsp</result>
+			<result name="subClauseslistForView">/subclauses/subClauseslistForView.jsp</result>
+			<result name="viewInfo">/subclauses/viewSubClases.jsp</result>
+		</action>
+	</package>
+</struts>

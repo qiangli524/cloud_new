@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiHostConfig">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiHostConfigObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusiHostConfigObj" />
+	<typeAlias alias="TbBusiHostObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusiHostObj" />
+	<sql id="tableTbBusiHostColumnsNoKey">
+		HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,SPACE,to_char(UPDATETTIME,'yyyy-mm-dd
+		hh24:mi:ss') UPDATETTIME
+	</sql>
+
+	<sql id="tableTbBusiHostColumns">
+		ID,
+		<include refid="tableTbBusiHostColumnsNoKey" />
+	</sql>
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryTbBusiHostByObjBase">
+		select
+		a.APPID,a.CREDITUSER,a.SPECIALPATH,a.ID,a.HOSTID,a.TYPE,a.HOSTUSERNAME,a.HOSRPWD,a.SPACE,a.STATUS,to_char(UPDATETTIME,'yyyy-mm-dd
+		hh24:mi:ss') UPDATETTIME,a.SSHPORT sshPort,a.SSHPWD sshPwd,a.LOGPATH
+		logPath,a.APPPATH appPath,
+		a.DEPLOYPATH deploy_path,a.BASEPATH base_path,a.STARTSHELL
+		start_shell,a.SHUTDOWNSHELL shutdown_shell,a.IFEXAMPLE ifexample,a.USER_MANAGE_ID,a.HOSTCONFIGID,
+		b.HOSTNAME,b.IP,c.appname,a.ISCREDITUSER isCredituser
+		from tb_busi_host_config a left join
+		TB_SYS_APP c on a.appid = c.id,tb_busi_host b
+		where a.hostid=b.id
+		<isGreaterThan property="ID" compareValue="0" prepend="and">
+			a.ID =#ID#
+		</isGreaterThan>
+		<isGreaterThan property="TYPE" compareValue="0" prepend="and">
+			a.TYPE =#TYPE#
+		</isGreaterThan>
+		<isGreaterThan property="HOSTID" compareValue="0"
+			prepend="and">
+			a.HOSTID =#HOSTID#
+		</isGreaterThan>
+		<isGreaterThan property="STATUS" compareValue="0"
+			prepend="and">
+			a.STATUS =#STATUS#
+		</isGreaterThan>
+		<isNotEmpty property="HOSTUSERNAME" prepend="and">
+			a.HOSTUSERNAME like '%'||#HOSTUSERNAME#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="APPID">
+			<isNotEqual property="APPID" compareValue="0" prepend="and">
+				a.APPID = #APPID#
+			</isNotEqual>
+		</isNotEmpty>
+		<isNotNull property="HOSTCONFIGID" prepend="and">
+			HOSTCONFIGID = #HOSTCONFIGID#
+		</isNotNull>
+		<isNotNull property="USER_MANAGE_ID" prepend="and">
+			USER_MANAGE_ID = #USER_MANAGE_ID#
+		</isNotNull>
+		<isNotNull property="appPath" prepend="and">
+			APPPATH = #appPath#
+		</isNotNull>
+		order by a.ID desc
+	</sql>
+	<select id="queryForListByObjUname" parameterClass="TbBusiHostConfigObj"
+		resultClass="TbBusiHostConfigObj">
+		select
+		a.APPID,a.CREDITUSER,a.SPECIALPATH,a.ID,a.HOSTID,a.TYPE,a.HOSTUSERNAME,a.HOSRPWD,a.SPACE,a.STATUS,to_char(UPDATETTIME,'yyyy-mm-dd
+		hh24:mi:ss') UPDATETTIME,a.SSHPORT sshPort,a.SSHPWD sshPwd,a.LOGPATH
+		logPath,a.APPPATH appPath,
+		a.DEPLOYPATH deploy_path,a.BASEPATH base_path,a.STARTSHELL
+		start_shell,a.SHUTDOWNSHELL shutdown_shell,a.IFEXAMPLE ifexample,a.USER_MANAGE_ID,
+		b.HOSTNAME,b.IP,c.appname from tb_busi_host_config a left join
+		TB_SYS_APP c on a.appid = c.id,tb_busi_host b
+		where a.hostid=b.id
+		<isGreaterThan property="ID" compareValue="0" prepend="and">
+			a.ID =#ID#
+		</isGreaterThan>
+		<isGreaterThan property="TYPE" compareValue="0" prepend="and">
+			a.TYPE =#TYPE#
+		</isGreaterThan>
+		<isGreaterThan property="HOSTID" compareValue="0"
+			prepend="and">
+			a.HOSTID =#HOSTID#
+		</isGreaterThan>
+		<isGreaterThan property="STATUS" compareValue="0"
+			prepend="and">
+			a.STATUS =#STATUS#
+		</isGreaterThan>
+		<isNotEmpty property="HOSTUSERNAME" prepend="and">
+			a.HOSTUSERNAME = #HOSTUSERNAME#
+		</isNotEmpty>
+		<isNotEmpty property="APPID">
+			<isNotEqual property="APPID" compareValue="0" prepend="and">
+				a.APPID = #APPID#
+			</isNotEqual>
+		</isNotEmpty>
+		order by a.ID desc
+	</select>
+	<select id="queryForListByObj" parameterClass="TbBusiHostConfigObj"
+		resultClass="TbBusiHostConfigObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryTbBusiHostByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="TbBusiHostConfigObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryTbBusiHostByObjBase" />
+		) virtual_table
+	</select>
+
+	<!-- 根据主机编号查找主机对应的用户 -->
+	<select id="queryForListByHostId" parameterClass="TbBusiHostConfigObj"
+		resultClass="TbBusiHostConfigObj">
+		select
+		a.APPID,a.CREDITUSER,a.SPECIALPATH,a.ID,a.HOSTID,a.TYPE,a.HOSTUSERNAME,a.HOSRPWD,a.SPACE,a.STATUS,to_char(UPDATETTIME,'yyyy-mm-dd
+		hh24:mi:ss') UPDATETTIME,a.SSHPORT sshPort,a.SSHPWD sshPwd,a.LOGPATH
+		logPath,a.APPPATH appPath,
+		a.DEPLOYPATH deploy_path,a.BASEPATH base_path,a.STARTSHELL
+		start_shell,a.SHUTDOWNSHELL shutdown_shell,a.IFEXAMPLE ifexample,a.USER_MANAGE_ID
+		from tb_busi_host_config a
+		where
+		<isGreaterThan property="HOSTID" compareValue="0">
+			a.HOSTID =#HOSTID#
+		</isGreaterThan>
+		order by a.ID desc
+	</select>
+
+	<delete id="deleteByObj" parameterClass="TbBusiHostConfigObj">
+		delete from TB_BUSI_HOST_CONFIG 
+		<dynamic prepend="where">
+			<isNotEqual property="ID" prepend="ID" compareValue="0">
+				ID=#ID#
+			</isNotEqual>
+			<isNotNull property="HOSTCONFIGID" prepend="and">
+				HOSTCONFIGID=#HOSTCONFIGID#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	<update id="updateByObj" parameterClass="TbBusiHostConfigObj">
+		<!-- update TB_BUSI_HOST_CONFIG set HOSTID=#HOSTID#,HOSTUSERNAME=#HOSTUSERNAME#,HOSRPWD=#HOSRPWD#,SPACE=#SPACE#,STATUS=#STATUS#,EXECUTE_FLAG=#EXECUTE_FLAG#,APPID=#APPID#,SPECIALPATH=#SPECIALPATH#,CREDITUSER=#CREDITUSER# 
+			where ID=#ID# -->
+		update TB_BUSI_HOST_CONFIG set
+		UPDATETTIME=SYSDATE,HOSTID=#HOSTID#,HOSTUSERNAME=#HOSTUSERNAME#,SPACE=#SPACE#,STATUS=#STATUS#,EXECUTE_FLAG=#EXECUTE_FLAG#,APPID=#APPID#,SPECIALPATH=#SPECIALPATH#,CREDITUSER=#CREDITUSER#,TYPE=#TYPE#,SSHPORT=#sshPort#,SSHPWD=#sshPwd#,LOGPATH=#logPath#,APPPATH=#appPath#,
+		DEPLOYPATH=#deploy_path#,BASEPATH=#base_path#,STARTSHELL=#start_shell#,SHUTDOWNSHELL=#shutdown_shell#,IFEXAMPLE=#ifexample#
+
+		where ID=#ID#
+	</update>
+	<insert id="insertByObj" parameterClass="TbBusiHostConfigObj">
+		<selectKey resultClass="int" keyProperty="ID">
+			SELECT ID_BUSI_HOST_CONFIG.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		<!-- passwd版 -->
+		<!-- insert into TB_BUSI_HOST_CONFIG( -->
+		<!-- ID,HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,UPDATETTIME,SPACE,STATUS,APPID,SPECIALPATH,CREDITUSER -->
+		<!-- ) -->
+		<!-- values(#ID#,#HOSTID#,#TYPE#,#HOSTUSERNAME#,#HOSRPWD#,SYSDATE,#SPACE#,#STATUS#,#APPID#,#SPECIALPATH#,#CREDITUSER#) -->
+		<!-- 信任用户板 -->
+		insert into TB_BUSI_HOST_CONFIG(
+		ID,HOSTID,TYPE,HOSTUSERNAME,UPDATETTIME,SPACE,STATUS,APPID,SPECIALPATH,CREDITUSER,SSHPORT,SSHPWD,LOGPATH,APPPATH,EXECUTE_FLAG,DEPLOYPATH,BASEPATH,STARTSHELL,SHUTDOWNSHELL,IFEXAMPLE,ISCREDITUSER,USER_MANAGE_ID,HOSTCONFIGID
+		)
+		values(#ID#,#HOSTID#,#TYPE#,#HOSTUSERNAME#,SYSDATE,#SPACE#,#STATUS#,#APPID#,#SPECIALPATH#,#CREDITUSER#,#sshPort#,#sshPwd#,#logPath#,#appPath#,0,#deploy_path#,#base_path#,#start_shell#,#shutdown_shell#,#ifexample#,#isCredituser#,#USER_MANAGE_ID#,#HOSTCONFIGID#)
+	</insert>
+
+	<update id="updateHostConfigByUsername" parameterClass="TbBusiHostConfigObj">
+		update TB_BUSI_HOST_CONFIG set
+		UPDATETTIME=SYSDATE,APPID=#APPID#
+		where HOSTUSERNAME=#HOSTUSERNAME# and
+		HOSTID = #HOSTID#
+	</update>
+	
+	<update id="updateHostConfigByAppId" parameterClass="TbBusiHostConfigObj">
+		update TB_BUSI_HOST_CONFIG set UPDATETTIME=SYSDATE
+		<isNotEqual property="HOSTID" prepend="," compareValue="0">
+			HOSTID = #HOSTID#
+		</isNotEqual>
+		<isNotNull property="USER_MANAGE_ID" prepend=",">
+			USER_MANAGE_ID=#USER_MANAGE_ID#
+		</isNotNull>
+		<isNotNull property="base_path" prepend=",">
+			BASEPATH=#base_path#
+		</isNotNull>
+		<isNotNull property="deploy_path" prepend=",">
+			DEPLOYPATH=#deploy_path#
+		</isNotNull>
+		<isNotNull property="appPath" prepend=",">
+			APPPATH=#appPath#
+		</isNotNull>
+		<dynamic prepend="where">
+			<isNotNull property="APPID" prepend="and">
+				APPID=#APPID#
+			</isNotNull>
+			<isNotNull property="HOSTCONFIGID" prepend="and">
+				HOSTCONFIGID=#HOSTCONFIGID#
+			</isNotNull>
+		</dynamic>
+	</update>
+	
+	<sql id="queryForHostConfigAndDepListByObjBase"> 
+		SELECT
+			a.ID USER_MANAGE_ID,a.USERNAME HOSTUSERNAME,a.IP,
+			b.BASEPATH base_path,b.DEPLOYPATH deploy_path,b.LOGPATH logPath,b.APPPATH appPath,b.HOSTCONFIGID,
+			c.EXAMPLE_NAME,
+			d.HOSTNAME
+		FROM
+			TB_USER_MANAGE a,
+			TB_BUSI_HOST_CONFIG b,
+			TB_BUSI_DEPLOY_EXAMPLE c,
+			TB_BUSI_HOST d
+		WHERE
+			c.HOST_CONFIG_ID = b.HOSTCONFIGID
+		AND b.USER_MANAGE_ID = a.ID
+		AND d.IP = a.IP
+		<isNotNull property="HOSTUSERNAME">
+			<isNotEmpty property="HOSTUSERNAME" prepend="and">
+				a.USERNAME = #HOSTUSERNAME#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="HOSTNAME">
+			<isNotEmpty property="HOSTNAME" prepend="and">
+				d.HOSTNAME = #HOSTNAME#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="IP" prepend="and">
+			a.IP = #IP#
+		</isNotNull>
+     </sql>
+	
+	<select id="queryForHostConfigAndDepListByObj" parameterClass="TbBusiHostConfigObj"
+		resultClass="TbBusiHostConfigObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForHostConfigAndDepListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForHostConfigAndDepForCount" parameterClass="TbBusiHostConfigObj" resultClass="int">
+      select count(HOSTCONFIGID) from (
+        <include refid="queryForHostConfigAndDepListByObjBase"/>
+       ) virtual_table
+    </select>
+</sqlMap>

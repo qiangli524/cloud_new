@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="MysqlTableStatus">
+	<typeAlias alias="MysqlTableStatusObj"
+		type="com.sitech.basd.yicloud.domain.mytstat.MysqlTableStatusObj" />
+	<!-- 获取mysql数据库表自增Id -->
+	<resultMap id="result" class="MysqlTableStatusObj">
+		<result property="name" column="Name"/>
+		<result property="engine" column="Engine"/>
+		<result property="version" column="Version"/>
+		<result property="rowFormat" column="Row_format"/>
+		<result property="rows" column="Rows"/>
+		<result property="avgRowLength" column="Avg_row_length"/>
+		<result property="dataLength" column="Data_length"/>
+		<result property="maxDataLength" column="Max_data_length"/>
+		<result property="indexLength" column="Index_length"/>
+		<result property="dataFree" column="Data_free"/>
+		<result property="autoIncrement" column="Auto_increment"/>
+		<result property="createTime" column="Create_time"/>
+		<result property="updateTime" column="Update_time"/>
+		<result property="checkTime" column="Check_time"/>
+		<result property="collation" column="Collation"/>
+		<result property="checksum" column="Checksum"/>
+		<result property="createOptions" column="Create_options"/>
+		<result property="comment" column="Comment"/>
+	</resultMap>
+	<resultMap id="resultString" class="java.lang.Integer">
+		<result property="autoIncrement" column="Auto_increment"/>
+	</resultMap>
+	<select id="queryTableStatusString" parameterClass="java.lang.String" resultMap="resultString">
+		<![CDATA[ $sql$ ]]>
+	</select>
+	<select id="queryTableStatus" parameterClass="java.lang.String" resultMap="result">
+		<![CDATA[ $sql$ ]]>
+	</select>
+</sqlMap>

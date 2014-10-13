@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbCloud2MonitorAlarm">
+	<typeAlias alias="TbCloud2MonitorAlarmObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.alarm.TbCloud2MonitorAlarmObj" />
+	<typeAlias alias="MonitorAlarmObj" 
+		type="com.sitech.basd.sxcloud.cloud.domain.monitor.MonitorAlarmObj"/>
+	<typeAlias alias="MonitorAlarmLocationObj" 
+	     type="com.sitech.basd.sxcloud.cloud.domain.monitor.MonitorAlarmLocationObj"/>
+	<!--  插入告警  -->
+	<insert id="insertAlarmByObj"
+		parameterClass="TbCloud2MonitorAlarmObj">
+		<selectKey resultClass="int" keyProperty="ID" type="post">
+       		SELECT @@IDENTITY AS ID
+		</selectKey>
+		insert into
+		TB_CLOUD2_MONITOR_ALARM(EVENT_TYPE,EVENT_LEVEL,TITILE,
+		CONTENT,ALARM_TIME,INS_DATE,EVENT_STAT,EVENT_LOCATION)
+		values(
+		#EVENT_TYPE#,#EVENT_LEVEL#,#TITILE#,#CONTENT#,#ALARM_TIME#,sysdate(), #EVENT_STAT#,#EVENT_LOCATION#)
+	</insert>
+	<sql id="ColumnsNoKey">
+		EVENT_TYPE,EVENT_LEVEL,TITILE,
+		CONTENT,ALARM_TIME,INS_DATE,EVENT_STAT,EVENT_LOCATION
+	</sql>
+	<sql id="Columns">
+		EVENT_ID,
+		<include refid="ColumnsNoKey" />
+	</sql>
+	<!--  查询告警数据(唯一确定)  -->
+	<select id="queryAlarmDataByObj"
+		parameterClass="TbCloud2MonitorAlarmObj"
+		resultClass="TbCloud2MonitorAlarmObj">
+		select
+		<include refid="Columns" />
+		from TB_CLOUD2_MONITOR_ALARM 
+		where 1=1
+			<isNotEmpty property="EVENT_TYPE" prepend="and">
+				EVENT_TYPE=#EVENT_TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="EVENT_LEVEL">
+				EVENT_LEVEL=#EVENT_LEVEL#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TITILE">
+				TITILE=#TITILE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="EVENT_LOCATION">
+				EVENT_LOCATION=#EVENT_LOCATION#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="EVENT_ID">
+				EVENT_ID=#EVENT_ID#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+								`domain`=#domain#
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+	</select>
+	<!--  更新告警数据  -->
+	<update id="updateAlarmDataTime" parameterClass="TbCloud2MonitorAlarmObj">
+		update TB_CLOUD2_MONITOR_ALARM set ALARM_TIME=#ALARM_TIME#,EVENT_COUNT=#EVENT_COUNT# where EVENT_ID=#EVENT_ID#
+	</update>
+	<!--  更新告警状态  -->
+	<update id="updateAlarmDataStat" parameterClass="TbCloud2MonitorAlarmObj">
+		update TB_CLOUD2_MONITOR_ALARM set EVENT_STAT=#EVENT_STAT# where EVENT_ID=#EVENT_ID#
+	</update>
+	<!--  查询从当前日期起一个月外的数据  -->
+	<select id="queryAlarmDataOutOneMonth"
+		resultClass="TbCloud2MonitorAlarmObj"
+		parameterClass="TbCloud2MonitorAlarmObj">
+		select
+		<include refid="Columns" />
+		from TB_CLOUD2_MONITOR_ALARM where INS_DATE >= sysdate() -
+		interval '31' day and INS_DATE
+		<![CDATA[ <= ]]>
+		sysdate()
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+								`domain`=#domain#
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+	</select>
+	<!--  删除无用数据  -->
+	<delete id="deleteAlarmDataByObj"
+		parameterClass="TbCloud2MonitorAlarmObj">
+		delete from TB_CLOUD2_MONITOR_ALARM where EVENT_ID=#EVENT_ID#
+	</delete>
+	<!-- 查询不同级别告警记录数 -->
+	<select id="getAlarmsNum" parameterClass="MonitorAlarmObj" resultClass="java.util.HashMap">
+		SELECT 
+			a.event_level level,count(a.event_level) levelcount
+		FROM
+			tb_cloud2_monitor_alarm AS a
+			<dynamic prepend="where">
+		 		<isNotEmpty property="filterlevel" prepend="and">
+	               	EVENT_LEVEL in $filterlevel$
+	             </isNotEmpty>
+	             <isNotEmpty property="filtertype" prepend="and">
+	               	EVENT_TYPE in $filtertype$
+	             </isNotEmpty>
+		 		<isNotEmpty property="EVENT_ID" prepend="and">
+	               	EVENT_ID =#EVENT_ID#
+	             </isNotEmpty>
+	            <isNotEmpty property="EVENT_TYPE" prepend="and">
+	            	EVENT_TYPE =#EVENT_TYPE#
+	            </isNotEmpty>
+	            <isNotEmpty property="EVENT_LOCATION" prepend="and">
+	               	EVENT_LOCATION like CONCAT('%',#EVENT_LOCATION#,'%')
+	            </isNotEmpty>
+	            <isNotEmpty property="EVENT_LEVEL" prepend="and">
+	               	EVENT_LEVEL =#EVENT_LEVEL#
+	            </isNotEmpty>
+	            <isNotEmpty property="EVENT_STAT" prepend="and">
+	              	EVENT_STAT =#EVENT_STAT#
+	            </isNotEmpty>
+	            <isNotEmpty property="TITILE" prepend="and">
+	            	TITILE like CONCAT('%',#TITILE#,'%')
+	            </isNotEmpty>
+	            <isNotEmpty property="CONTENT" prepend="and">
+	            	CONTENT like CONCAT('%',#CONTENT#,'%')
+	            </isNotEmpty>
+	            <!-- 添加告警系统条件 add by lizqd 20140904 -->
+	            <isNotEmpty property="EVENT_SYS" prepend="and">
+	            	EVENT_SYS = #EVENT_SYS#
+	            </isNotEmpty>
+	            <isNotEmpty property="ALARM_TIME" prepend="and">
+	            	<![CDATA[
+	            		DATEDIFF(ALARM_TIME,#ALARM_TIME#) >= 0
+	            	]]>
+	            </isNotEmpty>
+	            <isNotEmpty property="INS_DATE" prepend="and">
+	            <![CDATA[
+	            		DATEDIFF(#INS_DATE#,INS_DATE) >= 0
+	            	]]>
+	            </isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+									`domain`=#domain#
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+    		</dynamic>
+        group by a.event_level
+		order by a.event_level asc
+	</select>
+	 <select id="queryLocationForVm" parameterClass="MonitorAlarmLocationObj" resultClass="MonitorAlarmLocationObj">
+	     	SELECT distinct
+			a.oneLevelName,
+			a.twoLevelName,
+			a.threeLevelName,
+			a.fourLevelName,
+			b.vmname,
+			b.bsname,
+			b.bcname,
+			c.vh_ip as ip
+		FROM
+			(
+				SELECT
+					vm.uuid,
+					vm.connect_id,
+					vm.domain,
+					dc. NAME AS oneLevelName,
+					cluster. NAME AS twoLevelName,
+					ho. NAME AS threeLevelName,
+					vm. NAME AS fourLevelName
+				FROM
+					tb_united_tree vm,
+					tb_united_tree ho,
+					tb_united_tree cluster,
+					tb_united_tree dc
+				WHERE
+					vm.parent_id = ho.id
+				AND ho.parent_id = cluster.id
+				AND cluster.parent_id = dc.id
+				<isNotEmpty property="uuid" prepend="and">
+		          vm.uuid =#uuid#
+		        </isNotEmpty>
+		        <isNotEmpty property="connectId" prepend="and">
+		          vm.connect_id =#connectId#
+		        </isNotEmpty>
+			 	<isNotEmpty property="domain" prepend="and">
+		          vm.domain =#domain#
+		        </isNotEmpty>
+			) a
+		LEFT JOIN (
+			SELECT
+				vm.entity_id,
+				vm.connect_id,
+				vm.domain,
+				vm. NAME AS vmname,
+				bs. NAME AS bsname,
+				bc. NAME AS bcname
+			FROM
+				tb_busi_system_tree vm,
+				tb_busi_system_tree bs,
+				tb_busi_system_tree bc
+			WHERE
+				vm.parent_id = bs.id
+			AND bs.parent_id = bc.id
+			<isNotEmpty property="uuid" prepend="and">
+	          vm.entity_id =#uuid#
+	        </isNotEmpty>
+	        <isNotEmpty property="connectId" prepend="and">
+	          vm.connect_id =#connectId#
+	        </isNotEmpty>
+		 	<isNotEmpty property="domain" prepend="and">
+	          vm.domain =#domain#
+	        </isNotEmpty>
+		) b ON a.uuid = b.entity_id
+		AND a.connect_id = b.connect_id
+		AND a.domain = b.domain
+		LEFT JOIN tb_cloud2_vmhost_info c ON a.uuid = c.VH_UUID
+		AND a.connect_id = c.connect_id
+		AND a.domain = c.domain
+	 </select>
+	  <select id="queryLocationForHost" parameterClass="MonitorAlarmLocationObj" resultClass="MonitorAlarmLocationObj">
+	  		SELECT
+				a.oneLevelName,
+				a.twoLevelName,
+				a.threeLevelName,
+				c.eq_ip as ip
+			FROM
+				(
+					SELECT
+						ho.uuid,
+						ho.connect_id,
+						ho.domain,
+						dc. NAME AS oneLevelName,
+						cluster. NAME AS twoLevelName,
+						ho. NAME AS threeLevelName
+					FROM
+						tb_united_tree ho,
+						tb_united_tree cluster,
+						tb_united_tree dc
+					WHERE
+						ho.parent_id = cluster.id
+					AND cluster.parent_id = dc.id
+					<isNotEmpty property="uuid" prepend="and">
+			          ho.uuid =#uuid#
+			        </isNotEmpty>
+			        <isNotEmpty property="connectId" prepend="and">
+			          ho.connect_id =#connectId#
+			        </isNotEmpty>
+				 	<isNotEmpty property="domain" prepend="and">
+			          ho.domain =#domain#
+			        </isNotEmpty>
+				) a
+			LEFT JOIN tb_cloud2_host_info c ON a.uuid = c.H_UUID
+			AND a.connect_id = c.connect_id
+			AND a.domain = c.domain
+	 </select>
+	 <select id="queryLocationForStore" parameterClass="MonitorAlarmLocationObj" resultClass="MonitorAlarmLocationObj">
+			SELECT
+				group_concat(oneLevelName) AS oneLevelName,
+				group_concat(twoLevelName) AS twoLevelName,
+				group_concat(threeLevelName) AS threeLevelName
+			FROM
+				(
+					SELECT DISTINCT
+						dc. NAME AS oneLevelName,
+						cl. NAME AS twoLevelName,
+						d. NAME AS threeLevelName
+					FROM
+						tb_yicloud_datastore d
+					LEFT JOIN tb_united_tree cl ON d.cluster_id = cl.uuid
+						AND d.connect_id = cl.connect_id
+						AND d.domain = cl.domain
+					LEFT JOIN tb_united_tree dc ON d.datacenter_id = dc.uuid
+						AND d.connect_id = dc.connect_id
+						AND d.domain = dc.domain
+					<dynamic prepend="where">
+				 		<isNotEmpty property="uuid" prepend="and">
+			               	d.store_uuid =#uuid#
+			             </isNotEmpty>
+			             <isNotEmpty property="connectId" prepend="and">
+			               	d.connect_id =#connectId#
+			             </isNotEmpty>
+				 		<isNotEmpty property="domain" prepend="and">
+			               	d.domain =#domain#
+			             </isNotEmpty>
+			    ) a
+		</dynamic>             	
+	 </select>
+</sqlMap>

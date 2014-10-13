@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SendSms">
+
+	<typeAlias alias="sendSmsObj"
+		type="com.sitech.ssd.sc.sendSms.domain.SendSmsObj" />
+
+	<insert id="insertSendSms" parameterClass="sendSmsObj">
+		INSERT INTO
+		tb_cloud2_send_sms (USER_PHONE, USER_ID, SEND_CONTENT,BUSI_TYPE,
+		INSERT_TIME, OTHER_DESC, LOGIN_ID, DO_FLAG)
+		values(#USER_PHONE#,
+		#USER_ID#,
+		#SEND_CONTENT#,#BUSI_TYPE#,
+		now(), #OTHER_DESC#,
+		#LOGIN_ID#, #DO_FLAG#)
+	</insert>
+
+	<select id="selectAuditPhone" resultClass="sendSmsObj">
+		SELECT
+		t.value as
+		USER_PHONE
+		FROM
+		tb_cloud2_global_config t
+		WHERE t.key = 'workAuditPhone'
+	</select>
+
+</sqlMap>

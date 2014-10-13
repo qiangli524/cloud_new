@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="mFrame" extends="global_package">
+		<action name="mFrameAction_*"
+				class="mFrameAction" method="{1}">
+			<result name="list">/resource/mframe/listMFrame.jsp</result>
+			<result name="mod">/resource/mframe/editMFrame.jsp</result>
+			<result name="save" type="redirect">mFrameAction_list.do</result>
+			<result name="delete" type="redirect">mFrameAction_list.do</result>
+		</action>
+		
+ </package>
+
+</struts>

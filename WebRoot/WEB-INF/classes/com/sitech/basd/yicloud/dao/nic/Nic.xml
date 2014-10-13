@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="vmwareNic">
+	<typeAlias alias="NicObj"
+		type="com.sitech.basd.yicloud.domain.nic.NicObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+	  <insert id="insertByObj" parameterClass="NicObj">
+		  <selectKey resultClass="Integer" keyProperty="id" >
+		  	select  ID_TB_CLOUD2_NIC.nextval as id from dual
+		  </selectKey>
+		insert into TB_CLOUD2_NIC(
+		ID,NAME,LINKDUPLEX,LINKSPEED,STATUS,UUID
+		)
+		values(#id#,#name#,#linkduplex#,#linkspeed#,#status#,#uuid#)
+	  </insert>
+	  
+	   <select id="queryForListByObj" parameterClass="NicObj" resultClass="NicObj">
+		select ID,NAME,LINKDUPLEX,LINKSPEED,STATUS,UUID from TB_CLOUD2_NIC
+		<dynamic prepend="where">
+			<isNotNull property="uuid" prepend="and">
+				UUID=#uuid#
+			</isNotNull>
+		</dynamic>
+	 </select>
+	  
+</sqlMap>

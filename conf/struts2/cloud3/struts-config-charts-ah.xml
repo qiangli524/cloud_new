@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="charts_ah"
+			 extends="global_package">
+			 
+		<!-- 虚拟机监控数据展示 -->
+		<action name="ah-hyMonitor_*" class="hyMonitorDataAction_ah" method="{1}">
+			<!-- 虚拟机性能统计明细 -->
+			<result name="hyMonitorPerformationTabs">/ah/charts/fusionchart/hyMonitorPerformationTabs.jsp</result>
+			<result name="hyMonitorPerformation">/ah/charts/fusionchart/hyMonitorPerformation.jsp</result>
+			
+			
+		</action>
+		<!-- 主机监控数据展示 -->
+		<action name="ah-hostMonitor_*" class="hostMonitorDataAction_ah" method="{1}">
+			
+		</action>
+	</package>
+</struts>

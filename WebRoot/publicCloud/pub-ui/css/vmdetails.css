@@ -1,0 +1,102 @@
+tr {
+	display: table-row;
+	vertical-align: inherit;
+	border-color: inherit;
+}
+
+td {
+	text-align: left;
+}
+
+.ecs-vm-detail {
+	border: 0px solid #DDD;
+}
+
+.ecs-vm-detail td {
+	line-height: 24px;
+}
+
+.ecs-vm-detail .vm-detail-action {
+	width: 33%;
+	border-left: 2px solid #EEE;
+	padding-left: 16px;
+}
+
+.ecs-vm-detail .vm-detail-col label {
+	font-weight: normal;
+}
+
+.ecs-vm-detail td p label {
+	margin: 0px;
+}
+
+.ecs-vm-detail td p {
+	padding: 4px 0px;
+	margin: 0px;
+}
+
+.text-muted {
+	color: #999 !important;
+}
+
+.btn-link:hover {
+	color: #039;
+}
+
+.btn-link:hover,.btn-link:focus {
+	color: #06C;
+	text-decoration: underline;
+	background-color: transparent;
+}
+
+.ecs-vm-detail-title {
+	padding: 8px 0px
+}
+
+.ecs-vm-detail td {
+	line-height: 24px;
+	padding: 10px 16px
+}
+
+.ecs-vm-detail td p {
+	padding: 4px 0px;
+	margin: 0px
+}
+
+.ecs-vm-detail td p label {
+	margin: 0px
+}
+
+.ecs-vm-detail .vm-detail-label {
+	text-align: center;
+	border-right: 1px solid #EEE
+}
+
+.ecs-vm-detail .vm-detail-col {
+	width: 33%;
+	vertical-align: top
+}
+
+.ecs-vm-detail .vm-detail-col label {
+	font-weight: normal
+}
+
+.ecs-vm-detail .vm-detail-action .btn {
+	margin-right: 8px
+}
+
+.ecs-vm-detail .vm-detail-action a {
+	margin-right: 8px
+}
+
+.ecs-vm-detail .vm-detail-explode {
+	padding: 8px 0px
+}
+
+.ecs-vm-detail .vm-detail-explode span {
+	display: block;
+	width: 100%;
+	height: 1px;
+	overflow: hidden;
+	background: #DDD
+}

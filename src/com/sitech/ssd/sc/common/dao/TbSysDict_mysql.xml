@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TbSysDict">
+
+	<typeAlias alias="_TbSysDictObj" type="com.sitech.ssd.sc.common.domain.TbSysDictObj" />
+
+	<sql id="partTableColumns">
+		dictname,dictcode,dicttype,dictdesc,effect
+	</sql>
+	<sql id="allTableColumns">
+		dictid,
+		<include refid="partTableColumns" />
+	</sql>
+	<insert id="insertTbSysDict" parameterClass="_TbSysDictObj">
+		insert into tb_sys_dict(
+		<include refid="partTableColumns" />
+		)
+		values(#dictname#,#dictcode#,#dicttype#,#dictdesc#,#effect#)
+	</insert>
+
+	<delete id="deleteTbSysDict" parameterClass="_TbSysDictObj">
+		DELETE FROM tb_sys_dict
+		<dynamic prepend="where">
+			<isNotEmpty property="dictid" prepend="and">
+				dictid = #dictid#
+			</isNotEmpty>
+			<isNotEmpty property="dicttype" prepend="and">
+				dicttype = #dicttype#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateTbSysDict" parameterClass="_TbSysDictObj">
+		UPDATE tb_sys_dict 
+		SET dictname = #dictname#,
+			dictcode = #dictcode#,
+			dicttype = #dicttype#,
+			dictdesc = #dictdesc#,
+			effect = #effect#
+		<dynamic prepend="where">
+			<isNotEmpty property="dictid" prepend="and">
+				dictid = #dictid#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<select id="selectTbSysDict" parameterClass="_TbSysDictObj"
+		resultClass="_TbSysDictObj">
+		SELECT <include refid="allTableColumns" /> FROM tb_sys_dict where dictid = #dictid#
+	</select>
+	
+	<select id="selectTbSysDictList" parameterClass="_TbSysDictObj"
+		resultClass="_TbSysDictObj">
+		SELECT <include refid="allTableColumns" /> FROM tb_sys_dict 
+		<dynamic prepend="where">
+			<isNotEmpty property="dictid" prepend="and">
+				dictid = #dictid#
+			</isNotEmpty>			
+			<isNotEmpty property="dictname" prepend="and">
+				dictname like CONCAT('%',#dictname#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dictcode" prepend="and">
+				dictcode like CONCAT('%',#dictcode#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="dicttype" prepend="and">
+				dicttype = #dicttype#
+			</isNotEmpty>
+			<isNotEmpty property="effect" prepend="and">
+				effect = #effect#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY dictid  
+	</select> 
+
+</sqlMap>

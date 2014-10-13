@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplatePart">
+
+	<typeAlias alias="_OsTemplatePart" type="com.sitech.ssd.sc.ostempl.domain.OsTemplatePart" />
+
+	<sql id="partTableColumns">
+		template_id,part_name,part_fstype,part_grow,part_ondisk,part_size,part_desc
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplatePart" parameterClass="_OsTemplatePart">
+		insert into tb_os_template_part(
+		<include refid="partTableColumns" />
+		)
+		values(#template_id#,#part_name#,#part_fstype#,#part_grow#,#part_ondisk#,#part_size#,#part_desc#)
+	</insert>
+	
+	<insert id="copyOsTemplatePart" parameterClass="_OsTemplatePart">
+		insert into tb_os_template_part(<include refid="partTableColumns" />)
+		select (SELECT id FROM tb_os_template WHERE templ_name = #id#) <include refid="partTableColumns" />
+		from tb_os_template_part where template_id = #template_id#
+	</insert>	
+
+	<delete id="deleteOsTemplatePart" parameterClass="_OsTemplatePart">
+		DELETE FROM tb_os_template_part
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplatePart" parameterClass="_OsTemplatePart">
+		UPDATE tb_os_template_part 
+		SET template_id = #template_id#,
+		    part_name = #part_name#,
+		    part_fstype = #part_fstype#,
+		    part_grow = #part_grow#,
+		    part_ondisk = #part_ondisk#,
+		    part_size = #part_size#,
+		    part_desc = #part_desc#
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<select id="selectOsTemplatePartList" parameterClass="_OsTemplatePart"
+		resultClass="_OsTemplatePart">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_part 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="part_name" prepend="and">
+				part_name = #part_name# 
+			</isNotEmpty>
+			<isNotEmpty property="part_ondisk" prepend="and">
+				part_ondisk LIKE CONCAT('%',#part_ondisk#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="selectOsTemplatePart" parameterClass="_OsTemplatePart"
+		resultClass="_OsTemplatePart">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_part
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="part_name" prepend="and">
+				part_name = #part_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

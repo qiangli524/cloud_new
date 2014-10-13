@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="tb_order_relation" >
+
+    <!-- 订购关系对象-->
+    <typeAlias alias="orderRelation" type="com.sitech.shop.webservice.domain.TbOrderRelation"/>
+
+    <!-- 订购关系例子对象-->
+    <typeAlias alias="orderRelationExample" type="com.sitech.shop.webservice.domain.TbOrderRelationExample"/>
+
+    <!-- 订购关系结果集-->
+    <resultMap id="baseResultMap" class="com.sitech.shop.webservice.domain.TbOrderRelation">
+        <result column="uuid" property="uuid" jdbcType="VARCHAR"/>
+        <result column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="order_relation_insid" property="orderRelationInsid" jdbcType="VARCHAR"/>
+        <result column="master_relation_id" property="masterRelationId" jdbcType="VARCHAR"/>
+        <result column="child_relation_id" property="childRelationId" jdbcType="VARCHAR"/>
+        <result column="relation_type" property="relationType" jdbcType="VARCHAR"/>
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+        <result column="boAttr1" property="boattr1" jdbcType="VARCHAR"/>
+        <result column="boAttr2" property="boattr2" jdbcType="VARCHAR"/>
+        <result column="boAttr3" property="boattr3" jdbcType="VARCHAR"/>
+        <result column="boAttr4" property="boattr4" jdbcType="VARCHAR"/>
+        <result column="boAttr5" property="boattr5" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 条件解析-->
+     <sql id="example_Where_Clause" >
+    <iterate property="oredCriteria" conjunction="or" prepend="where" removeFirstPrepend="iterate" >
+      <isEqual property="oredCriteria[].valid" compareValue="true" >
+        (
+        <iterate prepend="and" property="oredCriteria[].criteriaWithoutValue" conjunction="and" >
+          $oredCriteria[].criteriaWithoutValue[]$
+        </iterate>
+        <iterate prepend="and" property="oredCriteria[].criteriaWithSingleValue" conjunction="and" >
+          $oredCriteria[].criteriaWithSingleValue[].condition$
+            #oredCriteria[].criteriaWithSingleValue[].value#
+        </iterate>
+        <iterate prepend="and" property="oredCriteria[].criteriaWithListValue" conjunction="and" >
+          $oredCriteria[].criteriaWithListValue[].condition$
+          <iterate property="oredCriteria[].criteriaWithListValue[].values" open="(" close=")" conjunction="," >
+            #oredCriteria[].criteriaWithListValue[].values[]#
+          </iterate>
+        </iterate>
+        <iterate prepend="and" property="oredCriteria[].criteriaWithBetweenValue" conjunction="and" >
+          $oredCriteria[].criteriaWithBetweenValue[].condition$
+          #oredCriteria[].criteriaWithBetweenValue[].values[0]# and
+          #oredCriteria[].criteriaWithBetweenValue[].values[1]#
+        </iterate>
+        )
+      </isEqual>
+    </iterate>
+  </sql>
+
+    <!-- 基础查询sql -->
+    <sql id="queryBaseSql">
+            SELECT
+                uuid,
+                order_id,
+                order_relation_insid,
+                master_relation_id,
+                child_relation_id,
+                relation_type,
+                create_date,
+                last_update_date,
+                boAttr1,
+                boAttr2,
+                boAttr3,
+                boAttr4,
+                boAttr5
+            FROM
+                tb_order_relation
+    </sql>
+
+    <!-- 简单条件查询-->
+    <select id="selectByExample" resultMap="baseResultMap" parameterClass="orderRelationExample" >
+        <include refid="queryBaseSql"/>
+        <isParameterPresent >
+            <include refid="tb_order_relation.example_Where_Clause" />
+            <isNotNull property="orderByClause" >
+                order by $orderByClause$
+            </isNotNull>
+        </isParameterPresent>
+    </select>
+
+    <!-- 主键查询-->
+    <select id="selectByPrimaryKey" resultMap="baseResultMap" parameterClass="java.lang.String" >
+        <include refid="queryBaseSql"/>
+        where uuid = #uuid:VARCHAR#
+  </select>
+
+    <!-- 选择性插入-->
+    <insert id="insertSelective" parameterClass="orderRelation" >
+        insert into tb_order_relation
+        <dynamic prepend="(" >
+            <isNotNull prepend="," property="uuid" >
+                uuid
+            </isNotNull>
+            <isNotNull prepend="," property="orderId" >
+                order_id
+            </isNotNull>
+            <isNotNull prepend="," property="orderRelationInsid" >
+                order_relation_insid
+            </isNotNull>
+            <isNotNull prepend="," property="masterRelationId" >
+                master_relation_id
+            </isNotNull>
+            <isNotNull prepend="," property="childRelationId" >
+                child_relation_id
+            </isNotNull>
+            <isNotNull prepend="," property="relationType" >
+                relation_type
+            </isNotNull>
+            <isNotNull prepend="," property="createDate" >
+                create_date
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate" >
+                last_update_date
+            </isNotNull>
+            <isNotNull prepend="," property="boattr1" >
+                boAttr1
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                boAttr2
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                boAttr3
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                boAttr4
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                boAttr5
+            </isNotNull>
+            )
+        </dynamic>
+        values
+        <dynamic prepend="(" >
+            <isNotNull prepend="," property="uuid" >
+                #uuid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="orderId" >
+                #orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="orderRelationInsid" >
+                #orderRelationInsid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="masterRelationId" >
+                #masterRelationId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="childRelationId" >
+                #childRelationId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="relationType" >
+                #relationType:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="createDate" >
+                #createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate" >
+                #lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr1" >
+                #boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                #boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                #boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                #boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                #boattr5:VARCHAR#
+            </isNotNull>
+            )
+        </dynamic>
+    </insert>
+
+    <!-- 主键删除-->
+    <delete id="deleteByPrimaryKey" parameterClass="java.lang.String" >
+        delete from tb_order_relation
+        where uuid = #uuid:VARCHAR#
+    </delete>
+
+    <!-- 条件删除-->
+    <delete id="deleteByExample" parameterClass="orderRelationExample" >
+        delete from tb_order_relation
+        <include refid="tb_order_relation.example_Where_Clause" />
+    </delete>
+
+    <!-- 记录数量-->
+    <select id="countByExample" parameterClass="orderRelationExample" resultClass="java.lang.Integer" >
+        select count(1) from tb_order_relation
+        <include refid="tb_order_relation.example_Where_Clause" />
+    </select>
+
+    <!-- 根据条件选择更新-->
+    <update id="updateByExampleSelective" >
+        update tb_order_relation
+        <dynamic prepend="set" >
+            <isNotNull prepend="," property="record.uuid" >
+                uuid = #record.uuid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.orderId" >
+                order_id = #record.orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.orderRelationInsid" >
+                order_relation_insid = #record.orderRelationInsid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.masterRelationId" >
+                master_relation_id = #record.masterRelationId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.childRelationId" >
+                child_relation_id = #record.childRelationId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.relationType" >
+                relation_type = #record.relationType:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.createDate" >
+                create_date = #record.createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.lastUpdateDate" >
+                last_update_date = #record.lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr1" >
+                boAttr1 = #record.boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr2" >
+                boAttr2 = #record.boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr3" >
+                boAttr3 = #record.boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr4" >
+                boAttr4 = #record.boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr5" >
+                boAttr5 = #record.boattr5:VARCHAR#
+            </isNotNull>
+        </dynamic>
+        <isParameterPresent >
+            <include refid="tb_order_relation.example_Where_Clause" />
+        </isParameterPresent>
+    </update>
+
+    <!-- 根据主键选择更新-->
+    <update id="updateByPrimaryKeySelective" parameterClass="orderRelation" >
+        update tb_order_relation
+        <dynamic prepend="set" >
+            <isNotNull prepend="," property="orderId" >
+                order_id = #orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="orderRelationInsid" >
+                order_relation_insid = #orderRelationInsid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="masterRelationId" >
+                master_relation_id = #masterRelationId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="childRelationId" >
+                child_relation_id = #childRelationId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="relationType" >
+                relation_type = #relationType:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="createDate" >
+                create_date = #createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate" >
+                last_update_date = #lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr1" >
+                boAttr1 = #boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                boAttr2 = #boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                boAttr3 = #boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                boAttr4 = #boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                boAttr5 = #boattr5:VARCHAR#
+            </isNotNull>
+        </dynamic>
+        where uuid = #uuid:VARCHAR#
+    </update>
+
+</sqlMap>

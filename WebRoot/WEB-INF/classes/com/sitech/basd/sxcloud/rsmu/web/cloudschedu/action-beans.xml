@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.rsmu.web.hostmanage.action.BusiHostAction -->
+	<bean id="baseVirtualServerAction"
+		class="com.sitech.basd.sxcloud.rsmu.web.cloudschedu.action.VirtualServerAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="virtualServerService">
+			<ref bean="virtualServerService" />
+		</property>
+	</bean>
+
+	<bean id="realServerAction"
+		class="com.sitech.basd.sxcloud.rsmu.web.cloudschedu.action.RealServerAction"
+		singleton="false">
+		<property name="realServerService">
+			<ref bean="realServerService" />
+		</property>
+		<property name="virtualServerService">
+			<ref bean="virtualServerService" />
+		</property>
+	</bean>
+
+
+
+</beans>
+

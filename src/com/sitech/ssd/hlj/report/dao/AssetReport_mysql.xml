@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="AssetReport">
+	<typeAlias alias="AssetReportObj" type="com.sitech.ssd.hlj.report.domain.AssetReportObj" />
+	<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data" />
+	
+     <!-- 资产报表-主机 -->
+	<select id="queryHostAssetReport"  parameterClass="AssetReportObj" resultClass="java.util.HashMap"> 
+		select h.EQ_NAME as eqName,
+		CASE h.EQ_TYPE 
+		WHEN 1 THEN 'IBM小型机' 
+		WHEN 2 THEN 'IBM刀片' 
+		WHEN 3 THEN 'IBM普通刀片'
+		WHEN 4 THEN 'HPx86刀片'
+		WHEN 5 THEN '机架服务器'
+		WHEN 6 THEN '华为服务器' 
+		ELSE '其他'  END AS eqType,
+		h.EQ_IP as eqIp,h.CPU_CL as cpuCl,
+		round(h.MEMORY/1024,2) as memory,
+		CASE h.HASVERTUAL
+		WHEN 0 THEN '非虚拟化'
+		WHEN 3 THEN 'XEN'
+		WHEN 4 THEN 'VMWARE'
+		ELSE '其他' END AS hasvertual,
+		(select COUNT(1) from tb_cloud2_vmhost_info v where v.EQ_ID=h.EQ_ID) as vmSize,
+		CASE h.`STATUS`
+		WHEN 1 THEN '正常启动'
+		WHEN 2 THEN '关闭'
+		WHEN 3 THEN '异常'
+		ELSE '其他' END AS `status`,
+		date_format(h.INS_DATE,'%Y-%m-%d %H:%i:%s') as insDate,h.MODEL as model,
+		u2.`name` as cluster,u3.`name` as datacenter,
+		t2.`name` as business,t3.`name` as subbusiness,
+		c.C_NAME cubName,c.C_ADDR as cubAddr,r.R_NAME as roomName,
+		CASE h.ALLOCATED 
+		WHEN 0 THEN '未分配' ELSE '已分配' END as allocated
+		from tb_cloud2_host_info h 
+		left join tb_united_tree u on h.H_uuid=u.uuid
+		left join tb_united_tree u2 on u.parent_id=u2.id
+		left join tb_united_tree u3 on u2.parent_id=u3.id
+		left join tb_busi_system_tree t1 on h.EQ_IP = t1.entity_id
+		left join tb_busi_system_tree t2 on t1.parent_id=t2.id
+		left join tb_busi_system_tree t3 on t2.parent_id=t3.id
+		left join TB_CLOUD2_CUBINET_INFO  c on h.CQ_ID=c.C_ID
+		left join tb_cloud2_room_info r on r.R_ID=c.R_ID
+		<dynamic prepend="where">
+		    <isNotEmpty property="dataCenterId">
+	           	<isNotEqual property="dataCenterId" compareValue="-1" prepend="AND">            	
+					u3.id= #dataCenterId#
+	           	</isNotEqual>
+            </isNotEmpty>
+             <isNotEmpty property="clusterId">
+	           	<isNotEqual property="clusterId" compareValue="-1" prepend="AND">            	
+					 u2.id = #clusterId#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="businessId">
+	           	<isNotEqual property="businessId" compareValue="-1" prepend="AND">            	
+					 t3.id = #businessId#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="subBusinessId">
+	           	<isNotEqual property="subBusinessId" compareValue="-1" prepend="AND">            	
+					t2.id = #subBusinessId#
+	           	</isNotEqual>
+            </isNotEmpty>	
+            <isNotEmpty property="hasvertual">
+	           	<isNotEqual property="hasvertual" compareValue="-1" prepend="AND">            	
+					h.HASVERTUAL = #hasvertual#
+	           	</isNotEqual>
+            </isNotEmpty>	
+            <isNotEmpty property="roomId">
+	           	<isNotEqual property="roomId" compareValue="-1" prepend="AND">            	
+					r.R_ID = #roomId#
+	           	</isNotEqual>
+            </isNotEmpty>
+			<isNotEmpty property="eqName" prepend="and">	
+				h.EQ_NAME like concat('%',#eqName#,'%')
+			</isNotEmpty>	
+			<isNotEmpty property="eqIp" prepend="and">	
+				h.EQ_IP like concat('%',#eqIp#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="eqType">
+	           	<isNotEqual property="eqType" compareValue="-1" prepend="AND">            	
+					h.EQ_TYPE = #eqType#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="allocated">
+	           	<isNotEqual property="allocated" compareValue="-1" prepend="AND">            	
+					h.ALLOCATED = #allocated#
+	           	</isNotEqual>
+            </isNotEmpty>
+			<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+				h.domain = #domain#
+	       	</isNotEqual>
+		</dynamic>		
+		order by h.HASVERTUAL desc		 
+    </select>
+   
+    <!-- 资产报表-主机 -->
+	<select id="queryVmAssetReport"  parameterClass="AssetReportObj" resultClass="java.util.HashMap">
+		 SELECT
+			v.VH_NAME vhName,
+			v.VH_IP vhIp,
+			case v.VH_TYPE WHEN 1 THEN 'VMWARE' WHEN 3 THEN 'xen' ELSE '其他' END vhType,
+			v.VH_CPU cpu,
+			SUBSTRING(v.VH_MEM / 1024,1,INSTR(v.VH_MEM / 1024, '.')+ 2)AS mem,
+			round(v.VH_STORAGE / 1024, 0)AS store,
+			CASE v.VH_STAT WHEN 1 THEN '正在运行' WHEN 0 THEN '已关闭' WHEN 2 THEN '挂起' ELSE '其他' END AS stat,
+			v.VH_SYSTEM system,
+			h.EQ_IP eqIp,t2.`name` subbusiness,u4.`name` datacenter,u3.`name` cluster
+		FROM TB_CLOUD2_VMHOST_INFO v 
+		left join tb_cloud2_host_info h on v.EQ_ID=h.EQ_ID
+		left join tb_busi_system_tree t1 on v.VH_UUID = t1.entity_id
+		left join tb_busi_system_tree t2 on t1.parent_id=t2.id
+		left join tb_busi_system_tree t3 on t2.parent_id=t3.id
+		left join tb_united_tree u on v.VH_uuid=u.uuid  and u.connect_id=v.CONNECT_ID
+		left join tb_united_tree u2 on u.parent_id=u2.id
+		left join tb_united_tree u3 on u2.parent_id=u3.id
+		left join tb_united_tree u4 on u3.parent_id=u4.id
+		<dynamic prepend="where">
+		    <isNotEmpty property="dataCenterId">
+	           	<isNotEqual property="dataCenterId" compareValue="-1" prepend="AND">            	
+					u4.id= #dataCenterId#
+	           	</isNotEqual>
+            </isNotEmpty>
+             <isNotEmpty property="clusterId">
+	           	<isNotEqual property="clusterId" compareValue="-1" prepend="AND">            	
+					 u3.id = #clusterId#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="businessId">
+	           	<isNotEqual property="businessId" compareValue="-1" prepend="AND">            	
+					 t3.id = #businessId#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="subBusinessId">
+	           	<isNotEqual property="subBusinessId" compareValue="-1" prepend="AND">            	
+					t2.id = #subBusinessId#
+	           	</isNotEqual>
+            </isNotEmpty>	
+			<isNotEmpty property="vhName" prepend="and">	
+				v.VH_NAME like concat('%',#vhName#,'%')
+			</isNotEmpty>	
+			<isNotEmpty property="vhIp" prepend="and">	
+				v.VH_IP like concat('%',#vhIp#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="eqIp" prepend="and">	
+				h.eq_ip like concat('%',#eqIp#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="vhType">
+	           	<isNotEqual property="vhType" compareValue="-1" prepend="AND">            	
+					v.VH_TYPE = #vhType#
+	           	</isNotEqual>
+            </isNotEmpty>
+			<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+				h.domain = #domain#
+	       	</isNotEqual>
+		</dynamic>					 
+	</select>
+   
+       <!-- 资产报表-ip -->
+	<select id="queryIpAssetReport"  parameterClass="AssetReportObj" resultClass="java.util.HashMap">
+		SELECT
+			t.IPADDRESS ip,
+			DATE_FORMAT(t.INS_DATE,'%Y-%m-%d %H:%i:%s') insDate,
+			CASE t.ISUSED WHEN 1 THEN '已使用' ELSE '未使用' END as isused,
+			n.`NAME` as vlan,u2.`name` subnet,u3.`name` net,
+			CASE t.IP_TYPE WHEN 1 THEN '公网IP' ELSE '内网IP' END AS ipType  
+		FROM
+			tb_cloud2_ip_info t
+		LEFT JOIN tb_cloud2_net_info n ON t.NET_ID = n.NET_ID
+		left join tb_united_tree u on n.NET_ID=u.uuid
+		left join tb_united_tree u2 on u.parent_id=u2.id
+		left join tb_united_tree u3 on u2.parent_id=u3.id
+		<dynamic prepend="where">
+            <isNotEmpty property="subnetId">
+	           	<isNotEqual property="subnetId" compareValue="-1" prepend="AND">            	
+					 u2.id = #subnetId#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="netId">
+	           	<isNotEqual property="netId" compareValue="-1" prepend="AND">            	
+					u3.id = #netId#
+	           	</isNotEqual>
+            </isNotEmpty>	
+            <isNotEmpty property="isused">
+	           	<isNotEqual property="isused" compareValue="-1" prepend="AND">            	
+					t.isused = #isused#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="vlanId">
+	           	<isNotEqual property="vlanId" compareValue="-1" prepend="AND">            	
+					t.NET_ID = #vlanId#
+	           	</isNotEqual>
+            </isNotEmpty>
+			<isNotEmpty property="ipAddress" prepend="and">	
+				t.IPADDRESS like concat('%',#ipAddress#,'%')
+			</isNotEmpty>	
+			<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+				h.domain = #domain#
+	       	</isNotEqual>
+		</dynamic>					 
+	</select>
+	
+	<!-- 查询VLAN -->
+	<select id="queryVlan"  parameterClass="AssetReportObj" resultClass="UnitedTreeObj"> 
+    	select id,name,parent_id,uuid 
+    	from tb_united_tree 
+    	where vtype = 5 
+    	AND type = 8
+    	<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			domain = #domain#
+	    </isNotEqual>
+    </select>
+    
+	<!-- 查询机房 -->
+	<select id="queryRoom"  parameterClass="AssetReportObj" resultClass="java.util.HashMap"> 
+    	select R_ID as id,R_NAME as name
+    	from tb_cloud2_room_info 
+    </select>
+    
+    <!-- 查询数据中心 -->
+	<select id="querySubNet"  parameterClass="AssetReportObj" resultClass="UnitedTreeObj"> 
+    	select id,name,parent_id,uuid 
+    	from tb_united_tree 
+    	where vtype = 5 
+    	AND type = 7
+    	<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			domain = #domain#
+	    </isNotEqual>
+    </select>
+</sqlMap>

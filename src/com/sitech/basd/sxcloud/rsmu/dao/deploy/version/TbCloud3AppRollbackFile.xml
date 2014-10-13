@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbCloud3AppRollbackFile">
+	<typeAlias alias="TbCloud3AppRollbackFileVO"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.version.TbCloud3AppRollbackFileVO" />
+	
+	<select id="queryVOByID" parameterClass="TbCloud3AppRollbackFileVO" resultClass="TbCloud3AppRollbackFileVO">
+		SELECT T.ID,T.ROLLBACKID,T.ROLLBACKFILEPATH,T.INSERTTIME,T.ROLLBACKFILEFULLPATH FROM TB_CLOUD3_APP_ROLLBACK_FILE T WHERE T.ID=#id#
+	</select>
+	
+	<insert id="insertByVO" parameterClass="TbCloud3AppRollbackFileVO">
+		<selectKey resultClass="String" keyProperty="id">
+			SELECT sys_guid() AS id FROM DUAL
+		</selectKey>
+		insert into TB_CLOUD3_APP_ROLLBACK_FILE(ID,ROLLBACKID,ROLLBACKFILEPATH,INSERTTIME,ROLLBACKFILEFULLPATH)
+		values(#id#,#rollbackId#,#rollbackFilePath#,sysdate,#rollbackFileFullPath#)
+	</insert>
+	
+	<select id="queryVOByRollbackId" parameterClass="TbCloud3AppRollbackFileVO" resultClass="TbCloud3AppRollbackFileVO">
+		SELECT T.ID,T.ROLLBACKID,T.ROLLBACKFILEPATH,T.INSERTTIME,T.ROLLBACKFILEFULLPATH FROM TB_CLOUD3_APP_ROLLBACK_FILE T 
+		<dynamic prepend="where">
+			<isNotEmpty property="rollbackFilePath" prepend="and">
+				T.ROLLBACKFILEPATH=#rollbackFilePath#
+			</isNotEmpty>
+			<isNotEmpty property="rollbackFileFullPath" prepend="and">
+				T.ROLLBACKFILEFULLPATH=#rollbackFileFullPath#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				T.ID=#id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

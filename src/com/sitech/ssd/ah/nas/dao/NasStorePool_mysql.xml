@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="nasStorePool">
+	<typeAlias alias="NasStorePoolObj" type="com.sitech.ssd.ah.nas.domain.NasStorePoolObj" />
+	
+	<sql id="queryAllBase">
+	SELECT
+		a.ID,
+		a.NASPOOLNAME,
+		a.FREESPACE,
+		a.TOTALSPACE,
+		a.NAS_DEVICE_ID,
+		count(b.id) fileNum
+	FROM
+		tb_cloud2_hwnas_storagepool AS a
+	LEFT JOIN tb_cloud2_hwnas_filesystem b ON b.FS_STORAGE_POOL = a.NASPOOLNAME AND b.NAS_DEVICE_ID = a.NAS_DEVICE_ID
+	<dynamic prepend="where">
+			<isNotNull property="nas_device_id" prepend="and">
+					<isNotEmpty property="nas_device_id">
+						a.NAS_DEVICE_ID = #nas_device_id#
+					</isNotEmpty>
+			</isNotNull>
+	</dynamic>
+	GROUP BY a.ID	
+	</sql>
+	<select id="queryStorePoolByObj" parameterClass="NasStorePoolObj" resultClass="NasStorePoolObj">
+		<include refid="queryAllBase"/>
+	</select>
+    <update id="updateStorePoolByObj" parameterClass="NasStorePoolObj">
+    	update tb_cloud2_hwnas_storagepool
+    	<dynamic prepend="set">
+	    	<isNotNull property="naspoolname" prepend=",">
+					<isNotEmpty property="naspoolname">
+						NASPOOLNAME = #naspoolname#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="freespace" prepend=",">
+					<isNotEmpty property="freespace">
+						FREESPACE = #freespace#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="totalspace" prepend=",">
+					<isNotEmpty property="totalspace">
+						TOTALSPACE = #totalspace#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="nas_device_id" prepend=",">
+					<isNotEmpty property="nas_device_id">
+						NAS_DEVICE_ID = #nas_device_id#
+					</isNotEmpty>
+			</isNotNull>
+    	</dynamic>
+    	where ID=#id#
+    </update>
+    <delete id="deleteStorePoolByObj" parameterClass="NasStorePoolObj">
+    	delete from tb_cloud2_hwnas_storagepool 
+    	where ID = #id#
+    </delete>
+	
+	<insert id="insertByObj" parameterClass="NasStorePoolObj" >
+		INSERT INTO tb_cloud2_hwnas_storagepool (
+			NASPOOLNAME,
+			TOTALSPACE,
+			FREESPACE,
+			NAS_DEVICE_ID
+		)
+		VALUES
+			(#naspoolname#,#totalspace#,#freespace#,#nas_device_id#)
+	</insert>
+	
+</sqlMap>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dhcp">
+	<typeAlias alias="dhcpObj" type="com.sitech.basd.component.domain.dhcp.DhcpObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                         limit #FIRSTROWNUM#,#PAGESIZE#
+                 ]]>
+	</sql>
+
+	<sql id="baseCloumn">
+		 ID,IP,MACADDRESS,IPSTATUS,DESCR,
+		 DATE_FORMAT(INSERTDATE,'%Y-%m-%d %H:%i:%s') INSERTDATE,
+		 DATE_FORMAT(UPDATEDATE,'%Y-%m-%d %H:%i:%s') UPDATEDATE
+	</sql>
+    
+    <insert id="insertDhcp" parameterClass="dhcpObj">
+    	insert into tb_cloud_dhcp
+    	<dynamic prepend="(">
+    		<isNotEmpty prepend="," property="ID">
+    			ID
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IP">
+    			IP
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="MACADDRESS">
+    			MACADDRESS
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IPSTATUS">
+    			IPSTATUS
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="DESCR">
+    			DESCR
+    		</isNotEmpty>
+    		,INSERTDATE,UPDATEDATE
+    	)
+    	</dynamic>
+    	values
+    	<dynamic prepend="(">
+	    	<isNotEmpty prepend="," property="ID">
+    			#ID#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IP">
+    			#IP#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="MACADDRESS">
+    			#MACADDRESS#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IPSTATUS">
+    			#IPSTATUS#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="DESCR">
+    			#DESCR#
+    		</isNotEmpty>
+    		,SYSDATE(),SYSDATE()
+    	)
+    	</dynamic>
+    </insert>
+    
+    <delete id="deleteDhcp" parameterClass="dhcpObj">
+    	delete from tb_cloud_dhcp where ID = #ID#
+    </delete>
+    
+    <update id="updateDhcp" parameterClass="dhcpObj">
+    	update TB_CLOUD_DHCP t 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="ID">
+				t.ID  = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="IP">
+				t.IP  = #IP#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="MACADDRESS">	
+				t.MACADDRESS  = #MACADDRESS#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="IPSTATUS">
+				t.IPSTATUS  = #IPSTATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="DESCR">
+				t.DESCR  = #DESCR#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="INSERTDATE">
+				t.INSERTDATE  = STR_TO_DATE(#INSERTDATE#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+				,t.UPDATEDATE  = SYSDATE()
+		</dynamic>
+		where t.ID=#ID#
+    </update>
+    
+    <select id="queryForList" parameterClass="dhcpObj" resultClass="dhcpObj">
+    	select 
+    	<include refid="baseCloumn"/>
+    	from tb_cloud_dhcp
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="ID">
+				ID  = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IP">
+				IP  like CONCAT('%',#IP#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MACADDRESS">	
+				MACADDRESS  like CONCAT('%',#MACADDRESS#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IPSTATUS">
+				IPSTATUS  = #IPSTATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DESCR">
+				DESCR  like CONCAT('%',#DESCR#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="INSERTDATE">
+				INSERTDATE  = STR_TO_DATE(#INSERTDATE#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="UPDATEDATE">
+				UPDATEDATE  = STR_TO_DATE(#UPDATEDATE#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+    	</dynamic>
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+    </select>
+    
+    <select id="countDhcp" parameterClass="dhcpObj" resultClass="int">
+    	select count(ID) from tb_cloud_dhcp
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="ID">
+				ID  = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IP">
+				IP  like CONCAT('%',#IP#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MACADDRESS">	
+				MACADDRESS like CONCAT('%',#MACADDRESS#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IPSTATUS">
+				IPSTATUS  = #IPSTATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DESCR">
+				DESCR like CONCAT('%',#DESCR#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="INSERTDATE">
+				INSERTDATE  = STR_TO_DATE(#INSERTDATE#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="UPDATEDATE">
+				UPDATEDATE  = STR_TO_DATE(#UPDATEDATE#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+    	</dynamic>
+    </select>
+    
+</sqlMap>

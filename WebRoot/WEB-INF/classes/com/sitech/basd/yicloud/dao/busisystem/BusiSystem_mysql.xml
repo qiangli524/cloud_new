@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="busiSystem">
+	<typeAlias alias="busiSystemObj" type="com.sitech.basd.yicloud.domain.busisystem.BusiSystemObj"/>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+            	limit #FIRSTROWNUM#,#PAGESIZE# 
+        ]]>
+	</sql>
+
+	<sql id="baseCloumns">
+		a.ID,a.PARENT_ID,a.NUMBER,a.`DESC`,a.CONNECT_ID,a.NAME,a.TYPE,a.ENTITY_ID,DATE_FORMAT(a.INSERTDATE,'%Y-%m-%d %H:%i:%s') INSERTDATE,a.USER_ID,a.OEM
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="busiSystemObj" resultClass="busiSystemObj">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_busi_system_tree a
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="ID">
+				a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PARENT_ID">
+				a.PARENT_ID = #PARENT_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="NUMBER">
+				a.NUMBER = #NUMBER#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DESC">
+				a.`DESC` = #DESC#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="CONNECT_ID">
+				a.CONNECT_ID = #CONNECT_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="NAME">
+				a.NAME like CONCAT('%',#NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TYPE">
+				a.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ENTITY_ID">
+				a.ENTITY_ID = #ENTITY_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="INSERTDATE">
+				a.INSERTDATE = STR_TO_DATE(#INSERTDATE#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="USER_ID">
+				a.USER_ID = #USER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="OEM">
+				a.OEM = #OEM#
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="CountByObj" parameterClass="busiSystemObj" resultClass="int">
+		select count(a.ID) from tb_busi_system_tree a
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="ID">
+				a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PARENT_ID">
+				a.PARENT_ID = #PARENT_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="NUMBER">
+				a.NUMBER = #NUMBER#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DESC">
+				a.`DESC` = #DESC#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="CONNECT_ID">
+				a.CONNECT_ID = #CONNECT_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="NAME">
+				a.NAME like CONCAT('%',#NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TYPE">
+				a.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ENTITY_ID">
+				a.ENTITY_ID = #ENTITY_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="INSERTDATE">
+				a.INSERTDATE = STR_TO_DATE(#INSERTDATE#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="USER_ID">
+				a.USER_ID = #USER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="OEM">
+				a.OEM = #OEM#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

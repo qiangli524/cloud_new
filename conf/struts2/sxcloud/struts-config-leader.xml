@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="leader"
+			 extends="global_package">
+		<action name="getDataForLeaderView1"
+				class="leaderViewBusinessAction" method="getDataForLeaderView1"> 
+		</action>
+		<action name="gotoLeaderViewMainPage"
+				class="leaderViewBusinessAction" method="gotoLeaderViewMainPage"> 
+		</action>
+		<action name="getComputerRoomInfo"
+				class="leaderViewBusinessAction" method="getComputerRoomInfo"> 
+		</action>
+		<action name="getEquipmentPercent"
+				class="leaderViewBusinessAction" method="getEquipmentPercent"> 
+		</action>
+		<action name="getRoomCabinetInfo"
+				class="leaderViewBusinessAction" method="getRoomCabinetInfo"> 
+		</action>
+		<action name="getSourceCabinet"
+				class="leaderViewBusinessAction" method="getSourceCabinet"> 
+		</action>
+		<action name="getComputerCabinetInfo"
+				class="leaderViewBusinessAction" method="getComputerCabinetInfo"> 
+		</action>
+		
+		<action name="getHostMonitoringInfo"
+				class="leaderViewBusinessAction" method="getHostMonitoringInfo"> 
+		</action>
+		<action name="getVhostMonitoringInfo"
+				class="leaderViewBusinessAction" method="getVhostMonitoringInfo"> 
+		</action>
+		<action name="getAppMonitoringInfo"
+				class="leaderViewBusinessAction" method="getAppMonitoringInfo"> 
+		</action>
+		<action name="getDataForLeaderView1"
+				class="leaderViewBusinessAction" method="getDataForLeaderView1"> 
+		</action>
+	</package>
+</struts>

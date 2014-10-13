@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasEntity">
+	<typeAlias alias="PaasEntityObj" type="com.sitech.ssd.ah.paas.domain.entity.PaasEntityObj" />
+
+	<sql id="baseCloumns">
+		id,entity_id,entity_name,entity_parent_id,entity_type,host_address,host_port,DATE_FORMAT(insert_time,'%Y-%m-%d %H:%i:%S') insert_time
+	</sql>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForEntityListBase">
+	SELECT <include refid="baseCloumns"/>
+		FROM tb_paas_entity 
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="id" prepend="and">
+					id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="entity_name" prepend="and">
+					entity_name LIKE CONCAT('%',#entity_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="entity_type" prepend="and">
+					entity_type = #entity_type#
+			</isNotEmpty>
+			<isNotEmpty property="entity_parent_id" prepend="and">
+					entity_parent_id = #entity_parent_id#
+			</isNotEmpty>
+			<isNotEmpty property="entityIdList" prepend="and">
+				entity_id NOT IN
+				<iterate close=")" conjunction="," open="(" property="entityIdList">
+					#entityIdList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty property="nodeName" prepend="and">
+					entity_name = #nodeName#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForEntityList" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+		<include refid ="queryForEntityListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForEntityListCount" parameterClass="PaasEntityObj" resultClass="int">
+		select count(id)  from (
+		<include refid="queryForEntityListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	<insert id="insertByObj" parameterClass="PaasEntityObj">
+		insert into tb_paas_entity(id,entity_id,entity_name,entity_parent_id,entity_type,host_address,host_port,insert_time)
+			values(#id#,#entity_id#,#entity_name#,#entity_parent_id#,#entity_type#,#host_address#,#host_port#,#insert_time#)
+	</insert>
+	
+	<select id="queryByObj" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_paas_entity
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+					id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+					entity_id = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<update id="updateByObj" parameterClass="PaasEntityObj">
+		update tb_paas_entity set 
+		id = #id#,entity_id = #entity_id#,entity_name = #entity_name#,
+		entity_parent_id = #entity_parent_id#,entity_type = #entity_type#,
+		host_address = #host_address#,host_port= #host_port#,insert_time = #insert_time#
+	  	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+					id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="PaasEntityObj">
+		delete from tb_paas_entity 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+					id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<select id="queryForEntityProp" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+		SELECT
+			p.entity_prop_key, p.entity_prop_val
+		FROM
+			tb_paas_entity t LEFT JOIN tb_paas_entity_prop p ON t.entity_id = p.entity_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="entity_id">
+				t.entity_id = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryDistinctEntityNameByType" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">	
+		SELECT DISTINCT entity_name from tb_paas_entity t where t.entity_type = #entity_type# ORDER BY t.entity_name
+	</select>
+</sqlMap>

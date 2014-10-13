@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="subclauses">
+	<typeAlias alias="SubClausesObj" type="com.sitech.basd.subclauses.domain.SubClausesObj" />
+	<typeAlias alias="ResourceListObj" type="com.sitech.basd.subclauses.domain.ResourceListObj" />
+
+    <!-- resultMap映射 -->
+    <resultMap class="com.sitech.basd.subclauses.domain.SubClausesObj" id="subClauses_ResultMap">
+        <result column="id" property="id" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="indate" property="indate" jdbcType="VARCHAR" />
+        <result column="declare" property="declare" jdbcType="VARCHAR" />
+        <result column="resource_id" property="resource_id" jdbcType="VARCHAR" />
+        <result column="resource_name" property="resource_name" jdbcType="VARCHAR" />
+        <result column="resource_info" property="resource_info" jdbcType="VARCHAR" />
+        <result column="role" property="role" jdbcType="VARCHAR" />
+        <result column="type_id" property="type_id" jdbcType="VARCHAR" />
+        <result column="state" property="state" jdbcType="VARCHAR" />
+        <result column="resource_type" property="resource_type" jdbcType="VARCHAR" />
+         <result column="publish_state" property="publish_state" jdbcType="VARCHAR" />
+    </resultMap>
+	<sql id="baseCloumns">
+		DISTINCT id,name,indate,role,declare,resource_id,resource_info,type_id,state,resource_type,publish_state
+	</sql>
+	<sql id="baseCloumnsa">
+		DISTINCT a.id,a.name
+	</sql>	
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	
+	<!-- 查询所有主机 -->
+	<sql id="querySubClausesbase">
+	   select
+		 a.id as id,a.name as name,a.indate as indate,a.role as role,a.declare as 'declare',a.resource_id as resource_id,
+		 tab1.`name` as resource_name,a.resource_info as resource_info,a.type_id as type_id,a.state as state,a.resource_type as resource_type,
+		 a.publish_state as publish_state
+		from tb_service_subclauses a left join (
+		 select '1' as type, b.`name`,b.id FROM tb_tem_manage b union 
+		 select '2' as type, c.`name`,c.id FROM tb_tem_manage c
+		)tab1 on a.resource_type = tab1.type  and a.resource_id = tab1.id
+		 
+		<dynamic prepend="where">
+			  <isNotNull prepend="and" property="id">
+			  	  <isNotEmpty property="id">
+			  	 	  a.id=#id#
+			  	  </isNotEmpty>
+			  </isNotNull>
+			   <isNotNull prepend="and" property="name">
+			  	  <isNotEmpty property="name">
+			  	 	  a.name like CONCAT('%',#name#,'%')
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="indate">
+			  	  <isNotEmpty property="indate">
+			  	   <![CDATA[
+            		 DATEDIFF(a.indate,#indate#) >= 0
+            	   ]]>
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="role">
+			  	  <isNotEmpty property="role">
+			  	 	  role = #role#
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="resource_name">
+			  	  <isNotEmpty property="resource_name">
+			  	 	  tab1.`name` like CONCAT('%',#resource_name#,'%')
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="state">
+			  	  <isNotEmpty property="state">
+			  	 	  a.state=#state#
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="publish_state">
+			  	  <isNotEmpty property="publish_state">
+			  	 	  a.publish_state=#publish_state#
+			  	  </isNotEmpty>
+			  </isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="querySubClausesLists" parameterClass="SubClausesObj" resultClass="SubClausesObj">
+		<include refid="querySubClausesbase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	  </select>
+	
+	<select id="querySubClausesListsForCount"
+		parameterClass="SubClausesObj" resultClass="int">
+		select count(id) from (
+		<include refid="querySubClausesbase" />
+		) virtual_table
+	 </select>
+<!-- 主键查询 -->
+	<select id="selectByPrimaryKey" parameterClass="java.lang.String" resultMap="subClauses_ResultMap">
+        select
+		 a.id as id,a.name as name,a.indate as indate,a.role as role,a.declare as 'declare',a.resource_id as resource_id,
+		 'resource_name' as resource_name,a.resource_info as resource_info,a.type_id as type_id,a.state as state,a.resource_type as resource_type,
+		 a.publish_state as publish_state
+		from tb_service_subclauses a 
+		where id = #id#
+	</select>
+<!-- 查询是否重复for add -->
+	<select id="selectCountForAdd" parameterClass="java.lang.String" resultClass="int">
+        select
+		 count(0)
+		from tb_service_subclauses a 
+		where id = #id#
+	</select>
+	
+<!-- 查询模板list1 -->
+	<select id="getResourceName1" parameterClass="java.lang.String" resultClass="ResourceListObj">
+        select 
+		 a.id,a.name
+		from tb_tem_manage a 
+	</select>
+<!-- 查询模板Info1 -->
+	<select id="getResourceInfo1" parameterClass="java.lang.String" resultClass="java.lang.String">
+        select 
+		 CONCAT('CPU:',a.CPU,'个,内存:',cast(IFNULL(a.MEM,0)/1024 as decimal(9,2)),'G,存储:',cast(IFNULL(a.STORE,0)/1024 as decimal(9,2)),'G|',IFNULL(a.remark,''))
+		from tb_tem_manage a 
+		where a.ID = #id#
+	</select>
+
+<!-- 对象判断插入 -->
+	<insert id="insertSubClauses" parameterClass="SubClausesObj">
+		insert into tb_service_subclauses
+		<dynamic prepend="(">
+      <isNotNull prepend="," property="id" >
+      <isNotEmpty property="id">
+        id
+       </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="name" >
+      <isNotEmpty property="name">
+        name
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="indate" >
+      <isNotEmpty property="indate">
+        indate
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="role" >
+      <isNotEmpty property="role">
+        role
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="declare" >
+      <isNotEmpty property="declare">
+        `declare`
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="resource_type" >
+      <isNotEmpty property="resource_type">
+        resource_type
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="resource_id" >
+      <isNotEmpty property="resource_id">
+        resource_id
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="resource_info" >
+      <isNotEmpty property="resource_info">
+        resource_info
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="type_id" >
+      <isNotEmpty property="type_id">
+        type_id
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="state" >
+      <isNotEmpty property="state">
+        state
+      </isNotEmpty>
+      </isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+      <isNotNull prepend="," property="id" >
+      <isNotEmpty property="id">
+        #id:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="name" >
+      <isNotEmpty property="name">
+        #name:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="indate" >
+      <isNotEmpty property="indate">
+        #indate:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="role" >
+      <isNotEmpty property="role">
+        #role:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="declare" >
+      <isNotEmpty property="declare">
+        #declare:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+       <isNotNull prepend="," property="resource_type" >
+      <isNotEmpty property="resource_type">
+        #resource_type:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="resource_id" >
+      <isNotEmpty property="resource_id">
+        #resource_id:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="resource_info" >
+      <isNotEmpty property="resource_info">
+        #resource_info:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="type_id" >
+      <isNotEmpty property="type_id">
+        #type_id:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+      <isNotNull prepend="," property="state" >
+      <isNotEmpty property="state">
+        #state:VARCHAR#
+      </isNotEmpty>
+      </isNotNull>
+			)
+		</dynamic>
+	</insert>
+	
+<!-- 条件更新对象 -->
+	<update id="updateSubClausesById" parameterClass="SubClausesObj">
+		update tb_service_subclauses
+		<dynamic prepend="set">
+      <isNotNull prepend="," property="name" >
+        name = #name:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="indate" >
+        indate = #indate:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="role" >
+        role = #role:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="declare" >
+        `declare` = #declare:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="resource_type" >
+        resource_type = #resource_type:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="resource_id" >
+        resource_id = #resource_id:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="resource_info" >
+        resource_info = #resource_info:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="type_id" >
+        type_id = #type_id:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="state" >
+        state = #state:VARCHAR#
+      </isNotNull>
+		</dynamic>
+		where id = #id:VARCHAR#
+	</update>
+<!-- 删除对象 -->	
+	<delete id="deleteById" parameterClass="java.lang.String">
+		delete from tb_service_subclauses 
+		where id = #id:VARCHAR#
+	</delete>
+<!-- 发布对象 -->
+	<update id="publishSubClausesById" parameterClass="SubClausesObj">
+		update tb_service_subclauses
+		set publish_state = #publish_state:VARCHAR#
+		where id = #id:VARCHAR#
+	</update>
+</sqlMap>

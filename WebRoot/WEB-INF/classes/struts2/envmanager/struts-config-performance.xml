@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="performance"
+			 extends="global_package">
+		<action name="performance_*"
+				class="performanceAction" method="{1}">
+			<result name="success">/envmanager/performance/listPerformance.jsp</result>
+			<result name="check">/envmanager/check/checkInfo.jsp</result>
+			
+			<result name="address">/envmanager/performance/listIp.jsp</result>
+		
+		</action>
+			
+	</package>
+</struts>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="room"
+			 extends="global_package">
+		<action name="room_*"
+				class="machineRoomAction" method="{1}">
+			<result name="success">/sxcloud/cloud/machineroom/allMachineList.jsp</result>
+			<result name="modify">/sxcloud/cloud/machineroom/editMachine.jsp</result>
+			<result name="del" type="redirect">room_queryRoomList.do</result>
+			<result name="add" >/sxcloud/cloud/machineroom/editMachine.jsp</result>
+			<result name="save" type="redirect">room_queryRoomList.do</result>
+		</action>
+			<action name="area_*"
+				class="roomAreaAction" method="{1}">
+			<result name="success">/sxcloud/cloud/machineroom/allAreaList.jsp</result>
+			<result name="modify">/sxcloud/cloud/machineroom/editArea.jsp</result>
+			<result name="del" type="redirect">area_queryAreaList.do</result>
+			<result name="add" >/sxcloud/cloud/machineroom/editArea.jsp</result>
+			<result name="save" type="redirect">area_queryAreaList.do</result>
+		</action>
+	</package>
+</struts>

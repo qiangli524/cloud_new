@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Configure">
+  <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="ConfigureObj" type="com.sitech.basd.envmanager.domain.configure.ConfigureObj"/>
+  	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<delete id="deleteConfigureObj" parameterClass="ConfigureObj">
+		delete env_configure  where CF_ENV=#cf_env#
+	</delete>
+	<update id="updateConfigureObj" parameterClass="ConfigureObj">
+		update env_configure set CF_DOMAIN=#CF_DOMAIN#,CF_SOURCE=#CF_SOURCE#,CF_CLASS=#CF_CLASS#,CF_HOSTTYPE=#CF_HOSTTYPE#,CF_HOSTNUM=#CF_HOSTNUM#,
+		CF_DESCRIPTION=#CF_DESCRIPTION#,CF_SYSTEM=#CF_SYSTEM#,CF_HOSTNAME=#CF_HOSTNAME#,CF_IP=#CF_IP#,CF_PRODUCT=#CF_PRODUCT#,CF_DEVEPROD=#CF_DEVEPROD#,CF_SID=#CF_SID#,
+		CF_TABLESPACE=#CF_TABLESPACE#,CF_FILESYSNAM=#CF_FILESYSNAM#,CF_FILEAPPNUM=#CF_FILEAPPNUM#,CF_CPUUSED=#CF_CPUUSED#,CF_MEM=#CF_MEM#,CF_FILEUSERD=#CF_FILEUSERD#,
+		CF_FILEUSEPER=#CF_FILEUSEPER#,CF_SID1=#CF_SID1#,CF_TABSPAUSED=#CF_TABSPAUSED#,CF_TABSPAUSEPER=#CF_TABSPAUSEPER#,
+		CF_SGA=#CF_SGA#,CF_CPULEFT=#CF_CPULEFT#,CF_MEMLEFT=#CF_MEMLEFT#,CF_STORAGE=#CF_STORAGE#,CF_DATE=sysdate
+		where CF_ENV=#cf_env#
+	</update>
+	<select id="queryConfigureOne" parameterClass="ConfigureObj" resultClass="ConfigureObj">
+		select  CF_ENV,CF_DOMAIN,CF_SOURCE,CF_CLASS,CF_HOSTTYPE,CF_HOSTNUM ,CF_DESCRIPTION ,CF_SYSTEM,CF_HOSTNAME,CF_IP,CF_PRODUCT,CF_DEVEPROD,CF_SID,CF_TABLESPACE,
+		CF_FILESYSNAM ,CF_FILEAPPNUM,CF_CPUUSED,CF_MEM ,CF_FILEUSERD,CF_FILEUSEPER,CF_SID1,CF_TABSPAUSED,CF_TABSPAUSEPER ,CF_SGA ,CF_CPULEFT , CF_MEMLEFT ,CF_STORAGE
+		from env_configure
+		where CF_ENV=#cf_env#
+	</select>
+	<insert id="insertConfigureObj" parameterClass="ConfigureObj">
+		<selectKey  resultClass="int"  keyProperty="cf_env">
+	 		select ID_CONFIGURE.nextval as cf_env from dual
+	 	</selectKey>
+		insert into env_configure
+			(CF_ENV,CF_DOMAIN,CF_SOURCE,CF_CLASS,CF_HOSTTYPE,CF_HOSTNUM ,CF_DESCRIPTION ,CF_SYSTEM,CF_HOSTNAME,CF_IP,CF_PRODUCT,CF_DEVEPROD,CF_SID,CF_TABLESPACE,
+			CF_FILESYSNAM ,CF_FILEAPPNUM,CF_CPUUSED,CF_MEM ,CF_FILEUSERD,CF_FILEUSEPER,CF_SID1,CF_TABSPAUSED,CF_TABSPAUSEPER ,CF_SGA ,CF_CPULEFT , CF_MEMLEFT ,CF_STORAGE,CF_DATE,DEVICE_ID)
+			values(#cf_env#,#CF_DOMAIN#,#CF_SOURCE#,#CF_CLASS#,#CF_HOSTTYPE#,#CF_HOSTNUM#,#CF_DESCRIPTION#,#CF_SYSTEM#,#CF_HOSTNAME#,#CF_IP#,#CF_PRODUCT#,#CF_DEVEPROD#,#CF_SID#,#CF_TABLESPACE#,
+			#CF_FILESYSNAM#,#CF_FILEAPPNUM#,#CF_CPUUSED#,#CF_MEM#,#CF_FILEUSERD#,#CF_FILEUSEPER#,#CF_SID1#,#CF_TABSPAUSED#,#CF_TABSPAUSEPER#,#CF_SGA#,#CF_CPULEFT#,#CF_MEMLEFT#,#CF_STORAGE#,sysdate,#DEVICE_ID#)
+	</insert>
+	<sql id="queryConfigureObj">   
+		select  cf_env,CF_DOMAIN,CF_SOURCE,CF_CLASS,CF_HOSTTYPE,CF_HOSTNUM ,CF_DESCRIPTION ,CF_SYSTEM,CF_HOSTNAME,CF_IP,CF_PRODUCT,CF_DEVEPROD,CF_SID,CF_TABLESPACE,DEVICE_ID,
+		CF_FILESYSNAM ,CF_FILEAPPNUM,CF_CPUUSED,CF_MEM ,CF_FILEUSERD,CF_FILEUSEPER,CF_SID1,CF_TABSPAUSED,CF_TABSPAUSEPER ,CF_SGA ,CF_CPULEFT ,CF_MEMLEFT ,CF_STORAGE, to_char(CF_DATE,'yyyy-mm-dd hh24:mi:ss') CF_DATE
+		from env_configure
+	<dynamic prepend="where">
+	<isNotNull property="DEVICE_ID">
+		 <isNotEmpty property="DEVICE_ID" prepend="and">
+               DEVICE_ID =#DEVICE_ID#
+            </isNotEmpty>
+         </isNotNull> 
+		<isNotNull property="CF_DOMAIN">
+		 <isNotEmpty property="CF_DOMAIN" prepend="and">
+               CF_DOMAIN like '%'||#CF_DOMAIN#||'%'
+            </isNotEmpty>
+         </isNotNull> 
+         <isNotNull property="CF_SOURCE">
+		 <isNotEmpty property="CF_SOURCE" prepend="and">
+               CF_SOURCE like '%'||#CF_SOURCE#||'%'
+            </isNotEmpty>
+          </isNotNull> 
+           <isNotNull property="CF_CLASS">
+		 <isNotEmpty property="CF_CLASS" prepend="and">
+               CF_CLASS like '%'||#CF_CLASS#||'%'
+            </isNotEmpty>
+          </isNotNull> 
+           <isNotNull property="CF_HOSTTYPE">
+		 <isNotEmpty property="CF_HOSTTYPE" prepend="and">
+               CF_HOSTTYPE like '%'||#CF_HOSTTYPE#||'%'
+            </isNotEmpty>
+          </isNotNull> 
+       </dynamic> 
+	</sql>
+	<select id="queryConfigureObj" parameterClass="ConfigureObj"
+		resultClass="ConfigureObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryConfigureObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryConfigureCount" parameterClass="ConfigureObj"
+		resultClass="int">
+		select count(cf_env) from (
+		<include refid="queryConfigureObj" />
+		) virtual_table
+	</select>
+
+</sqlMap>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="net"
+			 extends="global_package">
+		<action name="net_*"
+				class="netMangAction" method="{1}">
+			<result name="list">/sxcloud/cloud/net/listNet.jsp</result>
+			<result name="add">/sxcloud/cloud/net/editNet.jsp</result>
+			<result name="listNetNode">/yicloud/entitytree/netNode.jsp</result>
+			<result name="redirect" type="redirect">net_listNetInfo.do</result>
+		</action>
+	</package>
+	<package name="ip"
+			 extends="default">
+			 <!-- 全局异常配置 -->
+ 		<global-results>
+ 			<result name="exception">/yicloud/vmman/exception.jsp</result>
+ 		</global-results>
+ 		<global-exception-mappings>
+ 			<exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>
+ 		</global-exception-mappings>
+		<action name="ip_*"
+				class="ipAction" method="{1}">
+			<result name="list">/sxcloud/cloud/ip/listIpInfo.jsp</result>
+			<result name="add">/sxcloud/cloud/ip/addIpInfo.jsp</result>
+			<result name="edit">/sxcloud/cloud/ip/editIpInfo.jsp</result>
+			<result name="allHost">/sxcloud/cloud/ip/allHostList.jsp</result>
+			<result name="listvm">/sxcloud/cloud/ip/showVm.jsp</result>
+			<result name="validate" type="json">
+				<param name="root">reMess</param>
+			</result>	
+		</action>
+	</package>
+</struts>

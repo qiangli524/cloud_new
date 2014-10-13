@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="tb_resource_scheduler_task">
+
+<!-- 别名 -->
+	<typeAlias alias="resourceTaskObj" type="com.sitech.basd.scheduler.domain.task.ResourceTaskObj" />
+	<typeAlias alias="resourceTaskObjExample" type="com.sitech.basd.scheduler.domain.task.ResourceTaskObjExample" />
+
+    <!-- resultMap映射 -->
+    <resultMap class="com.sitech.basd.scheduler.domain.task.ResourceTaskObj" id="scheduler_task_ResultMap">
+        <result column="task_id" property="taskId" jdbcType="VARCHAR" />
+        <result column="vh_id" property="vhId" jdbcType="VARCHAR" />
+        <result column="vh_name" property="vhName" jdbcType="VARCHAR" />
+        <result column="vh_uuid" property="vhUuid" jdbcType="VARCHAR" />
+        <result column="vh_ip" property="vhIp" jdbcType="VARCHAR" />
+        <result column="execute_start_date" property="executeStartDate" jdbcType="TIMESTAMP" />
+        <result column="execute_end_date" property="executeEndDate" jdbcType="TIMESTAMP" />
+        <result column="execute_cron_expression" property="executeCronExpression" jdbcType="VARCHAR" />
+        <result column="execute_action" property="executeAction" jdbcType="VARCHAR" />
+        <result column="execute_state" property="executeState" jdbcType="VARCHAR" />
+        <result column="exclude_date" property="excludeDate" jdbcType="VARCHAR" />
+        <result column="every_type" property="everyType" jdbcType="VARCHAR" />
+        <result column="vm_type" property="vmType" jdbcType="VARCHAR" />
+        <result column="boAttr1" property="boattr1" jdbcType="VARCHAR" />
+        <result column="boAttr2" property="boattr2" jdbcType="VARCHAR" />
+        <result column="boAttr3" property="boattr3" jdbcType="VARCHAR" />
+        <result column="boAttr4" property="boattr4" jdbcType="VARCHAR" />
+        <result column="boAttr5" property="boattr5" jdbcType="VARCHAR" />
+        <result column="created_date" property="createdDate" jdbcType="TIMESTAMP" />
+        <result column="created_by" property="createdBy" jdbcType="VARCHAR" />
+        <result column="last_updated_date" property="lastUpdatedDate" jdbcType="TIMESTAMP" />
+        <result column="last_updated_by" property="lastUpdatedBy" jdbcType="VARCHAR" />
+    </resultMap>
+	
+<!-- 基础查询sql -->
+	<sql id="queryBaseSql">
+		SELECT
+			task_id,
+			vh_id,
+			vh_name,
+			vh_uuid,
+			vh_ip,
+			execute_start_date,
+			execute_end_date,
+			execute_cron_expression,
+			execute_action,
+			execute_state,
+			exclude_date,
+			every_type,
+			vm_type,
+			boAttr1,
+			boAttr2,
+			boAttr3,
+			boAttr4,
+			boAttr5,
+            created_date, 
+            created_by, 
+            last_updated_date,
+            last_updated_by
+		FROM
+			tb_resource_scheduler_task
+	</sql>	
+	
+<!-- 分页sql	 -->
+	<sql id="paginationStart">
+			<![CDATA[
+	                          select * from (select virtual_table.*, rownum rownum_ from (
+	                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+			<![CDATA[
+	                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+	                 ]]>
+	</sql>
+
+<!-- 条件解析 -->
+	<sql id="Where_Clause">
+		<iterate conjunction="or" prepend="where" property="oredCriteria" removeFirstPrepend="iterate">
+			<isEqual compareValue="true" property="oredCriteria[].valid">
+				(
+				<iterate conjunction="and" prepend="and" property="oredCriteria[].criteriaWithoutValue">
+					$oredCriteria[].criteriaWithoutValue[]$
+				</iterate>
+				<iterate conjunction="and" prepend="and" property="oredCriteria[].criteriaWithSingleValue">
+					$oredCriteria[].criteriaWithSingleValue[].condition$
+					#oredCriteria[].criteriaWithSingleValue[].value#
+				</iterate>
+				<iterate conjunction="and" prepend="and" property="oredCriteria[].criteriaWithListValue">
+					$oredCriteria[].criteriaWithListValue[].condition$
+					<iterate close=")" conjunction="," open="(" property="oredCriteria[].criteriaWithListValue[].values">
+						#oredCriteria[].criteriaWithListValue[].values[]#
+					</iterate>
+				</iterate>
+				<iterate conjunction="and" prepend="and" property="oredCriteria[].criteriaWithBetweenValue">
+					$oredCriteria[].criteriaWithBetweenValue[].condition$
+					#oredCriteria[].criteriaWithBetweenValue[].values[0]# and
+					#oredCriteria[].criteriaWithBetweenValue[].values[1]#
+				</iterate>
+				)
+			</isEqual>
+		</iterate>
+	</sql>
+
+<!-- 条件查询单个记录 -->
+	<select id="selectByExample" parameterClass="resourceTaskObjExample" resultMap="scheduler_task_ResultMap">
+        <include refid="queryBaseSql" />
+		<isParameterPresent>
+			<include refid="tb_resource_scheduler_task.Where_Clause" />
+			<isNotNull property="orderByClause">
+				order by $orderByClause$
+			</isNotNull>
+		</isParameterPresent>
+	</select>
+
+<!-- 对象判断插入 -->
+	<insert id="insertSelective" parameterClass="resourceTaskObj">
+		insert into tb_resource_scheduler_task
+		<dynamic prepend="(">
+      <isNotNull prepend="," property="taskId" >
+        task_id
+      </isNotNull>
+      <isNotNull prepend="," property="vhId" >
+        vh_id
+      </isNotNull>
+      <isNotNull prepend="," property="vhName" >
+        vh_name
+      </isNotNull>
+      <isNotNull prepend="," property="vhUuid" >
+        vh_uuid
+      </isNotNull>
+      <isNotNull prepend="," property="vhIp" >
+        vh_ip
+      </isNotNull>
+      <isNotNull prepend="," property="executeStartDate" >
+        execute_start_date
+      </isNotNull>
+      <isNotNull prepend="," property="executeEndDate" >
+        execute_end_date
+      </isNotNull>
+      <isNotNull prepend="," property="executeCronExpression" >
+        execute_cron_expression
+      </isNotNull>
+      <isNotNull prepend="," property="executeAction" >
+        execute_action
+      </isNotNull>
+      <isNotNull prepend="," property="executeState" >
+        execute_state
+      </isNotNull>
+      <isNotNull prepend="," property="excludeDate" >
+        exclude_date
+      </isNotNull>
+      <isNotNull prepend="," property="everyType" >
+        every_type
+      </isNotNull>
+      <isNotNull prepend="," property="vmType" >
+        vm_type
+      </isNotNull>
+      <isNotNull prepend="," property="boattr1" >
+        boAttr1
+      </isNotNull>
+      <isNotNull prepend="," property="boattr2" >
+        boAttr2
+      </isNotNull>
+      <isNotNull prepend="," property="boattr3" >
+        boAttr3
+      </isNotNull>
+      <isNotNull prepend="," property="boattr4" >
+        boAttr4
+      </isNotNull>
+      <isNotNull prepend="," property="boattr5" >
+        boAttr5
+      </isNotNull>
+      <isNotNull prepend="," property="createdDate" >
+        created_date
+      </isNotNull>
+      <isNotNull prepend="," property="createdBy" >
+        created_by
+      </isNotNull>
+      <isNotNull prepend="," property="lastUpdatedDate" >
+        last_updated_date
+      </isNotNull>
+      <isNotNull prepend="," property="lastUpdatedBy" >
+        last_updated_by
+      </isNotNull>      
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+      <isNotNull prepend="," property="taskId" >
+        #taskId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="vhId" >
+        #vhId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="vhName" >
+        #vhName:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="vhUuid" >
+        #vhUuid:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="vhIp" >
+        #vhIp:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="executeStartDate" >
+        #executeStartDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="executeEndDate" >
+        #executeEndDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="executeCronExpression" >
+        #executeCronExpression:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="executeAction" >
+        #executeAction:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="executeState" >
+        #executeState:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="excludeDate" >
+        #excludeDate:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="everyType" >
+        #everyType:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="vmType" >
+        #vmType:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr1" >
+        #boattr1:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr2" >
+        #boattr2:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr3" >
+        #boattr3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr4" >
+        #boattr4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr5" >
+        #boattr5:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="createdDate" >
+        #createdDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="createdBy" >
+        #createdBy:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="lastUpdatedDate" >
+        #lastUpdatedDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="lastUpdatedBy" >
+        #lastUpdatedBy:VARCHAR#
+      </isNotNull>
+			)
+		</dynamic>
+	</insert>
+	
+<!-- 主键删除 -->
+	<delete id="deleteByPrimaryKey" parameterClass="java.lang.String">
+		delete from tb_resource_scheduler_task
+		where task_id = #taskId#
+	</delete>
+
+<!-- 条件删除 -->
+	<delete id="deleteByExample" parameterClass="resourceTaskObjExample">
+		delete from tb_resource_scheduler_task
+		<include refid="tb_resource_scheduler_task.Where_Clause" />
+	</delete>
+
+<!-- 条件查询记录个数 -->
+	<select id="countByExample" parameterClass="resourceTaskObjExample" resultClass="java.lang.Integer">
+		select count(1) from tb_resource_scheduler_task
+		<include refid="tb_resource_scheduler_task.Where_Clause" />
+	</select>
+
+<!-- 条件查询记录 -->
+	<select id="queryByExampleList" resultMap="scheduler_task_ResultMap" parameterClass="resourceTaskObjExample">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+        <include refid="queryBaseSql" />
+		<isParameterPresent>
+			<include refid="tb_resource_scheduler_task.Where_Clause" />
+			<isNotNull property="orderByClause">
+				order by $orderByClause$
+			</isNotNull>
+		</isParameterPresent>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+<!-- 主键查询 -->
+	<select id="selectByPrimaryKey" parameterClass="java.lang.String" resultMap="scheduler_task_ResultMap">
+        <include refid="queryBaseSql" />
+		where task_id = #taskId#
+	</select>
+
+<!-- 条件更新对象 -->
+	<update id="updateByExampleSelective">
+		update tb_resource_scheduler_task
+		<dynamic prepend="set">
+      <isNotNull prepend="," property="record.taskId" >
+        task_id = #record.taskId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.vhId" >
+        vh_id = #record.vhId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.vhName" >
+        vh_name = #record.vhName:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.vhUuid" >
+        vh_uuid = #record.vhUuid:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.vhIp" >
+        vh_ip = #record.vhIp:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.executeStartDate" >
+        execute_start_date = #record.executeStartDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="record.executeEndDate" >
+        execute_end_date = #record.executeEndDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="record.executeCronExpression" >
+        execute_cron_expression = #record.executeCronExpression:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.executeAction" >
+        execute_action = #record.executeAction:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.executeState" >
+        execute_state = #record.executeState:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.excludeDate" >
+        exclude_date = #record.excludeDate:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.everyType" >
+        every_type = #record.everyType:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.vmType" >
+        vm_type = #record.vmType:VARCHAR#
+      </isNotNull>      
+      <isNotNull prepend="," property="record.boattr1" >
+        boAttr1 = #record.boattr1:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.boattr2" >
+        boAttr2 = #record.boattr2:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.boattr3" >
+        boAttr3 = #record.boattr3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.boattr4" >
+        boAttr4 = #record.boattr4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.boattr5" >
+        boAttr5 = #record.boattr5:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.createdDate" >
+        created_date = #record.createdDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="record.createdBy" >
+        created_by = #record.createdBy:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.lastUpdatedDate" >
+        last_updated_date = #record.lastUpdatedDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="record.lastUpdatedBy" >
+        last_updated_by = #record.lastUpdatedBy:VARCHAR#
+      </isNotNull>     
+		</dynamic>
+		<isParameterPresent>
+			<include refid="tb_resource_scheduler_task.Where_Clause" />
+		</isParameterPresent>
+	</update>
+
+</sqlMap>

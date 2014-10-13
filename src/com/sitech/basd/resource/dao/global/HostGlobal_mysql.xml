@@ -1,0 +1,1120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HostGlobal">
+	<typeAlias alias="TopTargetObj" type="com.sitech.basd.resource.domain.top.TopTargetObj"/>
+	<typeAlias alias="hostGlobalObj" type="com.sitech.basd.resource.domain.global.HostGlobalObj"/>
+	<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<typeAlias alias="cmsObj"
+		type="com.sitech.basd.resource.domain.united.CMSObj" />
+
+	<!-- 查询主机cpu topN-->
+	<select id="queryCpuTop" parameterClass="java.util.HashMap" resultClass="java.lang.Double">
+ 		<![CDATA[ 
+			SELECT
+				ROUND(t.cpu_usage,2) y
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+ 		]]> 
+	</select>
+	<select id="queryCpuTopClu" parameterClass="java.util.HashMap" resultClass="java.lang.Double">
+		<![CDATA[ 
+			SELECT
+				ROUND(t.cpu_usage,2) y
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+			and t.cluster_uuid = #uuid#
+			and t.connect_uuid = #connect_id#
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+ 		]]> 
+	</select>
+<!-- 查询 -->
+	<select id="queryCpuXData" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+ 		<![CDATA[ 
+			SELECT
+				h.eq_name name
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+ 		]]> 
+	</select>
+	<select id="queryCpuXDataClu" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+ 		<![CDATA[ 
+			SELECT
+				h.eq_name name
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+			and t.cluster_uuid = #uuid#
+			and t.connect_uuid = #connect_id#
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+ 		]]> 
+	</select>
+<!-- 查询按照CPU进行排序的列表 -->
+	<select id="queryCPUList" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+			SELECT
+				h.EQ_NAME name,
+				ifnull(h.EQ_IP,'--') as ip,
+				ROUND(ifnull(t.cpu_usage,0),2) as  cpu_usage,
+				ROUND(ifnull(t.mem_usage,0),2) as mem_usage,
+				ROUND(ifnull(t.store_usage,0),2) as  store_usage,
+				ifnull(t.storage_o_kbps,0) as  storage_o_kbps,
+				ifnull(t.storage_i_kbps,0) as  storage_i_kbps,
+				ifnull(t.network_o_kbps,0) as  network_o_kbps,
+				ifnull(t.network_i_kbps,0) as  network_i_kbps
+				FROM
+				tb_host_global_info t left join
+				tb_cloud2_host_info h
+				on t.host_uuid=h.h_uuid
+				and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.center_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<select id="queryCPUListClu" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+			SELECT
+				h.EQ_NAME name,
+				ifnull(h.EQ_IP,'--') as ip,
+				ROUND(ifnull(t.cpu_usage,0),2) as  cpu_usage,
+				ROUND(ifnull(t.mem_usage,0),2) as mem_usage,
+				ROUND(ifnull(t.store_usage,0),2) as  store_usage,
+				ifnull(t.storage_o_kbps,0) as  storage_o_kbps,
+				ifnull(t.storage_i_kbps,0) as  storage_i_kbps,
+				ifnull(t.network_o_kbps,0) as  network_o_kbps,
+				ifnull(t.network_i_kbps,0) as  network_i_kbps
+				FROM
+				tb_host_global_info t left join
+				tb_cloud2_host_info h
+				on t.host_uuid=h.h_uuid
+				and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.cluster_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+<!-- 查询主机mem topN -->
+	<select id="queryMemTop" parameterClass="java.util.HashMap" resultClass="java.lang.Double">
+<!-- 		<![CDATA[ -->
+			SELECT
+				ROUND(t.mem_usage,2) y
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+				and t.connect_uuid = #connect_id#
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+<!-- 		]]> -->
+	</select>
+	<select id="queryMemTopClu" parameterClass="java.util.HashMap" resultClass="java.lang.Double">
+<!-- 		<![CDATA[ -->
+			SELECT
+				ROUND(t.mem_usage,2) y
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+			and t.cluster_uuid = #uuid#
+			and t.connect_uuid = #connect_id#
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+<!-- 		]]> -->
+	</select>
+	<!-- 查询内存topN 对应的x值 -->
+	<select id="queryMemXData" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+<!-- 		<![CDATA[ -->
+			SELECT
+				h.eq_name name
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+<!-- 		]]> -->
+	</select>
+	<select id="queryMemXDataClu" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT
+				h.eq_name name
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+			and t.cluster_uuid = #uuid#
+			and t.connect_uuid = #connect_id#
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+		]]>
+	</select>
+	
+	<!-- 查询按照内存进行排序的列表 -->
+	<select id="queryMemList" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+			SELECT
+				h.EQ_NAME name,
+				ifnull(h.EQ_IP,'--') as ip,
+				ROUND(ifnull(t.cpu_usage,0),2) as  cpu_usage,
+				ROUND(ifnull(t.mem_usage,0),2) as mem_usage,
+				ROUND(ifnull(t.store_usage,0),2) as  store_usage,
+				ifnull(t.storage_o_kbps,0) as  storage_o_kbps,
+				ifnull(t.storage_i_kbps,0) as  storage_i_kbps,
+				ifnull(t.network_o_kbps,0) as  network_o_kbps,
+				ifnull(t.network_i_kbps,0) as  network_i_kbps
+				FROM
+				tb_host_global_info t left join
+				tb_cloud2_host_info h
+				on t.host_uuid=h.h_uuid
+				and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.center_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<select id="queryMemListClu" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+			SELECT
+				h.EQ_NAME name,
+				ifnull(h.EQ_IP,'--') as ip,
+				ROUND(ifnull(t.cpu_usage,0),2) as  cpu_usage,
+				ROUND(ifnull(t.mem_usage,0),2) as mem_usage,
+				ROUND(ifnull(t.store_usage,0),2) as  store_usage,
+				ifnull(t.storage_o_kbps,0) as  storage_o_kbps,
+				ifnull(t.storage_i_kbps,0) as  storage_i_kbps,
+				ifnull(t.network_o_kbps,0) as  network_o_kbps,
+				ifnull(t.network_i_kbps,0) as  network_i_kbps
+				FROM
+				tb_host_global_info t left join
+				tb_cloud2_host_info h
+				on t.host_uuid=h.h_uuid
+				and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.cluster_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	
+	<!-- 查询主机store topN -->
+	<select id="queryStoreTop" parameterClass="java.util.HashMap" resultClass="java.lang.Double">
+		<![CDATA[
+			SELECT
+				ROUND(t.store_usage,2) y
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+		]]>
+	</select>
+	<select id="queryStoreTopClu" parameterClass="java.util.HashMap" resultClass="java.lang.Double">
+		<![CDATA[
+			SELECT
+				ROUND(t.store_usage,2) y
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+			and t.cluster_uuid = #uuid#
+			and t.connect_uuid = #connect_id#
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+		]]>
+	</select>
+	<!-- 查询主机存储topN对应的 x值 -->
+	<select id="queryStoreXData" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT
+				h.eq_name name
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+		]]>
+	</select>
+	<select id="queryStoreXDataClu" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		<![CDATA[
+			SELECT
+				h.eq_name name
+				FROM
+				tb_host_global_info t,
+				tb_cloud2_host_info h
+			where t.host_uuid=h.h_uuid 
+			and t.cluster_uuid = #uuid#
+			and t.connect_uuid = #connect_id#
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+		]]>
+	</select>
+	
+	<!-- 查询按照主机存储进行排序列表 -->
+	<select id="queryStoreList" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+			SELECT
+				h.EQ_NAME name,
+				ifnull(h.EQ_IP,'--') as ip,
+				ROUND(ifnull(t.cpu_usage,0),2) as  cpu_usage,
+				ROUND(ifnull(t.mem_usage,0),2) as mem_usage,
+				ROUND(ifnull(t.store_usage,0),2) as  store_usage,
+				ifnull(t.storage_o_kbps,0) as  storage_o_kbps,
+				ifnull(t.storage_i_kbps,0) as  storage_i_kbps,
+				ifnull(t.network_o_kbps,0) as  network_o_kbps,
+				ifnull(t.network_i_kbps,0) as  network_i_kbps
+				FROM
+				tb_host_global_info t left join
+				tb_cloud2_host_info h
+				on t.host_uuid=h.h_uuid
+				and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.center_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<select id="queryStoreListClu" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+			SELECT
+				h.EQ_NAME name,
+				ifnull(h.EQ_IP,'--') as ip,
+				ROUND(ifnull(t.cpu_usage,0),2) as  cpu_usage,
+				ROUND(ifnull(t.mem_usage,0),2) as mem_usage,
+				ROUND(ifnull(t.store_usage,0),2) as  store_usage,
+				ifnull(t.storage_o_kbps,0) as  storage_o_kbps,
+				ifnull(t.storage_i_kbps,0) as  storage_i_kbps,
+				ifnull(t.network_o_kbps,0) as  network_o_kbps,
+				ifnull(t.network_i_kbps,0) as  network_i_kbps
+				FROM
+				tb_host_global_info t left join
+				tb_cloud2_host_info h
+				on t.host_uuid=h.h_uuid
+				and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.cluster_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<!-- 查询集群CPU topN -->
+	<select id="queryClusterCpuTop" parameterClass="java.util.HashMap" resultClass="DataPoint">
+		
+	</select>
+	
+	<!-- 查询集群mem topN -->
+	<select id="queryClusterMemTop" parameterClass="java.util.HashMap" resultClass="DataPoint">
+	
+	</select>
+	<!-- 查询集群store topN -->
+	<select id="queryClusterStoreTop" parameterClass="java.util.HashMap" resultClass="DataPoint">
+	
+	</select>
+	<!-- 统计集群下主机个数 -->
+	<select id="countHost" parameterClass="hostGlobalObj" resultClass="java.lang.Integer">
+		select count(id)  from tb_host_global_info i
+		where i.cluster_uuid=#cluster_uuid# and  i.connect_uuid=#connect_uuid#
+	</select>
+	<!-- FusionCharts宿主机CpuTopN -->
+	<select id="queryHostCpuTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				ROUND(t.cpu_usage,2) `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.center_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<!-- FusionCharts-集群CpuTopN -->
+	<select id="queryClusterHostCpuTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				ROUND(t.cpu_usage,2) `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.cluster_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<!-- FusionCharts-宿主机内存TopN -->
+	<select id="queryHostMemTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				ROUND(t.mem_usage,2) `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.center_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<select id="queryHostStoreIKbpsTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				t.storage_i_kbps `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.cluster_uuid = #uuid#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.center_uuid = #uuid#
+					</isNotEmpty>
+				</isEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.storage_i_kbps desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<select id="queryHostStoreOKbpsTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				t.storage_o_kbps `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.cluster_uuid = #uuid#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.center_uuid = #uuid#
+					</isNotEmpty>
+				</isEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.storage_o_kbps desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<select id="queryHostNetworkOKbpsTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				t.network_o_kbps `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.cluster_uuid = #uuid#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.center_uuid = #uuid#
+					</isNotEmpty>
+				</isEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.network_o_kbps desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<select id="queryHostNetworkIKbpsTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				t.network_i_kbps `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.cluster_uuid = #uuid#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty property="isInCluster">
+					<isNotEmpty prepend="and" property="uuid">
+						t.center_uuid = #uuid#
+					</isNotEmpty>
+				</isEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.network_i_kbps desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<!-- FusionCharts-集群内存TopN -->
+	<select id="queryClusterHostMemTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				t.mem_usage `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.cluster_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<!-- FusionCharts-宿主机存储TopN -->
+	<select id="queryHostStorageTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				ROUND(t.store_usage,2) `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.center_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	
+	<!-- FusionCharts-集群存储TopN -->
+	<select id="queryClusterHostStorageTopN" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				ROUND(t.store_usage,2) `value`,
+				h.eq_name `label`
+				FROM
+				tb_host_global_info t left join 
+				tb_cloud2_host_info h
+			on t.host_uuid=h.h_uuid
+			and t.connect_uuid = h.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connect_id">
+					t.connect_uuid = #connect_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="uuid">
+					t.cluster_uuid = #uuid#
+				</isNotEmpty>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+			</dynamic>
+			ORDER BY
+				t.store_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 查询主机 -->
+	<select id="queryHostByMap" parameterClass="java.util.HashMap" resultClass="hostGlobalObj">
+			SELECT
+				g.id id,
+				h.EQ_NAME eq_name,
+				h.EQ_IP eq_ip,
+				g.cluster_uuid cluster_uuid,
+				g.host_uuid host_uuid,
+				g.cpu_usage cpu_usage,
+				ifnull(g.mem_usage, 0) mem_useage,
+				g.store_usage store_usage,
+			    g.connect_uuid connect_uuid
+			FROM
+				tb_host_global_info g,
+				tb_cloud2_host_info h
+			WHERE
+				g.host_uuid = h.H_UUID
+			AND g.connect_uuid = h.CONNECT_ID
+			<isNotEmpty property="cluster_uuid" prepend="and">
+                cluster_uuid = #cluster_uuid# 
+            </isNotEmpty>
+            <isNotEmpty property="connect_id" prepend="and">
+             	 connect_uuid = #connect_id#
+            </isNotEmpty>
+            <isNotNull property="eq_name" prepend="and">
+				<isNotEmpty property="eq_name">
+	    			 eq_name like CONCAT('%',#eq_name#,'%')
+	    		</isNotEmpty>
+			</isNotNull>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	h.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+	</select>
+	
+	<select id="queryForListUseClusterIn" parameterClass="hostGlobalObj" resultClass="hostGlobalObj">
+		select distinct host_uuid,connect_uuid from tb_host_global_info where cluster_uuid in
+		<iterate close=")" conjunction="," open="(" property="uuidList">
+			#uuidList[]#
+		</iterate>
+		<dynamic>
+			<isNotEmpty property="connect_uuid" prepend="and">
+             	 connect_uuid = #connect_uuid#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForListUseCenterIn" parameterClass="hostGlobalObj" resultClass="hostGlobalObj">
+		select distinct host_uuid,connect_uuid from tb_host_global_info where center_uuid in
+		<iterate close=")" conjunction="," open="(" property="uuidList">
+			#uuidList[]#
+		</iterate>
+		<dynamic>
+			<isNotEmpty property="connect_uuid" prepend="and">
+             	 connect_uuid = #connect_uuid#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="countResourceForHost" parameterClass="hostGlobalObj" resultClass="cmsObj">
+		SELECT
+			a.allcpu allcpu,
+			a.allmem allmem,
+			a.usedcpu usedcpu,
+			a.usedmem usedmem,
+			b.allocpu allocpu,
+			b.allomem allomem
+		FROM
+			(
+				SELECT
+					SUM(n.vCpu_visible) allcpu,
+					SUM(m.USED_VCPU) usedcpu,
+					SUM(m.MEMORY) allmem,
+					SUM(m.USED_MEM) usedmem
+				FROM
+					tb_cloud2_host_info m
+				LEFT JOIN tb_host_global_info n ON m.H_UUID = n.host_uuid
+				AND m.CONNECT_ID = n.connect_uuid
+				WHERE
+					n.host_uuid IN 
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+				<dynamic>
+					<isNotEmpty property="connect_uuid" prepend="and">
+		             	 n.connect_uuid = #connect_uuid#
+		            </isNotEmpty>
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	m.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		    		</isNotEmpty>
+				</dynamic>
+			) a,
+			(
+				SELECT
+					SUM(VH_CPU) allocpu,
+					SUM(VH_MEM) allomem
+				FROM
+					tb_cloud2_vmhost_info x
+				LEFT JOIN tb_virtual_global_info y ON x.CONNECT_ID = y.connect_uuid
+				AND x.VH_UUID = y.vm_uuid
+				WHERE
+					y.host_uuid IN 
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+				<dynamic>
+					<isNotEmpty property="connect_uuid" prepend="and">
+		             	 y.connect_uuid = #connect_uuid#
+		            </isNotEmpty>
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	x.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		    		</isNotEmpty>
+				</dynamic>
+			) b
+	</select>
+	
+	<select id="countResourceForCluster" parameterClass="hostGlobalObj" resultClass="cmsObj">
+		SELECT
+			a.allcpu allcpu,
+			a.allmem allmem,
+			a.usedcpu usedcpu,
+			a.usedmem usedmem,
+			b.allocpu allocpu,
+			b.allomem allomem
+		FROM
+			(
+				SELECT
+					SUM(n.vCpu_visible) allcpu,
+					SUM(m.USED_VCPU) usedcpu,
+					SUM(m.MEMORY) allmem,
+					SUM(m.USED_MEM) usedmem
+				FROM
+					tb_cloud2_host_info m
+				LEFT JOIN tb_host_global_info n ON m.H_UUID = n.host_uuid
+				AND m.CONNECT_ID = n.connect_uuid
+				WHERE
+					n.cluster_uuid IN 
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+				<dynamic>
+					<isNotEmpty property="connect_uuid" prepend="and">
+		             	 n.connect_uuid = #connect_uuid#
+		            </isNotEmpty>
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	m.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		    		</isNotEmpty>
+				</dynamic>
+			) a,
+			(
+				SELECT
+					SUM(VH_CPU) allocpu,
+					SUM(VH_MEM) allomem
+				FROM
+					tb_cloud2_vmhost_info x
+				LEFT JOIN tb_virtual_global_info y ON x.CONNECT_ID = y.connect_uuid
+				AND x.VH_UUID = y.vm_uuid
+				WHERE
+					y.cluster_uuid IN 
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+				<dynamic>
+					<isNotEmpty property="connect_uuid" prepend="and">
+		             	 y.connect_uuid = #connect_uuid#
+		            </isNotEmpty>
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	x.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		    		</isNotEmpty>
+				</dynamic>
+			) b
+	</select>
+	
+	<select id="countResourceForCenter" parameterClass="hostGlobalObj" resultClass="cmsObj">
+		SELECT
+			a.allcpu allcpu,
+			a.allmem allmem,
+			a.usedcpu usedcpu,
+			a.usedmem usedmem,
+			b.allocpu allocpu,
+			b.allomem allomem
+		FROM
+			(
+				SELECT
+					SUM(n.vCpu_visible) allcpu,
+					SUM(m.USED_VCPU) usedcpu,
+					SUM(m.MEMORY) allmem,
+					SUM(m.USED_MEM) usedmem
+				FROM
+					tb_cloud2_host_info m
+				LEFT JOIN tb_host_global_info n ON m.H_UUID = n.host_uuid
+				AND m.CONNECT_ID = n.connect_uuid
+				WHERE
+					n.center_uuid IN 
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+				<dynamic>
+					<isNotEmpty property="connect_uuid" prepend="and">
+		             	 n.connect_uuid = #connect_uuid#
+		            </isNotEmpty>
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	m.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		    		</isNotEmpty>
+				</dynamic>
+			) a,
+			(
+				SELECT
+					SUM(VH_CPU) allocpu,
+					SUM(VH_MEM) allomem
+				FROM
+					tb_cloud2_vmhost_info x
+				LEFT JOIN tb_virtual_global_info y ON x.CONNECT_ID = y.connect_uuid
+				AND x.VH_UUID = y.vm_uuid
+				WHERE
+					y.center_uuid IN 
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+				<dynamic>
+					<isNotEmpty property="connect_uuid" prepend="and">
+		             	 y.connect_uuid = #connect_uuid#
+		            </isNotEmpty>
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	x.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		    		</isNotEmpty>
+				</dynamic>
+			) b
+	</select>
+	
+	<select id="queryForClusterListByCenter" parameterClass="hostGlobalObj" resultClass="hostGlobalObj">
+		select distinct cluster_uuid,connect_uuid from tb_host_global_info where center_uuid in
+		<iterate close=")" conjunction="," open="(" property="uuidList"> 
+			#uuidList[]#
+		</iterate>
+		<dynamic>
+			<isNotEmpty property="connect_uuid" prepend="and">
+		         connect_uuid = #connect_uuid#
+		    </isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

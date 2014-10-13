@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="FileManager">
+	 <typeAlias alias="fileInfo" type="com.sitech.basd.sxcloud.cloud.domain.fileManager.TbCloud2FileInfoObj"/>
+	 <typeAlias alias="fileListInfo" type="com.sitech.basd.sxcloud.cloud.domain.fileManager.TbCloud2FileListInfoObj"/>
+	 <typeAlias alias="fileTypeInfo" type="com.sitech.basd.sxcloud.cloud.domain.fileManager.TbCloud2FileTypeInfoObj"/>
+	 <typeAlias alias="FORM" type="com.sitech.basd.sxcloud.cloud.web.fileManager.form.FileManagerForm"/>
+	 
+	 <sql id="sqlFileManagerList">
+		SELECT A.*,B.* FROM tb_cloud2_cfg_filetype A LEFT JOIN TB_SYS_USERINFO B ON A.UPDATE_USR=B.ACCOUNT 
+		WHERE 1=1 
+		<isNotNull prepend="AND" property="TYPE_NAME"> 
+		<isNotEmpty property="TYPE_NAME">
+		<![CDATA[
+	  		A.TYPE_NAME LIKE '%'||#TYPE_NAME#||'%'
+		]]>
+	</isNotEmpty>
+	 </isNotNull>
+	</sql>
+	
+	<sql id="sqlDirectoryManagerList">
+		SELECT A.*, B.NAME,C.TYPE_NAME SI_NAME
+    	FROM TB_CLOUD2_CFG_FILELIST A 
+			LEFT JOIN TB_SYS_USERINFO B ON A.UPDATE_USR=B.ACCOUNT 
+			LEFT JOIN tb_cloud2_cfg_filetype C ON TRIM(A.SI_ID) = TRIM(C.TYPE_ID)
+		<dynamic prepend="WHERE">
+			<isNotNull> 
+				<isNotEmpty property="LIST_NAME" prepend="AND">
+					<![CDATA[
+				  		A.LIST_NAME LIKE '%'||#LIST_NAME#||'%'
+					]]>
+				</isNotEmpty>
+		 	</isNotNull>
+		 	<isNotNull> 
+				<isNotEmpty property="SI_ID" prepend="AND">
+					<![CDATA[
+				  		TRIM(A.SI_ID) = #SI_ID#
+					]]>
+				</isNotEmpty>
+		 	</isNotNull>  
+		</dynamic>
+		ORDER BY A.UPDATE_DATE DESC 
+	</sql> 
+	
+	<!-- 上传文件列表 -->
+	<sql id="sqlHelpFileList">
+		SELECT A.FILE_ID 
+      ,A.FILE_NAME
+      ,A.FILE_DIR
+      ,A.FILE_DESC
+      ,B.TYPE_NAME
+      ,C.LIST_NAME
+      ,A.Update_Usr
+      ,A.VERSION || '.0' AS VERSION
+      ,(SELECT COUNT(1) FROM TB_CLOUD2_HIS_FILE WHERE FILE_ID = A.FILE_ID) NUM
+      ,TO_CHAR(A.Update_DATE,'yyyy-MM-dd hh24:mi:ss') Update_DATE
+    FROM TB_CLOUD2_FILE A LEFT JOIN TB_CLOUD2_CFG_FILETYPE B ON A.TYPE_ID = B.TYPE_ID 
+		     LEFT JOIN TB_CLOUD2_CFG_FILELIST C ON A.LIST_ID = C.LIST_ID
+		     LEFT JOIN TB_SYS_USERINFO D ON A.INSERT_USR = D.ACCOUNT 
+		<dynamic prepend="WHERE">
+			<isNotNull>
+				<isNotEmpty prepend="AND" property="FILE_NAME">
+					A.FILE_NAME LIKE '%'||#FILE_NAME#||'%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull>
+				<isNotEmpty prepend="AND" property="TYPE_ID">
+					TRIM(A.TYPE_ID) = TRIM(#TYPE_ID#)
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		ORDER BY A.UPDATE_DATE DESC
+	</sql>
+	<!-- 获得历史版本信息 -->
+	<sql id="sqlHelpFileHisList">
+		SELECT 
+       	A.FILE_NAME
+      	,A.FILE_ID
+      	,A.FILE_DIR
+      	,A.FILE_DESC
+      	,B.TYPE_NAME
+      	,C.LIST_NAME
+     	,A.VERSION || '.0' AS VERSION
+      	,A.UPDATE_USR
+      	,TO_CHAR(A.UPDATE_DATE,'yyyy-MM-dd hh24:mi:ss') UPDATE_DATE
+    	FROM TB_CLOUD2_HIS_FILE A LEFT JOIN TB_CLOUD2_CFG_FILETYPE B ON A.TYPE_ID = B.TYPE_ID 
+         LEFT JOIN TB_CLOUD2_CFG_FILELIST C ON A.LIST_ID = C.LIST_ID 
+		WHERE A.FILE_ID = #FILE_ID#
+		ORDER BY A.UPDATE_DATE DESC
+	</sql>
+	<sql id="paginationStart">
+         <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+    </sql>
+    <sql id="paginationEnd">
+          <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+    </sql>
+
+
+	<!-- 文件类型list -->
+	<select id="FileManagerList" parameterClass="fileTypeInfo" resultClass="java.util.HashMap">
+		<include refid="paginationStart"/>
+		<include refid="sqlFileManagerList"/>
+		<include refid="paginationEnd"/> 
+	</select>
+	 
+	<select id="FileManagerListCount" parameterClass="fileTypeInfo" resultClass="java.lang.Integer">
+		SELECT COUNT(1) FROM (<include refid="sqlFileManagerList"/>)		
+	</select>
+	 
+	 
+	 <!-- 插入类型 -->
+	 <insert id="fileManagerAdd" parameterClass="FORM">
+	 <![CDATA[
+	    INSERT INTO tb_cloud2_cfg_filetype(
+	    TYPE_ID
+	    ,TYPE_NAME
+	    ,AUTH_CODE
+	    ,ENABLE
+	    ,INSERT_USR
+	    ,INSERT_DATE
+	    ,UPDATE_USR
+	    ,UPDATE_DATE
+	    ) VALUES (
+	    ID_CLOUD2_CFG_FILETYPE.NEXTVAL
+	    ,#TYPE_NAME#
+	    ,#AUTH_CODE#
+	    ,#ENABLE#
+	    ,#USER_ID#
+	    ,SYSDATE
+	    ,#USER_ID#
+	    ,SYSDATE
+	    )
+	    ]]>
+	 </insert>
+
+	<!-- 更新类型 -->
+	 <update id="fileManagerUpdate" parameterClass="FORM">
+	 <![CDATA[
+	    UPDATE tb_cloud2_cfg_filetype SET
+	   	TYPE_NAME=#TYPE_NAME#
+	    ,ENABLE=#ENABLE#	   
+	    ,UPDATE_USR=#USER_ID#
+	    ,UPDATE_DATE=SYSDATE
+	    WHERE TYPE_ID=#TYPE_ID#
+	     ]]>
+	 </update>
+
+	<!-- 删除类型 -->
+	 <delete id="fileManagerDelete" parameterClass="FORM">
+	    DELETE FROM tb_cloud2_cfg_filetype WHERE TYPE_ID=#TYPE_ID#
+	 </delete>
+	 
+
+	<!-- 文件信息 -->
+	<select id="getFileManager" parameterClass="FORM" resultClass="FORM">
+		SELECT A.* FROM tb_cloud2_cfg_filetype A WHERE A.TYPE_ID=#TYPE_ID#
+	</select>
+	 
+	<!-- 文件上传目录列表 -->
+	<select id="directoryManagerList" parameterClass="fileListInfo" resultClass="java.util.HashMap">
+		<include refid="paginationStart"/>
+		<include refid="sqlDirectoryManagerList"/>
+		<include refid="paginationEnd"/> 
+	</select>
+	
+	<select id="directoryManagerListCount" parameterClass="fileListInfo" resultClass="java.lang.Integer">
+		SELECT COUNT(1) FROM (<include refid="sqlDirectoryManagerList"/>)		
+	</select>
+	
+	<!-- 新增目录 -->
+	<insert id="directoryAdd" parameterClass="FORM">
+		INSERT INTO TB_CLOUD2_CFG_FILELIST(LIST_ID,LIST_NAME,SI_ID,AUTH_CODE,ENABLE,INSERT_USR,INSERT_DATE,UPDATE_USR,UPDATE_DATE)
+		VALUES
+		(
+		ID_CLOUD2_CFG_FILELIST.NEXTVAL
+		,#LIST_NAME#
+		,TRIM(#SI_ID#)
+		,#AUTH_CODE#
+		,#ENABLE#
+		,#USER_ID#
+		,SYSDATE
+		,#USER_ID#
+		,SYSDATE	
+		)
+	</insert>
+	
+	<!-- 更新目录 -->
+	<update id="directoryUpdate" parameterClass="FORM">
+		UPDATE TB_CLOUD2_CFG_FILELIST
+		SET 
+		LIST_NAME = #LIST_NAME#
+		,SI_ID = #SI_ID#
+		,AUTH_CODE = #AUTH_CODE#
+		,ENABLE = #ENABLE#
+		,UPDATE_USR = #USER_ID#
+		,UPDATE_DATE = SYSDATE
+		WHERE LIST_ID = #LIST_ID#
+	</update>
+	
+	<!-- 目录信息 -->
+	<select id="getDirectoryInfo" parameterClass="FORM" resultClass="FORM">
+		SELECT A.LIST_ID,A.LIST_NAME,A.ENABLE,A.AUTH_CODE,TRIM(A.SI_ID) SI_ID,A.LIST_NAME AS OLD_LIST_NAME 
+		
+		FROM TB_CLOUD2_CFG_FILELIST A WHERE A.LIST_ID=#LIST_ID#
+	</select>
+	
+	<!-- 删除目录 -->
+	 <delete id="directoryDelete" parameterClass="java.lang.String">
+	    DELETE FROM TB_CLOUD2_CFG_FILELIST WHERE LIST_ID=#LIST_ID#
+	 </delete>
+	 
+	 <!-- 获得文件上传根目录 -->
+	 <select id="getUploadRootStr" resultClass="java.lang.String">
+	 	SELECT VALUE FROM tb_cloud2_cfg_mmanager_config WHERE KEY = 'upload_path'
+	 </select>
+	 
+	 <!-- 判断目录使用的数量 -->
+	 <select id="findDirCount" parameterClass="FORM" resultClass="java.lang.String">
+	 	SELECT COUNT(1) FROM
+	 	(SELECT LIST_ID FROM TB_CLOUD2_FILE WHERE LIST_ID = #LIST_ID# 
+	 	 UNION ALL
+	 	 SELECT LIST_ID FROM TB_CLOUD2_HIS_FILE WHERE LIST_ID = #LIST_ID#
+	 	) 
+	 </select>
+	 
+	
+	 
+	<!-- 判断是否可以删除文件信息 -->
+	<select id="fileManagerCount" parameterClass="java.lang.String" resultClass="int">
+		SELECT COUNT(1)
+		FROM (
+		SELECT TYPE_ID FROM TB_CLOUD2_FILE
+		UNION ALL
+		SELECT TYPE_ID FROM TB_CLOUD2_HIS_FILE
+		) A
+		WHERE A.TYPE_ID=#TYPE_ID#
+	</select>
+	
+	<!-- 上传文件列表 -->
+	<select id="helpFileList" parameterClass="fileInfo" resultClass="java.util.HashMap">
+		<include refid="paginationStart"/>
+		<include refid="sqlHelpFileList"/>
+		<include refid="paginationEnd"/> 
+	</select>
+	
+	<select id="helpFileListCount" parameterClass="fileInfo" resultClass="java.lang.Integer">
+		SELECT COUNT(1) FROM (<include refid="sqlHelpFileList"/>)		
+	</select>
+	<!-- 获得文件类型列表 -->
+	<select id="getFileTypeList" resultClass="java.util.HashMap">
+		SELECT A.TYPE_ID,A.TYPE_NAME FROM TB_CLOUD2_CFG_FILETYPE A WHERE A.ENABLE = 1
+	</select>
+	
+	<!-- 获得目录列表 -->
+	<select id="getDirectoryList" resultClass="java.util.HashMap">
+		SELECT A.LIST_ID ||'_'|| A.LIST_NAME AS LIST_ID,A.LIST_NAME FROM TB_CLOUD2_CFG_FILELIST A WHERE A.ENABLE = 1
+	</select>
+	
+	<!-- 添加上传文件 -->
+	<insert id="helpFileAdd" parameterClass="FORM">
+		INSERT INTO TB_CLOUD2_FILE(FILE_ID,FILE_NAME,FILE_DESC,FILE_DIR,TYPE_ID,LIST_ID,AUTH_CODE,INSERT_USR,INSERT_DATE,UPDATE_USR,UPDATE_DATE,VERSION)
+		VALUES
+		(ID_CLOUD2_FILE.NEXTVAL	
+		 ,#FILE_NAME#
+		 ,#FILE_DESC#
+		 ,#FILE_DIR#
+		 ,#SI_ID#
+		 ,#LIST_ID#
+		 ,#AUTH_CODE#
+		 ,#USER_ID#
+		 ,SYSDATE
+		 ,#USER_ID#
+		 ,SYSDATE
+		 ,1
+		) 
+	</insert>
+	
+	<!-- 获得上传文件序列号 -->
+	<select id="helpFileSequence" resultClass="java.lang.String">
+		SELECT ID_CLOUD2_FILE_STOR.NEXTVAL FROM DUAL
+	</select>
+	
+	
+	<!-- 删除上传文件 -->
+	<delete id="deleteHelpFile" parameterClass="java.lang.String">
+		DELETE FROM TB_CLOUD2_FILE WHERE FILE_ID = #FILE_ID#
+	</delete>
+	<!-- 删除历史上传文件 -->
+	<delete id="deleteHelpHisFile" parameterClass="java.lang.String">
+		DELETE FROM TB_CLOUD2_HIS_FILE WHERE FILE_ID = #FILE_ID#
+	</delete>
+	<!-- 获得要修改上传文件的详细信息 -->
+	<select id="getHelpFileInfo" parameterClass="FORM" resultClass="java.util.HashMap">
+		SELECT A.FILE_ID,A.TYPE_ID,A.LIST_ID||'_'||B.LIST_NAME AS LIST_ID,B.SI_ID,A.FILE_DESC,A.FILE_DIR AS OLD_FILE_DIR,A.VERSION || '.0' AS VERSION
+		FROM TB_CLOUD2_FILE A LEFT JOIN TB_CLOUD2_CFG_FILELIST B ON A.LIST_ID = B.LIST_ID
+		WHERE A.FILE_ID = #FILE_ID# 
+	</select>
+	<!-- 更新上传文件内容 -->
+	<update id="updateHelpFile" parameterClass="FORM">
+		UPDATE TB_CLOUD2_FILE
+		SET TYPE_ID = #SI_ID#
+		   ,LIST_ID = #LIST_ID#
+		   ,FILE_DESC = #FILE_DESC#
+		   ,FILE_NAME = #FILE_NAME#
+		   ,FILE_DIR = #FILE_DIR#
+		   ,AUTH_CODE = #AUTH_CODE#
+		   ,UPDATE_USR = #USER_ID#
+		   ,UPDATE_DATE = SYSDATE
+		<!--    	<isEqual property="FLAG" compareValue="NO">
+		   ,VERSION = (SELECT VERSION + 1 FROM TB_CLOUD2_FILE WHERE FILE_ID = #FILE_ID#)
+		    </isEqual>
+		     -->
+		     ,VERSION = (SELECT VERSION + 1 FROM TB_CLOUD2_FILE WHERE FILE_ID = #FILE_ID#)
+		WHERE FILE_ID = #FILE_ID# 
+	</update>
+	<!-- 把当前记录从TB_CLOUD2_FILE 表 转移到 TB_CLOUD2_HIS_FILE表 -->
+	<insert id="addHelpFileHis" parameterClass="FORM">
+		INSERT INTO TB_CLOUD2_HIS_FILE SELECT * FROM TB_CLOUD2_FILE WHERE FILE_ID = #FILE_ID#
+	</insert>
+	<!-- 获得上传文件历史版本 -->
+	<select id="helpFileHisList" parameterClass="fileInfo" resultClass="java.util.HashMap">
+		<include refid="paginationStart"/>
+		<include refid="sqlHelpFileHisList"/>
+		<include refid="paginationEnd"/>
+	</select>
+	<select id="helpFileHisListCount" parameterClass="fileInfo" resultClass="java.lang.Integer">
+		SELECT COUNT(1) FROM (<include refid="sqlHelpFileHisList"/>)
+	</select>
+	
+	<!-- 根据目录ID获得目录名称 -->
+	<select id="getListName" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT LIST_NAME FROM TB_CLOUD2_CFG_FILELIST WHERE LIST_ID = #LIST_ID#
+	</select>
+	
+	<!-- 获得文件路径信息 -->
+	<select id="getFileInfo" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		SELECT FILE_DIR FROM TB_CLOUD2_FILE WHERE FILE_ID = #FILE_ID#
+		UNION
+		SELECT FILE_DIR FROM TB_CLOUD2_HIS_FILE WHERE FILE_ID = #FILE_ID#
+	</select>
+	
+	<!-- 获得所有厂商列表 -->
+	<select id="getAllSiList" resultClass="java.util.HashMap">
+		SELECT type_id si_id,type_name si_name FROM tb_cloud2_cfg_filetype t where t.enable = 1
+	</select>
+	
+	<!-- 获得某一厂商的目录列表 -->
+	<select id="getHelpFileDirList" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		SELECT A.LIST_ID ||'_'|| A.LIST_NAME AS LIST_ID,A.LIST_NAME FROM TB_CLOUD2_CFG_FILELIST A WHERE A.ENABLE = 1 AND TRIM(A.SI_ID) = TRIM(#SI_ID#)
+	</select>
+	
+	<select id="queryFileInfoByObj" parameterClass="fileInfo" resultClass="fileInfo">
+		select * from tb_cloud2_file where FILE_ID = #FILE_ID#
+	</select>
+	
+ </sqlMap>

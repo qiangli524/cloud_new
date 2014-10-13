@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- 多vCenter标识-->
+	<entry key="VCENTER.m0">domain.type.IT_VCENTER.m0</entry>
+</properties>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="cluster" extends="global_package">
+		<action name="cluster_*"
+				class="clusterAction" method="{1}">
+			<result name="add_cluster">/yicloud/cluster/addCluster.jsp</result>
+			<result name="con_Cluster">/yicloud/cluster/editCluster.jsp</result>
+			<result name="cluster_ha">/yicloud/cluster/conClusterHA.jsp</result>
+			<result name="cluster_drs">/yicloud/cluster/conClusterDRS.jsp</result>
+			<result name="list_group">/yicloud/cluster/drsGroup.jsp</result>
+			<result name="add_group">/yicloud/cluster/editDRSGroup.jsp</result>
+			<result name="host">/yicloud/cluster/selectHost.jsp</result>
+			<result name="redirect" type="redirect">cluster_listGroup.do</result>
+			<result name="edit">/yicloud/cluster/editDRSGroupForTest.jsp</result>
+		</action>
+ </package>
+
+</struts>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbProject">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbCloud2ProjectInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.project.TbCloud2ProjectInfoObj"/>
+    <typeAlias alias="VuserManageObj" type="com.sitech.basd.sxcloud.cloud.domain.vusermanage.VuserManageObj" />
+   
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+    <sql id="TB_CLOUD2_PROJECT_INFOColumnsNoKey">
+         PROJECT_ID,NAME,DESCRIPTION,ISDEFAULT,ISSTAGING,ISPUBLIC
+    </sql>
+    <sql id="queryByObjBase">
+    		select
+    			<include refid="TB_CLOUD2_PROJECT_INFOColumnsNoKey"/>
+    		from
+    			TB_CLOUD2_PROJECT_INFO 
+    		<dynamic prepend="where">
+               <isNotEmpty property="PROJECT_ID" prepend="and">
+                PROJECT_ID =#PROJECT_ID#
+               </isNotEmpty>
+               <isNotEmpty property="NAME" prepend="and">
+                NAME =#NAME#
+               </isNotEmpty>
+        	</dynamic> 
+                order by PROJECT_ID asc
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="TbCloud2ProjectInfoObj" resultClass="TbCloud2ProjectInfoObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryByObjBase"/>
+	        
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="TbCloud2ProjectInfoObj" resultClass="int">
+	      select count(PROJECT_ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <insert id="insertByObj" parameterClass="TbCloud2ProjectInfoObj">
+	  		insert into TB_CLOUD2_PROJECT_INFO(
+       		PROJECT_ID,NAME,DESCRIPTION,ISDEFAULT,ISSTAGING,ISPUBLIC
+       		)
+       		values(#PROJECT_ID#,#NAME#,#DESCRIPTION#,#ISDEFAULT#,#ISSTAGING#,#ISPUBLIC#)
+      </insert>
+	  <delete id="deleteByObj" parameterClass="TbCloud2ProjectInfoObj">
+	    	delete from TB_CLOUD2_PROJECT_INFO where PROJECT_ID=#PROJECT_ID#
+	  </delete>
+	  <update id="updateByObj" parameterClass="TbCloud2ProjectInfoObj">
+	    update TB_CLOUD2_PROJECT_INFO set NAME=#NAME#,DESCRIPTION=#DESCRIPTION#,ISDEFAULT=#ISDEFAULT#,ISSTAGING=#ISSTAGING#,ISPUBLIC=#ISPUBLIC# where PROJECT_ID=#PROJECT_ID#
+	  </update>
+	  <select id="queryByName" parameterClass="TbCloud2ProjectInfoObj" resultClass="TbCloud2ProjectInfoObj">
+	      select PROJECT_ID,NAME,DESCRIPTION,ISDEFAULT,ISSTAGING,ISPUBLIC 
+	      from TB_CLOUD2_PROJECT_INFO 
+	      where NAME=#NAME#  
+	  </select>
+	  <select id="queryForListByProjectObj" parameterClass="TbCloud2ProjectInfoObj" resultClass="TbCloud2ProjectInfoObj">
+	  		select PROJECT_ID,NAME from TB_CLOUD2_PROJECT_INFO
+	  </select>
+	  <!-- 在项目中添加用户 -->
+	  <insert id="insertVuserByObj" parameterClass="TbCloud2ProjectInfoObj">
+	 		 <selectKey resultClass="string" keyProperty="ID" >
+       				 SELECT TB_PROJECT_VUSER_ID.NEXTVAL AS ID FROM DUAL
+      		 </selectKey>
+	  		insert into TB_CLOUD2_PROJECT_VUSER(
+       		ID,PROJECT_ID,USER_ID,USER_ROLE,USER_STATUS
+       		)
+       		values(#ID#,#PROJECT_ID#,#USER_ID#,#USER_ROLE#,#USER_STATUS#)
+      </insert>
+      <!-- 删除项目中的用户 -->
+      <delete id="deleteUserByObj" parameterClass="TbCloud2ProjectInfoObj">
+	    	delete from TB_CLOUD2_PROJECT_VUSER where PROJECT_ID=#PROJECT_ID#
+	  </delete>
+	  <!-- 查询项目中的用户 -->
+	   <sql id="queryUserByObj">
+	  	select a.USER_ID,a.ISADMIN,a.USER_NAME,to_char(a.INS_DATE,'yyyy-mm-dd hh24:mi:ss') INS_DATE, b.PROJECT_ID,b.USER_ROLE,
+         case when a.user_id in (select user_id from TB_CLOUD2_PROJECT_VUSER)then '0' else '1' end USER_STATUS 
+         from TB_CLOUD2_VUSER_INFO a , TB_CLOUD2_PROJECT_VUSER b  where  a.user_id=b.user_id(+)
+        	
+            
+            <isNotEmpty property="USER_ID" prepend="and">
+               a.USER_ID =#USER_ID#
+            </isNotEmpty>
+            
+            <isNotEmpty property="USER_NAME" prepend="and">
+               a.USER_NAME =#USER_NAME#
+            </isNotEmpty>
+       
+                order by a.USER_ID asc
+	  </sql>
+	  <select id="queryUserListByObj" parameterClass="VuserManageObj" resultClass="VuserManageObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryUserByObj"/>
+	        
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryUserByObjForCount" parameterClass="VuserManageObj" resultClass="int">
+	      select count(USER_ID) from (
+	        <include refid="queryUserByObj"/>
+	       ) virtual_table
+	  </select>
+	  
+</sqlMap>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.monitor.action.MonitorAction -->
+	<bean id="monitorAction" class="com.sitech.basd.sxcloud.cloud.web.monitor.action.MonitorAction"
+		singleton="false"><!--每个request请求产生新实例[duangh 样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="monitorService">
+			<ref bean="monitorService" />
+		</property> 
+		<property name="eventManageService">
+			<ref bean="eventManageService" />
+		</property> 
+	</bean>
+	<bean id="monitorAlarmAction" class="com.sitech.basd.sxcloud.cloud.web.monitor.action.MonitorAlarmAction"
+		singleton="false"><!--每个request请求产生新实例[duangh 样例]-->
+		<property name="monitorService">
+			<ref bean="monitorService" />
+		</property> 
+		<property name="tbGlobalConfigService">
+			<ref bean="tbGlobalConfigService" />
+		</property> 
+	</bean>
+</beans>
+
+

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="TB_TOPO_MXGRAPH" >
+    <typeAlias alias="TbTopoMxgraph" type="com.sitech.basd.yicloud.domain.graph.TbTopoMxgraph"/>
+    <insert id="insertTopoMxGraph" parameterClass="TbTopoMxgraph">
+        insert into TB_TOPO_MXGRAPH
+          (GRAPH_ID, GRAPH_NAME, GRAPH_TYPE, GRAPH_DESC, GRAPH_CONTENT, DB_TIME)
+        values
+          (#GRAPH_ID#,
+           #GRAPH_NAME#,
+           #GRAPH_TYPE#,
+           #GRAPH_DESC#,
+           #GRAPH_CONTENT#,
+           DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
+    </insert>
+    <update id="updateTopoMxGraph" parameterClass="TbTopoMxgraph">
+        update TB_TOPO_MXGRAPH
+           set GRAPH_ID = GRAPH_ID
+           <isNotNull prepend=",">GRAPH_NAME    = #GRAPH_NAME#</isNotNull>
+           <isNotNull prepend=",">GRAPH_TYPE    = #GRAPH_TYPE#</isNotNull>
+           <isNotNull prepend=",">GRAPH_DESC    = #GRAPH_DESC#</isNotNull>
+           <isNotNull prepend=",">GRAPH_CONTENT = #GRAPH_CONTENT#</isNotNull>
+         where GRAPH_ID = #GRAPH_ID#
+    </update>
+    <delete id="deleteTopoMxGraph">
+        delete TB_TOPO_MXGRAPH where GRAPH_ID in (<iterate conjunction=",">#[]#</iterate>)
+    </delete>
+    <select id="findTooMxGraph" resultClass="TbTopoMxgraph" parameterClass="java.lang.String">
+        select GRAPH_ID,GRAPH_NAME,GRAPH_TYPE,GRAPH_DESC,GRAPH_CONTENT,DATE_FORMAT(DB_TIME,'%Y-%m-%d %H:%i:%S') from TB_TOPO_MXGRAPH where GRAPH_ID = #GRAPH_ID#
+    </select>
+    <select id="findAllTooMxGraph" resultClass="TbTopoMxgraph">
+        select GRAPH_ID,GRAPH_NAME,GRAPH_TYPE,GRAPH_DESC,DATE_FORMAT(DB_TIME,'%Y-%m-%d %H:%i:%S') from TB_TOPO_MXGRAPH
+    </select>
+    <select id="findAllTooMxGraphByName" resultClass="TbTopoMxgraph">
+        select GRAPH_ID,GRAPH_NAME,GRAPH_TYPE,GRAPH_DESC,DATE_FORMAT(DB_TIME,'%Y-%m-%d %H:%i:%S') from TB_TOPO_MXGRAPH where GRAPH_NAME=#GRAPH_NAME#
+    </select>
+</sqlMap>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="KPI">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="KPIWeightObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.KPIWeightObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryListBase">
+		select KPI_ID,KPI_WEIGHT,KPI_DESC,KPI_TYPE from TB_KPI_WEIGHT
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="kpi_id">
+  				KPI_ID like '%'||#kpi_id#||'%'
+  			</isNotNull>
+  			<isNotNull prepend="and" property="kpi_desc">
+  				KPI_DESC like '%'||#kpi_desc#||'%'
+  			</isNotNull>
+  			<isNotNull prepend="and" property="kpi_type">
+  				KPI_TYPE = #kpi_type#
+  			</isNotNull>
+		</dynamic> 
+	</sql>
+	
+	<select id="queryForObj" parameterClass="KPIWeightObj" resultClass="KPIWeightObj">
+		select KPI_ID,KPI_WEIGHT,KPI_DESC,KPI_TYPE from TB_KPI_WEIGHT where KPI_ID = #kpi_id#
+	</select>
+	<select id="queryForList" parameterClass="KPIWeightObj" resultClass="KPIWeightObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		
+		<include refid="queryListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForCount" parameterClass="KPIWeightObj" resultClass="int">
+		select count(KPI_ID)  from (
+		<include refid="queryListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	<insert id="insertKPI" parameterClass="KPIWeightObj">
+		insert into TB_KPI_WEIGHT(KPI_ID,KPI_WEIGHT,KPI_DESC,KPI_TYPE) values(#kpi_id#,#kpi_weight#,#kpi_desc#,#kpi_type#)
+	</insert>
+	<delete id="delKPI" parameterClass="KPIWeightObj">
+		delete TB_KPI_WEIGHT where KPI_ID=#kpi_id#
+	</delete>
+	<update id="updateKPI" parameterClass="KPIWeightObj">
+		update TB_KPI_WEIGHT set KPI_WEIGHT=#kpi_weight#,KPI_DESC=#kpi_desc#,KPI_TYPE=#kpi_type# where KPI_ID=#kpi_id#
+	</update>
+</sqlMap>

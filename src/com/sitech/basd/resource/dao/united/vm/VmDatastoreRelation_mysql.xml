@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="VmDatastoreRelation">
+	<typeAlias alias="VmDatastoreRelationObj" type="com.sitech.basd.resource.domain.united.vm.VmDatastoreRelationObj"/>
+    <typeAlias alias="VMHostObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj"/>
+     <typeAlias alias="DataStoreObj" type="com.sitech.basd.yicloud.domain.datastore.DataStoreObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForListSql">
+	           select b.VH_ID, 
+					  b.VH_NAME,
+					   b.VH_MEM,
+					   b.VH_CPU,
+					   b.VH_STORAGE,
+					   b.VH_SYSTEM,
+					   b.VH_IP,
+					   b.VH_NETWORK,
+					   b.EQ_ID,
+					   b.VH_STAT,
+					   b.VH_DESC,
+					   b.VH_MIN_CPU,
+					   b.VH_MAX_CPU,
+					   b.VH_MIN_MEM,
+					   b.VH_MAX_MEM,
+					   b.VH_LOG,
+					   b.VH_USER,
+					   b.VH_PASS,
+					   b.VH_TYPE,
+					   b.VH_STATUS 
+				from tb_cloud2_host_info a,
+				     tb_cloud2_vmhost_info b,
+				     tb_yicloud_datastore c,
+				     tb_vm_datastore_relation d
+				where
+				      b.HOST_CODE=a.H_UUID AND
+				      b.VH_UUID=d.vm_uuid AND
+				      c.STORE_UUID=d.datastore_uuid AND
+				      d.datastore_uuid=#datastore_uuid# AND
+				      b.connect_id=#connectid# AND
+				      b.vh_type=#vtype#
+	
+	</sql>
+		
+   <select id="queryForList" parameterClass="VmDatastoreRelationObj" resultClass="VMHostObj">
+     <include refid="queryForListSql" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>   		
+   </select>
+   
+     <select id="queryVmListForCount"
+		parameterClass="VmDatastoreRelationObj" resultClass="int">
+		select count(VH_ID) from (
+		<include refid="queryForListSql" />
+		) virtual_table
+	  </select>
+	  
+	  <sql id="queryDatastoreForListSql">
+	              select c.ID,
+   		   		       c.NAME,
+   		   		       c.STORAGE_URL,
+   		   		       c.TYPE,
+   		   		       c.STATE
+				from tb_cloud2_host_info a,
+				     tb_cloud2_vmhost_info b,
+				     tb_yicloud_datastore c,
+				     tb_vm_datastore_relation d
+				where
+				      b.HOST_CODE=a.H_UUID AND
+				      b.VH_UUID=d.vm_uuid AND
+				      c.STORE_UUID=d.datastore_uuid AND
+				      d.vm_uuid=#vm_uuid# AND
+				      b.connect_id=#connectid# AND
+				      b.vh_type=#vtype#
+	  </sql>
+	  
+   <select id="queryDatastoreForList" parameterClass="VmDatastoreRelationObj" resultClass="DataStoreObj">
+   		   	 <include refid="queryDatastoreForListSql" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>   	
+   </select>
+   
+     <select id="queryDatastoreListForCount"
+		parameterClass="VmDatastoreRelationObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryDatastoreForListSql" />
+		) virtual_table
+	  </select>
+	  
+   <select id="queryRelationListByDatastoreuuid" parameterClass="VmDatastoreRelationObj" resultClass="VmDatastoreRelationObj">
+	       select a.datastore_uuid,
+	        	  a.connectid,
+				  a.vtype
+			from tb_vm_datastore_relation a
+			where a.datastore_uuid=#datastore_uuid#
+   </select>
+      <select id="queryRelationListByVmuuid" parameterClass="VmDatastoreRelationObj" resultClass="VmDatastoreRelationObj">
+	       select a.vm_uuid,
+	        	  a.connectid,
+				  a.vtype
+			from tb_vm_datastore_relation a
+			where a.vm_uuid=#vm_uuid#
+   </select>
+	<insert id="insertByObj" parameterClass="VmDatastoreRelationObj">
+		insert into tb_vm_datastore_relation(id,vm_uuid,connectid,host_uuid,datastore_uuid,vtype)
+		values(#id#,#vm_uuid#,#connectid#,#host_uuid#,#datastore_uuid#,#vtype#)
+	</insert>
+
+	<delete id="deleteByObj" parameterClass="VmDatastoreRelationObj">
+		delete from tb_vm_datastore_relation where vm_uuid = #vm_uuid# and connectid = #connectid#
+		and vtype= #vtype#
+	</delete>
+</sqlMap>

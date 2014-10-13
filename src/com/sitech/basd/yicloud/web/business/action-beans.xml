@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="tbYicloudBusinessAppAction" class="com.sitech.basd.yicloud.web.business.action.TbYicloudBusinessAppAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="yiDataDictionaryService">
+			<ref bean="yiDataDictionaryService" />
+		</property>
+		<property name="tbYicloudBusinessAppService">
+			<ref bean="tbYicloudBusinessAppService" />
+		</property>
+		<property name="deviceService">
+			<ref bean="deviceService" />
+		</property>
+	</bean>
+
+</beans>

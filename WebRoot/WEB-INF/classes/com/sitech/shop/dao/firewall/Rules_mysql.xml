@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Rules">
+<typeAlias alias="RulesObj" type="com.sitech.shop.domain.firewall.RulesObj"/>
+
+	<sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+         ]]>
+	</sql>
+	
+	<sql id="queryByObjBase">
+		SELECT
+			id,         
+			`name`,  
+			priority, 	
+			protocol, 		 	
+			action,	 	
+			direction,	
+			val1,	 	
+			val2,	 	
+			val3,	 	
+			firewall_id,
+			acl,
+			rule,
+			rule_id
+		FROM
+			tb_firewall_rules			
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				name like '%$name$%'
+			</isNotEmpty>
+			<isNotEmpty property="priority" prepend="and">
+				priority = #priority#
+			</isNotEmpty>
+			<isNotEmpty property="protocol" prepend="and">
+				protocol = #protocol#
+			</isNotEmpty>
+			<isNotEmpty property="action" prepend="and">
+					action = #action#
+			</isNotEmpty>
+			<isNotEmpty property="direction" prepend="and">
+					direction = #direction#
+			</isNotEmpty>
+			<isNotEmpty property="val1" prepend="and">
+					val1 = #val1#
+			</isNotEmpty>
+			<isNotEmpty property="val2" prepend="and">
+					val2 = #val2#
+			</isNotEmpty>
+			<isNotEmpty property="val2" prepend="and">
+					val2 = #val2#
+			</isNotEmpty>
+			<isNotEmpty property="firewall_id" prepend="and">
+					firewall_id = #firewall_id#
+			</isNotEmpty>
+			<isNotEmpty property="acl" prepend="and">
+					acl = #acl#
+			</isNotEmpty>
+			<isNotEmpty property="rule" prepend="and">
+					rule = #rule#
+			</isNotEmpty>
+			<isNotEmpty property="rule_id" prepend="and">
+					rule_id = #rule_id#
+			</isNotEmpty>
+		</dynamic>
+		order by `name`
+	</sql>
+	
+	  <!-- 查找防火墙规则-->
+	  <select id="queryForRulesObj" parameterClass="RulesObj" resultClass="RulesObj">
+	        <include refid="queryByObjBase"/> 
+	  </select>
+	
+	  <!-- 查找防火墙规则列表记录 -->
+	  <select id="queryForRulesList" parameterClass="RulesObj" resultClass="RulesObj">
+	        <include refid="queryByObjBase"/> 
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="RulesObj" resultClass="int">
+	       select count(id) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <!-- 插入一条记录 -->
+	  <insert id="insertByObj" parameterClass="RulesObj">
+	  	INSERT INTO tb_firewall_rules (
+			id,         
+			`name`,  
+			priority, 	
+			protocol, 		 	
+			action,	 	
+			direction,	
+			val1,	 	
+			val2,	 	
+			val3,	 	
+			firewall_id,
+			acl,
+			rule,
+			rule_id
+		)
+			VALUES
+		(
+			#id#,  
+			#name#, 
+			#priority#, 	
+			#protocol#, 		 	
+			#action#,	 	
+			#direction#,	
+			#val1#,	 	
+			#val2#,	 	
+			#val3#,	 	
+			#firewall_id#,
+			#acl#,
+			#rule#,
+			#rule_id#
+		)
+	  </insert>
+	  
+	  <!-- 更新一条记录 -->
+	  <update id="updateByObj" parameterClass="RulesObj">
+	  	UPDATE tb_firewall_rules 
+	  	SET 
+			id=#id#
+			<isNotEmpty property="name" prepend=",">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty property="priority" prepend=",">
+				priority = #priority#
+			</isNotEmpty>
+			<isNotEmpty property="protocol" prepend=",">
+				protocol = #protocol#
+			</isNotEmpty>
+			<isNotEmpty property="action" prepend=",">
+					action = #action#
+			</isNotEmpty>
+			<isNotEmpty property="direction" prepend=",">
+					direction = #direction#
+			</isNotEmpty>
+			<isNotEmpty property="val1" prepend=",">
+					val1 = #val1#
+			</isNotEmpty>
+			<isNotEmpty property="val2" prepend=",">
+					val2 = #val2#
+			</isNotEmpty>
+			<isNotEmpty property="val2" prepend=",">
+					val2 = #val2#
+			</isNotEmpty>
+			<isNotEmpty property="firewall_id" prepend=",">
+					firewall_id = #firewall_id#
+			</isNotEmpty>
+			<isNotEmpty property="acl" prepend=",">
+					acl = #acl#
+			</isNotEmpty>
+			<isNotEmpty property="rule" prepend=",">
+					rule = #rule#
+			</isNotEmpty>
+			<isNotEmpty property="rule_id" prepend=",">
+					rule_id = #rule_id#
+			</isNotEmpty>
+		WHERE
+			id=#id#
+	  </update>
+	  
+	  <!-- 删除一条记录 -->
+	  <delete id="deleteByObj" parameterClass="RulesObj">
+	  		delete from tb_firewall_rules where id=#id#
+	  </delete>
+	  
+	
+</sqlMap>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="showresource"
+			 extends="global_package">
+		<action name="showresource_*"
+				class="showResourceAction" method="{1}"> 
+			<result name="list">/resource.jsp</result>
+			<result name="detail">/resourceDetail.jsp</result>
+			<result name="xen_resource">/servicemanage.jsp</result>
+		</action>
+	</package>
+
+</struts>

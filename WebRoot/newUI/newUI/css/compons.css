@@ -1,0 +1,66 @@
+@charset "gb2312";
+/*
+ * Filename: compons.css
+ * Description: universal compons
+ * Version: 1.0.0
+ * Author: kevin
+ * UpdateBy: kevin
+*/
+.accordion-1 {width:150px;}
+.accordion-1 dt {width:150px;height: 28px;background: url(../images/side-accordion.png) 0 0 repeat-x;}
+.accordion-1 dt b {display:block;background:url(../images/side-accordion.png) right -28px no-repeat;color:#376cbb;line-height: 26px;font-size: 12px;cursor: pointer;}
+.accordion-1 dt.expand b {background: url(../images/side-accordion.png) right -56px no-repeat;}
+.accordion-1 dd a {display:block;padding-left:8px;font-size: 12px;color: #888888;height:27px;line-height: 27px;border-bottom:1px dashed #b8b8b8;}
+.accordion-1 dd li:last-child a {border-bottom:none;}
+.accordion-1 dd a:link { 
+color:#666; 
+} 
+.accordion-1 dd a:visited { 
+color:#666; 
+text-decoration:none; 
+} 
+.accordion-1 dd a:hover {color:#376cbb;background:url(../images/hover.png) right no-repeat;text-decoration: none;}
+.accordion-1 dd a:active { 
+color:#F30;background:url(../images/hover.png) right no-repeat;text-decoration: none;
+} 
+.accordion-1 dd li a.expand {background:url(../images/side-accordion-02.gif) right -28px no-repeat;}
+.accordion-1 dd li a.collapse {background:url(../images/side-accordion-02.gif) right 0px no-repeat;}
+.accordion-1 dd li ul {display:none;}
+.accordion-1 dd li li a {padding-left: 22px;}
+.accordion-1 .flyPanel {position:relative;}
+.accordion-1 .flyPanel_box {display:none;position:absolute;left:140px;top: 0;}
+.accordion-1 .flyPanel_box .borderTop {width:75px;height:4px;overflow:hidden;background:url("../images/flyPanel_bg.gif") 0 0 no-repeat;}
+.accordion-1 .flyPanel_box .leftTip {position:absolute;left:-6px;top:8px;width:7px;height:10px;overflow:hidden;background:url("../images/flyPanel_bg.gif") -150px 0 no-repeat;}
+.accordion-1 .flyPanel_box .borderBottom {width:75px;height:4px;overflow:hidden;background:url("../images/flyPanel_bg.gif") 0 -6px no-repeat;}
+.accordion-1 .flyPanel_box ul {display:block;width:73px;padding:0 1px;overflow:hidden;background:url("../images/flyPanel_bg.gif") -75px 0px repeat-y;}
+.accordion-1 .flyPanel_box ul a{width:51px;}
+
+.collect-1 {width:196px;}
+.collect-1 dt {width:184px;height:28px;padding-left:12px;_overflow:hidden;background:url(../images/side-box-01.png) 0 0 no-repeat;color:#4d4d4d;line-height: 28px;}
+.collect-1 dt a {_position:relative;_top:-28px;right:0px;}
+.collect-1 dd {width:194px;border-left:1px solid #e1e1e1;border-right:1px solid #e1e1e1;clear:both;}
+.collect-1 dd.bottom {width:196px;height:5px;clear:both;overflow:hidden;border:none;background:url(../images/side-box-01.png) 0 bottom no-repeat;line-height:1px;}
+
+.paginate-2 {width:100%;text-align:right;}
+/*.paginate-2 a {padding:2px 5px;background:url("../images/paginate-2.gif") repeat-x;}*/
+.paginate-2 a:hover {text-decoration:none;}
+.paginate-2 a.first {background-position:center -120px}
+.paginate-2 a.prev {background-position:center -40px}
+.paginate-2 a.next {background-position:center 0px}
+.paginate-2 a.last {background-position:center -80px}
+.paginate-2 a.first:hover {background-position:center -140px}
+.paginate-2 a.prev:hover {background-position:center -60px}
+.paginate-2 a.next:hover {background-position:center -20px}
+.paginate-2 a.last:hover {background-position:center -100px}
+.paginate-2 a.on {background:#aaaaaa;border:1px solid #aaaaaa;color:#FFFFFF;}
+
+
+
+
+
+
+
+
+
+
+

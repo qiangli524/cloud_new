@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="vmwManAction" class="com.sitech.basd.yicloud.web.vmware.action.VmwManAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="entityTreeService">
+			<ref bean="entityTreeService" />
+		</property>
+		<property name="ipService">
+			<ref bean="ipService" />
+		</property>
+		<property name="netService">
+			<ref bean="netService" />
+		</property>
+		<property name="vmwManService">
+			<ref bean="vmwManService" />
+		</property>
+		<property name="dataStoreService">
+			<ref bean="dataStoreService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="templetTreeService">
+			<ref bean="templetTreeService" />
+		</property>
+		<property name="portGroupService">
+			<ref bean="portGroupService" />
+		</property>
+		<property name="scriptService">
+			<ref bean="scriptService" />
+		</property>
+		<property name="clusterService">
+			<ref bean="clusterService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="virtualNicService">
+			<ref bean="virtualNicService" />
+		</property>
+		<property name="nicRelationService">
+			<ref bean="nicRelationService" />
+		</property>
+		<property name="temManService">
+			<ref bean="temManService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

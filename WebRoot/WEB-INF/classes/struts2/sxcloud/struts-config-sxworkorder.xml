@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="sxworkorder"
+			 extends="global_package">
+		<action name="sxworkorder_*"
+				class="sxworkOrderAction" method="{1}">
+			
+			<result name="sxlistWorkOrder">/sxcloud/cloud/sxworkorder/listWorkOrder.jsp</result>
+			<result name="sxviewDealedWorkOrder">/sxcloud/cloud/sxworkorder/viewDealedWorkOrder.jsp</result>
+			<result name="sxaddw">/sxcloud/cloud/sxworkorder/addWorkOrder.jsp</result>
+			<result name="sxlistpro">/sxcloud/cloud/sxworkorder/listProject.jsp</result>
+			<result name="sxlistBusi">/sxcloud/cloud/sxworkorder/listBusi.jsp</result>
+
+			<result name="sxaddscer">/sxcloud/cloud/sxworkorder/addSceResource.jsp</result>
+			<result name="sxaddr">/sxcloud/cloud/sxworkorder/addResource.jsp</result>
+			<result name="sxaddrr">/sxcloud/cloud/sxworkorder/addRecoverResource.jsp</result>
+			<result name="sxlistTem">/sxcloud/cloud/sxworkorder/listTemMan.jsp</result>
+			<result name="sxlistip">/sxcloud/cloud/sxworkorder/listIP.jsp</result>
+			<result name="sxlistEntity">/sxcloud/cloud/sxworkorder/listEntity.jsp</result>
+			<result name="sxeditr">/sxcloud/cloud/sxworkorder/addResource.jsp</result>
+			<result name="sxeditscer">/sxcloud/cloud/sxworkorder/addSceResource.jsp</result>
+			<result name="sxeditrr">/sxcloud/cloud/sxworkorder/addRecoverResource.jsp</result>
+			<result name="sxlistResource">/sxcloud/cloud/sxworkorder/listResource.jsp</result>
+			<result name="sxlistWOByResource">/sxcloud/cloud/sxworkorder/listWOByResource.jsp</result>
+			<result name="sxlistWorkOrderForTabs">/sxcloud/cloud/sxworkorder/listWorkOrderForTabs.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="xenCluster">
+	<typeAlias alias="XenClusterObj"
+		type="com.sitech.basd.yicloud.domain.xentree.XenClusterObj" />
+	<insert id="insertByObj" parameterClass="XenClusterObj">
+		insert into
+		TB_XEN_CLUSTER_INFO(ID,NAME,TYPE,HASTATE,DRSSTATE,C_UUID)
+		values(#id#,#name#,#type#,#hastate#,#drsstate#,#c_uuid#)
+	</insert>
+	<select id="queryListByObj" parameterClass="XenClusterObj" resultClass="XenClusterObj">
+		select id,name,type,hastate,drsstate,c_uuid from TB_XEN_CLUSTER_INFO
+		<dynamic prepend="where">
+			<isNotEqual compareValue="0" prepend="and" property="id">
+				id = #id#
+			</isNotEqual>
+			<isNotNull prepend="and" property="c_uuid">
+				C_UUID = #c_uuid#
+			</isNotNull>
+		</dynamic>
+	</select>
+	<update id="updateByObj" parameterClass="XenClusterObj">
+		update TB_XEN_CLUSTER_INFO set hastate=#hastate#,drsstate=#drsstate# 
+		<dynamic prepend="where">
+			<isNotEqual compareValue="0" prepend="and" property="id">
+				id = #id#
+			</isNotEqual>
+			<isNotNull prepend="and" property="c_uuid">
+				C_UUID = #c_uuid#
+			</isNotNull>
+		</dynamic>
+	</update>
+	<update id="updateByObjUuid" parameterClass="XenClusterObj">
+		update TB_XEN_CLUSTER_INFO set hastate=#hastate#,drsstate=#drsstate# where C_UUID= #c_uuid#
+	</update>
+	<delete id="deleteByObj" parameterClass="XenClusterObj">
+		delete from TB_XEN_CLUSTER_INFO
+		<dynamic prepend="where">
+			<isNotEqual compareValue="0" prepend="and" property="id">
+				id = #id#
+			</isNotEqual>
+			<isNotNull prepend="and" property="c_uuid">
+				C_UUID = #c_uuid#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	<select id="queryForCollection" parameterClass="XenClusterObj" resultClass="XenClusterObj">
+		select NAME,TYPE,C_UUID from TB_XEN_CLUSTER_INFO where ID=#id#
+	</select>
+	<select id="getIdSequence" resultClass="int">
+		select ID_XEN_CLUSTER_INFO.NEXTVAL AS ID FROM dual
+	</select>
+	<insert id="insertForConnection" parameterClass="XenClusterObj">
+		insert into
+		TB_XEN_CLUSTER_INFO(ID,NAME,TYPE,HASTATE,DRSSTATE,C_UUID)
+		values(#id#,#name#,#type#,#hastate#,#drsstate#,#c_uuid#)
+	</insert>
+	<update id="updateForConnection" parameterClass="XenClusterObj">
+		update TB_XEN_CLUSTER_INFO set C_UUID=#c_uuid# where NAME= #name#
+	</update>
+</sqlMap>

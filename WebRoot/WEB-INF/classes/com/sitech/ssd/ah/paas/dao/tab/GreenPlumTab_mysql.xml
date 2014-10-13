@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="GreenPlumTab">
+<typeAlias alias="GreenPlumHostInfoObj" type="com.sitech.ssd.ah.paas.domain.host.GreenPlumHostInfoObj" />
+
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="hostInfoSql">
+    	id,h_uuid,eq_id,eq_name,eq_type,eq_ip,eq_hostname,eq_temperature,hasvertual,cq_id,protocol,control,
+    	device_id,cpu_fq,cpu_cl,memory,store,model,nic_num,cpu_desc,
+    	host_proc,status,connect_id,max_vcpu,used_vcpu,allocated,connect_status,sn
+    </sql>
+	<sql id="queryGreenPlumHostListBase">
+		SELECT
+			<include refid="hostInfoSql"/>
+		FROM
+			tb_cloud2_host_info t
+		WHERE
+			t.EQ_ID IN (
+				SELECT p.entity_id FROM tb_paas_resource_tree p 
+				<dynamic prepend="where">
+					<isNotEmpty prepend="and" property="id">
+						p.parent_id = #id#
+					</isNotEmpty>
+				</dynamic>
+			)
+			<isNotEmpty prepend="and" property="eq_name">
+				t.eq_name like CONCAT('%',#eq_name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="eq_ip">
+				t.eq_ip like CONCAT('%',#eq_ip#,'%') 
+			</isNotEmpty>
+		order by t.eq_ip,t.eq_name
+	</sql>
+	 <select id="queryGreenPlumHostList" parameterClass="GreenPlumHostInfoObj" resultClass="GreenPlumHostInfoObj">
+	        <include refid="queryGreenPlumHostListBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryGreenPlumHostListCount" parameterClass="GreenPlumHostInfoObj" resultClass="int">
+	      select count(*) from (
+	        <include refid="queryGreenPlumHostListBase"/>
+	       ) virtual_table
+	  </select>
+ </sqlMap>

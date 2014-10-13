@@ -1,0 +1,121 @@
+@charset "utf-8";
+/*
+ * @Filename: layout.css
+ * @Description: layout style
+ * @Version: 1.0.0
+ * @Author: wangyq
+ * @Update: wangyq
+*/
+.ued-wrapper-100 {
+    width: 100px;
+    margin: 0 auto;
+}
+.ued-wrapper-200 {
+    width: 200px;
+    margin: 0 auto;
+}
+.ued-wrapper-300 {
+    width: 300px;
+    margin: 0 auto;
+}
+.ued-wrapper-400 {
+    width: 400px;
+    margin: 0 auto;
+}
+.ued-wrapper-500 {
+    width: 500px;
+    margin: 0 auto;
+}
+.ued-wrapper-600 {
+    width: 600px;
+    margin: 0 auto;
+}
+.ued-wrapper-700 {
+    width: 700px;
+    margin: 0 auto;
+}
+.ued-wrapper-800 {
+	width: 800px;
+	margin: 0 auto;
+}
+.ued-wrapper-960 {
+	width: 960px;
+	margin: 0 auto;
+}
+.ued-wrapper-980 {
+	width: 980px;
+	margin: 0 auto;
+}
+.ued-wrapper-1000 {
+	width: 1000px;
+	margin: 0 auto;
+}
+.ued-wrapper-1200 {
+	width: 1200px;
+	margin: 0 auto;
+}
+.ued-wrapper-full {
+	width: 100%;
+	margin: 0;
+}
+.layout-collapse-left, .layout-collapse-right {
+	cursor:pointer;
+	background: none repeat scroll 0 0 #DBEDF7;
+	position: absolute;
+	width: 24px;
+	z-index: 10;
+}
+.layout-collapse-left {
+	height:100%;
+	width: 10px;
+	cursor:pointer;
+	position:absolute;
+	left:0;
+	background:url(images/togglePrevEnd.jpg) no-repeat scroll left center;
+}
+.layout-collapse-right {
+	right:0;
+}
+.layout-header-over {
+	background: url(images/layout-header-over.gif) repeat-x scroll 0 0 #EFF4FE;
+}
+.layout-header-left, .layout-header-right {
+	height:100%;
+	width: 10px;
+	cursor:pointer;
+	position:absolute;
+	left:200px;
+	background:url(images/togglePrevOver.jpg) no-repeat scroll left center;
+}
+.layout-collapse-left-over, .layout-collapse-right-over {
+	background: none repeat scroll 0 0 #F8FCFE;
+}
+.layout-collapse-left-toggle, .layout-collapse-right-toggle, .layout-header-toggle-left, .layout-header-toggle-right {
+	cursor: pointer;
+	height: 100%;
+	overflow: hidden;
+	position: absolute;
+	width: 10px;
+}
+.layout-collapse-left-toggle {
+	background-position: -20px -40px;
+}
+.layout-collapse-right-toggle {
+	background-position: -20px 0;
+}
+.layout-header-toggle-right {
+	background-position: -20px -40px;
+	right: 2px;
+	top: 0;
+}
+.layout-collapse-left-toggle-over {
+	background-position: -20px -60px;
+}
+.layout-header-toggle-left {
+	background-position: -20px 0;
+	left: 2px;
+	top: 0;
+}
+.layout-collapse-right-toggle-over {
+	background-position: -20px -20px;
+}

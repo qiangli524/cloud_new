@@ -1,0 +1,90 @@
+/*
+ * @Filename: button.css
+ * @Description: button style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: wangchen
+ * @skin:{
+        "ued-button":"#279fe9",
+        "ued-button-1":"#4abf03",
+        "ued-button-2":"#fb8b09",
+        "ued-button-3":"#f8482b",
+        "ued-button-4":"#90cffb",
+        "ued-button-5":"#f9f9f9",
+        "ued-button-6":"#d2d2d2"
+    }@skin
+*/
+button i.ued-icon{
+    vertical-align: middle;
+}
+.ued-button{
+    border: 1px solid #267cd2;
+    color: #fff;
+    background: #279fe9;
+}
+.ued-button:hover{
+    background: #1b91da;
+}
+.ued-button-1{
+    border: 1px solid #38a60c;
+    color: #fff;
+    background: #4abf03;
+}
+.ued-button-1:hover{
+    background: #44b201;
+}
+.ued-button-2{
+    border: 1px solid #ea6601;
+    color: #fff;
+    background: #fb8b09;
+}
+.ued-button-2:hover{
+    background: #f56a00;
+}
+.ued-button-3{
+    border: 1px solid #dd2a0c;
+    color: #fff;
+    background: #f8482b;
+}
+.ued-button-3:hover{
+    background: #df2708;
+}
+.ued-button-4{
+    border: 1px solid #71beee;
+    color: #39749d;
+    background: #a9dcff;
+}
+.ued-button-4:hover{
+    background: #90cffb;
+}
+.ued-button-5{
+    border: 1px solid #d6d6d6;
+    color: #6e6e6e;
+    background: #f9f9f9;
+}
+.ued-button-5:hover{
+    background: #f0f0f0;
+}
+.ued-button-6{
+    border: 1px solid #cccccc;
+    color: #b8b7b7;
+	cursor:default;
+    background: #e8e8e8;
+}
+.ued-button-6:hover{
+	cursor:default;
+    background: #e8e8e8;
+}
+.ued-button-large{
+	font-size:14px;
+	height:32px;
+	line-height:30px;
+	
+}
+.ued-button-small{
+	padding: 0 8px;
+    *padding:0 6px;/*IE6、7下双倍边距bug*/
+	font-size:12px;
+	height:20px;
+	line-height:18px;
+}

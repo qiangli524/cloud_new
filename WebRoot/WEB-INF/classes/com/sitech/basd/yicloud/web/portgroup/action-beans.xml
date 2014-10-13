@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="portGroupAction" class="com.sitech.basd.yicloud.web.portgroup.action.PortGroupAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="portGroupService">
+			<ref bean="portGroupService"/>
+		</property>
+		<property name="virtualSwitchService">
+			<ref bean="virtualSwitchService"/>
+		</property>
+		<property name="tbGlobalConfigService">
+			<ref bean="tbGlobalConfigService"/>
+		</property>
+		<property name="entityTreeService">
+			<ref bean="entityTreeService"/>
+		</property>
+		<property name="nicRelationService">
+			<ref bean="nicRelationService"/>
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

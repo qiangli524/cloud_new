@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+	"http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DefendInfo">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="DefendObj" type="com.sitech.basd.sxcloud.cloud.domain.defend.DefendObj" />
+	<typeAlias alias="TbBusiHostObj" type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusiHostObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    <sql id="queryByObjBase">
+       select m.DEFEND_ID,n.HOSTNAME,m.DEFEND_DIR,m.ENABLE,DATE_FORMAT(m.INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE,n.ID,m.HOST_ID,m.EXCUTE_FLAG,m.DEFEND_TYPE
+       from TB_CLOUD2_DEFEND_INFO m,TB_BUSI_HOST n
+       where m.HOST_ID=n.ID
+               <isNotEqual property="ID" compareValue="0" prepend="and">
+                	n.ID = #ID#
+               </isNotEqual>
+               <isNotEqual property="DEFEND_ID" compareValue="0" prepend="and">
+                	m.DEFEND_ID = #DEFEND_ID#
+               </isNotEqual>
+               <isNotEmpty property="DEFEND_DIR" prepend="and">
+                	m.DEFEND_DIR like CONCAT('%',#DEFEND_DIR#,'%')
+               </isNotEmpty>
+              	<isNotEqual property="ENABLE" compareValue="-1" prepend="and">
+            		m.ENABLE = #ENABLE#
+            	</isNotEqual>
+    </sql>
+    <sql id="queryByObjBaseOrderBy">
+    order by m.DEFEND_ID desc
+    </sql>
+    <select id="queryForListByObj" parameterClass="DefendObj" resultClass="DefendObj">
+        <include refid="queryByObjBase"/>
+        <include refid="queryByObjBaseOrderBy"/>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    <select id="queryByObjForCount" parameterClass="DefendObj"  resultClass="int">
+		select count(DEFEND_ID) from (
+        <include refid="queryByObjBase"/>
+		) virtual_table
+    </select>
+    <insert id="insertByObj" parameterClass="DefendObj">
+		insert into TB_CLOUD2_DEFEND_INFO(
+		PROCESS_ID,HOST_ID,DEFEND_DIR,ENABLE,INS_DATE,HOST_MAC,DEFEND_TYPE
+		)
+		values('2',#HOST_ID#,#DEFEND_DIR#,#ENABLE#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#HOST_MAC#,#DEFEND_TYPE#)
+		<selectKey resultClass="int" type="post" keyProperty="DEFEND_ID" >
+        SELECT @@IDENTITY AS DEFEND_ID  
+       </selectKey> 
+	</insert>
+	<delete id="deleteByObj" parameterClass="DefendObj">
+		delete from TB_CLOUD2_DEFEND_INFO where DEFEND_ID=#DEFEND_ID#
+	</delete>
+	<update id="updateByObj" parameterClass="DefendObj">
+		update TB_CLOUD2_DEFEND_INFO set HOST_ID=#HOST_ID#,DEFEND_DIR=#DEFEND_DIR#,ENABLE=#ENABLE#,INS_DATE=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),DEFEND_TYPE=#DEFEND_TYPE# where DEFEND_ID=#DEFEND_ID#
+	</update>
+	<select id="queryForListByTbBusiHostObj" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+		select ID,HOSTNAME,MAC from TB_BUSI_HOST
+	</select>
+	<insert id="insertHisByObj" parameterClass="DefendObj">
+	insert into TB_CLOUD2_DEFEND_HIS
+		select PROCESS_ID,
+       			DEFEND_ID,
+       			DEFEND_DIR,
+       			HOST_ID,
+       			INS_DATE,
+       			ENABLE,
+       			EXCUTE_FLAG,
+       			HOST_MAC,
+       			APP_ID,
+       			DEFEND_TYPE,
+       			#TYPE#
+  			from TB_CLOUD2_DEFEND_INFO
+		 where DEFEND_ID = #DEFEND_ID#
+	</insert>
+	 <sql id="queryHisByObj">
+       select t.DEFEND_ID,h.HOSTNAME,t.DEFEND_DIR,t.ENABLE,DATE_FORMAT(t.INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE,t.HOST_ID,t.EXCUTE_FLAG,t.DEFEND_TYPE,t.TYPE
+       from TB_CLOUD2_DEFEND_HIS t left join TB_BUSI_HOST h on t.HOST_ID = h.ID
+       <dynamic prepend="where"> 
+               <isNotEqual property="DEFEND_ID" compareValue="0" prepend="and">
+                	t.DEFEND_ID = #DEFEND_ID#
+               </isNotEqual>
+               <isNotEmpty property="DEFEND_DIR" prepend="and">
+                	t.DEFEND_DIR like CONCAT('%',#DEFEND_DIR#,'%')
+               </isNotEmpty>
+            	<isNotEqual property="TYPE" compareValue="0" prepend="and">
+            		t.TYPE = #TYPE#
+            	</isNotEqual>	
+        </dynamic>	
+        order by t.INS_DATE desc	
+    </sql>
+    <sql id="queryHisByObjOrderBy"> 
+    	order by t.INS_DATE desc
+    </sql>
+    <select id="queryHisListByObj" parameterClass="DefendObj" resultClass="DefendObj">
+        <include refid="queryHisByObj"/>
+        <include refid="queryHisByObjOrderBy"/>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    <select id="queryHisForCount" parameterClass="DefendObj"  resultClass="int">
+		select count(DEFEND_ID) from (
+        <include refid="queryHisByObj"/>
+		) virtual_table
+    </select>
+    <!-- 查询可添加防篡改的IP地址 -->
+    <select id="queryDefendIp" parameterClass="DefendObj" resultClass="DefendObj">
+    	select a.IP,a.ID, b.PLATFORM_ID from TB_BUSI_HOST a,
+			(select PLATFORM_ID, PLATFORM_IP
+  				from TB_CLOUD2_DEFEND_PLATFORM_INFO 
+    			where PLATFORM_IP in (select VLANIP from TB_BUSI_HOST) ) b 
+    			where a.VLANIP=b.PLATFORM_IP
+    		<isNotEmpty property="PLATFORM_ID" prepend="and">
+    			b.PLATFORM_ID = #PLATFORM_ID#
+    		</isNotEmpty>
+  
+    </select>
+</sqlMap>

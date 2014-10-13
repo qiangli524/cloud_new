@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceStatistics">
+	<typeAlias alias="ResourceStatisticsObj" type="com.sitech.basd.resource.domain.united.ResourceStatisticsObj"/>
+	<typeAlias alias="HostInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.resource.TbCloud2HostInfoObj"/>
+	<!-- 查询首页摘要信息 -->
+	<select id="queryForListByObj" parameterClass="ResourceStatisticsObj" resultClass="ResourceStatisticsObj">
+		select * from tb_resource_statistics 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="key">
+				`key` = #key#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		              <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>	
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<resultMap class="java.util.HashMap" id="unVirHost">
+		<result property="count" column="COUNT" javaType="java.lang.Integer"/>
+		<result property="cpu_cl" column="CPU_CL" javaType="java.lang.Integer"/>
+		<result property="memory" column="MEMORY"/>
+		<result property="store" column="STORE"/>
+		<result property="useable" column="useable" javaType="java.lang.Integer"/>
+		<result property="blade" column="blade"/>
+		<result property="dl" column="dl"/>
+	</resultMap>
+	<!-- 非虚拟化主机的 统计信息 -->
+	<select id="queryForUnVir" parameterClass="HostInfoObj" resultMap="unVirHost">
+		 select COUNT(id) COUNT, SUM(CPU_CL)*#modulus# CPU_CL,SUM(MEMORY) MEMORY,SUM(STORE) STORE ,COUNT(if(`STATUS`='1',1,NULL)) useable ,COUNT(if(EQ_TYPE='2',true,NULL)) blade, COUNT(if(EQ_TYPE='3',true,NULL)) dl 
+		 from tb_cloud2_host_info
+		<dynamic prepend="where">
+			<isNotNull property="hasvertual" prepend="and">
+				<isNotEmpty property="hasvertual">
+					hasvertual=#hasvertual#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

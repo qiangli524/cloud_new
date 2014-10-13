@@ -1,0 +1,12 @@
+/**
+*功能描述：定时统计各数据中心下的各业务健康度
+*时间：2014-07-03 20:12:05
+*authors:qism
+*/
+CREATE DEFINER=`ssduser`@`10.243.124.%` 
+EVENT `event_cloud_BusinessHealthVal`
+ON SCHEDULE EVERY 5 MINUTE STARTS '2014-07-04 17:32:42'
+ON COMPLETION NOT PRESERVE
+ENABLE
+DO
+CALL pro_Cloud_BusinessHealthVal();

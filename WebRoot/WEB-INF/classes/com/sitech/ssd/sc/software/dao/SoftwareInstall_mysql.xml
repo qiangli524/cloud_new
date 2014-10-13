@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="SoftwareInstall">
+	<typeAlias alias="SoftwareInstallObj"
+		type="com.sitech.ssd.sc.software.domain.SoftwareInstallObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+			select 
+				id,
+				name,	
+				ip,
+				status,
+				DATE_FORMAT(start_time,'%Y-%m-%d %H:%i:%s') start_time,
+				DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%s') end_time,
+				description
+			from tb_software_install
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+				ip like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="description" prepend="and">
+				description like CONCAT('%',#description#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="SoftwareInstallObj"
+		resultClass="SoftwareInstallObj"> 
+		<include refid="queryByObjBase" /> 
+		order by id 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="SoftwareInstallObj"
+		resultClass="int">
+		select count(id) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 添加设备主机 -->
+	<insert id="insertByObj" parameterClass="SoftwareInstallObj">
+	insert into
+		tb_software_install(
+					id,
+					name,	
+					ip,
+					status,
+					start_time,
+					end_time,
+					description
+		)
+		values(
+					#id#,
+					#name#,	
+					#ip#,
+					#status#,
+					#start_time#,
+					now(),
+					#description#
+		)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="SoftwareInstallObj">
+		update 
+		tb_software_install
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="name">
+				name=#name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="ip">
+				ip=#ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="status">
+				status=#status#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="end_time">
+				end_time=#end_time#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="description">
+				description=#description#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id=#id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<delete id="deleteByObj" parameterClass="SoftwareInstallObj">
+		delete  from tb_software_install where id = #id#
+	</delete>
+</sqlMap>

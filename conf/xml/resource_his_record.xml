@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- vlan总量 -->
+	<entry key="vlan_all_count">PM-R-VL-00-AC_vlan总量</entry>
+	
+	<!-- ip总量 -->
+	<entry key="ip_all_count">PM-R-IP-00-AC_ip总量</entry>
+	
+	<!-- ip分配量 -->
+	<entry key="ip_allo_count">PM-R-IP-00-UC_ip分配量</entry>
+	
+	<!-- cpu总量 -->
+	<entry key="vcpu_all_count">PM-R-VC-00-AC_cpu总量</entry>
+	
+	<!-- cpu分配量 -->
+	<entry key="vcpu_allo_count">PM-R-VC-00-UC_cpu分配量</entry>
+	
+	<!-- vmware cpu总量 -->
+	<entry key="vmware_vcpu_all_count">PM-R-VC-01-AC_cpu总量(vmware)</entry>
+	
+	<!-- vmware cpu分配量 -->
+	<entry key="vmware_vcpu_allo_count">PM-R-VC-01-UC_cpu分配量(vmware)</entry>
+	
+	<!-- xen cpu总量 -->
+	<entry key="xen_vcpu_all_count">PM-R-VC-02-AC_cpu总量(xen)</entry>
+	
+	<!-- xen cpu 分配量 -->
+	<entry key="xen_vcpu_allo_count">PM-R-VC-02-UC_cpu分配量(xen)</entry>
+	
+	<!-- 内存总量 -->
+	<entry key="mem_all_count">PM-R-MO-00-AC_内存总量</entry>
+	
+	<!-- 内存分配量 -->
+	<entry key="mem_allo_count">PM-R-MO-00-UC_内存分配量</entry>
+	
+	<!-- vmware 内存总量 -->
+	<entry key="vmware_mem_all_count">PM-R-MO-01-AC_内存总量(vmware)</entry>
+	
+	<!-- vmware 内存分配量 -->
+	<entry key="vmware_mem_allo_count">PM-R-MO-01-UC_内存分配量(vmware)</entry>
+	
+	<!-- xen 内存总量 -->
+	<entry key="xen_mem_all_count">PM-R-MO-02-AC_内存总量(xen)</entry>
+	
+	<!-- xen 内存分配量 -->
+	<entry key="xen_mem_allo_count">PM-R-MO-02-UC_内存分配量(xen)</entry>
+	
+	<!-- vmware 存储总量 -->
+	<entry key="vmware_store_all_count">PM-R-SR-01-AC_存储总量(vmware)</entry>
+	
+	<!-- vmware 存储分配量 -->
+	<entry key="vmware_store_allo_count">PM-R-SR-01-UC_存储分配量(vmware)</entry>
+	
+	<!-- xen 存储总量 -->
+	<entry key="xen_store_all_count">PM-R-SR-02-AC_存储总量(xen)</entry>
+	
+	<!-- xen 存储分配量 -->
+	<entry key="xen_store_allo_count">PM-R-SR-02-UC_存储分配量(xen)</entry>
+	
+	<!-- 主机 已分配数量 -->
+	<!-- <entry key="host_allocated_count"></entry> -->
+	
+	<!-- 主机 未分配数量 -->
+	<!-- <entry key="host_not_allocated_count"></entry> -->
+	
+	<!-- 主机 vmware虚拟化数量 -->
+	<entry key="host_vmware_count">PM-R-HO-01-AC_vmware主机数量</entry>
+	
+	<!-- 主机 xen虚拟化数量 -->
+	<entry key="host_xen_count">PM-R-HO-02-AC_xen主机数量</entry>
+	
+	<!-- 主机 非虚拟化数量 -->
+	<entry key="host_not_virtual_count">PM-R-HO-03-AC_非虚拟化主机数量</entry>
+	
+	<!-- vmware 虚拟机数量 -->
+	<entry key="vm_vmware_count">PM-R-VM-01-AC_vmware虚拟机数量</entry>
+	
+	<!-- xen 虚拟机数量 -->
+	<entry key="vm_xen_count">PM-R-VM-02-AC_xen虚拟机数量</entry>
+	
+</properties>

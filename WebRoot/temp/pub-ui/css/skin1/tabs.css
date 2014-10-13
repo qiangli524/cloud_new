@@ -1,0 +1,399 @@
+/*
+ * @Filename: tabs.css
+ * @Description: panel style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: yangpl
+ * @skin:{
+		"ued-tab":"#279fe9",
+        "ued-tab-1":"#4abf03",
+        "ued-tab-2":"#fb8e09",
+        "ued-tab-3":"#f74b43",
+		"ued-tab-4":"#c3eafa"
+    }@skin
+*/
+
+/*默认形态*/
+.ued-tab .nav-tabs {
+ 	*zoom: 1;
+	margin:0;
+	border-bottom:0;
+	padding-left:10px;
+}
+.ued-tab .title-bg{
+	height:26px;
+	line-height:26px;
+	font-size:12px;
+	border:0;
+	background: none;
+	padding:0;
+	border-radius:none;
+}
+.ued-tab .title-bg .title{
+	padding-left:10px;
+}
+.ued-tab .nav-tabs:before, .ued-tab .nav-tabs:after {
+	display:block;
+	line-height: 0;
+	content: "";
+	clear: both;
+}
+.ued-tab .nav-tabs li {
+	float: left;
+	list-style: none;
+	margin:0 5px 0 0 ;
+}
+.ued-tab .nav-tabs li a {
+	display: inline-block;
+    padding: 0 15px;
+    margin:0;
+    height:25px;
+	line-height:25px;
+	color:#CCCCCC;
+	text-decoration:none;
+	border-radius: 3px 3px 0 0;
+	background:#f9f9f9;
+	border:1px solid #d1d1d1;
+	border-bottom:0;
+}
+.ued-tab .nav-tabs .active a, .ued-tab .nav-tabs .active a:hover {
+	color: #fff;
+    cursor: default;
+    background:#279fe9;
+	border:2px solid #279fe9;
+	border-bottom:0;
+	font-weight:bold;
+	height:24px;
+	line-height:24px;
+}
+.ued-tab .tab-content  {
+	border:0;
+	border-top:2px solid #279fe9;
+}
+.ued-tab .tab-content .tab-pane {
+	display: none;
+}
+.ued-tab .tab-content .active {
+	display: block;
+}
+
+
+
+/*标签皮肤1*/
+.ued-tab-1 .nav-tabs {
+ 	*zoom: 1;
+	margin:0;
+	border-bottom:0;
+	padding-left:10px;
+}
+.ued-tab-1 .title-bg{
+	height:26px;
+	line-height:26px;
+	font-size:12px;
+	border:0;
+	background: none;
+	padding:0;
+	border-radius:none;
+}
+.ued-tab-1 .title-bg .title{
+	padding-left:10px;
+}
+.ued-tab-1 .nav-tabs:before, .ued-tab-1 .nav-tabs:after {
+	display:block;
+	line-height: 0;
+	content: "";
+	clear: both;
+}
+.ued-tab-1 .nav-tabs li {
+	float: left;
+	list-style: none;
+	margin:0 5px 0 0 ;
+}
+.ued-tab-1 .nav-tabs li a {
+	display: inline-block;
+    padding: 0 15px;
+    margin:0;
+    height:25px;
+	line-height:25px;
+	color:#CCCCCC;
+	text-decoration:none;
+	border-radius: 3px 3px 0 0;
+	background:#f9f9f9;
+	border:1px solid #d1d1d1;
+	border-bottom:0;
+}
+.ued-tab-1 .nav-tabs .active a, .ued-tab-1 .nav-tabs .active a:hover {
+	color: #fff;
+    cursor: default;
+    background:#4abf03;
+	border:2px solid #4abf03;
+	border-bottom:0;
+	font-weight:bold;
+	height:24px;
+	line-height:24px;
+}
+.ued-tab-1 .tab-content  {
+	border:0;
+	border-top:2px solid #4abf03;
+}
+.ued-tab-1 .tab-content .tab-pane {
+	display: none;
+}
+.ued-tab-1 .tab-content .active {
+	display: block;
+}
+
+
+/*标签皮肤2*/
+.ued-tab-2 .nav-tabs {
+ 	*zoom: 1;
+	margin:0;
+	border-bottom:0;
+	padding-left:10px;
+}
+.ued-tab-2 .title-bg{
+	height:26px;
+	line-height:26px;
+	font-size:12px;
+	border:0;
+	background: none;
+	padding:0;
+	border-radius:none;
+}
+.ued-tab-2 .title-bg .title{
+	padding-left:10px;
+}
+.ued-tab-2 .nav-tabs:before, .ued-tab-2 .nav-tabs:after {
+	display:block;
+	line-height: 0;
+	content: "";
+	clear: both;
+}
+.ued-tab-2 .nav-tabs li {
+	float: left;
+	list-style: none;
+	margin:0 5px 0 0 ;
+}
+.ued-tab-2 .nav-tabs li a {
+	display: inline-block;
+    padding: 0 15px;
+    margin:0;
+    height:25px;
+	line-height:25px;
+	color:#CCCCCC;
+	text-decoration:none;
+	border-radius: 3px 3px 0 0;
+	background:#f9f9f9;
+	border:1px solid #d1d1d1;
+	border-bottom:0;
+}
+.ued-tab-2 .nav-tabs .active a, .ued-tab-2 .nav-tabs .active a:hover {
+	color: #fff;
+    cursor: default;
+    background:#fb8b09;
+	border:2px solid #fb8b09;
+	border-bottom:0;
+	font-weight:bold;
+	height:24px;
+	line-height:24px;
+}
+.ued-tab-2 .tab-content  {
+	border:0;
+	border-top:2px solid #fb8b09;
+}
+.ued-tab-2 .tab-content .tab-pane {
+	display: none;
+}
+.ued-tab-2 .tab-content .active {
+	display: block;
+}
+
+
+
+/*标签皮肤3*/
+.ued-tab-3 .nav-tabs {
+ 	*zoom: 1;
+	margin:0;
+	border-bottom:0;
+	padding-left:10px;
+}
+.ued-tab-3 .title-bg{
+	height:26px;
+	line-height:26px;
+	font-size:12px;
+	border:0;
+	background: none;
+	padding:0;
+	border-radius:none;
+}
+.ued-tab-3 .title-bg .title{
+	padding-left:10px;
+}
+.ued-tab-3 .nav-tabs:before, .ued-tab-3 .nav-tabs:after {
+	display:block;
+	line-height: 0;
+	content: "";
+	clear: both;
+}
+.ued-tab-3 .nav-tabs li {
+	float: left;
+	list-style: none;
+	margin:0 5px 0 0 ;
+}
+.ued-tab-3 .nav-tabs li a {
+	display: inline-block;
+    padding: 0 15px;
+    margin:0;
+    height:25px;
+	line-height:25px;
+	color:#CCCCCC;
+	text-decoration:none;
+	border-radius: 3px 3px 0 0;
+	background:#f9f9f9;
+	border:1px solid #d1d1d1;
+	border-bottom:0;
+}
+.ued-tab-3 .nav-tabs .active a, .ued-tab-3 .nav-tabs .active a:hover {
+	color: #fff;
+    cursor: default;
+    background:#f8482b;
+	border:2px solid #f8482b;
+	border-bottom:0;
+	font-weight:bold;
+	height:24px;
+	line-height:24px;
+}
+.ued-tab-3 .tab-content  {
+	border:0;
+	border-top:2px solid #f8482b;
+}
+.ued-tab-3 .tab-content .tab-pane {
+	display: none;
+}
+.ued-tab-3 .tab-content .active {
+	display: block;
+}
+
+
+
+/*标签皮肤4*/
+.ued-tab-4 .nav-tabs {
+ 	*zoom: 1;
+	margin:0;
+	border-bottom:0;
+	padding-left:10px;
+}
+.ued-tab-4 .title-bg{
+	height:26px;
+	line-height:26px;
+	font-size:12px;
+	border:0;
+	background: none;
+	padding:0;
+	border-radius:none;
+}
+.ued-tab-4 .title-bg .title{
+	padding-left:10px;
+}
+.ued-tab-4 .nav-tabs:before, .ued-tab-4 .nav-tabs:after {
+	display:block;
+	line-height: 0;
+	content: "";
+	clear: both;
+}
+.ued-tab-4 .nav-tabs li {
+	float: left;
+	list-style: none;
+	margin:0 5px 0 0 ;
+}
+.ued-tab-4 .nav-tabs li a {
+	display: inline-block;
+    padding: 0 15px;
+    margin:0;
+    height:25px;
+	line-height:25px;
+	color:#CCCCCC;
+	text-decoration:none;
+	border-radius: 3px 3px 0 0;
+	background:#f9f9f9;
+	border:1px solid #d1d1d1;
+	border-bottom:0;
+}
+.ued-tab-4 .nav-tabs .active a, .ued-tab-4 .nav-tabs .active a:hover {
+	color: #39749d;
+    cursor: default;
+    background:#a9dcff;
+	border:2px solid #a9dcff;
+	border-bottom:0;
+	font-weight:bold;
+	height:24px;
+	line-height:24px;
+}
+.ued-tab-4 .tab-content  {
+	border:0;
+	border-top:2px solid #a9dcff;
+}
+.ued-tab-4 .tab-content .tab-pane {
+	display: none;
+}
+.ued-tab-4 .tab-content .active {
+	display: block;
+}
+
+
+
+/*第二种形态*/
+
+.tab-style .nav-tabs {
+ 	*zoom: 1;
+	margin:0;
+	border-bottom: 1px solid #ddd;
+}
+.tab-style .title-bg{
+	height:26px;
+	line-height:26px;
+	border: 1px solid #d1d1d1;
+	background:#f7f7f7;
+	padding:2px 0 0 0;
+	border-radius: 3px 3px 0 0;
+}
+.tab-style .nav-tabs:before, .tab-style .nav-tabs:after {
+	display:block;
+	line-height: 0;
+	content: "";
+	clear: both;
+}
+.tab-style .nav-tabs li {
+	float: left;
+	list-style: none;
+	margin:0 5px -1px 0 ;
+}
+.tab-style .nav-tabs li a {
+	display: inline-block;
+	text-decoration:none;
+    padding: 0 15px;
+    margin:0;
+	color:#CCCCCC;
+	border:0;
+}
+.tab-style .nav-tabs .active a, .tab-style .nav-tabs .active a:hover {
+	color: #666666;
+    cursor: default;
+    background: #ffffff;
+    border-left: 1px solid #d1d1d1;
+	border-right: 1px solid #d1d1d1;
+    border-bottom:1px solid #fff;
+	font-weight:bold;
+	border-radius:3px 3px 0 0;
+}
+.tab-style .tab-content  {
+	border-radius:0 0 3px 3px;
+	border:1px solid #d1d1d1;
+	border-top:0;
+}
+.tab-style .tab-content .tab-pane {
+	display: none;
+}
+.tab-style .tab-content .active {
+	display: block;
+}

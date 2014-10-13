@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysApp">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbSysAppObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.softmanage.TbSysAppObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		APPNAME,STATUS,TYPE,REMARK,APP_IDENTIFY,DEPLOYPATH,HOSEUSERNAME,STARTSHELL,STOPSHELL,
+		START_STOP_FLAG,RELEASE_FLAG,STRATEGYTYPE,STRATEGY,BASEPATH,OPERATIONNAME,CATCH_STATUS,SYS_ID,to_char(CATCH_TIME,'mm-dd
+		hh24:mi') CATCH_TIME,ONLINEPATH,APPMARK,VERSIONDESC,HOST_CONFIG_ID
+	</sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryByObjBase">
+		select
+		<include refid="tableColumns" />
+		from
+		TB_SYS_APP
+		<dynamic prepend="where">
+			<isGreaterThan property="ID" compareValue="0" prepend="and">
+				ID =#ID#
+			</isGreaterThan>
+			<isNotEmpty property="APPNAME" prepend="and">
+				APPNAME like '%'||#APPNAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				STATUS =#STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="CATCH_STATUS" prepend="and">
+				CATCH_STATUS =#CATCH_STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="APP_IDENTIFY" prepend="and">
+				APP_IDENTIFY =#APP_IDENTIFY#
+			</isNotEmpty>
+			<isNotEmpty property="DATAAUTHORITY" prepend="and">
+				ID in ($DATAAUTHORITY$)
+			</isNotEmpty>
+			<isNotNull property="SYS_ID" prepend="and">
+			 	SYS_ID=#SYS_ID#
+			</isNotNull>
+		</dynamic>
+		order by ID desc
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbSysAppObj"
+		resultClass="TbSysAppObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryListIDByObj" parameterClass="TbSysAppObj"
+		resultClass="TbSysAppObj">
+		select
+		ID,APPNAME,STATUS,START_STOP_FLAG,CATCH_STATUS,to_char(CATCH_TIME,'mm-dd
+		hh24:mi') CATCH_TIME from TB_SYS_APP where ID in (#LONGID#) order by
+		ID desc
+	</select>
+	<select id="queryByObjForCount" parameterClass="TbSysAppObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<delete id="deleteByObj" parameterClass="TbSysAppObj">
+		delete from TB_SYS_APP where ID=#ID#
+	</delete>
+	<update id="updateByObj" parameterClass="TbSysAppObj">
+		update TB_SYS_APP 
+		set REMARK=#REMARK#
+			<isNotNull property="APPNAME" prepend=",">
+				APPNAME=#APPNAME#
+			</isNotNull>
+			<isGreaterThan property="STATUS" prepend="," compareValue="0">
+				STATUS=#STATUS#
+			</isGreaterThan>
+			<isNotNull property="APP_IDENTIFY" prepend=",">
+				APP_IDENTIFY=#APP_IDENTIFY#
+			</isNotNull>
+			<isNotEqual property="STRATEGY" prepend="," compareValue="0">
+				STRATEGY=#STRATEGY#
+			</isNotEqual>
+			<isNotNull property="BASEPATH" prepend=",">
+				BASEPATH=#BASEPATH#
+			</isNotNull>
+			<isNotNull property="SYS_ID" prepend=",">
+				SYS_ID=#SYS_ID#
+			</isNotNull>
+			<isNotNull property="appMark" prepend=",">
+				APPMARK=#appMark#
+			</isNotNull>
+		<dynamic prepend="where">
+			<isNotEqual property="ID" prepend="and" compareValue="0">
+				ID=#ID#
+			</isNotEqual>
+		</dynamic>
+	</update>
+	<insert id="insertByObj" parameterClass="TbSysAppObj">
+		<selectKey resultClass="int" keyProperty="ID">
+			SELECT ID_SYS_APP.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		insert into TB_SYS_APP(
+		ID,APPNAME,STATUS,TYPE,REMARK,APP_IDENTIFY,DEPLOYPATH,HOSEUSERNAME,STARTSHELL,STOPSHELL,START_STOP_FLAG,RELEASE_FLAG,STRATEGYTYPE,STRATEGY,BASEPATH,OPERATIONNAME,CATCH_STATUS,SYS_ID,APPMARK,HOST_CONFIG_ID
+		)
+		values(#ID#,#APPNAME#,#STATUS#,#TYPE#,#REMARK#,#APP_IDENTIFY#,#DEPLOYPATH#,#HOSEUSERNAME#,#STARTSHELL#,#STOPSHELL#,1,#RELEASE_FLAG#,#STRATEGYTYPE#,#STRATEGY#,#BASEPATH#,#OPERATIONNAME#,#CATCH_STATUS#,#SYS_ID#,#appMark#,#HOST_CONFIG_ID#)
+	</insert>
+	<update id="startandstopByObj" parameterClass="TbSysAppObj">
+		update TB_SYS_APP
+		set START_STOP_FLAG =#START_STOP_FLAG# where
+		ID=#ID#
+	</update>
+	<update id="deployRequestByObj" parameterClass="TbSysAppObj">
+		update TB_SYS_APP
+		set STATUS =#STATUS# where
+		ID=#ID#
+	</update>
+	<update id="catchRequestByObj" parameterClass="TbSysAppObj">
+		update TB_SYS_APP
+		set CATCH_STATUS=#CATCH_STATUS# where
+		ID=#ID#
+	</update>
+
+	<update id="updateOnlinePath" parameterClass="TbSysAppObj">
+		update TB_SYS_APP set
+		ONLINEPATH=#onlinePath#,
+		VERSIONDESC=#versionDesc#
+		where ID=#ID#
+	</update>
+	
+	<resultMap class="java.util.HashMap" id="simple">
+		<result column="ID" property="ID" javaType="java.lang.String"/>
+		<result column="APPNAME" property="APPNAME" javaType="java.lang.String"/>
+		<result column="DEPLOYPATH" property="DEPLOYPATH" javaType="java.lang.String"/>
+	</resultMap>
+	<select id="queryForSheet" resultMap="simple">
+		select ID,APPNAME,DEPLOYPATH from TB_SYS_APP
+	</select>
+	
+	<select id="queryForListByIds" parameterClass="string" resultClass="TbSysAppObj">
+		select t.ID,t.APPNAME from TB_SYS_APP t where t.ID in ($appid$)
+	</select>
+	
+	<select id="countApp" parameterClass="TbSysAppObj" resultClass="int">
+		select count(id) from tb_sys_app where SYS_ID in 
+		<iterate close=")" open="(" conjunction="," property="bizids">
+			#bizids[]#
+		</iterate>
+	</select>
+	
+	<select id="queryForListUseIn" parameterClass="TbSysAppObj" resultClass="TbSysAppObj">
+		select * from tb_sys_app where ID in
+		<iterate close=")" open="(" conjunction="," property="idlist">
+			#idlist[]#
+		</iterate>
+	</select>
+	
+</sqlMap>

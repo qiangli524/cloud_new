@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BolProgramLib">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="BolProgramLibVO" type="com.sitech.basd.bol.domain.program.BolProgramLibVO"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    
+	<sql id="baseCloumns">
+		LIB_ID id,LIB_NAME name,LIB_DESC descrip,ifnull(STATE,0) status,DATE_FORMAT(STATE_DATE,'%Y-%m-%d %H:%i:%S') lastupdate
+	</sql>
+	  
+  	<sql id="queryForListByObjBase">
+  		select <include refid="baseCloumns" /> from CAPABILITY_LIB
+  		<dynamic prepend="where">
+  			<isGreaterThan  property="id" prepend="and"  compareValue="0">
+  				LIB_ID = #id#
+  			</isGreaterThan>
+  			<isNotEqual property="status" prepend="and" compareValue="-1">
+  				STATE = #status#
+  			</isNotEqual>
+  			<isNotNull property="name">
+  				<isNotEmpty property="name" prepend="and">
+  					LIB_NAME like '%'||#name#||'%'
+  				</isNotEmpty>
+  			</isNotNull>
+  		</dynamic>
+ 	</sql>
+  
+	<select id="queryForListByObj" parameterClass="BolProgramLibVO" resultClass="BolProgramLibVO">
+		<include refid="queryForListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	  
+ 	<select id="queryForListByObjCount" parameterClass="BolProgramLibVO" resultClass="int">
+		select count(id) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	  </select>
+	
+	<insert id="insertByObj" parameterClass="BolProgramLibVO">
+		insert into
+		CAPABILITY_LIB(LIB_ID,LIB_NAME,LIB_DESC,STATE,STATE_DATE)
+		values(#id#,#name#,#descrip#,#status#,sysdate())
+	</insert> 
+	 <update id="updateByObj" parameterClass="BolProgramLibVO">
+		update CAPABILITY_LIB set LIB_DESC = #descrip#,STATE_DATE=sysdate(),STATE=#status#  where LIB_ID = #id#
+	</update>
+    <delete id="deleteByObj" parameterClass="BolProgramLibVO">
+    	delete from CAPABILITY_LIB where LIB_ID = #id#
+    </delete>
+	 
+</sqlMap>

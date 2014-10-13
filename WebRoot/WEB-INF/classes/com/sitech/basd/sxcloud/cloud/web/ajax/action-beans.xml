@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.appmessage.action.AppMessageAction -->
+	<bean id="ajaxAction" class="com.sitech.basd.sxcloud.cloud.web.ajax.action.AjaxAction"
+		singleton="false">
+		<property name="templetService">
+			<ref bean="templetService"/>
+		</property> 
+		<property name="hostInfoService">
+			<ref bean="hostInfoService"/>
+		</property> 
+		<property name="virtualPoolService">
+			<ref bean="virtualPoolService"/>
+		</property> 
+		<property name="scriptmanageService">
+			<ref bean="scriptmanageService"/>
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

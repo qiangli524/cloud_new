@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="IBMColl">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="IBMCollObj" type="com.sitech.basd.sxcloud.cloud.domain.ibmcoll.IBMCollObj"/>
+    <typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+    <typeAlias alias="Category" type="com.sitech.basd.fusioncharts.vo.Category"/>
+    
+    <resultMap class="java.util.HashMap" id="collHost">
+    	<result property="ID" column="ID"/>
+    </resultMap>
+    
+    <select id="queryAllCollHost" resultMap="collHost">
+		select distinct ID from TB_IBM_POWER_DAY_COLL
+	</select>
+	
+	<select id="queryAllCollVm" resultMap="collHost">
+		select distinct ID from TB_IBM_LPAR_DAY_COLL
+	</select>
+    
+	<select id="queryPowerDayTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'HH24') label
+        	from
+        TB_IBM_POWER_DAY_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>					
+		
+	  <select id="queryPowerDayData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'hh24:mi:ss') toolText
+        	from
+        TB_IBM_POWER_DAY_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryPowerDayTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'hh24:mi:ss') toolText
+		from
+			TB_IBM_POWER_DAY_COLL a,
+			TB_IBM_POWER_DAY_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+	  
+	  <select id="queryPowerWeekTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'DD') label
+        	from
+        TB_IBM_POWER_WEEK_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>	
+	  
+	  <select id="queryPowerWeekData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'hh24:mi:ss') toolText
+        	from
+        TB_IBM_POWER_WEEK_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryPowerWeekTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'hh24:mi:ss') toolText
+		from
+			TB_IBM_POWER_WEEK_COLL a,
+			TB_IBM_POWER_WEEK_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+	  
+	  <select id="queryPowerMonthTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'DD') label
+        	from
+        TB_IBM_POWER_MONTH_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryPowerMonthData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'yyyy-mm-dd') toolText
+        	from
+        TB_IBM_POWER_MONTH_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryPowerMonthTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'yyyy-mm-dd') toolText
+		from
+			TB_IBM_POWER_MONTH_COLL a,
+			TB_IBM_POWER_MONTH_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+	  
+	  <select id="queryPowerYearTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'MM') label
+        	from
+        TB_IBM_POWER_YEAR_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	   <select id="queryPowerYearData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'yyyy-mm-dd') toolText
+        	from
+        TB_IBM_POWER_YEAR_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryPowerYearTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'yyyy-mm-dd') toolText
+		from
+			TB_IBM_POWER_YEAR_COLL a,
+			TB_IBM_POWER_YEAR_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+	  
+	  <select id="queryLparDayTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'HH24') label
+        	from
+        TB_IBM_LPAR_DAY_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparDayData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'hh24:mi:ss') toolText
+        	from
+        TB_IBM_LPAR_DAY_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparDayTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'hh24:mi:ss') toolText
+		from
+			TB_IBM_LPAR_DAY_COLL a,
+			TB_IBM_LPAR_DAY_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+	  
+	  <select id="queryLparWeekTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'DD') label
+        	from
+        TB_IBM_LPAR_WEEK_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparWeekData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'hh24:mi:ss') toolText
+        	from
+        TB_IBM_LPAR_WEEK_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparWeekTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'hh24:mi:ss') toolText
+		from
+			TB_IBM_LPAR_WEEK_COLL a,
+			TB_IBM_LPAR_WEEK_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+	  
+	  <select id="queryLparMonthTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'DD') label
+        	from
+        TB_IBM_LPAR_MONTH_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparMonthData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'yyyy-mm-dd') toolText
+        	from
+        TB_IBM_LPAR_MONTH_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparMonthTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'yyyy-mm-dd') toolText
+		from
+			TB_IBM_LPAR_MONTH_COLL a,
+			TB_IBM_LPAR_MONTH_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+	  
+	  <select id="queryLparYearTimeLabel" parameterClass="IBMCollObj" resultClass="Category">
+	      select to_char(COLL_TIME,'MM') label
+        	from
+        TB_IBM_LPAR_YEAR_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparYearData" parameterClass="IBMCollObj" resultClass="Data">
+	      select KPI_VALUE value,KPI_VALUE || '{br}' || to_char(COLL_TIME,'yyyy-mm-dd') toolText
+        	from
+        TB_IBM_LPAR_YEAR_COLL
+       	<dynamic prepend="where">
+       		<isNotNull property="kpi" prepend="and">
+       			KPI = #kpi#
+       		</isNotNull>
+       		<isNotNull  property="id" prepend="and">
+       			ID = #id#
+       		</isNotNull>
+       	</dynamic>
+       	order by coll_time
+	  </select>
+	  
+	  <select id="queryLparYearTrendData" parameterClass="IBMCollObj" resultClass="Data">
+	      select a.kpi_value/100*b.kpi_value value,a.kpi_value/100*b.kpi_value || '{br}' || to_char(a.COLL_TIME,'yyyy-mm-dd') toolText
+		from
+			TB_IBM_LPAR_YEAR_COLL a,
+			TB_IBM_LPAR_YEAR_COLL b
+		where a.coll_time = b.coll_time
+			<isNotNull property="kpi" prepend="and">
+				a.kpi = #kpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			a.id = #id#
+       		</isNotNull>
+			<isNotNull property="totalKpi" prepend="and">
+				b.kpi = #totalKpi#
+			</isNotNull>
+			<isNotNull  property="id" prepend="and">
+       			b.id = #id#
+       		</isNotNull>
+       		order by a.coll_time
+	  </select>
+</sqlMap>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbBusiDeployLog">
+
+	<typeAlias alias="TbBusiDeployLog" type="com.sitech.basd.component.domain.deploylog.TbBusiDeployLog" />
+
+	<sql id="queryBusiDeployLog">
+	  select ID,
+        EXAMPLE_ID,
+        EXAMPLE_LOG,
+        TASK_ID,
+        ORDER_ID,
+        ISSUCCESS,
+        ISCOMPLETE,
+        INSERTTIME
+   from TB_BUSI_DEPLOY_LOG
+	</sql>
+	
+	<select id="queryBusiDeployLogList" parameterClass="TbBusiDeployLog" resultClass="TbBusiDeployLog">
+	 <include refid="queryBusiDeployLog"/>
+	 <dynamic prepend="where">
+	   <isNotEmpty prepend="and" property="ID">
+	     ID=#ID#
+	   </isNotEmpty>
+	   <isNotEmpty prepend="and" property="TASK_ID">
+	     TASK_ID=#TASK_ID#
+	   </isNotEmpty>
+	   <isNotEmpty prepend="and" property="ORDER_ID">
+	     ORDER_ID=#ORDER_ID#
+	   </isNotEmpty>
+	 </dynamic>
+	 order by INSERTTIME desc
+	</select>
+</sqlMap>

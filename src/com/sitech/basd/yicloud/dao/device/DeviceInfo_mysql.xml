@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DeviceInfo">
+	<typeAlias alias="DeviceObj"
+		type="com.sitech.basd.yicloud.domain.device.DeviceObj" />
+	<typeAlias alias="DictionaryObj"
+		type="com.sitech.basd.yicloud.domain.dictionary.DictionaryObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+			select m.DEVICE_ID,m.DEVICE_NAME,m.DEVICE_NAME_EN,m.DEVICE_CODE,
+			m.DEVICE_DESC,m.STATUSE,m.DEVICE_TYPE,n.TYPE_NAME as TYPE_NAME from TB_YICLOUD_DEVICE m, TB_YICLOUD_DEVICE_TYPE n
+			where m.DEVICE_TYPE=n.TYPE_ID
+		]]>
+		<isNotEqual property="DEVICE_ID" compareValue="0" prepend="and">
+			DEVICE_ID = #DEVICE_ID#
+		</isNotEqual>
+
+		<isNotEmpty property="DEVICE_NAME" prepend="and">
+			DEVICE_NAME like CONCAT('%',#DEVICE_NAME#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="DEVICE_NAME_EN" prepend="and">
+			DEVICE_NAME_EN like CONCAT('%',#DEVICE_NAME_EN#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="DEVICE_TYPE" prepend="and">
+			DEVICE_TYPE = #DEVICE_TYPE#
+		</isNotEmpty>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="DeviceObj"
+		resultClass="DeviceObj"> 
+		<include refid="queryByObjBase" /> 
+		order by DEVICE_ID 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="DeviceObj"
+		resultClass="int">
+		select count(DEVICE_ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 添加设备主机 -->
+	<insert id="insertByObj" parameterClass="DeviceObj">
+	insert into
+		TB_YICLOUD_DEVICE(DEVICE_ID,DEVICE_NAME,DEVICE_NAME_EN,DEVICE_CODE,DEVICE_TYPE,DEVICE_DESC,STATUSE)
+		values(#DEVICE_ID#,#DEVICE_NAME#,#DEVICE_NAME_EN#,#DEVICE_CODE#,#DEVICE_TYPE#,#DEVICE_DESC#,#STATUSE#)
+	</insert>
+	<!-- 修改设备主机 -->
+	<update id="updateByObj" parameterClass="DeviceObj">
+		update TB_YICLOUD_DEVICE set
+		DEVICE_ID=#DEVICE_ID#,DEVICE_NAME=#DEVICE_NAME#,DEVICE_NAME_EN=#DEVICE_NAME_EN#,DEVICE_CODE=#DEVICE_CODE#,DEVICE_TYPE=#DEVICE_TYPE#,DEVICE_DESC=#DEVICE_DESC#,STATUSE=#STATUSE#
+		where DEVICE_ID=#DEVICE_ID#
+	</update>
+	<!-- 根据ID删除设备主机 -->
+	<delete id="deleteByObj" parameterClass="DeviceObj">
+		delete from TB_YICLOUD_DEVICE where DEVICE_ID=#DEVICE_ID#
+	</delete>
+	
+	<select id="getIdSequence" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		select max(DEVICE_ID)+1 from TB_YICLOUD_DEVICE
+	</select>
+</sqlMap>

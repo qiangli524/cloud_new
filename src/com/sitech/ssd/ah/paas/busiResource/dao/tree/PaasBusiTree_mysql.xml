@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasBusiTree">
+<typeAlias alias="PaasBusiTreeObj" type="com.sitech.ssd.ah.paas.busiResource.domain.tree.PaasBusiTreeObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<!-- 查询资源树 -->
+	<select id="queryForPaasBusiTree" parameterClass="PaasBusiTreeObj" resultClass="PaasBusiTreeObj">
+		select
+			t.uuid,
+			t.`name`,
+			t.entity_id,
+			t.parent_id,
+			t.node_type,
+			t.server_type
+		from
+			tb_paas_busi_tree t
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				t.uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				t.name like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				t.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="parent_id">
+				t.parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="node_type">
+				t.node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="server_type">
+				t.server_type = #server_type#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY t.name,t.node_type
+	</select>
+	<insert id="insertByObj" parameterClass="PaasBusiTreeObj">
+		insert into tb_paas_busi_tree(uuid,name,entity_id,parent_id,node_type,server_type) 
+			values (#uuid#,#name#,#entity_id#,#parent_id#,#node_type#,#server_type#)
+	</insert>
+	<update id="updateByObj" parameterClass="PaasBusiTreeObj">
+		update tb_paas_busi_tree
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="name">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="server_type">
+				server_type = #server_type#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<delete id="deleteByObj" parameterClass="PaasBusiTreeObj">
+		delete from tb_paas_busi_tree
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+</sqlMap>

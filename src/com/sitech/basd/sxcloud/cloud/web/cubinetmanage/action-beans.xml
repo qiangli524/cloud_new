@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.cubinetmanage.action.CubinetManageAction -->
+	<bean id="cubinetManageAction" class="com.sitech.basd.sxcloud.cloud.web.cubinetmanage.action.CubinetManageAction"
+		singleton="false" >
+		<property name="cubinetService">
+			<ref bean="cubinetService" />
+		</property>
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+	 <property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

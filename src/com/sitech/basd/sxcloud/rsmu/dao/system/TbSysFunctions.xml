@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysFunctions">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbSysFunctionsObj" type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysFunctionsObj"/>
+    <typeAlias alias="FuncRoleObj" type="com.sitech.basd.sxcloud.rsmu.domain.system.FuncRoleObj"/>
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+    <sql id="TB_SYS_FUNCTIONSColumnsNoKey">
+        FUNCID,FUNNAME,STATUS,REMARK,UPDATETIME,TYPE,FUNCREQUEST,ISREFRESH
+    </sql>
+    <sql id="TB_SYS_FUNCTIONSColumns">
+        ID,
+        <include refid="TB_SYS_FUNCTIONSColumnsNoKey"/>
+    </sql>
+    
+     <sql id="queryByObjBase">
+        select
+        <include refid="TB_SYS_FUNCTIONSColumns"/>
+        from
+        TB_SYS_FUNCTIONS
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="FUNNAME" prepend="and">
+                FUNNAME like '%'||#FUNNAME#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="STATUS" prepend="and">
+                STATUS =#STATUS#
+               </isNotEmpty>
+               <isNotEmpty property="FUNCREQUEST" prepend="and">
+                FUNCREQUEST like '%'||#FUNCREQUEST#||'%'
+               </isNotEmpty>
+               <isNotNull property="FUNCID" prepend="and">
+               		FUNCID like '%'||#FUNCID#||'%'
+               </isNotNull>
+        </dynamic> 
+                order by FUNCID asc
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+    <select id="queryTbSysFunctionsObjByFUNCID" parameterClass="FuncRoleObj" resultClass="TbSysFunctionsObj">
+        select
+    <include refid="TB_SYS_FUNCTIONSColumns"/>
+        from
+        TB_SYS_FUNCTIONS
+        where  STATUS = 1  
+        <isNotEmpty property="FUNCID"  prepend="and">
+          FUNCID like '%'||#FUNCID#||'%'
+        </isNotEmpty>
+        <isNotEqual property="ACCOUNT" compareValue="admin" prepend="and">
+         id in 
+        (select m.FUNCID from tb_sys_groupfunc m,tb_sys_grpmember n where m.GROUPID=n.GROUPID and n.USERID=#USERID#)
+        </isNotEqual>  
+        order by FUNCID asc
+    </select>
+     <select id="getNaviParam" parameterClass="list" resultClass="TbSysFunctionsObj">
+     select
+    <include refid="TB_SYS_FUNCTIONSColumns"/>
+        from
+        TB_SYS_FUNCTIONS
+      where FUNCID in 
+      <iterate open="(" close=")" conjunction=",">
+					#[]#
+      </iterate>
+      order by FUNCID
+     </select>
+	 <select id="queryForListByObj" parameterClass="TbSysFunctionsObj" resultClass="TbSysFunctionsObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryByObjBase"/>
+	        
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="TbSysFunctionsObj" resultClass="int">
+	      select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <delete id="deleteByObj" parameterClass="TbSysFunctionsObj">
+	    delete from TB_SYS_FUNCTIONS where ID=#ID#
+	  </delete>
+	  <update id="updateByObj" parameterClass="TbSysFunctionsObj">
+	    update TB_SYS_FUNCTIONS set FUNCID=#FUNCID#,FUNNAME=#FUNNAME#,STATUS=#STATUS#,REMARK=#REMARK#,UPDATETIME=#UPDATETIME#,TYPE=#TYPE#,FUNCREQUEST=#FUNCREQUEST#,ISREFRESH=#ISREFRESH# where ID=#ID#
+	  </update>
+	  <insert id="insertByObj" parameterClass="TbSysFunctionsObj">
+       <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_SYS_FUNCTIONS.NEXTVAL AS ID FROM DUAL
+       </selectKey>
+       insert into TB_SYS_FUNCTIONS(
+       ID,FUNCID,FUNNAME,STATUS,REMARK,TYPE,FUNCREQUEST,ISREFRESH
+       )
+       values(#ID#,#FUNCID#,#FUNNAME#,#STATUS#,#REMARK#,#TYPE#,#FUNCREQUEST#,#ISREFRESH#)
+       
+      </insert>
+      <select id="queryFuncName" parameterClass="TbSysFunctionsObj" resultClass="String">
+	      select FUNNAME from TB_SYS_FUNCTIONS where FUNCID=#FUNCID#  
+	  </select>
+	  
+	   <!-- 根据二级节点查询所有三级节点 -->
+	  <select id="queryThreeFuncNode" parameterClass="String" resultClass="TbSysFunctionsObj">
+	      select <include refid="TB_SYS_FUNCTIONSColumns"/> from TB_SYS_FUNCTIONS where FUNCID like '%'||#funcid#||'%'
+	  </select>
+</sqlMap>

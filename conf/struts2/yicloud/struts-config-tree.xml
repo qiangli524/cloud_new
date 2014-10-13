@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="tree" extends="global_package">
+		<action name="tree_*"
+				class="entityTreeAction" method="{1}">
+			<result name="list">/yicloud/entitytree/listServerTree.jsp</result>
+			<result name="vmtabs">/yicloud/entitytree/vmtabs.jsp</result>
+			<result name="dataCenterInfo">/yicloud/entitytree/dataCenterInfo.jsp</result>
+			<result name="dataCenterVM">/yicloud/entitytree/dataCenterVM.jsp</result>
+			<result name="dataCenterHost">/yicloud/entitytree/dataCenterHost.jsp</result>
+			<result name="clusterInfo">/yicloud/entitytree/clusterInfo.jsp</result>
+			<result name="hostInfo">/yicloud/entitytree/hostInfo.jsp</result>
+			<result name="clusterResource">/yicloud/entitytree/clusterResource.jsp</result>
+			<result name="hostTask">/yicloud/entitytree/task.jsp</result>
+			<result name="hostEvent">/yicloud/entitytree/event.jsp</result>
+			<result name="imageInfo">/yicloud/vmware/imageInfo.jsp</result>
+			<result name="list_alarm">/yicloud/entitytree/listAlarm.jsp</result>
+			<result name="list_solution">/yicloud/entitytree/listSolution.jsp</result>
+			<result name="list_solutionInfo">/yicloud/entitytree/listSolution.jsp</result>
+			<result name="success">/ajax/ajax.jsp</result>
+			<result name="xen_event">/yicloud/entitytree/xenEvent.jsp</result>
+			<result name="xen_task">/yicloud/entitytree/xenTask.jsp</result>
+			<result name="turnToMarkPage">/yicloud/entitytree/markAsTemplet.jsp</result>
+			<result name="select_page">/yicloud/vmware/authoritySelect.jsp</result>
+			<result name="vm_store">/yicloud/datastore/listVMStore.jsp</result>
+			<result name="hostNic">/yicloud/entitytree/listNic.jsp</result>
+			<result name="vmVirtualNic">/yicloud/entitytree/listVirtualNic.jsp</result>
+		</action>
+ </package>
+
+</struts>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BolProcess">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="BolProcessVO" type="com.sitech.basd.bol.domain.process.BolProcessVO"/>
+	    <sql id="paginationStart">
+			<![CDATA[
+	                          select * from (select virtual_table.*, rownum rownum_ from (
+	                 ]]>
+		</sql>
+		<sql id="paginationEnd">
+			<![CDATA[
+	                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+	                 ]]>
+		</sql>
+		
+		<sql id="baseCloumns">
+			PROCESS_ID id,PROCESS_NAME name,PROCESS_DESC descrip,NODE_ID nodeId,APPLICATION_ID programId,NVL(STATE,0) status,STATE_DATE lastupdate
+		</sql>
+	  
+	  	<sql id="queryForListByObjBase">
+	  		select a.NODE_NAME nodeName,
+	           b.APPLICATION_NAME programName,
+	           c.PROCESS_ID id,
+	           c.PROCESS_NAME name,
+	           c.PROCESS_DESC descrip,
+	           c.NODE_ID nodeId,
+	           c.APPLICATION_ID programId,
+	           c.STATE status,
+	           c.STATE_DATE lastupdate
+	      from (select NODE_ID, NODE_NAME from CLOUD_NOTE) a,
+	           (select APPLICATION_ID, APPLICATION_NAME from APPLICATION) b,
+	            PROCESS c
+	       where a.NODE_ID = c.NODE_ID and b.APPLICATION_ID = c.APPLICATION_ID
+  			<isGreaterThan property="id" prepend="and">
+	       		c.PROCESS_ID = #id#
+	        </isGreaterThan>
+  			<isNotEqual property="status" prepend="and" compareValue="-1">
+  				c.STATE = #status#
+  			</isNotEqual>
+  			<isNotNull property="name">
+  				<isNotEmpty property="name" prepend="and">
+  					c.PROCESS_NAME like '%'||#name#||'%'
+  				</isNotEmpty>
+  			</isNotNull>
+	 	</sql>
+	  	
+	  	<select id="queryID" resultClass="java.lang.Integer">
+			select max(PROCESS_ID) from PROCESS
+		</select>
+	  	
+		<select id="queryForListByObj" parameterClass="BolProcessVO" resultClass="BolProcessVO">
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationStart" />
+			</isGreaterThan>
+			<include refid="queryForListByObjBase" />
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationEnd" />
+			</isGreaterThan>
+		</select>
+	  
+	  <select id="queryForListByObjCount" parameterClass="BolProcessVO" resultClass="int">
+		select count(id) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	  </select>
+	
+	<insert id="insertByObj" parameterClass="BolProcessVO">
+		insert into PROCESS
+		(PROCESS_ID,PROCESS_NAME,PROCESS_DESC,NODE_ID,APPLICATION_ID,STATE,STATE_DATE)
+		values(#id#,#name#,#descrip#,#nodeId#,#programId#,#status#,sysdate)
+	</insert> 
+	<update id="updateByObj" parameterClass="BolProcessVO">
+		update PROCESS set PROCESS_DESC = #descrip#,NODE_ID=#nodeId#,APPLICATION_ID=#programId#,STATE=#status#,STATE_DATE=sysdate where PROCESS_ID = #id#
+	</update> 
+    <delete id="deleteByObj" parameterClass="BolProcessVO">
+    	delete from PROCESS where PROCESS_ID = #id#
+    </delete>
+	  
+</sqlMap>

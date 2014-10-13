@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+						http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+						http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
+       default-autowire="byName">
+
+    <context:property-placeholder  location="classpath:properties/rabbitmq_connection.properties"  ignore-unresolvable="true" />
+    <bean id="connectionFactory" class="com.rabbitmq.client.ConnectionFactory">
+        <property name="host"  value="${cloud.rabbitmq.host}"/>
+        <property name="port"  value="${cloud.rabbitmq.port}"/>
+        <property name="username"  value="${cloud.rabbitmq.username}"/>
+        <property name="password"  value="${cloud.rabbitmq.password}"/>
+        <property name="requestedHeartbeat"  value="500"/>
+    </bean>
+    <!-- RabbitMQ交换机配置，用于实例交换机数据 -->
+    <bean id="rabbitmqExchangeConfig" class="com.sitech.utils.rabbitmq.RabbitMQProperty">
+        <constructor-arg value="properties/rabbitmq_exchange.properties"/>
+    </bean>
+    <!-- RabbitMQ队列配置，用于实例队列 -->
+    <bean id="rabbitmqQueueConfig" class="com.sitech.utils.rabbitmq.RabbitMQProperty">
+        <constructor-arg value="properties/rabbitmq_queue.properties"/>
+    </bean>
+    <!-- RabbitMQ绑定配置，用于实例绑定 -->
+    <bean id="rabbitmqBindingConfig" class="com.sitech.utils.rabbitmq.RabbitMQProperty">
+        <constructor-arg value="properties/rabbitmq_binding.properties"/>
+    </bean>
+
+    <!-- RabbitMQ工具类 -->
+    <bean id="rabbitmqUtil" class="com.sitech.utils.rabbitmq.RabbitMQUtil">
+        <constructor-arg name="cachingConnectionFactory" ref="connectionFactory" />
+    </bean>
+    <!-- RabbitMQ数据实例 -->
+    <bean id="rabbitMQDataInit" class="com.sitech.utils.rabbitmq.RabbitMQDataInit">
+        <constructor-arg name="rabbitmqUtil" ref="rabbitmqUtil"/>
+        <constructor-arg name="rabbitmqExchangeConfig" ref="rabbitmqExchangeConfig"/>
+        <constructor-arg name="rabbitmqQueueConfig" ref="rabbitmqQueueConfig"/>
+        <constructor-arg name="rabbitmqBindingConfig" ref="rabbitmqBindingConfig"/>
+    </bean>
+    <!-- rabbitMQ监听器实例 -->
+    <bean id="rabbitMQListenerInit" class="com.sitech.utils.rabbitmq.RabbitMQListenerInit">
+        <constructor-arg name="rabbitmqUtil" ref="rabbitmqUtil"/>
+        <constructor-arg name="list">
+            <!-- 监听消息处理类列表 -->
+            <list value-type="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">
+                <ref bean="workorderSchedulerListener" />
+                <!--<ref bean="applyVM" />-->
+                <!--<ref bean="applyPublicIP" />-->
+                <!--<ref bean="applyBandwidth" />-->
+                <!--<ref bean="applyBalance" />-->
+                <!--<ref bean="upgradeVM"/>-->
+                <!--<ref bean="upgradeBandwidth"/>-->
+                <!--<ref bean="putVmServeTime" />-->
+                <!--<ref bean="powerStateChange" />-->
+                <!--<ref bean="orderRelationprocessResultListener" />-->
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <!-- 统一监控接受消费者监听 -->
+
+    <!-- 定时任务监听 -->
+    <bean id="workorderSchedulerListener" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">
+        <property name="queueName" value="sx.operate.returnset.sce.vmw" />
+        <property name="autoAck" value="true" />
+        <property name="handleMessageObj" ref="resourceSchedulerService" />
+        <property name="defalutMethod" value="receptionMessage" />
+    </bean>
+    <!--&lt;!&ndash; 北京电信云商城资源申请监听器 &ndash;&gt;-->
+    <!--<bean id="applyVM" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.createvm.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="applyVMListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 北京电信云商城虚拟机配置变更监听器 &ndash;&gt;-->
+    <!--<bean id="upgradeVM" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.changevm.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="upgradeVMListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 北京电信云商城资源时长变更监听器 &ndash;&gt;-->
+    <!--<bean id="putVmServeTime" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.changeservertime.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="putServeTimeListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 北京电信云商城资源状态变更监听器 &ndash;&gt;-->
+    <!--<bean id="powerStateChange" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.changevmstate.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="resourcePowerStateChangeListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 北京电信云商城购买公网IP监听器 &ndash;&gt;-->
+    <!--<bean id="applyPublicIP" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.buyPublicIP.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="applyPublicIPListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+    <!--&lt;!&ndash; 北京电信云商城购买带宽监听器 &ndash;&gt;-->
+    <!--<bean id="applyBandwidth" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.buyBandwidth.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="applyBandwidthListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+    <!--&lt;!&ndash; 北京电信云商城变更带宽监听器 &ndash;&gt;-->
+    <!--<bean id="upgradeBandwidth" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.editBandwidth.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="upgradeBandwidthListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+    <!--&lt;!&ndash; 北京电信云商城购买负载均衡监听器 &ndash;&gt;-->
+    <!--<bean id="applyBalance" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.buyLoadBalance.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="applyBalanceListener" />-->
+        <!--<property name="defalutMethod" value="handleMessage" />-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 订购关系处理结果监听 &ndash;&gt;-->
+    <!--<bean id="orderRelationprocessResultListener" class="com.sitech.utils.rabbitmq.RabbitMQListenerEntity">-->
+        <!--<property name="queueName" value="bj.callbackMessage.queue" />-->
+        <!--<property name="autoAck" value="true" />-->
+        <!--<property name="handleMessageObj" ref="orderRelationService" />-->
+        <!--<property name="defalutMethod" value="processResult" />-->
+    <!--</bean>-->
+
+</beans>

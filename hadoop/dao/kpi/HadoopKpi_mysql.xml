@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopKpi">
+	<typeAlias alias="HadoopKpiObj" type="domain.kpi.HadoopKpiObj" />
+
+	<sql id="baseCloumns">
+		DISTINCT id,kpi_id,description,unit,shape,isEffect,level,threshold
+	</sql>
+	<sql id="baseCloumnsa">
+		DISTINCT a.id,a.kpi_id,a.description,a.unit,a.shape,a.isEffect,a.level,a.threshold,a.threshold_type
+	</sql>	
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	
+	<select id="queryHadoopKpiCount" parameterClass="HadoopKpiObj" resultClass="int">
+	        select count(DISTINCT a.id)
+				from tb_hadoop_kpi_desc a LEFT JOIN tb_hadoop_servicename_kpi_relation b ON a.kpi_id = b.kpi_id 
+			<dynamic prepend="where">
+			  <isNotNull prepend="and" property="id">
+			  	  <isNotEmpty property="id">
+			  	 	  a.id=#id#
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="service_name">
+			  	  <isNotEmpty property="service_name">
+			  	 	  b.service_name=#service_name#
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="kpi_id">
+			  	  <isNotEmpty property="kpi_id">
+			  	 	  a.kpi_id like CONCAT('%',#kpi_id#,'%')
+			  	  </isNotEmpty>
+			  </isNotNull>
+			   <isNotNull prepend="and" property="description">
+			  	  <isNotEmpty property="description">
+			  	 	  a.description like CONCAT('%',#description#,'%')
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="isEffect">
+			  	  <isNotEmpty property="isEffect">
+			  	 	  a.isEffect=#isEffect#
+			  	  </isNotEmpty>
+			  </isNotNull>
+		  	  <isEqual prepend="and" property="threshold" compareValue="0">
+		  	  		 a.threshold=#threshold#
+		  	  </isEqual>
+		  	  <isNotEmpty prepend="and" property="threshold">
+			  	  	<isNotEqual property="threshold" compareValue="0">
+			  	  			a.threshold != 0
+			  	  	</isNotEqual>
+		  	  </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<!-- 查询所有主机 -->
+	<select id="queryHadoopKpiLists" parameterClass="HadoopKpiObj" resultClass="HadoopKpiObj">
+	   select
+		<include refid ="baseCloumnsa" />
+		from tb_hadoop_kpi_desc a LEFT JOIN tb_hadoop_servicename_kpi_relation b ON a.kpi_id = b.kpi_id 
+		<dynamic prepend="where">
+			  <isNotNull prepend="and" property="id">
+			  	  <isNotEmpty property="id">
+			  	 	  a.id=#id#
+			  	  </isNotEmpty>
+			  </isNotNull>
+			   <isNotNull prepend="and" property="service_name">
+			  	  <isNotEmpty property="service_name">
+			  	 	  b.service_name=#service_name#
+			  	  </isNotEmpty>
+			  </isNotNull>
+			   <isNotNull prepend="and" property="kpi_id">
+			  	  <isNotEmpty property="kpi_id">
+			  	 	  a.kpi_id like CONCAT('%',#kpi_id#,'%')
+			  	  </isNotEmpty>
+			  </isNotNull>
+			   <isNotNull prepend="and" property="description">
+			  	  <isNotEmpty property="description">
+			  	 	  a.description like CONCAT('%',#description#,'%')
+			  	  </isNotEmpty>
+			  </isNotNull>
+			  <isNotNull prepend="and" property="isEffect">
+			  	  <isNotEmpty property="isEffect">
+			  	 	  a.isEffect=#isEffect#
+			  	  </isNotEmpty>
+			  </isNotNull>
+		  	  <isEqual prepend="and" property="threshold" compareValue="0">
+		  	  		 a.threshold=#threshold#
+		  	  </isEqual>
+		  	  <isNotEmpty prepend="and" property="threshold">
+			  	  	<isNotEqual property="threshold" compareValue="0">
+			  	  			a.threshold != 0
+			  	  	</isNotEqual>
+		  	  </isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<insert id="insertHadoopKpi" parameterClass="HadoopKpiObj">
+		insert into tb_hadoop_kpi_desc(id,kpi_id,description,unit,shape,isEffect,level,threshold,threshold_type)
+			values(#id#,#kpi_id#,#description#,#unit#,#shape#,#isEffect#,#level#,#threshold#,#threshold_type#)
+	</insert>
+	
+	<update id="updateHadoopKpi" parameterClass="HadoopKpiObj">
+	   update tb_hadoop_kpi_desc 
+	   <dynamic prepend="set">
+	     <isNotEmpty prepend="," property="kpi_id">
+	       kpi_id=#kpi_id#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="description">
+	       description=#description#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="unit">
+	       unit=#unit#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="shape">
+	       shape=#shape#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="isEffect">
+	       isEffect=#isEffect#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="level">
+	       level=#level#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="threshold">
+	       threshold=#threshold#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="threshold_type">
+	       threshold_type=#threshold_type#
+	     </isNotEmpty>
+	   </dynamic>
+	   where id=#id#
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="HadoopKpiObj">
+		delete from tb_hadoop_kpi_desc 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<select id="queryByObj" parameterClass="HadoopKpiObj" resultClass="HadoopKpiObj">
+		select
+		<include refid ="baseCloumns" />
+		from tb_hadoop_kpi_desc where kpi_id = #kpi_id#
+	</select>
+</sqlMap>

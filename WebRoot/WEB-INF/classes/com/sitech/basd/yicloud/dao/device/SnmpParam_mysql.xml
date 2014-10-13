@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="SnmpParam">
+	<typeAlias alias="SnmpParamObj"
+		type="com.sitech.basd.yicloud.domain.device.SnmpParamObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+			select 	id,
+					version,
+					ip,
+					port,
+					time_out,
+					retry_nums,
+					smm1_ip,
+					smm2_ip,
+					community,
+					security_mode,
+					security_name,
+					indentity_metic, 
+					indentity_password,
+					encrypt_metic,
+					encrypt_password,
+					entity_id
+			from tb_snmp_param
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="entity_id" prepend="and">
+				entity_id = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="SnmpParamObj"
+		resultClass="SnmpParamObj"> 
+		<include refid="queryByObjBase" /> 
+		order by id 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="SnmpParamObj"
+		resultClass="int">
+		select count(SnmpParamObj) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 添加设备主机 -->
+	<insert id="insertByObj" parameterClass="SnmpParamObj">
+	insert into
+		tb_snmp_param(
+					id,
+					version,
+					ip,
+					port,
+					time_out,
+					retry_nums,
+					smm1_ip,
+					smm2_ip,
+					community,
+					security_mode,
+					security_name,
+					indentity_metic, 
+					indentity_password,
+					encrypt_metic,
+					encrypt_password,
+					entity_id
+		)
+		values(
+					#id#,
+					#version#,
+					#ip#,
+					#port#,
+					#time_out#,
+					#retry_nums#,
+					#smm1_ip#,
+					#smm2_ip#,
+					#community#,
+					#security_mode#,
+					#security_name#,
+					#indentity_metic#, 
+					#indentity_password#,
+					#encrypt_metic#,
+					#encrypt_password#,
+					#entity_id#
+		)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="SnmpParamObj">
+		update 
+		tb_snmp_param
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="version">
+				version=#version#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="ip">
+				ip=#ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="port">
+				port=#port#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="time_out">
+				time_out=#time_out#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="retry_nums">
+				retry_nums=#retry_nums#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="smm1_ip">
+				smm1_ip=#smm1_ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="smm2_ip">
+				smm2_ip=#smm2_ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="community">
+				community=#community#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="security_mode">
+				security_mode=#security_mode#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="security_name">
+				security_name=#security_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="indentity_metic">
+				indentity_metic=#indentity_metic#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="indentity_password">
+				indentity_password=#indentity_password#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="encrypt_metic">
+				encrypt_metic=#encrypt_metic#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="encrypt_password">
+				encrypt_password=#encrypt_password#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="entity_id">
+				entity_id=#entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<delete id="deleteByObj" parameterClass="SnmpParamObj">
+		delete  from tb_snmp_param where entity_id = #entity_id#
+	</delete>
+</sqlMap>

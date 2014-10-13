@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Task">
+	<typeAlias alias="TaskObjDeploy" type="com.sitech.basd.component.tree.domain.task.TaskObj" />
+	<typeAlias alias="TaskRelationObj" type="com.sitech.basd.component.tree.domain.task.TaskRelationObj" />
+	<typeAlias alias="DeployExampleObj" type="com.sitech.basd.component.tree.domain.task.DeployExampleObj" />
+	<typeAlias alias="TaskLogObj" type="com.sitech.basd.component.tree.domain.task.TaskLogObj"/>	
+	 
+	<sql id="paginationEnd">
+		<![CDATA[
+                    limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+<!-- 查询所有的进程，主机和进程组信息	-->
+	<sql id="queryForListBase">
+		select t.ID,t.TASK_ID,t.APP_ID,t.STATUS,t.TASK_TYPE,t.SUCCESS_COUNT,t.FAILURE_COUNT,t.EXECUTE_RESULT,t.REPORT_PATH,DATE_FORMAT(t.ADD_TIME,'%Y-%m-%d %H:%i:%S') ADD_TIME
+            ,(select count(b.TASK_ID) from TB_BUSI_TASK_RELATION_EXAMPLE b where b.TASK_ID=t.ID)  EXAMPLE_COUNT  from TB_BUSI_DEPLOY_TASK t 
+	</sql>
+	<!-- 	查询所有和订单没有做关联的的task -->
+	<sql id="queryForListBaseNotInOrderRelation">
+		select t.ID,t.TASK_ID,t.APP_ID,t.STATUS,t.TASK_TYPE,t.SUCCESS_COUNT,t.FAILURE_COUNT,t.EXECUTE_RESULT,t.REPORT_PATH,DATE_FORMAT(t.ADD_TIME,'%Y-%m-%d %H:%i:%S') ADD_TIME
+            ,(select count(b.TASK_ID) from TB_BUSI_TASK_RELATION_EXAMPLE b where b.TASK_ID=t.ID)  EXAMPLE_COUNT  
+            from TB_BUSI_DEPLOY_TASK t where t.ID not in (select TASK_ID from TB_BUSI_ORDER_RELATION_TASK)
+	</sql>
+	
+	<sql id="queryRelationForListBase">
+		select t.TASK_ID,t.EXAMPLE_ID,t.DEPLOY_STATUS,t.EXECUTE_LEVEL,t.DEPLOY_RESPORT,DATE_FORMAT(t.ADD_TIME,'%Y-%m-%d %H:%i:%S') ADD_TIME
+	    from TB_BUSI_TASK_RELATION_EXAMPLE t 
+	</sql>
+	<!-- 	查询task和order之间的关系，task和order做左链接 -->
+	<sql id="queryTaskRealtiontOrderListBase">
+		select  t.ID,
+				t.TASK_ID,
+				t.APP_ID,
+				(select IFNULL(min(d.ISCOMPLETE),2) ISCOMPLETE from TB_BUSI_DEPLOY_LOG d
+                WHERE d.TASK_ID = t.ID
+                AND d.ID = (SELECT MAX(a.ID) FROM TB_BUSI_DEPLOY_LOG A WHERE A.TASK_ID = D.TASK_ID AND A.EXAMPLE_ID = D.EXAMPLE_ID)) as STATUS,
+				t.TASK_TYPE,
+				(select count(case when d.ISSUCCESS = 1 then ISSUCCESS end) as SUCCESS_COUNT from TB_BUSI_DEPLOY_LOG d
+				WHERE d.TASK_ID =t.ID
+				AND d.ID = (SELECT MAX(a.ID)
+				FROM TB_BUSI_DEPLOY_LOG A
+				WHERE A.TASK_ID = D.TASK_ID
+				AND A.EXAMPLE_ID = D.EXAMPLE_ID) AND d.ISCOMPLETE='1') as SUCCESS_COUNT,
+				(select count(case when d.ISSUCCESS = 0 then ISSUCCESS end) as FAILURE_COUNT from TB_BUSI_DEPLOY_LOG d
+				WHERE d.TASK_ID =t.ID
+				AND d.ID = (SELECT MAX(a.ID)
+				FROM TB_BUSI_DEPLOY_LOG A
+				WHERE A.TASK_ID = D.TASK_ID
+				AND A.EXAMPLE_ID = D.EXAMPLE_ID) AND d.ISCOMPLETE='1') as FAILURE_COUNT,
+				t.EXECUTE_RESULT,
+				t.REPORT_PATH,
+				DATE_FORMAT(t.ADD_TIME, '%Y-%m-%d %H:%i:%S') ADD_TIME,
+				(select count(b.TASK_ID)
+		        from TB_BUSI_TASK_RELATION_EXAMPLE b
+		        where b.TASK_ID = t.ID) as EXAMPLE_COUNT,
+				r.ORDER_ID
+		from    TB_BUSI_DEPLOY_TASK t
+				left join TB_BUSI_ORDER_RELATION_TASK r on t.ID = r.TASK_ID
+	</sql>
+	
+	<!-- 	查询当前任务的处理状态 0 为处理中，1为处理完成 -->
+	<select id="queryTaskStatus" parameterClass="TaskObjDeploy" resultClass="TaskObjDeploy">
+	select IFNULL(min(d.ISCOMPLETE),2) as ISCOMPLETE from TB_BUSI_DEPLOY_LOG d
+      WHERE d.TASK_ID = #ID#
+      AND d.ID = (SELECT MAX(a.ID) FROM TB_BUSI_DEPLOY_LOG A WHERE A.TASK_ID = D.TASK_ID AND A.EXAMPLE_ID = D.EXAMPLE_ID)
+	</select>
+	
+    <!-- 	查询所有的部署实例和用户 -->
+	<sql id="queryExampleAndUserNameByTreeId">
+		select b.ID       as exampleId,
+		       d.USERNAME as username,
+		       d.PASSWORD as password,
+		       d.IP       as hostip
+		  from TB_BUSI_SYS_TREE       a,
+		       TB_BUSI_DEPLOY_EXAMPLE b,
+		       TB_BUSI_HOST_CONFIG    c,
+		       TB_USER_MANAGE         d
+		 where a.BUSI_ID = b.ID
+		   and b.HOST_CONFIG_ID = c.HOSTCONFIGID
+		   and c.USER_MANAGE_ID = d.ID
+	</sql>
+	
+	<!-- 查询订单信息列表 -->
+	<select id="queryForList" parameterClass="TaskObjDeploy" resultClass="TaskObjDeploy"> 
+		<include refid="queryForListBase" />
+		<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				t.ID =#ID#
+			</isNotEmpty>
+		    <isNotEmpty property="STATUS" prepend="and">
+				t.STATUS =#STATUS#
+			</isNotEmpty>
+			<isGreaterThan property="APP_ID" compareValue="0" prepend="and">
+			    t.APP_ID=#APP_ID#
+			</isGreaterThan>
+		</dynamic>
+		order by ADD_TIME desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+		<!-- 	查询所有和订单没有做关联的的task -->
+	<select id="queryForListNotInOrderRelation" parameterClass="TaskObjDeploy" resultClass="TaskObjDeploy">
+		<include refid="queryForListBaseNotInOrderRelation" />
+		    <isNotEmpty property="ID" prepend="and">
+				t.ID =#ID#
+			</isNotEmpty>
+			<isGreaterThan property="APP_ID" compareValue="0" prepend="and">
+			    t.APP_ID=#APP_ID#
+			</isGreaterThan>
+		order by ADD_TIME desc
+	</select>
+	
+	<select id="queryRelationForList" parameterClass="TaskRelationObj" resultClass="TaskRelationObj"> 
+		<include refid="queryRelationForListBase"/>
+		<dynamic prepend="where">
+		    <isNotEmpty property="TASK_ID" prepend="and">
+				t.TASK_ID =#TASK_ID#
+			</isNotEmpty>
+				<isGreaterThan property="APP_ID" compareValue="0"  prepend="and">
+			    APP_ID=#APP_ID#
+		    </isGreaterThan>
+		</dynamic>
+		order by ADD_TIME desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>	
+		
+	<!-- 	查询task和order之间的关系，task和order做左链接 -->
+	<select id="queryTaskRealtiontOrderList" parameterClass="TaskObjDeploy" resultClass="TaskObjDeploy">
+		<include refid="queryTaskRealtiontOrderListBase"/>
+		<dynamic prepend="where">
+		    <isNotEmpty property="TASK_ID" prepend="and">
+				r.TASK_ID =#TASK_ID#
+			</isNotEmpty>
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				ORDER_ID=#ORDER_ID#
+			</isNotEmpty>
+			<isGreaterThan property="APP_ID" compareValue="0" prepend="and">
+			    APP_ID=#APP_ID#
+		    </isGreaterThan>
+			<isNotNull prepend="and" property="STATUS">
+			    STATUS=#STATUS#
+		    </isNotNull>
+		</dynamic>
+		order by ADD_TIME desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<!-- 查询task和order之间的关系，task和order做左链接 的个数 -->
+	<select id="queryTaskRealtiontOrderListCount" parameterClass="TaskObjDeploy" resultClass="int">
+		select count(t.ID)
+		from    TB_BUSI_DEPLOY_TASK t
+				left join TB_BUSI_ORDER_RELATION_TASK r on t.ID = r.TASK_ID
+		<dynamic prepend="where">
+			<isNotEmpty property="TASK_ID" prepend="and">
+				TASK_ID =#TASK_ID#
+			</isNotEmpty>
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				ORDER_ID=#ORDER_ID#
+			</isNotEmpty>
+			<isGreaterThan property="APP_ID" compareValue="0"
+				prepend="and">
+				APP_ID=#APP_ID#
+			</isGreaterThan>
+			<isNotNull prepend="and" property="STATUS">
+				STATUS=#STATUS#
+			</isNotNull>
+		</dynamic>
+		order by ADD_TIME desc
+	</select>
+	
+	<!-- 	查询部署实例 -->
+	<select id="queryExampleAndUserNameByTreeIdList" parameterClass="DeployExampleObj" resultClass="DeployExampleObj">
+		<include refid="queryExampleAndUserNameByTreeId"/>
+	    <isNotEmpty property="ID" prepend="and">
+			a.ID =#ID#
+		</isNotEmpty>
+		<isNotEmpty property="PARENT_ID" prepend="and">
+			a.PARENT_ID =#PARENT_ID#
+		</isNotEmpty>
+	</select>
+	
+<!-- 	查询所有不在任务中 的实例 -->
+	<select id="queryExampleListNotInTask" parameterClass="DeployExampleObj" resultClass="DeployExampleObj">
+		select b.ID       as exampleId,
+		       d.USERNAME as username,
+		       d.PASSWORD as password,
+		       d.IP       as hostip
+		  from TB_BUSI_SYS_TREE       a,
+		       TB_BUSI_DEPLOY_EXAMPLE b,
+		       TB_BUSI_HOST_CONFIG    c,
+		       TB_USER_MANAGE         d
+		 where a.BUSI_ID = b.ID
+		   and b.HOST_CONFIG_ID = c.HOSTCONFIGID
+		   and c.USER_MANAGE_ID = d.ID and b.ID not in (select EXAMPLE_ID from tb_busi_task_relation_example)
+	    <isNotEmpty property="ID" prepend="and">
+			a.ID =#ID#
+		</isNotEmpty>
+		<isNotEmpty property="PARENT_ID" prepend="and">
+			a.PARENT_ID =#PARENT_ID#
+		</isNotEmpty>
+	</select>	
+	
+<!-- 	查询所有在任务中，并且任务状态为已完成 -->
+    <select id="queryExampleListInTaskAndComplete" parameterClass="DeployExampleObj" resultClass="DeployExampleObj">
+		select distinct o.* from (
+		select b.ID       as exampleId,
+		           d.USERNAME as username,
+		           d.PASSWORD as password,
+		           d.IP       as hostip,
+		           a.PARENT_ID,
+		           (select IFNULL(min(d.ISCOMPLETE),2) as ISCOMPLETE from TB_BUSI_DEPLOY_LOG d
+		      WHERE d.TASK_ID = f.TASK_ID
+		      AND d.ID = (SELECT MAX(a.ID) FROM TB_BUSI_DEPLOY_LOG A WHERE A.TASK_ID = D.TASK_ID AND A.EXAMPLE_ID = D.EXAMPLE_ID)) as iscomplete
+		      from TB_BUSI_SYS_TREE       a,
+		           TB_BUSI_DEPLOY_EXAMPLE b,
+		           TB_BUSI_HOST_CONFIG    c,
+		           TB_USER_MANAGE         d,
+		           tb_busi_task_relation_example f
+		     where a.BUSI_ID = b.ID
+		       and b.HOST_CONFIG_ID = c.HOSTCONFIGID
+		       and c.USER_MANAGE_ID = d.ID and b.id=f.EXAMPLE_ID and f.TASK_ID is not null
+		) o where o.ISCOMPLETE in (1)
+	    <isNotEmpty property="ID" prepend="and">
+			o.ID =#ID#
+		</isNotEmpty>
+		<isNotEmpty property="PARENT_ID" prepend="and">
+			o.PARENT_ID =#PARENT_ID#
+		</isNotEmpty>
+	</select>	
+	
+	<insert id="insertByObj" parameterClass="TaskObjDeploy">
+		insert into
+		TB_BUSI_DEPLOY_TASK(ID,TASK_ID,APP_ID,STATUS,TASK_TYPE,SUCCESS_COUNT,FAILURE_COUNT,EXECUTE_RESULT,REPORT_PATH,ADD_TIME,START_TIME,COMPLETE_TIME)
+		values(#ID#,#TASK_ID#,#APP_ID#,#STATUS#,#TASK_TYPE#,#SUCCESS_COUNT#,#FAILURE_COUNT#,#EXECUTE_RESULT#,#REPORT_PATH#,now(),#START_TIME#,#COMPLETE_TIME#)
+	</insert>
+	
+	<insert id="insertRelationByObj" parameterClass="TaskRelationObj">
+		insert into
+		TB_BUSI_TASK_RELATION_EXAMPLE(TASK_ID,EXAMPLE_ID,DEPLOY_STATUS,EXECUTE_LEVEL,DEPLOY_RESPORT,ADD_TIME)
+		values(#TASK_ID#,#EXAMPLE_ID#,#DEPLOY_STATUS#,#EXECUTE_LEVEL#,#DEPLOY_RESPORT#,now())
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="TaskObjDeploy">
+	   delete from TB_BUSI_DEPLOY_TASK
+	   	<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				ID =#ID#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<!-- 	移除任务与实例之间的关系 -->
+	<delete id="deleteRelationByObj" parameterClass="TaskRelationObj">
+	   delete from TB_BUSI_TASK_RELATION_EXAMPLE
+	   	<dynamic prepend="where">
+		    <isNotEmpty property="TASK_ID" prepend="and">
+				TASK_ID =#TASK_ID#
+			</isNotEmpty>
+			<isGreaterThan property="EXAMPLE_ID" prepend="and" compareValue="0">
+               EXAMPLE_ID=#EXAMPLE_ID#
+            </isGreaterThan>
+		</dynamic>
+	</delete>
+	
+	<!-- 	移除任务与订单之间的关系 -->
+	<delete id="deleteTaskRelationOrderByObj" parameterClass="TaskObjDeploy">
+	   delete from TB_BUSI_ORDER_RELATION_TASK
+	   	<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				TASK_ID =#ID#
+			</isNotEmpty>
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				ORDER_ID =#ORDER_ID#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<!-- 统计进程数目 -->
+	<select id="queryForCount" parameterClass="TaskObjDeploy" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 	<!-- 更新一条进程信息 -->
+	 <update id="updateByObj" parameterClass="TaskObjDeploy">
+	 	update TB_BUSI_DEPLOY_TASK set 
+	 	ID=#ID#
+       	<isNotEmpty prepend="," property="STATUS">  
+       	     STATUS=#STATUS#
+  		</isNotEmpty> 
+  		<isNotEmpty prepend="," property="TASK_TYPE">  
+       		 TASK_TYPE=#TASK_TYPE#
+  		</isNotEmpty> 
+  		<isNotEmpty prepend="," property="SUCCESS_COUNT">  
+       		 SUCCESS_COUNT=#SUCCESS_COUNT#
+  		</isNotEmpty> 
+  		<isNotEmpty prepend="," property="FAILURE_COUNT">  
+       		 FAILURE_COUNT=#FAILURE_COUNT#
+  		</isNotEmpty> 
+  		<isNotEmpty prepend="," property="EXECUTE_RESULT">  
+       		 EXECUTE_RESULT=#EXECUTE_RESULT#
+  		</isNotEmpty> 
+  		<isNotEmpty prepend="," property="REPORT_PATH">  
+       		 REPORT_PATH=#REPORT_PATH#
+  		</isNotEmpty> 
+	 	where ID = #ID#
+	 </update>
+	 
+	<!-- 更新任务与实例之间的关系 -->
+	 <update id="updateRelationByObj" parameterClass="TaskRelationObj">
+	 	update TB_BUSI_TASK_RELATION_EXAMPLE set DEPLOY_STATUS=#DEPLOY_STATUS#,EXECUTE_LEVEL=#EXECUTE_LEVEL#,DEPLOY_RESPORT=#DEPLOY_RESPORT#
+	 	where TASK_ID = #TASK_ID# and EXAMPLE_ID=#EXAMPLE_ID#
+	 </update>
+
+		<select id="countTaskNum" parameterClass="TaskObjDeploy" resultClass="int">
+			select count(ID) from tb_busi_deploy_task 
+			<dynamic prepend="where">
+				<isNotNull property="STATUS" prepend="and">
+					STATUS = #STATUS#
+				</isNotNull>
+			</dynamic>
+		</select>
+		
+	<select id="queryAllMappingsByObj" parameterClass="TaskObjDeploy" resultClass="TaskObjDeploy">
+		select * from tb_busi_deploy_task 
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="STATUS">
+				STATUS = #STATUS#			
+			</isNotNull>
+		</dynamic>
+	</select>
+	<!-- 查看任务的日志 -->
+	<select id="queryLog" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+		select l.ORDER_ID,l.TASK_ID,l.EXAMPLE_ID, l.ISSUCCESS, l.ISCOMPLETE, l.EXAMPLE_LOG,DATE_FORMAT(l.INSERTTIME, '%Y-%m-%d %H:%i:%s') INSERTTIME from tb_busi_deploy_log l 
+		where l.EXAMPLE_ID IN 
+		( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+		<dynamic prepend="where">
+			<isNotNull property="task_id">
+				<![CDATA[
+					TASK_ID = #task_id#) 
+				]]>
+			</isNotNull>
+		</dynamic>
+		<isNotNull property="task_id" prepend="and">
+			l.TASK_ID = #task_id#
+		</isNotNull>
+		<isNotNull property="order_id" prepend="and">
+			l.ORDER_ID = #order_id#
+		</isNotNull>
+		order by l.ID ASC
+	</select>
+	
+	<sql id="queryTaskReportListBase">
+		select a.ORDER_ID order_id,
+		       b.TASK_ID task_id,
+		       l.EXAMPLE_ID exampleID,
+		       c.EXAMPLE_Name exampleName,
+		       d.IP IP,
+		       l.ISSUCCESS isSuccess,
+		       l.ISCOMPLETE isComplete,
+		       l.EXAMPLE_LOG example_log,
+		       DATE_FORMAT(l.INSERTTIME,'%Y-%m-%d %H:%i:%s') insertTime
+		  from tb_busi_deploy_log     l,
+		       TB_BUSI_DEPLOY_ORDER   a,
+		       TB_BUSI_DEPLOY_TASK    b,
+		       TB_BUSI_DEPLOY_EXAMPLE c,
+		       TB_BUSI_HOST           d
+		 where l.order_id = a.id
+		   and l.task_id = b.id
+		   and l.example_id = c.id
+		   and c.hostid = d.id
+		   and l.EXAMPLE_ID IN ( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+			<dynamic prepend="where">
+				<isNotNull property="task_id" >
+						<![CDATA[
+							e.TASK_ID = #task_id#
+						]]>
+				</isNotNull>
+			</dynamic>
+			) 
+			<isNotNull property="task_id" prepend="and">
+				<isNotEmpty property="task_id">
+					l.TASK_ID = #task_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="order_id" prepend="and">
+				<isNotEmpty property="order_id">
+					l.ORDER_ID = #order_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="exampleID" prepend="and">
+				<isNotEmpty property="exampleID">
+					l.EXAMPLE_ID = #exampleID#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="exampleName" prepend="and">
+				<isNotEmpty property="exampleName">
+					c.EXAMPLE_Name = #exampleName#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="IP" prepend="and">
+				<isNotEmpty property="IP">
+					  d.IP = #IP#
+				</isNotEmpty>
+			</isNotNull>
+		 order by l.EXAMPLE_ID,l.INSERTTIME ASC
+	</sql>
+	<!-- 查询 任务报告 -->
+	<select id="queryTaskReportList" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+	        <include refid="queryTaskReportListBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryTaskReportListCount" parameterClass="TaskLogObj" resultClass="int">
+	      select count(*) from (
+	        <include refid="queryTaskReportListBase"/>
+	       ) virtual_table
+	  </select>
+	   <select id="exportTaskReportList" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+	    	select a.ORDER_ID order_id,
+		       b.TASK_ID task_id,
+		       l.EXAMPLE_ID exampleID,
+		       c.EXAMPLE_Name exampleName,
+		       d.IP IP,
+		       DECODE(l.ISSUCCESS,'1','成功','0','-') as is_success,
+		       DECODE(l.ISCOMPLETE,'1','完成','0','未完成') as is_complete,
+		       l.EXAMPLE_LOG example_log,
+		       DATE_FORMAT(l.INSERTTIME,'%Y-%m-%d %H:%i:%s') insertTime
+		  from tb_busi_deploy_log     l,
+		       TB_BUSI_DEPLOY_ORDER   a,
+		       TB_BUSI_DEPLOY_TASK    b,
+		       TB_BUSI_DEPLOY_EXAMPLE c,
+		       TB_BUSI_HOST           d
+		 where l.order_id = a.id
+		   and l.task_id = b.id
+		   and l.example_id = c.id
+		   and c.hostid = d.id
+		   and l.EXAMPLE_ID IN ( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+			<dynamic prepend="where">
+				<isNotNull property="task_id" >
+						<![CDATA[
+							e.TASK_ID = #task_id#
+						]]>
+				</isNotNull>
+			</dynamic>
+			) 
+			<isNotNull property="task_id" prepend="and">
+				<isNotEmpty property="task_id">
+					l.TASK_ID = #task_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="order_id" prepend="and">
+				<isNotEmpty property="order_id">
+					l.ORDER_ID = #order_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="exampleID" prepend="and">
+				<isNotEmpty property="exampleID">
+					l.EXAMPLE_ID = #exampleID#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="exampleName" prepend="and">
+				<isNotEmpty property="exampleName">
+					c.EXAMPLE_Name = #exampleName#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="IP" prepend="and">
+				<isNotEmpty property="IP">
+					  d.IP = #IP#
+				</isNotEmpty>
+			</isNotNull>
+		 order by l.example_id,l.INSERTTIME ASC
+	  </select>
+	<select id="querySuccessCount" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+		select a.order_id, b.TASK_ID, count(l.issuccess) successCount
+  			from tb_busi_deploy_log l, TB_BUSI_DEPLOY_ORDER a, TB_BUSI_DEPLOY_TASK b
+		 where l.order_id = a.id
+		   and l.task_id = b.id
+		   and l.EXAMPLE_ID IN 
+		( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+		<dynamic prepend="where">
+			<isNotNull property="task_id">
+				<![CDATA[
+					TASK_ID = #task_id#) 
+				]]>
+			</isNotNull>
+		</dynamic>
+		<isNotNull property="task_id" prepend="and">
+			l.TASK_ID = #task_id#
+		</isNotNull>
+		<isNotNull property="order_id" prepend="and">
+			l.ORDER_ID = #order_id#
+		</isNotNull>
+		   and l.issuccess = '1'
+		 group by a.order_id, b.TASK_ID, l.issuccess
+	</select>
+	<select id="queryfailCount" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+		select count(l.issuccess) failCount from tb_busi_deploy_log l
+		 where  l.EXAMPLE_ID IN 
+		( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+		<dynamic prepend="where">
+			<isNotNull property="task_id">
+				<![CDATA[
+					TASK_ID = #task_id#) 
+				]]>
+			</isNotNull>
+		</dynamic>
+		<isNotNull property="task_id" prepend="and">
+			l.TASK_ID = #task_id#
+		</isNotNull>
+		<isNotNull property="order_id" prepend="and">
+			l.ORDER_ID = #order_id#
+		</isNotNull>
+		and l.issuccess = '0'
+   		and l.iscomplete = '1'
+	</select>
+	<select id="queryFailCount" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+		select count(l.issuccess) failCount from tb_busi_deploy_log l
+		 where  l.EXAMPLE_ID IN 
+		( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+		<dynamic prepend="where">
+			<isNotNull property="task_id">
+				<![CDATA[
+					TASK_ID = #task_id#) 
+				]]>
+			</isNotNull>
+		</dynamic>
+		<isNotNull property="task_id" prepend="and">
+			l.TASK_ID = #task_id#
+		</isNotNull>
+		<isNotNull property="order_id" prepend="and">
+			l.ORDER_ID = #order_id#
+		</isNotNull>
+		and l.issuccess = '0'
+   		and l.iscomplete = '1'
+	</select>
+	
+	<select id="querySuccessTaskLog" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+		select l.EXAMPLE_ID   exampleID,
+		       c.EXAMPLE_Name exampleName,
+		       d.IP           IP,
+		       l.EXAMPLE_LOG  example_log
+		  from tb_busi_deploy_log l, TB_BUSI_DEPLOY_EXAMPLE c, TB_BUSI_HOST d
+		  where l.example_id = c.id
+			   and c.hostid = d.id
+			   and l.EXAMPLE_ID IN
+		( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+		<dynamic prepend="where">
+			<isNotNull property="task_id">
+				<![CDATA[
+					TASK_ID = #task_id#) 
+				]]>
+			</isNotNull>
+		</dynamic>
+		<isNotNull property="task_id" prepend="and">
+			l.TASK_ID = #task_id#
+		</isNotNull>
+		<isNotNull property="order_id" prepend="and">
+			l.ORDER_ID = #order_id#
+		</isNotNull>
+		and l.issuccess = '1'
+		order by l.EXAMPLE_ID
+	</select>
+	
+	<select id="queryFailTaskLog" parameterClass="TaskLogObj" resultClass="TaskLogObj">
+		select l.EXAMPLE_ID   exampleID,
+		       c.EXAMPLE_Name exampleName,
+		       d.IP           IP,
+		       l.EXAMPLE_LOG  failReason
+		  from tb_busi_deploy_log l, TB_BUSI_DEPLOY_EXAMPLE c, TB_BUSI_HOST d
+		 where l.example_id = c.id
+		   and c.hostid = d.id
+		   and l.EXAMPLE_ID IN
+		( select e.EXAMPLE_ID  from tb_busi_task_relation_example e 
+		<dynamic prepend="where">
+			<isNotNull property="task_id">
+				<![CDATA[
+					TASK_ID = #task_id#) 
+				]]>
+			</isNotNull>
+		</dynamic>
+		<isNotNull property="task_id" prepend="and">
+			l.TASK_ID = #task_id#
+		</isNotNull>
+		<isNotNull property="order_id" prepend="and">
+			l.ORDER_ID = #order_id#
+		</isNotNull>
+		and l.issuccess = '0'
+   		and l.iscomplete = '1'
+   		order by l.EXAMPLE_ID
+	</select>
+	<select id="queryBackupType" parameterClass="TaskObjDeploy" resultClass="java.lang.String">
+		select t.backup_type from TB_BUSI_DEPLOY_ORDER t
+		<dynamic prepend="where">
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				<isNotNull property="ORDER_ID">
+					ORDER_ID=#ORDER_ID#
+				</isNotNull>
+			</isNotEmpty>
+			<isGreaterThan property="APP_ID" compareValue="0"  prepend="and">
+			    APP_ID=#APP_ID#
+		    </isGreaterThan>
+		</dynamic>
+	</select>
+</sqlMap>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+">
+
+    <bean id="tbTopoMxgraphDao" class="com.sitech.basd.yicloud.dao.graph.TbTopoMxgraphDaoImpl" parent="baseDaoBean"></bean>
+    <bean id="mxGraphService" class="com.sitech.basd.yicloud.service.graph.MxGraphServiceImpl">
+        <property name="mxgraphDao" ref="tbTopoMxgraphDao"/>
+    </bean>
+    <bean id="mxGraphAction" class="com.sitech.basd.yicloud.web.graph.action.MxGraphAction" scope="prototype">
+        <property name="mxGraphService" ref="mxGraphService"/>
+    </bean>
+    
+    <!-- 进行业务处理,创建虚拟机等 duangh -->
+    <bean id="handlerAction" class="com.sitech.basd.yicloud.web.graph.action.HandlerAction">
+    	<property name="entityTreeDao" ref="entityTreeDao"></property>
+    	<property name="vmHostDao" ref="vmHostDao"></property>
+    </bean>
+    
+</beans>

@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceOutline">
+	<typeAlias alias="ResourceOutlineObj" type="com.sitech.basd.resource.domain.united.ResourceOutlineObj"/>
+	<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<typeAlias alias="busiSystemObj" type="com.sitech.basd.yicloud.domain.busisystem.BusiSystemObj"/>
+	<typeAlias alias="TopTargetObj" type="com.sitech.basd.resource.domain.top.TopTargetObj"/>
+	<typeAlias alias="vmHostObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj"/>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                         limit #FIRSTROWNUM#,#PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<select id="queryForNetList" parameterClass="ResourceOutlineObj" resultClass="ResourceOutlineObj">
+		select a.ipAllCount,a.ipUsedCount,b.parent_id domainName from (
+			select count(IP_ID) ipAllCount,
+				sum(case when ISUSED = 1 OR ISBLOCKED = 1 then 1 else 0 END) ipUsedCount,
+				NET_ID
+		 	from tb_cloud2_ip_info 
+		 	where 1=1
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+		 	GROUP BY NET_ID
+		) a INNER JOIN tb_united_tree b
+		ON a.NET_ID = b.uuid group by b.parent_id
+	</select>
+	
+	<select id="queryCpuResource" parameterClass="ResourceOutlineObj" resultClass="Data">
+		select DISTINCT t.`VALUE` value 
+			from tb_resource_statistics t where t.`KEY` = #key#		
+	</select>
+	
+	<select id="queryMemResource" parameterClass="ResourceOutlineObj" resultClass="Data">
+		select DISTINCT ROUND(t.`VALUE`/1024,2) value 
+			from tb_resource_statistics t where t.`KEY` = #key#
+	</select>
+	
+	<select id="queryStoreResource" parameterClass="ResourceOutlineObj" resultClass="Data">
+		select DISTINCT ROUND(t.`VALUE`/1024,2) value 
+			from tb_resource_statistics t where t.`KEY` = #key#
+	</select>
+	
+	<!-- 查询存储总量和使用量    update by lipp -->
+	<select id="queryStore" parameterClass="ResourceOutlineObj" resultClass="ResourceOutlineObj">
+		SELECT
+			SUM(e.allsr) storeAll,
+			SUM(e.allosr) storeUsed
+		FROM
+			(
+				(
+					SELECT
+						sum(a.CAPACITY) allsr,
+						SUM(a.FREE_SPACE) usedsr,
+						SUM(a.purchaseSpace) allosr
+					FROM
+						(
+							SELECT
+								b.DATACENTER_ID,
+								b.STORE_UUID,
+								b.CAPACITY,
+								b.FREE_SPACE,
+								b.purchaseSpace,
+								b.connect_id
+							FROM
+								tb_yicloud_datastore b
+							INNER JOIN tb_store_device c ON b.device_id = c.id
+							<dynamic prepend="where">
+								<isNotEmpty prepend="and" property="type">
+									c.type = #type#
+								</isNotEmpty>
+								<isNotEmpty property="domain">
+						              	  <isNotEqual compareValue="null" property="domain">
+								            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+								              	b.domain =#domain#	
+								            </isNotEqual>
+							            </isNotEqual>
+						    	</isNotEmpty>
+								<isNotEmpty property="domain">
+						              	  <isNotEqual compareValue="null" property="domain">
+								            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+								              	c.domain =#domain#	
+								            </isNotEqual>
+							            </isNotEqual>
+						    	</isNotEmpty>
+							</dynamic>
+							GROUP BY
+								b.DATACENTER_ID,
+								b.STORE_UUID,
+								b.connect_id
+						) a
+				)
+				UNION ALL
+					(
+						SELECT
+							SUM(a.SR_SIZE) allsr,
+							SUM(a.FREE_SIZE) usedsr,
+							SUM(a.purchase_Space) allosr
+						FROM
+							(
+								SELECT
+									b.STORE_UUID,
+									b.SR_SIZE,
+									b.FREE_SIZE,
+									b.purchase_Space
+								FROM
+									tb_xen_storage_info b
+								INNER JOIN tb_store_device c ON b.device_id = c.id
+								<dynamic prepend="where">
+									<isNotEmpty prepend="and" property="type">
+										c.type = #type#
+									</isNotEmpty>
+								</dynamic>
+								GROUP BY
+									b.STORE_UUID
+							) a
+					)
+			) e
+	</select> 
+	
+	
+	<select id="queryVMCountGroupByBusi" parameterClass="java.util.HashMap" resultClass="Data">
+		select sum(aa.`value`) value ,aa.label,aa.OEM,aa.parent_id FROM
+				((SELECT 
+				      a.id,
+							a.`name` label,
+							a.OEM,
+							b.idcount `value`,
+							b.parent_id
+						FROM
+							tb_busi_system_tree a
+						INNER JOIN (
+							SELECT
+								count(id) idcount,
+								parent_id
+							FROM
+								tb_busi_system_tree
+							WHERE
+								type = 3
+							GROUP BY
+								parent_id
+							) b ON a.id = b.parent_id where a.type = 2
+						)
+						UNION ALL
+						(
+							select c.id,c.`name` label,c.oem,d.idcount `value`,d.parent_id from tb_busi_system_tree c
+							INNER JOIN 
+						(
+							SELECT
+								b.idcount,
+								a.parent_id
+							FROM
+								tb_busi_system_tree a
+							INNER JOIN (
+								SELECT
+									count(id) idcount,
+									parent_id
+								FROM
+									tb_busi_system_tree
+								WHERE
+									type = 3
+								GROUP BY
+									parent_id
+							) b ON a.id = b.parent_id where a.type = 4) d on c.id = d.parent_id
+						) 
+				) aa GROUP BY aa.id
+				ORDER BY aa.value DESC
+				LIMIT 0,#top_num#
+	</select>
+	<select id="queryStoreCountGroupByBusi" parameterClass="java.util.HashMap" resultClass="Data">
+		(
+			SELECT
+				e.label ,
+				e.OEM,
+				e.USER_ID,
+				e.`value` value
+			FROM
+				(
+					SELECT
+						SUM(a.VH_STORAGE) / 1024/1024 `value`,
+						b.`name` label,
+						b.oem,
+						b.user_id
+					FROM
+						tb_cloud2_vmhost_info a
+					INNER JOIN (
+						SELECT
+							c.`name`,
+							c.oem,
+							d.entity,
+							f.`NAME` user_id,
+							c.type
+						FROM
+							tb_busi_system_tree c
+						INNER JOIN (
+							SELECT
+								CONCAT_WS('_', connect_id, entity_id) entity,
+								parent_id
+							FROM
+								tb_busi_system_tree
+							WHERE
+								type = 3
+						) d ON c.id = d.parent_id 
+						LEFT JOIN tb_sys_userinfo f ON c.user_id = f.id
+					) b ON CONCAT_WS('_', a.CONNECT_ID, a.VH_UUID) = b.entity
+					where b.type = 2
+					GROUP BY
+						b.`name`
+				
+				) e
+		)UNION ALL(
+			SELECT
+			e.label,
+			e.OEM,
+			e.USER_ID,
+			e.`value` value
+		FROM
+			(
+				SELECT
+					SUM(a.VH_STORAGE) / 1024/1024 `value`,
+					b.`name` label,
+					b.oem,
+					b.user_id
+				FROM
+					tb_cloud2_vmhost_info a
+				INNER JOIN (
+					SELECT
+						g.`name`,
+						g.oem,
+						d.entity,
+						f.`NAME` user_id,
+						c.type
+					FROM
+						tb_busi_system_tree c
+					LEFT JOIN tb_busi_system_tree g ON g.id = c.parent_id
+					INNER JOIN (
+						SELECT
+							CONCAT_WS('_', connect_id, entity_id) entity,
+							parent_id
+						FROM
+							tb_busi_system_tree
+						WHERE
+							type = 3
+					) d ON c.id = d.parent_id 
+					LEFT JOIN tb_sys_userinfo f ON g.user_id = f.id
+				) b ON CONCAT_WS('_', a.CONNECT_ID, a.VH_UUID) = b.entity
+				where b.type = 4
+				GROUP BY
+					b.`name`
+					) e
+			)
+	    ORDER BY value DESC
+		LIMIT 0,#top_num#
+	</select>
+	
+	<select id="queryBusiSystemVmTopList" parameterClass="java.util.HashMap" resultClass="busiSystemObj">
+		(SELECT
+			a.`name` NAME,
+			a.OEM,
+			b.idcount vmCount,
+			b.parent_id
+		FROM
+			tb_busi_system_tree a
+		INNER JOIN (
+			SELECT
+				count(id) idcount,
+				parent_id
+			FROM
+				tb_busi_system_tree
+			WHERE
+				type = 3
+			GROUP BY
+				parent_id
+			) b ON a.id = b.parent_id where a.type = 2
+		)
+		UNION ALL
+		(
+			select c.`name`,c.oem,d.idcount vmCount,d.parent_id from tb_busi_system_tree c
+			INNER JOIN 
+		(
+			SELECT
+				b.idcount,
+				a.parent_id
+			FROM
+				tb_busi_system_tree a
+			INNER JOIN (
+				SELECT
+					count(id) idcount,
+					parent_id
+				FROM
+					tb_busi_system_tree
+				WHERE
+					type = 3
+				GROUP BY
+					parent_id
+			) b ON a.id = b.parent_id where a.type = 4) d on c.id = d.parent_id
+		)
+	ORDER BY vmCount DESC
+		LIMIT 0,#top_num#
+	</select>
+	
+	<select id="queryBusiSystemStoreTopList" parameterClass="java.util.HashMap" resultClass="busiSystemObj">
+		(
+			SELECT
+				e.label NAME,
+				e.OEM,
+				e.USER_ID,
+				e.`value` storeSize
+			FROM
+				(
+					SELECT
+						SUM(a.VH_STORAGE) / 1024/1024 `value`,
+						b.`name` label,
+						b.oem,
+						b.user_id
+					FROM
+						tb_cloud2_vmhost_info a
+					INNER JOIN (
+						SELECT
+							c.`name`,
+							c.oem,
+							d.entity,
+							f.`NAME` user_id,
+							c.type
+						FROM
+							tb_busi_system_tree c
+						INNER JOIN (
+							SELECT
+								CONCAT_WS('_', connect_id, entity_id) entity,
+								parent_id
+							FROM
+								tb_busi_system_tree
+							WHERE
+								type = 3
+						) d ON c.id = d.parent_id 
+						LEFT JOIN tb_sys_userinfo f ON c.user_id = f.id
+					) b ON CONCAT_WS('_', a.CONNECT_ID, a.VH_UUID) = b.entity
+					where b.type = 2
+					GROUP BY
+						b.`name`
+				
+				) e
+		)UNION ALL(
+			SELECT
+			e.label NAME,
+			e.OEM,
+			e.USER_ID,
+			e.`value` storeSize
+		FROM
+			(
+				SELECT
+					SUM(a.VH_STORAGE) / 1024/1024 `value`,
+					b.`name` label,
+					b.oem,
+					b.user_id
+				FROM
+					tb_cloud2_vmhost_info a
+				INNER JOIN (
+					SELECT
+						g.`name`,
+						g.oem,
+						d.entity,
+						f.`NAME` user_id,
+						c.type
+					FROM
+						tb_busi_system_tree c
+					LEFT JOIN tb_busi_system_tree g ON g.id = c.parent_id
+					INNER JOIN (
+						SELECT
+							CONCAT_WS('_', connect_id, entity_id) entity,
+							parent_id
+						FROM
+							tb_busi_system_tree
+						WHERE
+							type = 3
+					) d ON c.id = d.parent_id 
+					LEFT JOIN tb_sys_userinfo f ON g.user_id = f.id
+				) b ON CONCAT_WS('_', a.CONNECT_ID, a.VH_UUID) = b.entity
+				where b.type = 4
+				GROUP BY
+					b.`name`
+					) e
+			)
+	    ORDER BY storeSize DESC
+		LIMIT 0,#top_num#
+	</select>
+	
+	<select id="queryCpuTopList" parameterClass="TopTargetObj" resultClass="TopTargetObj">
+		SELECT
+			a.EQ_NAME NAME,
+			a.EQ_IP ip,
+			b.cpu_usage,
+			b.mem_usage,
+			b.store_usage
+		FROM
+			tb_cloud2_host_info a
+		INNER JOIN tb_host_global_info b ON a.H_UUID = b.host_uuid
+		AND a.CONNECT_ID = b.connect_uuid
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name">
+				a.EQ_NAME like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				a.EQ_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY
+			b.cpu_usage desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryTopCount" parameterClass="TopTargetObj" resultClass="int">
+		SELECT
+			count(a.id)
+		FROM
+			tb_host_global_info a
+		INNER JOIN tb_cloud2_host_info b ON a.host_uuid = b.H_UUID
+		AND a.connect_uuid = b.CONNECT_ID
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="and" property="name">
+				b.EQ_NAME like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				b.EQ_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryMemTopList" parameterClass="TopTargetObj" resultClass="TopTargetObj">
+		SELECT
+			a.EQ_NAME NAME,
+			a.EQ_IP ip,
+			b.cpu_usage,
+			b.mem_usage,
+			b.store_usage
+		FROM
+			tb_cloud2_host_info a
+		INNER JOIN tb_host_global_info b ON a.H_UUID = b.host_uuid
+		AND a.CONNECT_ID = b.connect_uuid
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name">
+				a.EQ_NAME like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				a.EQ_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY
+			b.mem_usage desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryStoreTopList" parameterClass="TopTargetObj" resultClass="TopTargetObj">
+		SELECT
+			a.EQ_NAME NAME,
+			a.EQ_IP ip,
+			b.cpu_usage,
+			b.mem_usage,
+			b.store_usage
+		FROM
+			tb_cloud2_host_info a
+		INNER JOIN tb_host_global_info b ON a.H_UUID = b.host_uuid
+		AND a.CONNECT_ID = b.connect_uuid
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name">
+				a.EQ_NAME like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				a.EQ_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY
+			b.store_usage desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryValidStore" parameterClass="ResourceOutlineObj" resultClass="ResourceOutlineObj">
+		select SUM(valid_space) storeValid from tb_store_device 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryMemTopListVM" parameterClass="TopTargetObj" resultClass="TopTargetObj">
+		SELECT * from ((SELECT
+			c.cpu_usage,
+			c.mem_usage,
+			d.VH_NAME NAME,
+			d.VH_IP,
+			e.`name` businame
+		FROM
+			(
+				SELECT
+					a.vm_uuid,
+					a.connect_uuid,
+					a.cpu_usage,
+					a.mem_usage,
+					b.parent_id
+				FROM
+					tb_virtual_global_info a
+				INNER JOIN tb_busi_system_tree b ON a.vm_uuid = b.entity_id
+				AND a.connect_uuid = b.connect_id
+			) c
+		INNER JOIN tb_cloud2_vmhost_info d ON c.vm_uuid = d.VH_UUID
+		AND c.connect_uuid = d.CONNECT_ID
+		INNER JOIN tb_busi_system_tree e ON c.parent_id = e.id
+		WHERE e.type = 2
+)UNION ALL (
+SELECT
+			c.cpu_usage,
+			c.mem_usage,
+			d.VH_NAME NAME,
+			d.VH_IP,
+			f.`name` businame
+		FROM
+			(
+				SELECT
+					a.vm_uuid,
+					a.connect_uuid,
+					a.cpu_usage,
+					a.mem_usage,
+					b.parent_id
+				FROM
+					tb_virtual_global_info a
+				INNER JOIN tb_busi_system_tree b ON a.vm_uuid = b.entity_id
+				AND a.connect_uuid = b.connect_id
+			) c
+		left JOIN tb_cloud2_vmhost_info d ON c.vm_uuid = d.VH_UUID
+		AND c.connect_uuid = d.CONNECT_ID
+		INNER JOIN tb_busi_system_tree e ON c.parent_id = e.id
+		INNER JOIN tb_busi_system_tree f ON f.id = e.parent_id
+		WHERE e.type = 4
+)
+		ORDER BY mem_usage DESC) g 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name">
+				g.NAME LIKE CONCAT('%', #name#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="businame">
+				g.businame LIKE CONCAT('%', #businame#, '%')
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryCpuTopListVM" parameterClass="TopTargetObj" resultClass="TopTargetObj">
+		SELECT * from ((SELECT
+			c.cpu_usage,
+			c.mem_usage,
+			d.VH_NAME NAME,
+			d.VH_IP,
+			e.`name` businame
+		FROM
+			(
+				SELECT
+					a.vm_uuid,
+					a.connect_uuid,
+					a.cpu_usage,
+					a.mem_usage,
+					b.parent_id
+				FROM
+					tb_virtual_global_info a
+				INNER JOIN tb_busi_system_tree b ON a.vm_uuid = b.entity_id
+				AND a.connect_uuid = b.connect_id
+			) c
+		INNER JOIN tb_cloud2_vmhost_info d ON c.vm_uuid = d.VH_UUID
+		AND c.connect_uuid = d.CONNECT_ID
+		INNER JOIN tb_busi_system_tree e ON c.parent_id = e.id
+		WHERE e.type = 2
+)UNION ALL (
+SELECT
+			c.cpu_usage,
+			c.mem_usage,
+			d.VH_NAME NAME,
+			d.VH_IP,
+			f.`name` businame
+		FROM
+			(
+				SELECT
+					a.vm_uuid,
+					a.connect_uuid,
+					a.cpu_usage,
+					a.mem_usage,
+					b.parent_id
+				FROM
+					tb_virtual_global_info a
+				INNER JOIN tb_busi_system_tree b ON a.vm_uuid = b.entity_id
+				AND a.connect_uuid = b.connect_id
+			) c
+		left JOIN tb_cloud2_vmhost_info d ON c.vm_uuid = d.VH_UUID
+		AND c.connect_uuid = d.CONNECT_ID
+		INNER JOIN tb_busi_system_tree e ON c.parent_id = e.id
+		INNER JOIN tb_busi_system_tree f ON f.id = e.parent_id
+		WHERE e.type = 4
+)
+		ORDER BY cpu_usage DESC) g 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name">
+				g.NAME LIKE CONCAT('%', #name#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="businame">
+				g.businame LIKE CONCAT('%', #businame#, '%')
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryTopCountVM" parameterClass="TopTargetObj" resultClass="int">
+		SELECT
+			COUNT(c.vm_uuid)
+		FROM
+			(
+				SELECT
+					a.vm_uuid,
+					a.connect_uuid,
+					a.cpu_usage,
+					a.mem_usage,
+					b.parent_id
+				FROM
+					tb_virtual_global_info a
+				INNER JOIN tb_busi_system_tree b ON a.vm_uuid = b.entity_id
+				AND a.connect_uuid = b.connect_id
+			) c
+		INNER JOIN tb_cloud2_vmhost_info d ON c.vm_uuid = d.VH_UUID
+		AND c.connect_uuid = d.CONNECT_ID
+		INNER JOIN tb_busi_system_tree e ON c.parent_id = e.id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name">
+				d.VH_NAME LIKE CONCAT('%', #name#, '%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="businame">
+				e.`name` LIKE CONCAT('%', #businame#, '%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryVmHostConfigInfo" parameterClass="TopTargetObj" resultClass="vmHostObj">
+		SELECT
+			a.VH_NAME,
+			a.VH_MEM,
+			a.VH_CPU,
+			a.VH_STORAGE,
+			a.VH_SYSTEM,
+			a.VH_IP,
+			a.VH_STAT,
+			a.VH_UUID,
+			a.CONNECT_ID connectId,
+			b.EQ_NAME name
+		FROM
+			tb_cloud2_vmhost_info a
+		LEFT JOIN tb_cloud2_host_info b ON a.CONNECT_ID = b.CONNECT_ID
+		AND a.HOST_CODE = b.H_UUID
+		<dynamic prepend="where">
+			<isNotEmpty property="connect_uuid" prepend="and">
+				a.CONNECT_ID = #connect_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="entity_id" prepend="and">
+				a.VH_UUID = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

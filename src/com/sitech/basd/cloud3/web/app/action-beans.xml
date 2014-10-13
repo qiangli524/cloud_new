@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="appFileTree" class="com.sitech.basd.cloud3.web.app.action.AppFileTreeAction"
+		singleton="false">
+		<property name="tbCloud3AppFileTreeService">
+			<ref bean="tbCloud3AppFileTreeService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

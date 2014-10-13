@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="huaweiEntityTree">
+	<typeAlias alias="huaweiEntityTreeObj" type="com.sitech.ssd.gx.domain.huaweientitytree.HuaweiEntityTreeObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+        	  limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+</sqlMap>

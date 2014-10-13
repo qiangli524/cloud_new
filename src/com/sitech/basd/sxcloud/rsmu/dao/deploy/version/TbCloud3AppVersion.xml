@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbCloud3AppVersion">
+	<typeAlias alias="TbCloud3AppVersionVO"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.version.TbCloud3AppVersionVO" />
+	
+	<select id="queryVOByObj" parameterClass="TbCloud3AppVersionVO" resultClass="TbCloud3AppVersionVO">
+		SELECT T.ID,T.APP_ID,T.VERSION,TO_CHAR(T.INSERTTIME, 'yyyy-MM-dd hh24:mi:ss') INSERTTIME,T.DAY_VERSION FROM TB_CLOUD3_APP_VERSION T 
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="id" prepend="AND">
+					T.ID=#id#
+			</isNotEmpty>
+			<isGreaterThan property="app_id" prepend="AND" compareValue="0">
+					T.APP_ID=#app_id#
+			</isGreaterThan>
+			<isNotEmpty property="day_version" prepend="AND">
+					T.DAY_VERSION=#day_version#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryListByObj" parameterClass="TbCloud3AppVersionVO" resultClass="TbCloud3AppVersionVO">
+		SELECT T.ID,T.APP_ID,T.VERSION,T.INSERTTIME,T.DAY_VERSION FROM TB_CLOUD3_APP_VERSION T 
+		<dynamic prepend="WHERE">
+			<isGreaterThan property="app_id" prepend="AND" compareValue="0">
+					T.APP_ID=#app_id#
+			</isGreaterThan>
+		</dynamic>
+		order by T.INSERTTIME desc
+	</select>
+	
+	<insert id="insertByVO" parameterClass="TbCloud3AppVersionVO">
+		<selectKey resultClass="String" keyProperty="id">
+			SELECT sys_guid() AS id FROM DUAL
+		</selectKey>
+		INSERT INTO TB_CLOUD3_APP_VERSION(ID,APP_ID,VERSION,INSERTTIME,DAY_VERSION)
+		VALUES(#id#,#app_id#,#version#,sysdate,#day_version#)
+	</insert>
+	
+	<select id="queryMaxAppDayVersion" parameterClass="TbCloud3AppVersionVO" resultClass="String">
+		SELECT (to_char(sysdate, 'yyyyMMdd') || '_' ||
+       (max(to_number(substr(T.DAY_VERSION, 10))) + 1)) DAY_VERSION
+		  FROM TB_CLOUD3_APP_VERSION T
+		  <![CDATA[
+		 where t.inserttime > (to_date(to_char(sysdate, 'yyyyMMdd'), 'yyyyMMdd'))
+		   and t.inserttime < (to_date(to_char(sysdate, 'yyyyMMdd'), 'yyyyMMdd') + 1)]]>
+		   and t.APP_ID=#app_id#
+	</select>
+	
+	<select id="queryAppVersionInDay" parameterClass="TbCloud3AppVersionVO" resultClass="String">
+		SELECT substr(T.DAY_VERSION, 10) DAY_VERSION
+		  FROM TB_CLOUD3_APP_VERSION T
+		  <![CDATA[
+		 where t.inserttime > (to_date(to_char(sysdate, 'yyyyMMdd'), 'yyyyMMdd'))
+		   and t.inserttime < (to_date(to_char(sysdate, 'yyyyMMdd'), 'yyyyMMdd') + 1) ]]>
+		   and t.APP_ID=#app_id#
+	</select>
+	
+	<select id="queryMaxAppVersion" parameterClass="TbCloud3AppVersionVO" resultClass="String">
+		SELECT (max(T.VERSION) + 1) VERSION FROM TB_CLOUD3_APP_VERSION T WHERE 
+		T.APP_ID=#app_id#
+	</select>
+	
+	<select id="queryVOByDayVersion" parameterClass="TbCloud3AppVersionVO" resultClass="TbCloud3AppVersionVO">
+		SELECT T.DAY_VERSION,T.VERSION,T.APP_ID,T.INSERTTIME FROM TB_CLOUD3_APP_VERSION T WHERE T.DAY_VERSION=#day_version#
+	</select>
+	
+	<select id="queryCollListByObj" parameterClass="TbCloud3AppVersionVO" resultClass="TbCloud3AppVersionVO">
+	<![CDATA[	select * from TB_CLOUD3_APP_VERSION t where t.day_version > #day_version# and 
+		t.day_version <=  
+		(select max(day_version) from TB_CLOUD3_APP_VERSION) ]]>
+	</select>
+	
+	<select id="queryMinAppVersion" parameterClass="TbCloud3AppVersionVO" resultClass="String">
+		select min(t.day_version) from TB_CLOUD3_APP_VERSION t
+		where t.APP_ID=#app_id#
+	</select>
+</sqlMap>

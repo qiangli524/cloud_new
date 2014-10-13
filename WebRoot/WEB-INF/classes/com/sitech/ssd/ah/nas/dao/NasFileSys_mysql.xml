@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="nasFileSys">
+	<typeAlias alias="NasFileSystemObj" type="com.sitech.ssd.ah.nas.domain.NasFileSystemObj" />
+	<typeAlias alias="VmHostInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj" />
+	<typeAlias alias="VmIpObj" type="com.sitech.ssd.ah.nas.domain.VmIpObj" />
+	<typeAlias alias="MountObj" type="com.sitech.ssd.ah.nas.domain.MountObj" />
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+        	 limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+	
+	<sql id="queryAllBase">
+		SELECT
+			a.ID,
+			a.FS_STORAGE_POOL,
+			a.FS_NAME,
+			a.FS_STATUS,
+			a.FS_SHARED_TYPE,
+			a.FS_SIZE,
+			a.FS_USED_SIZE,
+			a.NAS_DEVICE_ID,
+			COUNT(a.ID) SHARENUM
+		FROM
+		tb_cloud2_hwnas_filesystem AS a
+		left join tb_cloud2_hwnas_filesystem_ip b ON a.FS_NAME = b.FS_NAME AND a.NAS_DEVICE_ID = b.NAS_DEVICE_ID
+		<dynamic prepend="where">
+			<isNotNull property="NAS_DEVICE_ID" prepend="and">
+					<isNotEmpty property="NAS_DEVICE_ID">
+						a.NAS_DEVICE_ID = #NAS_DEVICE_ID#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_NAME" prepend="and">
+					<isNotEmpty property="FS_NAME">
+						a.FS_NAME = #FS_NAME#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_STATUS" prepend="and">
+					<isNotEmpty property="FS_STATUS">
+						<isNotEqual property="FS_STATUS" compareValue="-1">
+							a.FS_STATUS = #FS_STATUS#
+	    				</isNotEqual>
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_SHARED_TYPE" prepend="and">
+					<isNotEmpty property="FS_SHARED_TYPE">
+						a.FS_SHARED_TYPE = #FS_SHARED_TYPE#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_STORAGE_POOL" prepend="and">
+					<isNotEmpty property="FS_STORAGE_POOL">
+						a.FS_STORAGE_POOL = #FS_STORAGE_POOL#
+					</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		GROUP BY a.ID
+	</sql>
+	
+	<select id="queryFileSysByObj" parameterClass="NasFileSystemObj" resultClass="NasFileSystemObj">
+		<include refid="queryAllBase"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryFileSysByObjForCount" parameterClass="NasFileSystemObj" resultClass="java.lang.Integer">
+		select count(*)  from (
+		<include refid="queryAllBase" />
+		 ) virtual_table
+	</select>
+	
+	<insert id="insertByObj" parameterClass="NasFileSystemObj" >
+		insert into tb_cloud2_hwnas_filesystem(FS_STORAGE_POOL,FS_NAME,FS_STATUS,FS_SHARED_TYPE,FS_SIZE,FS_USED_SIZE,NAS_DEVICE_ID) values(#FS_STORAGE_POOL#,#FS_NAME#,#FS_STATUS#,#FS_SHARED_TYPE#,#FS_SIZE#,#FS_USED_SIZE#,#NAS_DEVICE_ID#)
+	</insert>
+    
+    <update id="updateFileByObj" parameterClass="NasFileSystemObj">
+    	update tb_cloud2_hwnas_filesystem
+    	<dynamic prepend="set">
+			<isNotNull property="FS_STORAGE_POOL" prepend=",">
+					<isNotEmpty property="FS_STORAGE_POOL">
+						FS_STORAGE_POOL = #FS_STORAGE_POOL#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_STATUS" prepend=",">
+					<isNotEmpty property="FS_STATUS">
+						FS_STATUS = #FS_STATUS#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_SHARED_TYPE" prepend=",">
+					<isNotEmpty property="FS_SHARED_TYPE">
+						FS_SHARED_TYPE = #FS_SHARED_TYPE#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_SIZE" prepend=",">
+					<isNotEmpty property="FS_SIZE">
+						FS_SIZE = #FS_SIZE#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="FS_USED_SIZE" prepend=",">
+					<isNotEmpty property="FS_USED_SIZE">
+						FS_USED_SIZE = #FS_USED_SIZE#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="NAS_DEVICE_ID" prepend=",">
+					<isNotEmpty property="NAS_DEVICE_ID">
+						NAS_DEVICE_ID = #NAS_DEVICE_ID#
+					</isNotEmpty>
+			</isNotNull>
+    	</dynamic>
+    	where ID=#ID#
+    </update>
+    <delete id="deleteFileByObj" parameterClass="NasFileSystemObj">
+    	delete from tb_cloud2_hwnas_filesystem 
+    	where ID = #ID#
+    </delete>
+    <!-- nas文件系统与IP关系表相关操作 -->
+    <sql id="queryAllNasIp">
+    	SELECT
+			a.ID,
+			a.FS_NAME,
+			a.FS_NASIP,
+			a.NAS_DEVICE_ID
+		FROM
+			tb_cloud2_hwnas_filesystem_ip AS a
+    </sql>
+    <select id="queryFileSysIpByObj" parameterClass="NasFileSystemObj" resultClass="NasFileSystemObj">
+		<include refid="queryAllNasIp"/>
+	</select>
+	<insert id="insertFileSysIpByObj" parameterClass="NasFileSystemObj" >
+		insert into tb_cloud2_hwnas_filesystem_ip(FS_NAME,FS_NASIP,NAS_DEVICE_ID) values(#FS_NAME#,#FS_NASIP#,#NAS_DEVICE_ID#)
+	</insert>
+    <delete id="deleteFileSysIpByObj" parameterClass="NasFileSystemObj">
+    	delete from tb_cloud2_hwnas_filesystem_ip 
+    	where ID = #ID#
+    </delete>
+
+	<!-- 根据文件系统NASIP查找对应虚拟机 -->    
+    <select id="queryVmByIp" parameterClass="NasFileSystemObj" resultClass="VmHostInfoObj">
+    	SELECT
+			a.vm_uuid VH_UUID,
+			a.connectid CONNECT_ID,
+			a.ip VH_IP
+		FROM
+			tb_cloud2_vm_ip_relation AS a
+    	<dynamic prepend="where">
+			<isNotNull property="FS_NASIP" prepend="and">
+					<isNotEmpty property="FS_NASIP">
+						a.ip = #FS_NASIP#
+					</isNotEmpty>
+			</isNotNull>
+    	</dynamic>
+    </select>
+    
+    <!-- 根据虚拟机查找其主机、集群、数据中心 -->    
+    <select id="queryVmInfoByVm" parameterClass="VmHostInfoObj" resultClass="java.lang.String">
+    	SELECT
+			CONCAT_WS(
+				'_',
+				a.uuid,
+				b.uuid,
+				c.uuid,
+				d.uuid,
+				a.connect_id
+			)
+		FROM
+			tb_united_tree a
+		LEFT JOIN tb_united_tree b ON a.parent_id = b.id AND a.connect_id = b.connect_id
+		LEFT JOIN tb_united_tree c ON b.parent_id = c.id AND b.connect_id = c.connect_id
+		LEFT JOIN tb_united_tree d ON c.parent_id = d.id AND c.connect_id = d.connect_id
+    	<dynamic prepend="where">
+			<isNotNull property="VH_UUID" prepend="and">
+					<isNotEmpty property="VH_UUID">
+						a.uuid = #VH_UUID#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="CONNECT_ID" prepend="and">
+					<isNotEmpty property="CONNECT_ID">
+						a.connect_id = #CONNECT_ID#
+					</isNotEmpty>
+			</isNotNull>
+    	</dynamic>
+    </select>
+    
+    <!-- 录入多网卡与虚拟机的关系 -->
+    <insert id="insertVmIpByObj" parameterClass="VmIpObj">
+    	insert into tb_cloud2_vm_ip_relation(id,vm_uuid,connectid,ip,vtype,ip_type)
+    	values (#id#,#vm_uuid#,#connectid#,#ip#,#vtype#,#ipType#)
+    </insert>
+	<delete id="delVmIpByObj" parameterClass="VmIpObj">
+		delete from tb_cloud2_vm_ip_relation
+		<dynamic prepend="where">
+			<isNotNull property="id" prepend="and">
+				<isNotEmpty property="id">
+					id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="vtype" prepend="and">
+				<isNotEmpty property="vtype">
+					vtype=#vtype#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="vm_uuid" prepend="and">
+				vm_uuid=#vm_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="connectid" prepend="and">
+				connectid=#connectid#
+			</isNotEmpty>
+		</dynamic>
+	</delete>    
+	<!-- 更新虚拟机IP地址信息 -->
+	 <update id="updatVmIpObj" parameterClass="VmIpObj" >
+		update tb_cloud2_vm_ip_relation
+		<dynamic prepend="set">
+			<isNotEmpty property="ip" prepend=",">
+				ip = #ip#
+			</isNotEmpty>
+		</dynamic>
+			where vm_uuid = #vm_uuid# and connectid=#connectid#
+		</update>
+    <select id="queryVmIpByObj" parameterClass="VmIpObj" resultClass="VmIpObj">
+    	SELECT
+			a.id,
+			a.vm_uuid,
+			a.connectid,
+			a.ip
+		FROM
+			tb_cloud2_vm_ip_relation AS a
+			<dynamic prepend="where">
+				<isNotNull property="vm_uuid" prepend="and">
+						<isNotEmpty property="vm_uuid">
+							a.vm_uuid=#vm_uuid#
+						</isNotEmpty>
+				</isNotNull>
+				<isNotNull property="connectid" prepend="and">
+						<isNotEmpty property="connectid">
+							a.connectid=#connectid#
+						</isNotEmpty>
+				</isNotNull>
+				<isNotNull property="ipType" prepend="and">
+						<isNotEmpty property="ipType">
+							a.ipType=#ipType#
+						</isNotEmpty>
+				</isNotNull>
+					<isNotNull property="vtype" prepend="and">
+						<isNotEmpty property="vtype">
+							a.vtype=#vtype#
+						</isNotEmpty>
+				</isNotNull>
+		</dynamic>
+    </select>
+    
+    <!-- 根据文件系统查询对应挂载主机 -->
+    <select id="queryHostByFIlesys" parameterClass="NasFileSystemObj" resultClass="MountObj">
+		SELECT b.EQ_NAME mountName,b.EQ_IP ip from tb_yicloud_datastore a
+		LEFT JOIN tb_cloud2_host_info b ON a.host_id = b.H_UUID AND a.CONNECT_ID = b.CONNECT_ID	    
+		<dynamic prepend="where">
+					<isNotNull property="FS_NAME" prepend="and">
+							<isNotEmpty property="FS_NAME">
+								a.NAME=#FS_NAME#
+							</isNotEmpty>
+					</isNotNull>
+					<isNotNull property="NAS_DEVICE_ID" prepend="and">
+							<isNotEmpty property="NAS_DEVICE_ID">
+								a.DEVICE_ID=#NAS_DEVICE_ID#
+							</isNotEmpty>
+					</isNotNull>
+					<isNotEmpty property="domain">
+			              	  <isNotEqual compareValue="null" property="domain">
+					            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+					              	a.domain =#domain#	
+					            </isNotEqual>
+				            </isNotEqual>
+			    	</isNotEmpty>
+					<isNotEmpty property="domain">
+			              	  <isNotEqual compareValue="null" property="domain">
+					            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+					              	b.domain =#domain#	
+					            </isNotEqual>
+				            </isNotEqual>
+			    	</isNotEmpty>
+		</dynamic>
+    </select>
+    <!--根据文件系统查询对应挂载主机  -->
+    <select  id="queryVmByFIlesys" parameterClass="NasFileSystemObj" resultClass="MountObj">
+		SELECT a.VH_NAME mountName,CONCAT_WS('_',t3.`name`,t2.`name`) busi,a.VH_IP ip,c.FS_NASIP nasIp from tb_cloud2_vmhost_info a
+		LEFT JOIN tb_cloud2_vm_ip_relation b ON a.vh_uuid = b.vm_uuid AND a.CONNECT_ID = b.connectid
+		LEFT JOIN tb_cloud2_hwnas_filesystem_ip c ON b.ip = c.FS_NASIP 
+		LEFT JOIN  tb_busi_system_tree t1 ON t1.entity_id = a.VH_UUID and t1.connect_id = a.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree t2 ON t1.parent_id = t2.id
+		LEFT JOIN tb_busi_system_tree t3 ON t2.parent_id = t3.id
+		<dynamic prepend="where">
+					<isNotNull property="FS_NAME" prepend="and">
+							<isNotEmpty property="FS_NAME">
+								REPLACE(c.FS_NAME,'_','') = #FS_NAME#
+							</isNotEmpty>
+					</isNotNull>
+					<isNotNull property="NAS_DEVICE_ID" prepend="and">
+							<isNotEmpty property="NAS_DEVICE_ID">
+								c.NAS_DEVICE_ID=#NAS_DEVICE_ID#
+							</isNotEmpty>
+					</isNotNull>
+		</dynamic>
+		GROUP BY INET_ATON(a.VH_IP)
+    </select>
+</sqlMap>

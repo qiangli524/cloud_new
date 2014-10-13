@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
+	default-autowire="byName">
+	<!-- vlan ssh 脚本配置文件 -->
+	<bean id="sshProp" class="com.sitech.basd.util.PropertyUtil">
+		<constructor-arg index="0" value="properties/vlan_ssh"/>
+	</bean>
+	
+	<!-- 北京电信脚本配置文件 -->
+	<bean id="bjShellProp" class="com.sitech.basd.util.PropertyUtil">
+		<constructor-arg index="0" value="properties/public_shell"/>
+	</bean>
+	<!-- BusiSysTree.properties图标配置文件加载类 -->
+	<bean id="bsTreeIconProp" class="com.sitech.basd.util.PropertyUtil">
+		<constructor-arg index="0" value="properties/BusiSysTree"/>
+	</bean>
+	<!-- 统一树所对应的图标 -->
+	<bean id="unitedTreeIconProp" class="com.sitech.basd.util.PropertyUtil">
+		<constructor-arg index="0" value="properties/UnitedTreeIcon"/>
+	</bean>
+	<!-- IBM所对应的图标 -->
+	<bean id="ibmTreeIconProp" class="com.sitech.basd.util.PropertyUtil">
+		<constructor-arg index="0" value="properties/IBMTreeIcon"/>
+	</bean>
+	<!-- 部署文件树所对应的图标 -->
+	<bean id="deployFileTreeIconProp" class="com.sitech.basd.util.PropertyUtil">
+		<constructor-arg index="0" value="properties/DeployFileTreeIcon"/>
+	</bean>
+	
+	<!-- VMware-连接配置Xml -->
+	<bean id="vmwareConnectionXml" class="com.sitech.utils.xml.XmlProperties">
+		<constructor-arg name="resourceFile" value="xml/vmware_in_control.xml"/>
+	</bean>
+	
+	<!-- Xen-连接配置Xml -->
+	<bean id="xenConnectionXml" class="com.sitech.utils.xml.XmlProperties">
+		<constructor-arg name="resourceFile" value="xml/xen_in_control.xml"/>
+	</bean>
+	
+	<!-- 菜单名称映射Xml -->
+	<bean id="moduleNameMapXml" class="com.sitech.utils.xml.XmlProperties">
+		<constructor-arg name="resourceFile" value="xml/module_name_map.xml"/>
+	</bean>
+	
+	<!-- 菜单名称映射Xml -->
+	<bean id="ibmSceConnectionXml" class="com.sitech.utils.xml.XmlProperties">
+		<constructor-arg name="resourceFile" value="xml/ibm_sce_connection.xml"/>
+	</bean>
+	<!-- 地域与资源池关系映射 -->
+	<bean id="areaResourcePoolRelation" class="com.sitech.basd.util.PropertyUtil">
+		<constructor-arg index="0" value="properties/AreaResourcePoolRelation"/>
+	</bean>
+</beans>
+

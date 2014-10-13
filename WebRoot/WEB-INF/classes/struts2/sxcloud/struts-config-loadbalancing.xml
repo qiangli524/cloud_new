@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="farm"
+			 extends="global_package">
+		<action name="farm_*"
+				class="farmsAction" method="{1}"> 
+			<result name="list">/sxcloud/cloud/farms/listFarmsInfo.jsp</result>
+			<result name="add">/sxcloud/cloud/farms/addeditFarms.jsp</result>
+			<result name="modify">/sxcloud/cloud/farms/addeditFarms.jsp</result>
+			<result name="save" type="redirect">farm_farmsList.do</result>
+			<result name="del" type="redirect">farm_farmsList.do</result>
+		</action>
+	</package>
+	<package name="L4Policy"
+			 extends="default">
+			 <!-- 全局异常配置 -->
+ 		<global-results>
+ 			<result name="exception">/yicloud/vmman/exception.jsp</result>
+ 		</global-results>
+ 		<global-exception-mappings>
+ 			<exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>
+ 		</global-exception-mappings>
+		<action name="L4Policy_*"
+				class="l4PolicyAction" method="{1}"> 
+			<result name="list">/sxcloud/cloud/l4Policy/listL4PolicyInfo.jsp</result>
+			<result name="add">/sxcloud/cloud/l4Policy/addeditl4Policy.jsp</result>
+			<result name="modify">/sxcloud/cloud/l4Policy/editl4Policy.jsp</result>
+			<result name="add_save" type="redirect">L4Policy_l4PolicyList.do</result>
+			<result name="mod_save" type="redirect">farmserver_l4PolicyList.do</result>
+			<result name="del" type="redirect">farmserver_l4PolicyList.do</result>
+		</action>
+	</package>
+	<package name="farmserver"
+			 extends="default">
+			 <!-- 全局异常配置 -->
+ 		<global-results>
+ 			<result name="exception">/yicloud/vmman/exception.jsp</result>
+ 		</global-results>
+ 		<global-exception-mappings>
+ 			<exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>
+ 		</global-exception-mappings>
+		<action name="farmserver_*"
+				class="farmServerAction" method="{1}"> 
+			<result name="list">/sxcloud/cloud/farmsServer/listFarmsServerInfo.jsp</result>
+			<result name="add">/sxcloud/cloud/farmsServer/addeditFarmsServer.jsp</result>
+			<result name="modify">/sxcloud/cloud/farmsServer/editFarmsServer.jsp</result>
+			<result name="add_save" type="redirect">farmserver_farmServerList.do</result>
+			<result name="mod_save" type="redirect">farmserver_farmServerList.do</result>
+			<result name="del" type="redirect">farmserver_farmServerList.do</result>
+		</action>
+	</package>
+
+</struts>

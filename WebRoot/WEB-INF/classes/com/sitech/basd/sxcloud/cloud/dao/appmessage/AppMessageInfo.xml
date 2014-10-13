@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="AppMessageInfo">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="AppMessageObj" type="com.sitech.basd.sxcloud.cloud.domain.appmessage.AppMessageObj"/>
+    <typeAlias alias="BizsysObj" type="com.sitech.basd.sxcloud.cloud.domain.appmessage.BizsysObj"/>
+    <typeAlias alias="VMHostObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj"/>
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+     <sql id="queryByObjBase">
+        select  m.APP_ID,m.APP_NAME,m.PROCESS,m.PROCESS_AUX,m.PROTOCOL,m.MEM,l.VH_NAME,k.SYS_NAME,m.APP_TYPE,m.VH_ID,m.SYS_ID,m.APP_DESC,m.APP_STAT
+        from
+        TB_CLOUD2_APPLY_INFO m,
+        (select n.VH_ID,n.VH_NAME from TB_CLOUD2_VH_POOL n
+       union select j.EQ_ID,j.EQ_HOSTNAME FROM TB_CLOUD2_HOST_INFO j)l,
+        TB_CLOUD2_BIZSYS_INFO k 
+        where m.VH_ID=l.VH_ID and m.SYS_ID=k.SYS_ID
+               <isNotEmpty property="APP_ID" prepend="and">
+                APP_ID =#APP_ID#
+               </isNotEmpty>
+                <isNotEmpty property="APP_NAME" prepend="and">
+                APP_NAME like '%'||#APP_NAME#||'%'
+               </isNotEmpty>
+              	order by APP_ID asc
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="AppMessageObj" resultClass="AppMessageObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryByObjBase"/>
+	        
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="AppMessageObj" resultClass="int">
+	      select count(APP_ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <insert id="insertByObj" parameterClass="AppMessageObj">
+	  		<selectKey resultClass="string" keyProperty="APP_ID" >
+       				 SELECT ID_APP_ID.NEXTVAL AS APP_ID FROM DUAL
+      		 </selectKey>
+	  		insert into TB_CLOUD2_APPLY_INFO(
+	  		APP_ID,APP_NAME,PROCESS,MEM,VH_ID,SYS_ID,APP_TYPE,APP_DESC,PROCESS_AUX,PROTOCOL
+	  		)
+	  		values(#APP_ID#,#APP_NAME#,#PROCESS#,#MEM#,#VH_ID#,#SYS_ID#,#APP_TYPE#,#APP_DESC#,#PROCESS_AUX#,#PROTOCOL#)
+	  </insert>
+	   <select id="queryForListByBizsysObj" parameterClass="BizsysObj" resultClass="BizsysObj">
+	      select SYS_ID,SYS_NAME from TB_CLOUD2_BIZSYS_INFO 
+	  </select>
+	 
+	  <update id="updateByObj" parameterClass="AppMessageObj">
+	    update TB_CLOUD2_APPLY_INFO set APP_NAME=#APP_NAME#,PROCESS=#PROCESS#,MEM=#MEM#,VH_ID=#VH_ID#,SYS_ID=#SYS_ID#,APP_TYPE=#APP_TYPE#,APP_DESC=#APP_DESC#,PROCESS_AUX=#PROCESS_AUX#,PROTOCOL=#PROTOCOL# where APP_ID=#APP_ID#
+	  </update>
+	  
+	  <delete id="deleteByObj" parameterClass="AppMessageObj">
+	    delete from TB_CLOUD2_APPLY_INFO where APP_ID=#APP_ID#
+	  </delete>
+</sqlMap>

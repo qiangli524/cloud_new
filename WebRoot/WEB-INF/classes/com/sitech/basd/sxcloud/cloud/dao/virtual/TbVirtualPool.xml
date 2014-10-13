@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbVirtualPool">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbCloud2VirtualPoolObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.virtual.TbCloud2VirtualPoolObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	 
+	<sql id="TB_CLOUD2_VMPool_INFOColumnsNoKey">
+		VH_NAME,VH_TYPE,VH_IP,PROTOCOL,PORT,EQ_ID
+	</sql>
+	<sql id="TB_CLOUD2_VMPool_INFOColumns">
+		VH_ID,
+		<include refid="TB_CLOUD2_VMPool_INFOColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_CLOUD2_VMPool_INFOColumns" />
+		from TB_CLOUD2_VH_POOL
+		<dynamic prepend="where">
+			<isNotEmpty property="VH_ID" prepend="and">
+				VH_ID =#VH_ID#
+			</isNotEmpty>
+			<isNotEmpty property="VH_NAME" prepend="and">
+				VH_NAME like '%'||#VH_NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="eq_id" prepend="and">
+				EQ_ID = #eq_id#
+			</isNotEmpty>
+			<isNotEmpty property="VH_IP" prepend="and">
+				VH_IP = #VH_IP#
+			</isNotEmpty>
+		</dynamic>
+		order by VH_ID desc
+	</sql>
+	
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	
+	<select id="queryForListByObj"
+		parameterClass="TbCloud2VirtualPoolObj"
+		resultClass="TbCloud2VirtualPoolObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="TbCloud2VirtualPoolObj" resultClass="int">
+		select count(VH_ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	 
+	<insert id="insertByObj" parameterClass="TbCloud2VirtualPoolObj">
+		<selectKey resultClass="string" keyProperty="VH_ID" >
+       				 SELECT ID_TB_CLOUD2_VH_POOL.NEXTVAL AS VH_ID FROM DUAL
+      	 </selectKey>
+		insert into TB_CLOUD2_VH_POOL(
+		VH_ID,VH_NAME,VH_TYPE,VH_IP,PROTOCOL,PORT,EQ_ID)
+		values(
+		#VH_ID#,#VH_NAME#,#VH_TYPE#,#VH_IP#,#PROTOCOL#,#PORT#,#eq_id#)
+	</insert>
+	<update id="updateByObj" parameterClass="TbCloud2VirtualPoolObj">
+		update TB_CLOUD2_VH_POOL set
+		<isNotNull property="VH_NAME">VH_NAME=#VH_NAME#</isNotNull>
+		<isNotNull property="VH_TYPE">,VH_TYPE=#VH_TYPE#</isNotNull>
+		<isNotNull property="VH_IP">,VH_IP=#VH_IP#</isNotNull>
+		<isNotNull property="PROTOCOL">,PROTOCOL=#PROTOCOL#</isNotNull>
+		<isNotNull property="PORT">
+			,PORT=#PORT#
+		</isNotNull>
+		<isNotNull property="eq_id">
+			,EQ_ID=#eq_id#
+		</isNotNull>
+		where VH_ID=#VH_ID#
+	</update>
+	<delete id="deleteByObj" parameterClass="TbCloud2VirtualPoolObj">
+		delete from TB_CLOUD2_VH_POOL where VH_ID=#VH_ID#
+	</delete>
+	 <!-- 同步虚拟机数据到虚拟机资源池 -->
+	 <insert id="insertByObjForSyn" parameterClass="TbCloud2VirtualPoolObj">
+		insert into TB_CLOUD2_VH_POOL(
+		VH_ID,VH_NAME,VH_TYPE,VH_IP,PROTOCOL,PORT,EQ_ID)
+		values(
+		#VH_ID#,#VH_NAME#,#VH_TYPE#,#VH_IP#,#PROTOCOL#,#PORT#,#eq_id#)
+	</insert>
+</sqlMap>

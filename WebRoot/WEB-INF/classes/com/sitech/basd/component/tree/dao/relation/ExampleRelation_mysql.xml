@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ExampleRelation">
+	<typeAlias alias="ExampleRelationObj"
+		type="com.sitech.basd.component.tree.domain.relation.ExampleRelationObj" />
+	<typeAlias alias="ScriptsObj"
+		type="com.sitech.basd.component.domain.script.ScriptObj" /> 
+	<sql id="paginationEnd">
+		<![CDATA[
+                    limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForListBase">
+		select EXAMPLE_ID,ENTITY_ID,TYPE from TB_EXAMPLE_RELATION
+		<dynamic prepend="where">
+			<isNotNull property="entity_id" prepend="and">
+				ENTITY_ID= #entity_id#
+			</isNotNull>
+			<isNotNull property="example_id" prepend="and">
+				EXAMPLE_ID=#example_id#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE=#type#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<!-- 查询配置关系列表 -->
+	<select id="queryForList" parameterClass="ExampleRelationObj" resultClass="ExampleRelationObj"> 
+		<include refid="queryForListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 统计关系记录数目 -->
+	<select id="queryForCount" parameterClass="ExampleRelationObj" resultClass="int">
+		select count(EXAMPLE_ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <!-- 增加一条关系记录 -->
+	 <insert id="insertByObj" parameterClass="ExampleRelationObj">
+	 	insert into TB_EXAMPLE_RELATION(EXAMPLE_ID,ENTITY_ID,TYPE) 
+	 	values(#example_id#,#entity_id#,#type#) 
+	 </insert>
+	 <!-- 更新一条记录 -->
+	 <update id="updateByObj" parameterClass="ExampleRelationObj">
+	 	update TB_EXAMPLE_RELATION set TYPE=#type#,ENTITY_ID=#entity_id# where EXAMPLE_ID=#example_id#
+	 </update>
+	 
+	 <delete id="deleteByObj" parameterClass="ExampleRelationObj">
+	 	delete from TB_EXAMPLE_RELATION where ENTITY_ID = #entity_id# and  EXAMPLE_ID=#example_id#
+	 	<isNotNull prepend="and" property="type"> 
+	 		TYPE=#type# 
+	 	</isNotNull>
+	 </delete>
+
+		 <!-- 过滤同一类型的脚本的级别 -->
+	 <select id="filterGrade" parameterClass="java.util.HashMap" resultClass="ScriptsObj">
+	 		select b.grade,b.id,b.type
+  			 from  TB_EXAMPLE_RELATION a, TB_SCRIPT_MANAGE b
+			 where a.entity_id = b.id
+  			 and   a.example_id = #example_id# 
+  			 and   b.type=#type# 
+  			 and   a.type='4'
+  			 and   b.grade=#grade#
+	 </select>
+</sqlMap>

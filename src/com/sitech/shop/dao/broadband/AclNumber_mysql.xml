@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="AclNumber">
+<typeAlias alias="AclNumberObj" type="com.sitech.shop.domain.broadband.AclNumberObj"/>
+
+	<sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+         ]]>
+	</sql>
+	
+	<sql id="queryByObjBase">
+		SELECT
+			`id`,
+			`acl`,
+			`type`,
+			`isused`,
+			`oper_type`,
+			`user_id`,
+			`rate`
+		FROM
+			tb_public_acl			
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="acl" prepend="and">
+				acl=#acl#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				type=#type#
+			</isNotEmpty>
+			<isNotEmpty property="isused" prepend="and">
+				isused=#isused#
+			</isNotEmpty>
+			<isNotEmpty property="oper_type" prepend="and">
+				oper_type=#oper_type#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="rate" prepend="and">
+				rate = #rate#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	  <select id="queryForAclNumberObj" parameterClass="AclNumberObj" resultClass="AclNumberObj">
+	        <include refid="queryByObjBase"/> 
+	  </select>
+	
+	  <select id="queryForAclNumberList" parameterClass="AclNumberObj" resultClass="AclNumberObj">
+	        <include refid="queryByObjBase"/> 
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="AclNumberObj" resultClass="int">
+	       select count(id) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <!-- 插入一条记录 -->
+	  <insert id="insertByObj" parameterClass="AclNumberObj">
+		INSERT INTO `tb_public_acl` (
+			`id`,
+			`acl`,
+			`type`,
+			`isused`,
+			`oper_type`,
+			`user_id`,
+			`rate`
+		)
+		VALUES
+			(
+				#id#,
+				#acl#,
+				#type#,
+				#isused#,
+				#oper_type#,
+				#user_id#,
+				#rate#
+			)
+	  </insert>
+	  
+	  <!-- 更新一条记录 -->
+	  <update id="updateByObj" parameterClass="AclNumberObj">
+	  	UPDATE tb_public_acl 
+		<dynamic prepend="set">
+			<isNotEmpty property="acl" prepend=",">
+				acl=#acl#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend=",">
+				type=#type#
+			</isNotEmpty>
+			<isNotEmpty property="isused" prepend=",">
+				isused=#isused#
+			</isNotEmpty>
+			<isNotEmpty property="oper_type" prepend=",">
+				oper_type=#oper_type#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend=",">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="rate" prepend=",">
+				rate = #rate#
+			</isNotEmpty>
+		</dynamic>
+		WHERE
+			id=#id#
+	  </update>
+	  
+	  <!-- 删除一条记录 -->
+	  <delete id="deleteByObj" parameterClass="AclNumberObj">
+	  		delete from tb_public_acl where id=#id#
+	  </delete>
+	  
+	
+</sqlMap>

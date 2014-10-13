@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="vlan">
+	<typeAlias alias="switch" type="com.sitech.basd.resource.domain.switchBoard.SwitchObj"/>
+	<typeAlias alias="switchPerformance" type="com.sitech.basd.resource.domain.switchBoard.SwitchPerformanceObj"/>
+	<typeAlias alias="vlan" type="com.sitech.basd.resource.domain.switchBoard.VlanObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+         limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForListBase">
+	SELECT
+		v.id,
+		v.vlan_id,
+		v.vlan_name,
+		v.vlan_status,
+		v.switch_id,
+		v.IP_ID,
+		ip.IPADDRESS		
+	FROM
+		tb_resource_vlan AS v LEFT JOIN tb_cloud2_ip_info ip on v.ip_id = ip.IP_ID
+		<dynamic prepend="where">
+			<isNotNull property="vlan_name" prepend="and">
+				v.vlan_name like CONCAT('%',#vlan_name#,'%')
+			</isNotNull>
+			<isNotNull property="vlan_status">
+				<isGreaterThan prepend="and" property="vlan_status" compareValue="-1">
+					v.vlan_status=#vlan_status#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="switch_id" prepend="and">
+				    v.switch_id= #switch_id#
+			</isNotNull>
+			<isNotNull property="vlan_id" prepend="and">
+				v.vlan_id= #vlan_id#
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				v.id= #id#
+			</isNotNull>
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	ip.domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+    <!-- 查询所有vlan-->
+	<select id="queryVlanList" parameterClass="vlan" resultClass="vlan">
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 增加一条vlan记录 -->
+	 <insert id="insertVlan" parameterClass="vlan">
+	 	insert into tb_resource_vlan
+        (id,vlan_id,vlan_name,vlan_status,switch_id,ip_id) 
+		values(#id#,#vlan_id#,#vlan_name#,#vlan_status#,#switch_id#,#IP_ID#)
+	 </insert>
+	<!-- 更新一条vlan记录 -->
+	 <update id="updateVlan" parameterClass="vlan">
+	 	UPDATE tb_resource_vlan 
+	 	set vlan_id=#vlan_id#,vlan_name=#vlan_name#,vlan_status=#vlan_status#,ip_id=#IP_ID#
+        where id=#id#
+	 </update>
+	 <!-- 删除一条vlan记录 -->
+	 <delete id="deleteVlan" parameterClass="vlan">
+	 	delete from tb_resource_vlan where id = #id#
+	 </delete>
+	<!-- 统计vlan记录条数 -->
+	<select id="queryForCount" parameterClass="vlan" resultClass="int">
+		select count(id)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 <!-- IP修改为空 -->
+	 <update id="delIPAddr" parameterClass="vlan">
+	 	UPDATE tb_resource_vlan set ip_id=#IP_ID# where id=#id#
+	 </update>
+	 <select id="queryIPAddrByVlanId" parameterClass="vlan" resultClass="vlan">
+	 	select i.IPADDRESS,t.vlan_id from  tb_resource_vlan t LEFT JOIN tb_cloud2_ip_info i ON t.ip_id = i.IP_ID where t.id = #id#
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	i.domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+	 </select>
+</sqlMap>

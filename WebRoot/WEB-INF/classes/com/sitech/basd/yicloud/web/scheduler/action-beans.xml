@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="strategyAction" class="com.sitech.basd.yicloud.web.scheduler.action.StrategyAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="strategyService">
+			<ref bean="strategyService"/>
+		</property>
+		<property name="triggerDefService">
+			<ref bean="triggerDefService"/>
+		</property>
+		<property name="entityTreeService">
+			<ref bean="entityTreeService"/>
+		</property>
+		<property name="unitedTreeService">
+			<ref bean="unitedTreeService"/>
+		</property>		
+		<property name="temManService">
+			<ref bean="temManService"/>
+		</property> 
+		<property name="netService">
+			<ref bean="netService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="dataStoreService">
+			<ref bean="dataStoreService" />
+		</property>
+	</bean>
+	<bean id="triggerDefAction" class="com.sitech.basd.yicloud.web.scheduler.action.TriggerDefAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="triggerDefService">
+			<ref bean="triggerDefService"/>
+		</property>
+		<property name="strategyService">
+			<ref bean="strategyService"/>
+		</property>
+		<property name="kpiService">
+			<ref bean="kpiService"/>
+		</property>
+	</bean>
+	<bean id="kpiAction" class="com.sitech.basd.yicloud.web.scheduler.action.KPIAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="kpiService">
+			<ref bean="kpiService"/>
+		</property>
+		<property name="strategyService">
+			<ref bean="strategyService"/>
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

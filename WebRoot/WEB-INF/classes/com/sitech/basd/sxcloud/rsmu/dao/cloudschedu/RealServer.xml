@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="RealServer">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="RealServerObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.cloudschedu.RealServerObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		name,virtualAddress,realAddress,weight,forwarding_method,request,receive,optr_id,opt_time,INFO
+	</sql>
+	<sql id="tableColumns">
+		id,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryByObjBase">
+		select
+		t.id,t.name,t.virtualAddress,t.realAddress,t.weight,t.forwarding_method,t.request,t.receive,t.optr_id,to_char(t.opt_time,'YYYY-MM-DD
+		HH:MI:SS') as opt_time,t.INFO,v.name as virtual_name from
+		tb_real_server t,tb_virtual_server v where t.virtualAddress=
+		v.INFO
+		<isGreaterThan property="INFO" compareValue="0" prepend="and">
+			t.INFO =#INFO#
+		</isGreaterThan>
+		<isNotEmpty property="name" prepend="and">
+			t.name like '%'||#name#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="realAddress" prepend="and">
+			t.realAddress like '%'||#realAddress#||'%'
+		</isNotEmpty>
+		order by t.id desc
+	</sql>
+	<select id="queryForListByObj" parameterClass="RealServerObj"
+		resultClass="RealServerObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="RealServerObj"
+		resultClass="int">
+		select count(id) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<delete id="deleteByObj" parameterClass="RealServerObj">
+		delete from tb_real_server where INFO=#INFO#
+	</delete>
+	<insert id="insertByObj" parameterClass="RealServerObj">
+		insert into
+		tb_real_server(id,name,virtualAddress,realAddress,weight,forwarding_method,request,receive,optr_id,opt_time,INFO)
+		values
+		(ID_REAL_SERVER.NEXTVAL,#name#,#virtualAddress#,#realAddress#,#weight#,#forwarding_method#,#request#,#receive#,#optr_id#,sysdate,#INFO#)
+	</insert>
+
+	<update id="updateByObj" parameterClass="RealServerObj">
+		update tb_real_server set
+		name=#name#,virtualAddress=#virtualAddress#,realAddress=#realAddress#,weight=#weight#,forwarding_method=#forwarding_method#,request=#request#,
+		receive=#receive#,optr_id=#optr_id#,opt_time=sysdate where
+		INFO=#INFO#
+	</update>
+
+</sqlMap>

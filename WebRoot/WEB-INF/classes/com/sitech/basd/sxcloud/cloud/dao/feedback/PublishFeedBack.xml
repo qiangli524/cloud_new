@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+    PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="FeedBack">
+<typeAlias alias="PublishFeedBackTypeForm" type="com.sitech.basd.sxcloud.cloud.web.feedback.form.PublishFeedBackTypeForm"/> 
+<typeAlias alias="PublishFeedBackForm" type="com.sitech.basd.sxcloud.cloud.web.feedback.form.PublishFeedBackForm"/>
+<typeAlias alias="feedBackTypeInfo" type="com.sitech.basd.sxcloud.cloud.domain.feedback.TbCloud2FeedBackTypeObj"/>
+<typeAlias alias="feedBackInfo" type="com.sitech.basd.sxcloud.cloud.domain.feedback.TbCloud2FeedBackObj"/> 
+<sql id="paginationStart">
+         <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+</sql>
+<sql id="paginationEnd">
+          <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+</sql>
+<select id="findListPublishFeedBackTypeByCount" parameterClass="java.lang.String" resultClass="int">
+     select count(*)
+     from ($value$)
+ </select>	
+   <select id="findListPublishFeedBackType" parameterClass="java.lang.String" resultClass="PublishFeedBackTypeForm">
+  	$value$
+ </select>
+ 
+ <statement id="insertForTB_PUBLISH_FEEDBACKTYPE" parameterClass="PublishFeedBackTypeForm">
+    insert into TB_CLOUD2_PUBLISH_FEEDBACKTYPE ( TYPE_ID,TYPE_NAME,TYPE_DESC,ENABLE)
+    values (  #TYPE_ID#,#TYPE_NAME#,#TYPE_DESC#,#ENABLE# )
+ </statement>
+ <statement id="updateTB_PUBLISH_FEEDBACKTYPE" parameterClass="PublishFeedBackTypeForm">
+    update TB_CLOUD2_PUBLISH_FEEDBACKTYPE set 
+	TYPE_NAME =#TYPE_NAME:VARCHAR#,	
+	TYPE_DESC =#TYPE_DESC:VARCHAR#,	
+
+	ENABLE =#ENABLE:NUMERIC#
+	WHERE TYPE_ID =#TYPE_CODE#
+ 
+ </statement>
+ 
+  <select id="findObjTB_PUBLISH_FEEDBACKTYPE" parameterClass="java.lang.String" resultClass="PublishFeedBackTypeForm">
+    select   *  from TB_CLOUD2_PUBLISH_FEEDBACKTYPE  where TYPE_ID =#value#
+ </select>
+ 
+ <statement id="deleteForTB_PUBLISH_FEEDBACKTYPE" parameterClass="java.lang.String">
+    delete from TB_CLOUD2_PUBLISH_FEEDBACKTYPE where TYPE_ID IN (#value#)
+ </statement>
+ 
+ <select id="findObjTB_PUBLISH_FEEDBACK" parameterClass="java.lang.String" resultClass="PublishFeedBackForm">
+    select f.id,TO_CHAR(f.submit_time,'yyyy-MM-dd hh24:mi:ss') submit_time,f.df_info,
+		f.sentto_employe,f.login_id,f.if_affirm,f.title,f.type_id,f.type,f.enable,f.hf_info,
+		TO_CHAR(f.hf_time,'yyyy-MM-dd hh24:mi:ss') hf_time from TB_CLOUD2_PUBLISH_FEEDBACK  f 
+	  where ID =#value#
+ </select>
+ 
+ <statement id="insertForTB_PUBLISH_FEEDBACK" parameterClass="java.lang.String">
+   $value$
+ </statement>
+ <sql id="sqlPublishFeedBackList">
+		select f.id,TO_CHAR(f.submit_time,'yyyy-MM-dd hh24:mi:ss') submit_time,f.df_info,
+		f.sentto_employe,f.login_id,f.if_affirm,f.title,f.type_id,f.type,f.enable,f.hf_info,f.hf_time
+		from TB_CLOUD2_PUBLISH_FEEDBACK  f 
+		WHERE 1=1 
+		<isNotNull prepend="AND" property="TITLE">
+		<isNotEmpty property="TITLE">
+		<![CDATA[
+	  		TITLE LIKE '%'||#TITLE#||'%'
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	<isNotNull prepend="AND" property="SENTTO_EMPLOYE"> 
+		<isNotEmpty property="SENTTO_EMPLOYE">
+		<![CDATA[
+	  		SENTTO_EMPLOYE = #SENTTO_EMPLOYE#
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	 and IF_AFFIRM = 0 order by TYPE_ID
+	</sql>
+ <select id="findListPublishFeedBackInfoByCount" parameterClass="feedBackInfo" resultClass="int">
+     SELECT COUNT(1) FROM (<include refid="sqlPublishFeedBackList"/>)		
+ </select>	
+   <select id="findListPublishFeedBackInfo" parameterClass="feedBackInfo" resultClass="PublishFeedBackForm">
+  	<include refid="paginationStart"/>
+		<include refid="sqlPublishFeedBackList"/>
+		<include refid="paginationEnd"/> 
+ </select>
+ <statement id="deleteForTB_PUBLISH_FEEDBACKInfo" parameterClass="java.lang.String">
+    delete from TB_CLOUD2_PUBLISH_FEEDBACK where ID IN (#value#)
+ </statement>
+ 
+  <statement id="insertForTB_HIS_PUBLISH_FEEDBACK" parameterClass="java.lang.String">
+   $value$
+ </statement>
+ 
+ <select id="findListPublishHisFeedBackInfoByCount" parameterClass="java.lang.String" resultClass="int">
+     select count(*)
+     from ($value$)
+ </select>	
+   <select id="findListPublishHisFeedBackInfo" parameterClass="java.lang.String" resultClass="PublishFeedBackForm">
+  	$value$
+ </select>
+ 
+ <select id="searchHisFeedBackInfoByCount" parameterClass="java.lang.String" resultClass="int">
+     select count(*)
+     from ($value$)
+ </select>	
+   <select id="searchHisFeedBackInfo" parameterClass="java.lang.String" resultClass="PublishFeedBackForm">
+  	$value$
+ </select>
+ 
+ <select id="findTypeNameForTblPUBLISH_FEEDBACKTYPE" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+    select TYPE_ID,
+      TYPE_NAME
+    from TB_CLOUD2_PUBLISH_FEEDBACKTYPE
+ </select>
+ 
+ <select id="findObjTB_HIS_PUBLISH_FEEDBACK" parameterClass="java.lang.String" resultClass="PublishFeedBackForm">
+    select 
+      ID,
+      SUBMIT_TIME,
+      TYPE_ID,
+      TITLE,DF_INFO,SENTTO_EMPLOYE,LOGIN_ID,IF_AFFIRM,ENABLE
+    from TB_CLOUD2_HIS_PUBLISH_FEEDBACK  where ID =#value#
+ </select>
+ 
+ <select id="getIdSequence" parameterClass="java.lang.String" resultClass="java.lang.String">
+  	select  ID_CLOUD2_PUBLISH_FEEDBACK.NEXTVAL as ID from dual
+ </select>
+ <!--  
+  <select id="getTypeIdSequence" parameterClass="java.lang.String" resultClass="java.lang.String">
+  	select  ID_CLOUD2_PUBLISH_FEEDBACKTYPE.NEXTVAL as TYPE_ID from dual
+ </select>
+ -->
+ <sql id="sqlFeedBackList">
+		select f.id,TO_CHAR(f.submit_time,'yyyy-MM-dd hh24:mi:ss') submit_time,f.df_info,
+		f.sentto_employe,f.login_id,f.if_affirm,f.title,f.type_id,f.type,f.enable 
+		from TB_CLOUD2_PUBLISH_FEEDBACK  f 
+		WHERE 1=1 
+		<isNotNull prepend="AND" property="TITLE">
+		<isNotEmpty property="TITLE">
+		<![CDATA[
+	  		TITLE LIKE '%'||#TITLE#||'%'
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	<isNotNull prepend="AND" property="LOGIN_ID"> 
+		<isNotEmpty property="LOGIN_ID">
+		<![CDATA[
+	  		LOGIN_ID = #LOGIN_ID#
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	<isNotNull prepend="AND" property="IF_AFFIRM"> 
+		<isNotEmpty property="IF_AFFIRM">
+		<![CDATA[
+	  		IF_AFFIRM = #IF_AFFIRM#
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	 order by TYPE_ID
+	</sql>
+ <select id="findListPublishMyFeedBackInfoByCount" parameterClass="feedBackInfo" resultClass="java.lang.Integer">
+     SELECT COUNT(1) FROM (<include refid="sqlFeedBackList"/>)
+ </select>	
+ <select id="findListPublishMyFeedBackInfo" parameterClass="feedBackInfo" resultClass="java.util.HashMap">
+  	<include refid="paginationStart"/>
+	<include refid="sqlFeedBackList"/>
+	<include refid="paginationEnd"/> 
+ </select>
+ 
+ <select id="findListIfaffirm" parameterClass="java.lang.String" resultClass="java.lang.String">
+    $value$
+ </select>
+ 
+ <statement id="updateTB_PUBLISH_FEEDBACK" parameterClass="java.lang.String">
+    $value$
+ </statement>
+ <sql id="sqlPublishAffiriFeedBackList">
+		select f.id,TO_CHAR(f.submit_time,'yyyy-MM-dd hh24:mi:ss') submit_time,f.df_info,
+		f.sentto_employe,f.login_id,f.if_affirm,f.title,f.type_id,f.type,f.enable,f.hf_info,
+		TO_CHAR(f.hf_time,'yyyy-MM-dd hh24:mi:ss') hf_time from TB_CLOUD2_PUBLISH_FEEDBACK  f 
+		WHERE 1=1 
+		<isNotNull prepend="AND" property="TITLE">
+		<isNotEmpty property="TITLE">
+		<![CDATA[
+	  		TITLE LIKE '%'||#TITLE#||'%'
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	<isNotNull prepend="AND" property="SENTTO_EMPLOYE"> 
+		<isNotEmpty property="SENTTO_EMPLOYE">
+		<![CDATA[
+	  		SENTTO_EMPLOYE = #SENTTO_EMPLOYE#
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	 and IF_AFFIRM = 1 order by TYPE_ID
+	</sql>
+ <select id="findListPublishAffiriFeedBackInfoByCount" parameterClass="feedBackInfo" resultClass="int">
+     SELECT COUNT(1) FROM (<include refid="sqlPublishAffiriFeedBackList"/>)
+ </select>	
+ <select id="findListPublishAffiriFeedBackInfo" parameterClass="feedBackInfo" resultClass="java.util.HashMap">
+  	<include refid="paginationStart"/>
+	<include refid="sqlPublishAffiriFeedBackList"/>
+	<include refid="paginationEnd"/> 
+ </select>
+	
+	<sql id="sqlFeedBackTypeList">
+		select * from TB_CLOUD2_PUBLISH_FEEDBACKTYPE
+		WHERE 1=1 
+		<isNotNull prepend="AND" property="TYPE_NAME"> 
+		<isNotEmpty property="TYPE_NAME">
+		<![CDATA[
+	  		TYPE_NAME LIKE '%'||#TYPE_NAME#||'%'
+		]]>
+		</isNotEmpty>
+	 	</isNotNull>
+	 	 order by TYPE_ID
+	</sql>
+	<select id="FeedBackTypeList" parameterClass="feedBackTypeInfo" resultClass="java.util.HashMap">
+		<include refid="paginationStart"/>
+		<include refid="sqlFeedBackTypeList"/>
+		<include refid="paginationEnd"/> 
+	</select>
+	 
+	<select id="FeedBackTypeListCount" parameterClass="feedBackTypeInfo" resultClass="java.lang.Integer">
+		SELECT COUNT(1) FROM (<include refid="sqlFeedBackTypeList"/>)		
+	</select>
+	
+	<!-- 获得所有用户组列表 -->
+	<select id="getAllGroupList" resultClass="java.util.HashMap">
+		select id as group_id,groupname as group_name from tb_sys_usergroup
+	</select>
+ 	<!-- 通过组ID得到所属组的用户 -->
+	<select id="getUserListByGroupId" parameterClass="java.lang.String" resultClass="java.util.HashMap">
+		select u.ACCOUNT AS SENTTO_EMPLOYE,U.NAME AS NAME from tb_sys_userinfo u left join tb_sys_grpmember g on u.id = g.userid where g.groupid = #GROUP_ID#
+	</select>
+</sqlMap>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 

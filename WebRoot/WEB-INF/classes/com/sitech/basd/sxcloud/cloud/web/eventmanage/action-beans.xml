@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.eventmanage.action.EventManageAction -->
+	<bean id="eventManageAction" class="com.sitech.basd.sxcloud.cloud.web.eventmanage.action.EventManageAction"
+		singleton="false">
+		<property name="eventManageService">
+			<ref bean="eventManageService" />
+		</property> 
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

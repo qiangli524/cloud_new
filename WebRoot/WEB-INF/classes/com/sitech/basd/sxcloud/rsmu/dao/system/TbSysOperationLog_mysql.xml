@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysOperationLog">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbSysOperationLogObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysOperationLogObj" />
+
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		LOGINID,USERID,FUNCID,OPERTYPE,MESSAGE,RESULT,REMARK,OPERTIME,domain
+    </sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<insert id="insertByObj" parameterClass="TbSysOperationLogObj">
+		insert into
+		TB_SYS_OPERATIONLOG (
+		LOGINID,USERID,FUNCID,OPERTYPE,MESSAGE,RESULT,REMARK,OPERTIME,domain
+		)
+		values
+		(
+		#LOGINID#,
+		#USERID#,
+		#FUNCID#,
+		#OPERTYPE#,
+		#MESSAGE#,
+		#RESULT#,
+		#REMARK#,
+		DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),
+		#domain#
+		)
+	</insert>
+	<sql id="queryForListByObjBase">
+		SELECT
+		T1.ID,T2.ACCOUNT,T2.NAME,T3.FUNCID AS
+		FUNCID_STR,T3.FUNNAME,T1.OPERTYPE,T1.MESSAGE,T1.RESULT,T1.REMARK, DATE_FORMAT(OPERTIME,'%Y-%m-%d %H:%i:%S') OPERTIME
+		FROM
+		TB_SYS_OPERATIONLOG T1,TB_SYS_USERINFO
+		T2,TB_SYS_FUNCTIONS T3 WHERE
+		T1.USERID=T2.ID AND T1.FUNCID=T3.ID 
+		<!--AND  DATE_FORMAT(OPERTIME,'%Y') > 2012 -->
+		<isNotEmpty property="ACCOUNT" prepend="AND">
+			T2.ACCOUNT like CONCAT('%',#ACCOUNT#,'%')
+        </isNotEmpty>
+        <isNotEmpty property="NAME" prepend="AND">
+			T2.NAME like CONCAT('%',#NAME#,'%')
+        </isNotEmpty>
+		<isNotEmpty property="resoursePoolObject" prepend="AND">
+			T1.MESSAGE like CONCAT('%',#resoursePoolObject#,'%')
+        </isNotEmpty>
+		<isNotEmpty property="start_opertime" prepend="AND">
+			<isNotEmpty property="end_opertime">
+				T1.OPERTIME BETWEEN
+				DATE_FORMAT(#start_opertime#,'%Y-%m-%d %H:%i:%S') AND DATE_FORMAT(#end_opertime#,'%Y-%m-%d %H:%i:%S')
+               </isNotEmpty>
+			</isNotEmpty>
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	T1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+     	</isNotEmpty>
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbSysOperationLogObj"
+		resultClass="TbSysOperationLogObj"> 
+		<include refid="queryForListByObjBase" />
+		  ORDER BY OPERTIME DESC
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	 <select id="queryForListByObjForCount" parameterClass="TbSysOperationLogObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryForListByObjBase"/>
+       ) virtual_table
+    </select>
+</sqlMap>

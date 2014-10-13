@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="SysAppConfig">
+
+	<typeAlias alias="SysAppConfigObj" type="com.sitech.basd.cloud3.domain.sysappconfig.SysAppConfigObj" />
+
+	<sql id="paginationEnd">
+		<![CDATA[
+			limit #FIRSTROWNUM#,#PAGESIZE#
+		]]>
+	</sql>
+	
+	<sql id="baseCloumns">
+		CONFIG_ID,SYS_ORDER,JDK_ORDER,USER_ORDER,PORT_ORDER,SERVER_ORDER,MIDDLEWARE_ORDER,CONFIG_ORDER,CPUUSE_ORDER,MEMORYUSE_ORDER,HEAPUSE_ORDER,
+		HEAPLEFT_ORDER,PATHAUTHORITY,NETIO_ORDER,SYS_ORDER_FLAG,JDK_ORDER_FLAG,USER_ORDER_FLAG, MIDDLEWARE_ORDER_FLAG,CPUUSE_ORDER_FLAG,
+		MEMORYUSE_ORDER_FLAG,HEAPUSE_ORDER_FLAG,PORT_FLAG,SERVER_FLAG,CONFIG_FLAG,NET_FLAG,HEAPLEFT_FLAG,PATH_FLAG,APPNAME
+	</sql>
+	
+	<select id="queryOne" parameterClass="SysAppConfigObj" resultClass="SysAppConfigObj">
+		select 
+		<include refid="baseCloumns"/>
+		from TB_SYS_APP_CONFIG r ,TB_SYS_APP t where r.CONFIG_ID = t.ID and r.CONFIG_ID = #CONFIG_ID#
+	</select>
+	
+	<delete id="deleteSysAppConfigObj" parameterClass="SysAppConfigObj">
+		delete from TB_SYS_APP_CONFIG where CONFIG_ID=#CONFIG_ID#
+	</delete>
+	
+	<update id="updateSysAppConfigObj" parameterClass="SysAppConfigObj">
+		update TB_SYS_APP_CONFIG t 
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="CONFIG_ID">
+				t.CONFIG_ID = #CONFIG_ID#
+			</isNotNull>
+			<isNotNull prepend="," property="SYS_ORDER">
+				t.SYS_ORDER = #SYS_ORDER# 
+			</isNotNull>
+			<isNotNull prepend="," property="JDK_ORDER">
+				t.JDK_ORDER = #JDK_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="USER_ORDER">
+				t.USER_ORDER = #USER_ORDER# 
+			</isNotNull>
+			<isNotNull prepend="," property="MIDDLEWARE_ORDER">
+				t.MIDDLEWARE_ORDER = #MIDDLEWARE_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="CPUUSE_ORDER">
+				t.CPUUSE_ORDER = #CPUUSE_ORDER# 
+			</isNotNull>
+			<isNotNull prepend="," property="MEMORYUSE_ORDER">
+				t.MEMORYUSE_ORDER = #MEMORYUSE_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPUSE_ORDER">
+				t.HEAPUSE_ORDER = #HEAPUSE_ORDER# 	
+			</isNotNull>
+			<isNotNull prepend="," property="PORT_ORDER">
+				t.PORT_ORDER = #PORT_ORDER# 	
+			</isNotNull>
+			<isNotNull prepend="," property="SERVER_ORDER">
+				t.SERVER_ORDER = #SERVER_ORDER# 	
+			</isNotNull>
+			<isNotNull prepend="," property="CONFIG_ORDER">
+				t.CONFIG_ORDER = #CONFIG_ORDER# 	
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPLEFT_ORDER">
+				t.HEAPLEFT_ORDER = #HEAPLEFT_ORDER# 	
+			</isNotNull>
+			<isNotNull prepend="," property="PATHAUTHORITY">
+				t.PATHAUTHORITY = #PATHAUTHORITY# 	
+			</isNotNull>
+			<isNotNull prepend="," property="NETIO_ORDER">
+				t.NETIO_ORDER = #NETIO_ORDER# 	
+			</isNotNull>
+			<isNotNull prepend="," property="SYS_ORDER_FLAG">
+				t.SYS_ORDER_FLAG = #SYS_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="JDK_ORDER_FLAG">
+				t.JDK_ORDER_FLAG = #JDK_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="USER_ORDER_FLAG">
+				t.USER_ORDER_FLAG = #USER_ORDER_FLAG# 
+			</isNotNull>
+			<isNotNull prepend="," property="MIDDLEWARE_ORDER_FLAG">
+				t.MIDDLEWARE_ORDER_FLAG = #MIDDLEWARE_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="CPUUSE_ORDER_FLAG">
+				t.CPUUSE_ORDER_FLAG = #CPUUSE_ORDER_FLAG# 
+			</isNotNull>
+			<isNotNull prepend="," property="MEMORYUSE_ORDER_FLAG">
+				t.MEMORYUSE_ORDER_FLAG = #MEMORYUSE_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPUSE_ORDER_FLAG">
+				t.HEAPUSE_ORDER_FLAG = #HEAPUSE_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="PORT_FLAG">
+				t.PORT_FLAG = #PORT_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPLEFT_FLAG">
+				t.HEAPLEFT_FLAG = #HEAPLEFT_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="CONFIG_FLAG">
+				t.CONFIG_FLAG = #CONFIG_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="SERVER_FLAG">
+				t.SERVER_FLAG = #SERVER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="NET_FLAG">
+				t.NET_FLAG = #NET_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="PATH_FLAG">
+				t.PATH_FLAG = #PATH_FLAG#
+			</isNotNull>
+		</dynamic>
+		where t.CONFIG_ID=#CONFIG_ID#
+	</update>
+
+	<insert id="insertSysAppConfigObj" parameterClass="SysAppConfigObj">
+		insert into TB_SYS_APP_CONFIG 
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="CONFIG_ID">
+				CONFIG_ID
+			</isNotNull>
+			<isNotNull prepend="," property="SYS_ORDER">
+				SYS_ORDER
+			</isNotNull>							
+			<isNotNull prepend="," property="JDK_ORDER">
+				JDK_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="USER_ORDER">
+				USER_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="MIDDLEWARE_ORDER">
+				MIDDLEWARE_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="CPUUSE_ORDER">
+				CPUUSE_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="MEMORYUSE_ORDER">
+				MEMORYUSE_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPUSE_ORDER">
+				HEAPUSE_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="PORT_ORDER">
+				PORT_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="SERVER_ORDER">
+				SERVER_ORDER 
+			</isNotNull>
+			<isNotNull prepend="," property="CONFIG_ORDER">
+				CONFIG_ORDER	
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPLEFT_ORDER">
+				HEAPLEFT_ORDER
+			</isNotNull>
+			<isNotNull prepend="," property="PATHAUTHORITY">
+				PATHAUTHORITY	
+			</isNotNull>
+			<isNotNull prepend="," property="NETIO_ORDER">
+				NETIO_ORDER 	
+			</isNotNull>
+			<isNotNull prepend="," property="SYS_ORDER_FLAG">
+				SYS_ORDER_FLAG
+			</isNotNull>
+			<isNotNull prepend="," property="JDK_ORDER_FLAG">
+				JDK_ORDER_FLAG
+			</isNotNull>
+			<isNotNull prepend="," property="USER_ORDER_FLAG">
+				USER_ORDER_FLAG
+			</isNotNull>
+			<isNotNull prepend="," property="MIDDLEWARE_ORDER_FLAG">
+				MIDDLEWARE_ORDER_FLAG
+			</isNotNull>
+			<isNotNull prepend="," property="CPUUSE_ORDER_FLAG">
+				CPUUSE_ORDER_FLAG
+			</isNotNull>
+			<isNotNull prepend="," property="MEMORYUSE_ORDER_FLAG">
+				MEMORYUSE_ORDER_FLAG
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPUSE_ORDER_FLAG">
+				HEAPUSE_ORDER_FLAG
+			</isNotNull>
+			<isNotNull prepend="," property="PORT_FLAG">
+				PORT_FLAG 
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPLEFT_FLAG">
+				HEAPLEFT_FLAG 
+			</isNotNull>
+			<isNotNull prepend="," property="CONFIG_FLAG">
+				CONFIG_FLAG 
+			</isNotNull>
+			<isNotNull prepend="," property="SERVER_FLAG">
+				SERVER_FLAG 
+			</isNotNull>
+			<isNotNull prepend="," property="NET_FLAG">
+				NET_FLAG 
+			</isNotNull>
+			<isNotNull prepend="," property="PATH_FLAG">
+				PATH_FLAG
+			</isNotNull>
+		)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="CONFIG_ID">
+				#CONFIG_ID#
+			</isNotNull>
+			<isNotNull prepend="," property="SYS_ORDER">
+				#SYS_ORDER#
+			</isNotNull>							
+			<isNotNull prepend="," property="JDK_ORDER">
+				#JDK_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="USER_ORDER">
+				#USER_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="MIDDLEWARE_ORDER">
+				#MIDDLEWARE_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="CPUUSE_ORDER">
+				#CPUUSE_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="MEMORYUSE_ORDER">
+				#MEMORYUSE_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPUSE_ORDER">
+				#HEAPUSE_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="PORT_ORDER">
+				#PORT_ORDER#  
+			</isNotNull>
+			<isNotNull prepend="," property="SERVER_ORDER">
+				 #SERVER_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="CONFIG_ORDER">
+				#CONFIG_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPLEFT_ORDER">
+				#HEAPLEFT_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="PATHAUTHORITY">
+				#PATHAUTHORITY#
+			</isNotNull>
+			<isNotNull prepend="," property="NETIO_ORDER">
+				#NETIO_ORDER#
+			</isNotNull>
+			<isNotNull prepend="," property="SYS_ORDER_FLAG">
+				#SYS_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="JDK_ORDER_FLAG">
+				#JDK_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="USER_ORDER_FLAG">
+				#USER_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="MIDDLEWARE_ORDER_FLAG">
+				#MIDDLEWARE_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="CPUUSE_ORDER_FLAG">
+				#CPUUSE_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="MEMORYUSE_ORDER_FLAG">
+				#MEMORYUSE_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPUSE_ORDER_FLAG">
+				#HEAPUSE_ORDER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="PORT_FLAG">
+				#PORT_FLAG#  
+			</isNotNull>
+			<isNotNull prepend="," property="HEAPLEFT_FLAG">
+				#HEAPLEFT_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="CONFIG_FLAG">
+				#CONFIG_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="SERVER_FLAG">
+				#SERVER_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="NET_FLAG">
+				#NET_FLAG#
+			</isNotNull>
+			<isNotNull prepend="," property="PATH_FLAG">
+				#PATH_FLAG#
+			</isNotNull>
+		)
+		</dynamic>
+	</insert>
+	
+	<sql id="queryForList">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_sys_app_config r,tb_sys_app t where r.CONFIG_ID = t.ID
+		<dynamic>
+			<isNotEmpty prepend="and" property="CONFIG_ID">
+				r.CONFIG_ID = #CONFIG_ID#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="query4List" parameterClass="SysAppConfigObj" resultClass="SysAppConfigObj">
+		<include refid="queryForList"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryTotalCount" parameterClass="SysAppConfigObj"
+		resultClass="int">
+		select count(CONFIG_ID) from (
+		<include refid="queryForList"/>
+		) virtual_table
+	</select>
+	
+</sqlMap>

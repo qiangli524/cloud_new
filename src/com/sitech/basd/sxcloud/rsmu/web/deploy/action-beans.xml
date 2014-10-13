@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>       
+    <bean id="baseDeployAlarmAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.DeployAlarmAction" singleton="false" >
+        <property name="operationService">
+            <ref bean="operationService"/>
+	    </property> 
+	    <property name="deployAlarmService">
+	            <ref bean="deployAlarmService"/>
+	    </property>
+    </bean>                                                         
+    <bean id="baseDeployExampleAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.DeployExampleAction" singleton="false" >
+        <property name="operationService">
+	            <ref bean="operationService"/>
+	    </property> 
+	    <property name="deployExampleService">
+            <ref bean="deployExampleService"/>
+        </property>
+        <property name="busiHostService">
+            <ref bean="busiHostService"/>
+        </property>
+        <property name="deployStrategyService">
+            <ref bean="deployStrategyService"/>
+        </property>
+        <property name="appService">
+            <ref bean="appService"/>
+        </property>
+        <property name="deployExampleHisService">
+            <ref bean="deployExampleHisService"/>
+        </property>
+        <property name="taskService">
+            <ref bean="taskService"/>
+        </property>
+        <property name="deployConfigFileServerImpl">
+            <ref bean="deployConfigFileServerImpl"/>
+        </property>
+        <property name="bizSystemService">
+            <ref bean="bizSystemService"/>
+        </property>
+	     <property name="appVersionService">
+            <ref bean="appVersionService"/>
+        </property>
+	     <property name="onlineHistoryService">
+            <ref bean="onlineHistoryService"/>
+        </property>
+        <property name="busiHostConfigService">
+            <ref bean="busiHostConfigService"/>
+        </property> 
+        <property name="tbBusiSysTreeService">
+            <ref bean="tbBusiSysTreeService"/>
+        </property> 
+        <property name="userService">
+            <ref bean="userService"/>
+        </property> 
+        <property name="processService">
+            <ref bean="processService"/>
+        </property> 
+    </bean>                                                          
+    <bean id="baseDeployExampleHisAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.DeployExampleHisAction" singleton="false" >
+        <property name="appService">
+	            <ref bean="appService"/>
+	    </property> 
+	    <property name="deployExampleHisService">
+            <ref bean="deployExampleHisService"/>
+        </property>
+        <property name="operationService">
+            <ref bean="operationService"/>
+	    </property> 
+    </bean>  
+    
+    <bean id="baseExampleResumeAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.ExampleResumeAction" singleton="false" >
+	    <property name="operationService">
+            <ref bean="operationService"/>
+	    </property> 
+	    <property name="exampleResumeService">
+	            <ref bean="exampleResumeService"/>
+	    </property>
+	    <property name="appService">
+	            <ref bean="appService"/>
+	    </property>
+    </bean>
+    
+    <bean id="deployVideoAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.DeployVideoAction" singleton="false" >
+        <property name="shellService">
+            <ref bean="shellService"/>
+	    </property> 
+	    
+	     <property name="kvmManService">
+	            <ref bean="kvmManService"/>
+	    </property>
+	     <property name="entityTreeService">
+	            <ref bean="entityTreeService"/>
+	    </property>
+    </bean>  
+     <bean id="deployVideoCommandsetAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.DeployVideoCommandsetAction" singleton="false" >
+        <property name="videoExampleService">
+            <ref bean="videoExampleService"/>
+	    </property> 
+	     <property name="busiHostService">
+	            <ref bean="busiHostService"/>
+	    </property>
+	     <property name="busiHostConfigService">
+	            <ref bean="busiHostConfigService"/>
+	    </property>
+	    <property name="entityTreeService">
+	            <ref bean="entityTreeService"/>
+	    </property>
+    </bean>   
+     <bean id="versionResumeAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.VersionResumeAction" singleton="false" >
+	    <property name="appService">
+	            <ref bean="appService"/>
+	    </property>
+<!-- 	     <property name="versionResumeService"> -->
+<!--             <ref bean="versionResumeService"/> -->
+<!--         </property> -->
+	     <property name="fileVersionService">
+            <ref bean="fileVersionService"/>
+        </property>
+	     <property name="deployExampleService">
+            <ref bean="deployExampleService"/>
+        </property>
+	     <property name="rollbackFileService">
+            <ref bean="rollbackFileService"/>
+        </property>
+	     <property name="rollbackInfoService">
+            <ref bean="rollbackInfoService"/>
+        </property>
+	     <property name="onlineFilepathService">
+            <ref bean="onlineFilepathService"/>
+        </property>
+	     <property name="appVersionService">
+            <ref bean="appVersionService"/>
+        </property>
+	     <property name="onlineHistoryService">
+            <ref bean="onlineHistoryService"/>
+        </property>
+    </bean> 
+     <bean id="onlineHistoryAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.OnlineHistoryAction" singleton="false" >
+        <property name="onlineHistoryService">
+            <ref bean="onlineHistoryService"/>
+	    </property> 
+	     <property name="appService">
+	            <ref bean="appService"/>
+	    </property>
+    </bean> 
+    <bean id="deployFileVersionAction" class="com.sitech.basd.sxcloud.rsmu.web.deploy.action.DeployFileVersionAction" singleton="false" >
+        <property name="deployFileVersionService">
+            <ref bean="deployFileVersionService"/>
+	    </property> 
+	    <property name="tbGlobalConfigService">
+            <ref bean="tbGlobalConfigService"/>
+	    </property> 
+	    <property name="appService">
+	            <ref bean="appService"/>
+	    </property>
+    </bean> 
+</beans>
+

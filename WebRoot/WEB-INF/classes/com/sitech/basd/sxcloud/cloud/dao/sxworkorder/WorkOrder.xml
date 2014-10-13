@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="sxWorkOrder">
+	<typeAlias alias="sxWorkOrderObj" type="com.sitech.basd.sxcloud.cloud.domain.sxworkorder.WorkOrderObj"/>
+	
+	<typeAlias alias="sxOrderTaskObj" type="com.sitech.basd.sxcloud.cloud.domain.sxworkorder.OrderTaskObj"/>
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+		
+	<select id="countByObj" parameterClass="sxWorkOrderObj" resultClass="int">
+	select count(1) from(
+		 select o.*,(o.TASK_COUNT-o.TASK_DEAL_COUNT-o.TASK_COMPLETE_COUNT) as TASK_WAIT_COUNT from(
+		        select 
+            t.uuid,t.type,t.username,t.cameFrom,t.requestdonetime,TO_CHAR(t.receivetime,'yyyy-mm-dd HH24:mi:ss') receivetime,
+				t.exetime,t.requestType,t.addReason,t.expansionReason,t.currSituation,
+				t.isInPlan,t.isInvest,t.state,t.dealState,
+               (select count(1)
+				          from TB_CLOUD_SX4_ORDERTASK_INFO a 
+				         where a.workorderid = t.uuid   ) as TASK_COUNT ,
+               (select count(case when d.ISSUCCESS = 0 then ISSUCCESS end) from TB_SX_CREATE_RESOURCE_LOG d
+                   WHERE d.ORDER_ID = t.uuID AND d.ID = (SELECT MAX(a.ID) FROM TB_SX_CREATE_RESOURCE_LOG A WHERE A.TASK_ID = D.TASK_ID)) as TASK_DEAL_COUNT,
+               (select count(case when d.ISSUCCESS = 1 then ISSUCCESS end) from TB_SX_CREATE_RESOURCE_LOG d
+                   WHERE d.ORDER_ID = t.uuID AND d.ID = (SELECT MAX(a.ID) FROM TB_SX_CREATE_RESOURCE_LOG A WHERE A.TASK_ID = D.TASK_ID)) as TASK_COMPLETE_COUNT
+                   
+          from TB_CLOUD_SX4_WORKORDER_INFO t
+         ) o) z
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cameFrom">
+				cameFrom = #cameFrom#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="dealState">
+				dealState = #dealState#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryWorkOrderList" parameterClass="sxWorkOrderObj" resultClass="sxWorkOrderObj">
+		<isGreaterThan compareValue="0" property="PAGESIZE">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		 select o.*,(o.TASK_COUNT-o.TASK_DEAL_COUNT-o.TASK_COMPLETE_COUNT) as TASK_WAIT_COUNT from(
+		        select 
+            t.uuid,t.type,t.username,t.cameFrom,t.requestdonetime,TO_CHAR(t.receivetime,'yyyy-mm-dd HH24:mi:ss') receivetime,
+				t.requestType,t.addReason,t.expansionReason,t.currSituation,
+				t.isInPlan,t.isInvest,t.state,t.dealState,
+				(select TO_CHAR(d.inserttime,'yyyy-mm-dd HH24:mi:ss') from TB_SX_CREATE_RESOURCE_LOG d
+               WHERE  d.ID = (SELECT MIN(a.ID) FROM TB_SX_CREATE_RESOURCE_LOG A  WHERE a.ORDER_ID = t.uuID )) exetime,
+               (select count(1)
+				          from TB_CLOUD_SX4_ORDERTASK_INFO a 
+				         where a.workorderid = t.uuid   ) as TASK_COUNT ,
+               (select count(case when d.ISSUCCESS = 0 then ISSUCCESS end) from TB_SX_CREATE_RESOURCE_LOG d
+                   WHERE d.ORDER_ID = t.uuID AND d.ID = (SELECT MAX(a.ID) FROM TB_SX_CREATE_RESOURCE_LOG A WHERE A.TASK_ID = D.TASK_ID)) as TASK_DEAL_COUNT,
+               (select count(case when d.ISSUCCESS = 1 then ISSUCCESS end) from TB_SX_CREATE_RESOURCE_LOG d
+                   WHERE d.ORDER_ID = t.uuID AND d.ID = (SELECT MAX(a.ID) FROM TB_SX_CREATE_RESOURCE_LOG A WHERE A.TASK_ID = D.TASK_ID)) as TASK_COMPLETE_COUNT
+          from TB_CLOUD_SX4_WORKORDER_INFO t
+         ) o
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cameFrom">
+				cameFrom = #cameFrom#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="dealState">
+				dealState = #dealState#
+			</isNotEmpty>
+		</dynamic>
+		order by receivetime desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>	
+	
+	
+	<insert id="insertWorkOrderTable" parameterClass="sxWorkOrderObj"> 
+		insert into TB_CLOUD_SX4_WORKORDER_INFO(uuid,type,username,camefrom,requestdonetime,receivetime,
+				exetime,requestType,addReason,expansionReason,currSituation,isInPlan,isInvest,state,dealState)
+		values(#uuid#,#type#,#userName#,#cameFrom#,null,
+			sysdate,null,
+			#requestType#,#addReason#,#expansionReason#,#currSituation#,#isInPlan#,#isInvest#,0,0)
+	</insert>
+	
+	<update id="updateWorkOrderTable" parameterClass="sxWorkOrderObj">
+		update TB_CLOUD_SX4_WORKORDER_INFO 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="dealState">
+				dealState = #dealState#
+			</isNotEmpty>
+		</dynamic>
+		where uuid = #uuid#
+	</update>
+	
+	<delete id="deleteWorkOrderByObj" parameterClass="sxWorkOrderObj">
+		delete from TB_CLOUD_SX4_WORKORDER_INFO where uuid = #uuid#
+	</delete>
+	
+	<select id="queryResourceList" parameterClass="sxOrderTaskObj" resultClass="sxOrderTaskObj">
+		select o.* ,o.vmnum - o.success -o.failNum waiting from (select   
+     a.uuid,
+       a.templateId,
+       a.cpuCount,
+       a.memory,
+       a.storage,
+       a.expandStorage,
+       a.net1,
+       a.net2,
+       a.name,
+       a.clusterId,
+       d.NAME        clusterName,
+       a.hostname,
+       a.cpushared,
+       a.vmNum,
+       a.workOrderId,
+       a.type,
+       a.status,
+       a.PERFCONF,
+       a.remark,
+       TO_CHAR(a.FREEDATE,'yyyy-mm-dd') FREEDATE,
+       b.NAME        net1name,
+       e.NAME        net2name,
+       c.Name        templateName,
+        (select count(case when t.ISSUCCESS = 1 then ISSUCCESS end) success from TB_SX_CREATE_RESOURCE_LOG t
+where t.task_id= a.uuid) success,
+(select count(case when t.ISSUCCESS = 0 and t.iscomplete = 1  then iscomplete end) fail from TB_SX_CREATE_RESOURCE_LOG t
+where t.task_id= a.uuid) failNum
+   from TB_CLOUD_SX4_ORDERTASK_INFO a
+  join TB_CLOUD2_NET_INFO b
+    on a.net1 = b.IBM_NET_ID
+  join TB_TEM_MANAGE c
+    on a.templateId = c.TEMPLATE_CODE
+  left outer join TB_CLOUD_CLUSTER_INFO d
+    on a.clusterId = d.C_UUID
+  left outer join TB_CLOUD2_NET_INFO e
+    on a.net2 = e.IBM_NET_ID
+    ) o
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="workOrderId">
+				workOrderId = #workOrderId#
+			</isNotEmpty>
+		</dynamic>
+		order by o.type
+	</select>
+	
+	<insert id="insertResource" parameterClass="sxOrderTaskObj">
+		insert into TB_CLOUD_SX4_ORDERTASK_INFO(UUID,TEMPLATEID,CPUCOUNT,MEMORY,STORAGE,NET1,NET2,NAME,CLUSTERID,
+								CLUSTERNAME,HOSTNAME,CPUSHARED,VMNUM,WORKORDERID,TYPE,STATUS ,EXPANDSTORAGE,FREEDATE,PERFCONF,REMARK)
+		values(#uuid#,#templateId#,#cpuCount#,#memory#,#storage#,#net1#,#net2#,#name#,#clusterId#,#clusterName#,
+			#hostname#,#cpushared#,#vmNum#,#workOrderId#,#type#,'0',#expandStorage#,to_date(#freeDate#,'yyyy-mm-dd'),#perfConf#,#remark#) 
+	</insert>
+	
+	<delete id="deleteResourceByObj" parameterClass="sxOrderTaskObj">
+		delete from TB_CLOUD_SX4_ORDERTASK_INFO where uuid = #uuid#
+	</delete>
+	
+	<update id="updateResourceByObj" parameterClass="sxOrderTaskObj">
+		update TB_CLOUD_SX4_ORDERTASK_INFO 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="templateId">
+				templateId = #templateId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="cpuCount">
+				cpuCount = #cpuCount#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="memory">
+				memory = #memory#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="storage">
+				storage = #storage#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="expandStorage">
+				expandStorage = #expandStorage#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="net1">
+				net1 = #net1#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="net2">
+				net2 = #net2#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="name">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="clusterId">
+				clusterId = #clusterId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="clusterName">
+				clusterName = #clusterName#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="hostname">
+				hostname = #hostname#
+			</isNotEmpty>
+			<isNotNull prepend="," property="cpushared">
+				cpushared = #cpushared#
+			</isNotNull>
+			<isNotEmpty prepend="," property="vmNum">
+				vmNum = #vmNum#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="workOrderId">
+				workOrderId = workOrderId
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="type">
+				type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="status">
+				status = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="perfConf">
+				perfConf = #perfConf#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="remark">
+				remark = #remark#
+			</isNotEmpty>
+		</dynamic>
+		where uuid = #uuid#
+	</update>
+	
+
+</sqlMap>

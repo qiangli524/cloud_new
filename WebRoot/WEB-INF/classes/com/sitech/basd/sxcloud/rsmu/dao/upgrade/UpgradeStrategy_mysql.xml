@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="UpgradeStrategy">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="UpgradeStrategyObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.upgrade.UpgradeStrategyObj" />
+ 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		t.STRATEGYNAME,t.TYPE,t.STRATEGY,DATE_FORMAT(t.UPDATETIME,'%Y-%m-%d %H:%i:%S') as UPDATETIME,t.BASEPATH,h.HOSTNAME
+	</sql>
+	<sql id="tableColumns">
+		t.ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryByObjBase">
+		select
+		<include refid="tableColumns" />
+		from TB_BUSI_UPGRADE_STRATEGY t,TB_BUSI_HOST h where t.STRATEGY
+		= h.id
+		<isGreaterThan property="ID" compareValue="0" prepend="and">
+			t.ID =#ID#
+		</isGreaterThan>
+		<isNotEmpty property="STRATEGYNAME" prepend="and">
+			t.STRATEGYNAME like CONCAT('%',#STRATEGYNAME#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="HOSTNAME" prepend="and">
+			h.HOSTNAME like CONCAT('%',#HOSTNAME#,'%')
+		</isNotEmpty> 
+	</sql>
+	<select id="queryForListByObj" parameterClass="UpgradeStrategyObj"
+		resultClass="UpgradeStrategyObj"> 
+		<include refid="queryByObjBase" />
+		ORDER BY t.UPDATETIME DESC
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="UpgradeStrategyObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+
+	<delete id="deleteByObj" parameterClass="UpgradeStrategyObj">
+		delete from TB_BUSI_UPGRADE_STRATEGY where ID=#ID#
+	</delete>
+
+	<insert id="insertByObj" parameterClass="UpgradeStrategyObj">
+		insert into 
+		TB_BUSI_UPGRADE_STRATEGY(STRATEGYNAME,TYPE,STRATEGY,BASEPATH)
+		values
+		(#STRATEGYNAME#,#TYPE#,#STRATEGY#,#BASEPATH#)
+	</insert>
+
+	<update id="updateByObj" parameterClass="UpgradeStrategyObj">
+		update TB_BUSI_UPGRADE_STRATEGY set
+		STRATEGYNAME=#STRATEGYNAME#,TYPE=#TYPE#,
+		STRATEGY=#STRATEGY#,UPDATETIME=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),BASEPATH=#BASEPATH# 
+		where ID=#ID#
+	</update>
+
+</sqlMap>

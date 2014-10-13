@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="xen" extends="global_package">
+		<action name="xen_*"
+				class="xenManAction" method="{1}">
+			<result name="nake_page">/yicloud/xen/creatNakeMac.jsp</result>
+			<result name="success">/ajax/ajax.jsp</result>
+			<result name="vm_info">/yicloud/xen/xenvmInfo.jsp</result>
+			<result name="edit_vm_info">/yicloud/xen/editVmInfo.jsp</result>
+			<result name="vm_console">/yicloud/xen/vmConsole.jsp</result>
+			<result name="vm_vdis">/yicloud/xen/vmVdis.jsp</result>
+			<result name="host_info">/yicloud/xen/xenHostInfo.jsp</result>
+			<result name="shot_page">/yicloud/xen/snapShot.jsp</result>
+			<result name="tem_page">/yicloud/xen/createTemByVM.jsp</result>
+			<result name="vm_page">/yicloud/xen/createVMByTem.jsp</result>
+			<result name="queryCreateByTem">/yicloud/xen/queryCreateVMByTem.jsp</result>
+			<result name="clone_page">/yicloud/xen/cloneVMByVM.jsp</result>
+			<result name="snapshot_Manager">/yicloud/xen/snapshotManager.jsp</result>
+			<result name="tem_info">/yicloud/xen/temInfo.jsp</result>
+			<result name="addXenDataCenter">/yicloud/xen/addDataCenter.jsp</result>
+			<result name="con_cluster">/yicloud/xen/conCluster.jsp</result>
+			<result name="list_storage">/yicloud/xen/listHostDs.jsp</result>
+			<result name="list_nics">/yicloud/xen/listNics.jsp</result>
+			<result name="list_networks">/yicloud/xen/listNetworks.jsp</result>
+			<result name="connect_cluster">/yicloud/xen/connectCluster.jsp</result>
+			<result name="migrate_page">/yicloud/xen/migrateVM.jsp</result>
+			<result name="move_page">/yicloud/xen/moveVM.jsp</result>
+			<result name="is_can_del_host">/yicloud/xen/delHost.jsp</result>
+			<result name="add_host">/yicloud/xen/addHost.jsp</result>
+			<result name="nfs_page">/yicloud/xen/addNFS.jsp</result>
+			<result name="clusterVM">/yicloud/xen/clusterVM.jsp</result>
+			<result name="host_ability">/yicloud/xen/hostAbility.jsp</result>
+			<result name="add_vdi">/yicloud/xen/addVdi.jsp</result>
+			<result name="edit_vdi">/yicloud/xen/editVdi.jsp</result>
+			<result name="listStoreInfo">/yicloud/xen/xenStoreInfo.jsp</result>
+			<result name="listStoreVdi">/yicloud/xen/xenStoreVdi.jsp</result>
+			<result name="list_vm_networks">/yicloud/xen/listVmNetworks.jsp</result>
+			<result name="reConnPage">/yicloud/xen/reConnXenSR.jsp</result>
+			<result name="goAddInterfacePage">/yicloud/xen/addVirtualNic.jsp</result>
+			<result name="addNetworkPage">/yicloud/xen/addNetwork.jsp</result>
+			<result name="cloneByTem">/yicloud/xen/createVMByTemOnHost.jsp</result>
+			<result name="goAdjustNetworkPage">/yicloud/xen/adjustNetwork.jsp</result>
+		</action>
+ </package>
+
+</struts>

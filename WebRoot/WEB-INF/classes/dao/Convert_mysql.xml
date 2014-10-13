@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Convert">
+<typeAlias alias="ConvertObj" type="domain.ConvertObj"/>
+<typeAlias alias="DataStoreObj" type="com.sitech.basd.yicloud.domain.datastore.DataStoreObj"/>
+	<insert id="insertByObj" parameterClass="ConvertObj">
+		insert into tb_convert(id,convertType,state,sourceIp,destiIp,insertTime) 
+			 values(#id#,#convertType#,#state#,#sourceIp#,#destiIp#,sysdate())
+	</insert>
+	<select id="queryForList" parameterClass="ConvertObj" resultClass="ConvertObj">
+	  select id,convertType,state,sourceIp,destiIp,DATE_FORMAT(insertTime, '%Y-%m-%d %H:%i:%S') insertTime,
+	  			time_to_sec(timediff(IFNULL(updateTime,SYSDATE()), insertTime)) usedTime
+	  from tb_convert 
+	  <dynamic prepend="where">
+	    <isNotNull property="id" prepend="and">
+	        id=#id#
+	    </isNotNull>
+	    <isNotNull property="convertType" prepend="and">
+	    	<isNotEqual property="convertType" compareValue="-1">
+	    		convertType = #convertType#
+	    	</isNotEqual>
+	    </isNotNull>
+	     <isNotNull property="sourceIp" prepend="and">
+	     	<isNotEmpty property="sourceIp">
+	     		 sourceIp=#sourceIp#
+	     	</isNotEmpty>
+	    </isNotNull>
+	     <isNotNull property="destiIp" prepend="and">
+	     	<isNotEmpty property="destiIp">
+	     		 destiIp=#destiIp#
+	     	</isNotEmpty>
+	    </isNotNull>
+	  </dynamic>
+	</select>
+	
+	<delete id="deleteByObj" parameterClass="ConvertObj">
+		delete from tb_convert where id=#id#
+	</delete>
+	
+	<update id="updateByObj" parameterClass="ConvertObj">
+		update tb_convert set state = #state#,updateTime=sysdate() where id = #id#
+	</update>
+	
+	<select id="queryHostStore" parameterClass="DataStoreObj" resultClass="ConvertObj">
+		SELECT SUM(ROUND((t.CAPACITY/1024),2)) storeAll,SUM(ROUND((t.FREE_SPACE/1024),2)) storeFree 
+		from tb_yicloud_datastore t where t.HOST_ID = #HOST_ID#
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	t.domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+	</select>
+</sqlMap>

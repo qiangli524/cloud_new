@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.reporthost.action.ReportHostAction -->
+	<bean id="reportAppAction" class="com.sitech.basd.sxcloud.cloud.web.reportapp.action.ReportAppAction"
+		singleton="false">
+		<property name="appMessageService">
+			<ref bean="appMessageService" />
+		</property>
+		<property name="reportAppCollService">
+			<ref bean="reportAppCollService" />
+		</property>  
+	</bean>
+</beans>  
+
+
+
+
+
+
+	
+
+
+

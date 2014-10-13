@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="showVm" extends="global_package">
+		<action name="showvm_*" class="showVmAction" method="{1}">
+			<result name="listvm">/yicloud/showVm/showVm.jsp</result>
+            <!--定时调度页面用 -->
+			<result name="schedulervmlist">/scheduler/selectVm.jsp</result>
+			<result name="showVmwareDetail">/yicloud/showVm/vmwarevmInfo.jsp</result>	
+			<result name="showXenDetail">/yicloud/showVm/xenvmInfo.jsp</result>
+			<result name="listhost">/yicloud/showVm/queryHostIp.jsp</result>	
+			
+			<!-- 安徽移动云管理平台，虚拟机列表页面 -->
+			<result name="ah_listvm">/ah/resource/vmhost/ah_showVm.jsp</result>
+		</action>
+ </package>
+</struts>

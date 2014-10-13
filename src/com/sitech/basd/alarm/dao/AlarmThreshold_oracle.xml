@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="AlarmThreshold">
+    
+    <typeAlias alias="AlarmThreshold" type="com.sitech.basd.alarm.domain.AlarmThreshold"/>
+     <sql id="queryByObjBase_base">
+        select rownum rn, s.id,s.alarm_kpi,s.alarm_desc,s.alarm_level,s.alarm_threshold,
+        		s.alarm_trigger,s.alarm_type,s.alarm_unit,to_char(s.end_time,'yyyyMMdd hh24:mi:ss')end_time,to_char(s.start_time,'yyyyMMdd hh24:mi:ss')start_time  	
+        from
+        tb_cloud_alarm_kpi s
+         <dynamic prepend="where">
+         		<isNotEmpty property="alarm_level" prepend="and">
+                   s.alarm_level = #alarm_level#
+                </isNotEmpty>
+                <isNotEmpty property="alarm_kpi" prepend="and">
+              	  s.alarm_kpi like  CONCAT('%',#alarm_kpi#,'%')
+                </isNotEmpty>
+                <isNotEmpty property="PAGESIZE" prepend="and">
+                	<isGreaterThan property="PAGESIZE" compareValue="0">
+                 		 rownum < #PAGESIZE#
+                 	</isGreaterThan>
+                </isNotEmpty>
+         </dynamic>
+     </sql>
+     <sql id="queryByObjBase">
+     	select rn,a.* from (
+     		<include refid="queryByObjBase"/>
+     		) a 
+     		<dynamic prepend="where">
+     			<isNotEmpty property="FIRSTROWNUM" prepend="and">
+                  rn >= #FIRSTROWNUM#
+                </isNotEmpty>
+     		</dynamic>
+     </sql>
+  
+      <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	  <select id="queryForListByObj" parameterClass="AlarmThreshold" resultClass="AlarmThreshold">
+	        <include refid="queryByObjBase"/>
+	         order by alarm_level asc,start_time desc,end_time desc
+	  </select>
+	  
+	  <select id="queryByObjForCount" parameterClass="AlarmThreshold" resultClass="int">
+	      select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <insert id="insertByObj" parameterClass="AlarmThreshold">
+			INSERT INTO tb_cloud_alarm_kpi 
+			(id,alarm_kpi,alarm_desc,alarm_level,alarm_type,alarm_threshold,alarm_unit,alarm_trigger,start_time,end_time)VALUES
+			(#id#,#alarm_kpi#,#alarm_desc#,#alarm_level#,#alarm_type#,#alarm_threshold#,#alarm_unit#,#alarm_trigger#,#start_time#,#end_time#)	  
+	  </insert>
+	  
+	  <select id = "queryById" parameterClass="AlarmThreshold" resultClass="AlarmThreshold">
+	  		select 
+	  			s.id,s.alarm_kpi,s.alarm_desc,s.alarm_level,s.alarm_threshold,
+        		s.alarm_trigger,s.alarm_type,s.alarm_unit,to_char(s.end_time,'yyyyMMdd hh24:mi:ss')end_time,to_char(s.start_time,'yyyyMMdd hh24:mi:ss')start_time
+	  		from  tb_cloud_alarm_kpi s
+	  		where id = #id#
+	  </select>
+	  <delete id="delete" parameterClass="AlarmThreshold">
+			delete from tb_cloud_alarm_kpi 
+				<dynamic prepend="where">
+					<isNotEmpty prepend="and" property="resultList">
+						id  in 
+					    <iterate close=")" conjunction="," open="(" property="resultList">
+								#resultList[]#
+						</iterate>
+					</isNotEmpty>
+				</dynamic>
+	  </delete>
+	  <update id="update" parameterClass="AlarmThreshold">
+	  		update tb_cloud_alarm_kpi 
+	  			set alarm_kpi=#alarm_kpi#,alarm_desc=#alarm_desc#,alarm_level=#alarm_level#,alarm_type=#alarm_type#,alarm_threshold=#alarm_threshold#,alarm_unit=#alarm_unit#,
+	  				alarm_trigger=#alarm_trigger#,start_time=#start_time#,end_time=#end_time#
+	  			where id=#id#
+	  </update>
+	 	<!-- 验证名字是否重复 -->
+	   <select id="validateNameByEdit" parameterClass="AlarmThreshold" resultClass="java.lang.Integer">
+	    	select count(*) from tb_cloud_alarm_kpi 
+	    <dynamic prepend="where">
+	    	<isNotNull property="alarm_kpi" prepend="and">
+				alarm_kpi =#alarm_kpi#
+	    	</isNotNull>
+	    </dynamic>
+	   </select> 
+</sqlMap>

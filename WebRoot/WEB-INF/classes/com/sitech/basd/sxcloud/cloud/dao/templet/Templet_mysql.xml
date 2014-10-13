@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Templet">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TempletObj" type="com.sitech.basd.sxcloud.cloud.domain.templet.TempletObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                    limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    <sql id="queryByObjBase">
+        select a.TEM_ID,a.TEM_NAME,a.TEM_DESC,a.KV1,a.KV2,a.KV3,a.KV4,a.KV5,a.KV6,a.KV7,a.KV8,a.KV9,a.KV10,a.KV11,a.KV12,a.KV13,a.KV14,a.KV15,a.KV16,a.KV17,a.KV18,a.KV19,a.KV20
+        ,a.TYPE,a.RELEASE_FLAG,b.TYPE_NAME
+        from
+        TB_CLOUD2_VH_TEMPLATE a left join TB_CLOUD2_TEMPLAT_TYPE_CONFIG b on a.TYPE=b.TYPE
+       	<dynamic prepend="where">
+       	    <isNotEmpty property="RELEASE_FLAG" prepend="and">
+        		a.RELEASE_FLAG =#RELEASE_FLAG#
+        	</isNotEmpty>
+        	<isNotEmpty property="TEM_ID" prepend="and">
+        		a.TEM_ID like CONCAT('%',#TEM_ID#,'%')
+        	</isNotEmpty>
+        	<isNotEmpty property="TEM_NAME" prepend="and">
+        		a.TEM_NAME like CONCAT('%',#TEM_NAME#,'%')
+        	</isNotEmpty>
+ 			<isNotEmpty property="TYPE" prepend="and">
+        		a.TYPE =#TYPE#
+        	</isNotEmpty>
+        </dynamic>	
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="TempletObj" resultClass="TempletObj">
+	        <include refid="queryByObjBase"/>
+	        order by a.TEM_ID asc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryResourceType" resultClass="TempletObj">
+	      select TYPE_NAME,TYPE from TB_CLOUD2_TEMPLAT_TYPE_CONFIG WHERE TYPE in('1','2','3','4','6','7')
+	  </select>
+	  <select id="queryResourceTypeTemplet" parameterClass="java.lang.String" resultClass="TempletObj">
+	      select TEM_NAME,TEM_ID from TB_CLOUD2_VH_TEMPLATE WHERE TYPE =#TYPE# and RELEASE_FLAG='1'
+	  </select>
+	  <select id="queryAppForListByObj" parameterClass="TempletObj" resultClass="TempletObj">
+	      select TEM_ID,TEM_NAME from TB_CLOUD2_VH_TEMPLATE WHERE RELEASE_FLAG='1' and TYPE ='5'
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="TempletObj" resultClass="int">
+	      select count(TEM_ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	
+	  <insert id="insertByObj" parameterClass="TempletObj">
+       		insert into TB_CLOUD2_VH_TEMPLATE(
+       			TEM_ID,TEM_NAME,TEM_DESC,TYPE,RELEASE_FLAG,KV1,KV2,KV3,KV4,KV5,KV6,KV7,KV8,KV9,KV10,KV11,KV12,KV13,KV14,KV15,KV16,KV17,KV18,KV19,KV20,KV_NUM)
+       		values(
+       			#TEM_ID#,#TEM_NAME#,#TEM_DESC#,#TYPE#,#RELEASE_FLAG#,#KV1#,#KV2#,#KV3#,#KV4#,#KV5#,#KV6#,#KV7#,#KV8#,#KV9#,#KV10#,#KV11#,#KV12#,#KV13#,#KV14#,#KV15#,#KV16#,#KV17#,#KV18#,#KV19#,#KV20#,#KV_NUM#)
+       </insert>
+         
+       <update id="updateByObj" parameterClass="TempletObj">
+       		update TB_CLOUD2_VH_TEMPLATE set TEM_NAME=#TEM_NAME#,TEM_DESC=#TEM_DESC#,KV1=#KV1#,KV2=#KV2#,KV3=#KV3#,KV4=#KV4#,KV5=#KV5#,KV6=#KV6#,KV7=#KV7#,KV8=#KV8#,KV9=#KV9#,KV10=#KV10#
+       		,KV11=#KV11#,KV12=#KV12#,KV13=#KV13#,KV14=#KV14#,KV15=#KV15#,KV16=#KV16#,KV17=#KV17#,KV18=#KV18#,KV19=#KV19#,KV20=#KV20#
+       		where TEM_ID=#TEM_ID#
+	    </update>
+	    
+	    <update id="releaseByObj" parameterClass="TempletObj">
+       		update TB_CLOUD2_VH_TEMPLATE set RELEASE_FLAG=#RELEASE_FLAG#
+       		where TEM_ID=#TEM_ID#
+	    </update>
+	    
+	    
+	    <delete id="deleteByObj" parameterClass="TempletObj">
+	    	delete from TB_CLOUD2_VH_TEMPLATE where TEM_ID=#TEM_ID#
+	    </delete>
+	    
+	    <select id="queryConByObjBase" parameterClass="TempletObj" resultClass="TempletObj">
+        select ID,`KEY`, VALUE ,TYPE
+        from
+        TB_CLOUD2_TEMPLAT_CONFIG 
+    
+      	 <dynamic prepend="where">	
+        	<isNotEmpty property="ID" prepend="and">
+        		ID =#ID#
+        	</isNotEmpty>
+        	<isNotEmpty property="KEY" prepend="and">
+        		`KEY` =#KEY#
+        	</isNotEmpty>
+        	<isNotEmpty property="VALUE" prepend="and">
+        		VALUE =#VALUE#
+        	</isNotEmpty>
+        	<isNotEmpty property="TYPE" prepend="and">
+        		TYPE =#TYPE#
+        	</isNotEmpty>
+         </dynamic>
+        		order by ID asc
+     	</select>
+     	
+	   <select id="queryTypeListByObj" parameterClass="TempletObj" resultClass="TempletObj">
+	      select TYPE_NAME,TYPE,TYPE_DESC from TB_CLOUD2_TEMPLAT_TYPE_CONFIG 
+	  </select>
+	    <!-- 查看模板历史 -->
+	    <sql id="queryHisByObjBase">
+	    	select a.ID ,a.OPERTYPE,a.MESSAGE,a.RESULT,a.TEM_ID,a.TEM_NAME,a.TYPE,a.RELEASE_FLAG,a.TEM_DESC,  DATE_FORMAT(a.OPERTIME, '%Y-%m-%d %H:%i:%S') OPERTIME,c.TYPE_NAME
+	    	from TB_CLOUD2_TEMPLAT_HIS a left join TB_CLOUD2_TEMPLAT_TYPE_CONFIG c on a.TYPE=c.TYPE
+	    	<dynamic prepend="where">
+		    	<isNotEmpty property="TEM_ID" prepend="and">
+	        		a.TEM_ID =#TEM_ID#
+	        	</isNotEmpty>
+	        	<isNotEmpty property="TEM_NAME" prepend="and">
+	        	 	a.TEM_NAME like CONCAT('%',#TEM_NAME#,'%')
+	        	</isNotEmpty>
+	        	<isNotEmpty property="TYPE" prepend="and">
+	        		a.TYPE =#TYPE#
+	        	</isNotEmpty> 
+        	</dynamic>
+	    </sql>
+	    <select id="queryHisForListByObj" parameterClass="TempletObj" resultClass="TempletObj">
+	    	<include refid="queryHisByObjBase"/>
+	        order by a.OPERTIME desc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	   <select id="queryHisByObjForCount" parameterClass="TempletObj" resultClass="int">
+	      select count(ID) from (
+	        <include refid="queryHisByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <!-- 插入模板操作历史 -->
+	  <insert id="insertHisByObj" parameterClass="TempletObj">
+       		insert into TB_CLOUD2_TEMPLAT_HIS(
+       			TEM_ID,OPERTYPE,MESSAGE,RESULT,TEM_NAME,TYPE,RELEASE_FLAG,TEM_DESC,OPERTIME)
+       		values(
+       			#TEM_ID#,#OPERTYPE#,#MESSAGE#,#RESULT#,#TEM_NAME#,#TYPE#,#RELEASE_FLAG#,#TEM_DESC#,DATE_FORMAT(now(), '%Y-%m-%d %H:%i:%S'))
+       </insert>
+</sqlMap>

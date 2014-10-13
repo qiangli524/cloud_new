@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DepartMan">
+
+	<typeAlias alias="DepartManObj"
+		type="com.sitech.basd.cloud3.domain.departproject.DepartManObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	<!-- <sql id="queryForListBase"> SELECT a.id, a. NAME, b.`NAME` leader, 
+		ifnull(a.cpu,0) cpu, ifnull(a.mem,0) mem, ifnull(a.store,0) store, ifnull(a.ip_num,0) 
+		ip_num FROM tb_depart_info a LEFT JOIN tb_sys_userinfo b ON a.leader = b.account 
+		<dynamic prepend="where"> <isNotEmpty property="name" prepend="and"> a.name 
+		like CONCAT('%',#name#,'%') </isNotEmpty> <isNotEmpty property="id" prepend="and"> 
+		a.id= #id# </isNotEmpty> </dynamic> </sql> -->
+
+	<!-- 查询科室列表 -->
+	<sql id="queryForDeaprtListBase">
+		SELECT
+		i.id id,
+		i.`name` NAME,
+		s.ACCOUNT leader,
+		s.`NAME` leaderName,
+		IFNULL(SUM(a.cpu_count), 0) cpu,
+		IFNULL(SUM(a.memory_size) , 0) mem,
+		IFNULL((SUM(a.storage_size)), 0) store,
+		IFNULL((SUM(a.ip_count)), 0) ip_num,
+		i.type,
+		i.parent_id
+		FROM
+		tb_depart_info i
+		LEFT JOIN tb_sys_userinfo s ON i.leader = s.ACCOUNT
+		LEFT JOIN tb_project_info a ON a.depart_id = i.id
+		<dynamic prepend="where">
+			<isNotEmpty property="name" prepend="and">
+				i.name like
+				CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				i.id= #id#
+			</isNotEmpty>
+			<isNotNull property="type" prepend="and">
+				<isNotEmpty property="type">
+					i.type= #type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					i.parent_id= #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="leaderName" prepend="and">
+				<isNotEmpty property="leaderName">
+					s.`NAME` like
+					CONCAT('%',#leaderName#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+		        <isNotEqual compareValue="null" property="domain">
+				     <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				         i.domain =#domain#	
+				     </isNotEqual>
+			    </isNotEqual>
+		    </isNotEmpty>
+		</dynamic>
+		GROUP BY
+		i.id
+	</sql>
+
+	<select id="queryForDepartListByObj" parameterClass="DepartManObj"
+		resultClass="DepartManObj">
+		<include refid="queryForDeaprtListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryDepartCount" parameterClass="DepartManObj"
+		resultClass="int">
+		select count(id) from (
+		<include refid="queryForDeaprtListBase" />
+		) virtual_table
+	</select>
+
+	<!-- 查询部门列表 -->
+	<sql id="queryForSectionListBase">
+		SELECT
+			a.id id,
+			a.`name` NAME,
+			s.ACCOUNT leader,
+			s.`NAME` leaderName,
+			IFNULL(SUM(c.cpu_count), 0) cpu,
+			IFNULL(SUM(c.memory_size), 0) mem,
+			IFNULL((SUM(c.storage_size)), 0) store,
+			IFNULL((SUM(c.ip_count)), 0) ip_num,
+			a.type,
+			a.parent_id
+		FROM
+			tb_depart_info a
+		LEFT JOIN tb_depart_info b ON a.id = b.parent_id 
+		LEFT JOIN tb_sys_userinfo s ON a.leader = s.ACCOUNT
+		LEFT JOIN tb_project_info c ON c.depart_id = b.id
+		<dynamic prepend="where">
+			<isNotEmpty property="name" prepend="and">
+				a.name like
+				CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				a.id= #id#
+			</isNotEmpty>
+			<isNotNull property="type" prepend="and">
+				<isNotEmpty property="type">
+					a.type= #type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					a.parent_id= #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="leaderName" prepend="and">
+				<isNotEmpty property="leaderName">
+					s.`NAME` like
+					CONCAT('%',#leaderName#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+		        <isNotEqual compareValue="null" property="domain">
+				     <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				         a.domain =#domain#	
+				     </isNotEqual>
+			    </isNotEqual>
+		    </isNotEmpty>
+		</dynamic>
+		GROUP BY
+			a.id
+	</sql>
+
+	<select id="queryForSectionListByObj" parameterClass="DepartManObj"
+		resultClass="DepartManObj">
+		<include refid="queryForSectionListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="querySectionCount" parameterClass="DepartManObj"
+		resultClass="int">
+		select count(id) from (
+		<include refid="queryForSectionListBase" />
+		) virtual_table
+	</select>
+
+	<!-- 插入一条记录 -->
+	<insert id="insertByObj" parameterClass="DepartManObj">
+		insert into tb_depart_info
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="id">
+				ID
+			</isNotNull>
+			<isNotNull prepend="," property="name">
+				name
+			</isNotNull>
+			<isNotNull prepend="," property="leader">
+				leader
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				<isNotEmpty property="type">
+					type
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="parent_id">
+				<isNotEmpty property="parent_id">
+					parent_id
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="domain">
+				<isNotEmpty property="domain">
+					domain
+				</isNotEmpty>
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="id">
+				#id#
+			</isNotNull>
+			<isNotNull prepend="," property="name">
+				#name#
+			</isNotNull>
+			<isNotNull prepend="," property="leader">
+				#leader#
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				<isNotEmpty property="type">
+					#type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="parent_id">
+				<isNotEmpty property="parent_id">
+					#parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="domain">
+				<isNotEmpty property="domain">
+					#domain#
+				</isNotEmpty>
+			</isNotNull>
+			)
+		</dynamic>
+	</insert>
+
+	<!-- 更新一条记录 -->
+	<update id="updateByObj" parameterClass="DepartManObj">
+		update tb_depart_info
+		<dynamic prepend="set">
+			<isNotEmpty property="name" prepend=",">
+				name=#name#
+			</isNotEmpty>
+			<isNotEmpty property="leader" prepend=",">
+				leader=#leader#
+			</isNotEmpty>
+			<isNotNull prepend="," property="parent_id">
+				<isNotEmpty property="parent_id">
+					parent_id=#parent_id#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id= #id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<!-- 删除一条记录 -->
+	<delete id="deleteByObj">
+		delete from tb_depart_info
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id=#id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<!-- 查询部门下所有资源 -->
+	<select id="queryAllResourceForSection" parameterClass="DepartManObj" resultClass="DepartManObj">
+		SELECT
+		a.name name,
+		s.ACCOUNT leader,
+		s.`NAME` leaderName,
+		SUM(c.cpu_count) CPU_ALL_COUNT,
+		SUM(c.memory_size) MEM_ALL_MB,
+		SUM(c.storage_size) STORAGE_ALL_MB,
+		SUM(c.ip_count) IP_ALL_COUNT
+		FROM
+		tb_depart_info a
+		LEFT JOIN tb_depart_info b ON a.id = b.parent_id
+		LEFT JOIN tb_project_info c ON b.id = c.depart_id
+		LEFT JOIN tb_sys_userinfo s ON a.leader = s.ACCOUNT
+		<!-- WHERE
+		a.id = #id# and a.type = '1' -->
+		<dynamic prepend="where">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+				a.id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="name" prepend="and">
+				a.name like
+				CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotNull property="type" prepend="and">
+				<isNotEmpty property="type">
+				a.type = #type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="leaderName" prepend="and">
+				<isNotEmpty property="leaderName">
+					s.`NAME` like
+					CONCAT('%',#leaderName#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+		        <isNotEqual compareValue="null" property="domain">
+				     <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				         a.domain =#domain#	
+				     </isNotEqual>
+			    </isNotEqual>
+		    </isNotEmpty>
+		</dynamic>
+		group by a.id
+		ORDER BY a.id ,a.name
+	</select>
+	
+	<!-- 查询科室下所有资源 -->
+	<select id="queryAllResourceForDepart" parameterClass="DepartManObj" resultClass="DepartManObj">
+		SELECT
+		a.name name,
+		SUM(c.cpu_count) CPU_ALL_COUNT,
+		SUM(c.memory_size) MEM_ALL_MB,
+		SUM(c.storage_size) STORAGE_ALL_MB,
+		SUM(c.ip_count) IP_ALL_COUNT
+		FROM
+		tb_depart_info a
+		LEFT JOIN tb_project_info c ON a.id = c.depart_id
+		<dynamic prepend="where">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+				a.id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				<isNotEmpty property="type">
+				a.type = #type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+				a.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+		        <isNotEqual compareValue="null" property="domain">
+				     <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				         a.domain =#domain#	
+				     </isNotEqual>
+			    </isNotEqual>
+		    </isNotEmpty>
+		</dynamic>
+		group by a.id
+		ORDER BY a.id ,a.name
+	</select>
+	
+	<!-- 查询部门下已使用资源-->
+	<select id="queryUsedResourceForSection" parameterClass="DepartManObj" resultClass="DepartManObj">
+		select 
+		    e.`name` name,
+		  	SUM(a.VH_CPU) CPU_USED_COUNT,
+			SUM(a.VH_MEM) MEM_USED_MB,
+			SUM(a.VH_STORAGE) STORAGE_USED_MB,
+			COUNT(a.VH_IP) IP_USED_COUNT
+		from  tb_cloud2_vmhost_info a
+		LEFT JOIN tb_project_vm_relation b ON a.CONNECT_ID = b.connect_id AND a.VH_UUID = b.vm_uuid
+		LEFT JOIN tb_project_info c ON c.id = b.project_id
+		LEFT JOIN tb_depart_info d ON c.depart_id = d.id
+		LEFT JOIN tb_depart_info e on d.parent_id = e.id
+		<dynamic prepend="where">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+				e.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+		        <isNotEqual compareValue="null" property="domain">
+				     <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				         e.domain =#domain#	
+				     </isNotEqual>
+			    </isNotEqual>
+		    </isNotEmpty>
+		</dynamic>
+		GROUP BY e.id
+		ORDER BY e.id ,e.name
+	</select>
+	<!-- 查询科室下已使用资源 -->
+	<select id="queryUsedResourceForDepart" parameterClass="DepartManObj" resultClass="DepartManObj">
+		select 
+			d.`name` name,
+		  	SUM(a.VH_CPU) CPU_USED_COUNT,
+			SUM(a.VH_MEM) MEM_USED_MB,
+			SUM(a.VH_STORAGE) STORAGE_USED_MB,
+			COUNT(a.VH_IP) IP_USED_COUNT
+		from  tb_cloud2_vmhost_info a
+		LEFT JOIN tb_project_vm_relation b ON a.CONNECT_ID = b.connect_id AND a.VH_UUID = b.vm_uuid
+		LEFT JOIN tb_project_info c ON c.id = b.project_id
+		LEFT JOIN tb_depart_info d ON c.depart_id = d.id
+		<dynamic prepend="where">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+				d.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					d.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+		        <isNotEqual compareValue="null" property="domain">
+				     <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				         d.domain =#domain#	
+				     </isNotEqual>
+			    </isNotEqual>
+		    </isNotEmpty>
+		</dynamic>
+		GROUP BY d.id
+		ORDER BY d.id ,d.name
+	</select>
+</sqlMap>

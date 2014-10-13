@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopCluster">
+<typeAlias alias="HadoopClusterObj" type="domain.cluster.HadoopClusterObj"/>
+	<insert id="insertByObj" parameterClass="HadoopClusterObj">
+		insert into tb_hadoop_cluster_info(id,cluster_name,cluster_id) 
+			 values(#id#,#cluster_name#,#cluster_id#)
+	</insert>
+	<select id="queryClusterList" parameterClass="HadoopClusterObj" resultClass="HadoopClusterObj">
+	  select id,cluster_name,cluster_id
+	  from tb_hadoop_cluster_info 
+	  <dynamic prepend="where">
+	    <isNotEmpty property="id" prepend="and">
+	        ID=#id#
+	    </isNotEmpty>
+	  </dynamic>
+	</select>
+</sqlMap>

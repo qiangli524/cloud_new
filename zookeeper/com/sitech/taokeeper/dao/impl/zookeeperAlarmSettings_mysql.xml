@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ZookeeperMonitorForAlarm">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="AlarmSettings" type="com.sitech.taokeeper.model.AlarmSettings" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	
+	<sql id="zooKeeperAlarmSettingsObjBaseCloumns">
+			r.alarm_settings_id ,
+			r.cluster_id clusterId,
+			r.wangwang_list wangwangList,
+			r.phone_list phoneList,
+			r.email_list emailList,
+			r.max_delay_of_check maxDelayOfCheck,
+			r.max_cpu_usage maxCpuUsage,
+			r.max_memory_usage maxMemoryUsage,
+			r.max_load maxLoad,
+			r.max_connection_per_ip maxConnectionPerIp,
+			r.max_watch_per_ip maxWatchPerIp,
+			r.data_dir dataDir,
+			r.data_log_dir dataLogDir,
+			r.max_disk_usage maxDiskUsage,
+			r.node_path_check_rule nodePathCheckRule
+	</sql>
+	<select id="queryZooKeeperAlarmSettingsObjList" parameterClass="AlarmSettings" resultClass="AlarmSettings">
+	
+		SELECT <include refid ="zooKeeperAlarmSettingsObjBaseCloumns" />
+		 FROM tb_taokeeper_alarm_settings r 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="clusterId">
+						r.cluster_id = #clusterId#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	
+	<update id="updateZooKeeperAlarmSettings" parameterClass="AlarmSettings">
+		UPDATE tb_taokeeper_alarm_settings SET 
+			max_delay_of_check=#maxDelayOfCheck#,
+			max_cpu_usage=#maxCpuUsage#,
+			max_memory_usage=#maxMemoryUsage#, 
+			max_load=#maxLoad#, 
+			wangwang_list=#wangwangList#, 
+			phone_list=#phoneList#, 
+			email_list=#emailList#, 
+			max_connection_per_ip=#maxConnectionPerIp#, max_watch_per_ip=#maxWatchPerIp#, 
+			data_dir=#dataDir#, data_log_dir=#dataLogDir#, max_disk_usage=#maxDiskUsage#, node_path_check_rule=#nodePathCheckRule# 
+		WHERE cluster_id= #clusterId#;
+	</update>
+	
+	
+	
+	<insert id="insertZooKeeperAlarmSettings" parameterClass="AlarmSettings">
+		INSERT INTO tb_taokeeper_alarm_settings ( cluster_id, max_delay_of_check, max_cpu_usage, max_memory_usage, max_load, wangwang_list, phone_list, 
+			email_list, max_connection_per_ip, max_watch_per_ip, data_dir, data_log_dir, max_disk_usage ) 
+		VALUES (#clusterId#,#maxDelayOfCheck#,#maxCpuUsage#,#maxMemoryUsage#,#maxLoad#,#wangwangList#,#phoneList#,#emailList#,
+			#maxConnectionPerIp#,#maxWatchPerIp#,#dataDir#,#dataLogDir#,#maxDiskUsage#)
+	</insert>
+	
+	<delete id="deleteAlarmSettings" parameterClass="AlarmSettings">
+		delete from tb_taokeeper_alarm_settings
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="clusterId">
+						cluster_id = #clusterId#
+				</isNotEmpty>
+			</dynamic>
+	</delete>
+	
+</sqlMap>

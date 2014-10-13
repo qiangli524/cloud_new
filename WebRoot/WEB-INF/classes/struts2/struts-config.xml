@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<!-- 全局异常Package -->
+	<package name="global_exception"  extends="default">
+		<!-- 增加全局拦截器，用户获取当前用户请求action -->
+         <interceptors>
+<!--  		    <interceptor name="bomcInterceptor" class="bomcInterceptor"/> -->
+			<interceptor name="casAutoLoginInterceptor" class="casAutoLoginInterceptor"/>
+			<interceptor name="requestInterceptor" class="requestInterceptor"/>
+			<interceptor-stack name="cloudDefault">
+				<interceptor-ref name="defaultStack" />
+<!-- 				<interceptor-ref name="casAutoLoginInterceptor" /> -->
+<!--    				<interceptor-ref name="bomcInterceptor" /> -->
+				<interceptor-ref name="requestInterceptor" />
+			</interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="cloudDefault"></default-interceptor-ref>
+		  	
+<!--   	    <global-results> -->
+<!--   			<result name="illegalArgumentException">/exception/myexception.jsp</result> -->
+<!--    			<result name="exception">/exception/exception.jsp</result> -->
+<!--    		</global-results> -->
+
+<!--  		<global-exception-mappings> -->
+<!--   			<exception-mapping result="illegalArgumentException" exception="java.lang.IllegalArgumentException"></exception-mapping> -->
+<!--   			<exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>  -->
+<!--  		</global-exception-mappings> -->
+		
+ 	</package>
+	<!-- 全局Package -->
+  	<package name="global_package" extends="global_exception">
+  	</package>
+	<!-- 引入其他Struts配置文件 -->
+	<include file="struts2/struts-config-*.xml"/>
+	<include file="struts2/sxcloud/struts-config-*.xml"/>
+	<include file="struts2/test/struts-config-*.xml"/>
+	<include file="struts2/yicloud/struts-config-*.xml"/>
+	<include file="struts2/cloud3/struts-config-*.xml"/>
+	<include file="struts2/envmanager/struts-config-*.xml"/>
+	<include file="struts2/component/struts-config-*.xml"/>
+	<include file="struts2/resource/struts-config-*.xml"/>
+	<include file="struts2/dbmanager/struts-config-*.xml"/>
+	<include file="struts2/alarm/struts-config-*.xml"/>
+	<include file="struts2/busimanager/struts-config-*.xml"/>
+	<include file="struts2/fusioncharts/struts-config-*.xml"/>
+	<include file="struts2/bol/struts-config-*.xml"/>
+	<include file="struts2/ibmmanager/struts-config-*.xml"/>
+	<include file="struts2/scheduler/struts-config-*.xml"/>
+	<include file="struts2/gx/struts-config-*.xml"/>
+	<include file="struts2/deployfile/struts-config-*.xml"/>
+	<include file="struts2/hadoop/struts-config-*.xml"/>
+	<include file="struts2/publiccloud/struts-config-*.xml"/>
+	<include file="struts2/paas/struts-config-*.xml"/>
+	<include file="struts2/sx/struts-config-*.xml"/>
+	<include file="struts2/subclauses/struts-config-*.xml"/>
+	
+	<include file="struts2/ah/struts-config-*.xml"/>
+	<!-- new -->
+	<include file="struts2/chongqing/struts-config-*.xml"/>
+	<!-- <include file="struts2/struts-config-bpm.xml"></include> -->
+	<!-- sichuan -->
+	<include file="struts2/sc/struts-config-*.xml"/>
+	<!-- sichuan -->
+	<include file="struts2/cq/struts-config-*.xml"/>
+	<!-- 首页 -->
+	<include file="struts2/home/struts-config-*.xml"/>
+	<!-- zookeeper树 -->
+	<include file="struts2/zookeeper/struts-config-*.xml"/>
+	<!-- 黑龙江报表 -->
+	<include file="struts2/report/struts-config-*.xml"/>
+	<include file="struts2/console/struts-config-*.xml"/>
+</struts>
+

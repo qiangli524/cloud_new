@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="machineRoomAction" class="com.sitech.basd.cloud3.web.machineroom.action.MachineRoomAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="roomService">
+			<ref bean="roomService" />
+		</property>
+	</bean>
+
+	<bean id="roomAreaAction" class="com.sitech.basd.cloud3.web.machineroom.action.RoomAreaAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="areaService">
+			<ref bean="areaService" />
+		</property>
+		<property name="roomService">
+			<ref bean="roomService" />
+		</property>
+	</bean>
+	
+</beans>

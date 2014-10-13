@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiSoftwareInfoHis">
+
+  <typeAlias alias="TbBusiSoftwareInfoHisObj" type="com.sitech.basd.sxcloud.rsmu.domain.softmanage.TbBusiSoftwareInfoHisObj"/>
+
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+    <sql id="tableColumnsNoKey">      
+    SOFTWARE_SIZE,MANUFACTURERS,SYSTEM_REQUEST,PROVIDERS,INTRODUCE,REMARK,NAME,VERSION,APPID,SOFTWAREID,UPDATEUSER,DATE_FORMAT(INSERTTIME,'%Y-%m-%d %H:%i:%S') INSERTTIME,UPDATETYPE
+    </sql>
+    <sql id="tableColumnsNoKey_t">      
+    SOFTWARE_SIZE,MANUFACTURERS,SYSTEM_REQUEST,PROVIDERS,INTRODUCE,REMARK,NAME,VERSION,APPID,SOFTWAREID,UPDATEUSER,INSERTTIME,UPDATETYPE
+    </sql>
+    <sql id="tableColumns">
+        ID,
+        <include refid="tableColumnsNoKey"/>
+    </sql>
+    <sql id="queryByObjBase">
+        select
+        <include refid="tableColumns"/>
+        from
+        TB_BUSI_SOFTWAREINFO_HIS
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="NAME" prepend="and">
+                NAME like CONCAT('%',#NAME#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="UPDATETYPE" prepend="and">
+                UPDATETYPE =#UPDATETYPE#
+               </isNotEmpty>
+        </dynamic> 
+     </sql>
+     <select id="queryForListByObj" parameterClass="TbBusiSoftwareInfoHisObj" resultClass="TbBusiSoftwareInfoHisObj">
+        <include refid="queryByObjBase"/>
+         order by ID desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByObjForCount" parameterClass="TbBusiSoftwareInfoHisObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiSoftwareInfoHisObj">
+    delete from TB_BUSI_SOFTWAREINFO_HIS where ID=#ID#
+    </delete>
+    <insert id="insertByObj" parameterClass="TbBusiSoftwareInfoHisObj">
+    <selectKey resultClass="int" keyProperty="ID" type="post">
+        SELECT @@IDENTITY AS ID  
+       </selectKey> 
+    insert into TB_BUSI_SOFTWAREINFO_HIS(
+     SOFTWARE_SIZE,MANUFACTURERS,SYSTEM_REQUEST,PROVIDERS,INTRODUCE,REMARK,NAME,VERSION,APPID,SOFTWAREID,UPDATEUSER,UPDATETYPE,INSERTTIME
+     )
+     values(#SOFTWARE_SIZE#,#MANUFACTURERS#,#SYSTEM_REQUEST#,#PROVIDERS#,#INTRODUCE#,#REMARK#,#NAME#,#VERSION#,#APPID#,#SOFTWAREID#,#UPDATEUSER#,#UPDATETYPE#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
+    
+    </insert>
+</sqlMap>

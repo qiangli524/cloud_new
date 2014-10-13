@@ -1,0 +1,9 @@
+
+table.treetable tr.collapsed span.indenter a {
+  background-image: url(../images/expand.png);
+}
+
+table.treetable tr.expanded span.indenter a {
+  background-image: url(../images/collapse.png);
+}
+

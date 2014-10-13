@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiDeployExampleHis">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiDeployExampleHisObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.TbBusiDeployExampleHisObj" />
+	<sql id="tableColumnsNoKey">      
+      HOSTID,DEPLOYESTARTTIME,DEPLOYEENDTIME,STRATEGYID,DEPLOY_FLAG,START_STOP_FLAG,UPDATETIME,RESULT,RELEASE_FLAG,isrestart,isbackup
+    </sql> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    
+    <sql id="queryByObjBase">
+       select ID,IP,APPNAME,DEPLOYPATH,ISBACKUP,ISRESTART,DEPLOY_FLAG,START_STOP_FLAG,DEPLOYESTARTTIME,DEPLOYEENDTIME
+       FROM TB_BUSI_DEPLOY_EXAMPLE_HIS
+       <dynamic prepend="where" >
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                 ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="IP" prepend="and">
+                IP like CONCAT('%',#IP#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="APPNAME" prepend="and">
+                APPNAME =#APPNAME#
+               </isNotEmpty>
+        </dynamic> 
+    </sql>
+    <select id="queryForListByObj" parameterClass="TbBusiDeployExampleHisObj" resultClass="TbBusiDeployExampleHisObj">
+        <include refid="queryByObjBase"/>
+        order by DEPLOYESTARTTIME desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    <select id="queryByObjForCount" parameterClass="TbBusiDeployExampleHisObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiDeployExampleHisObj">
+      delete from TB_BUSI_DEPLOY_EXAMPLE_HIS where ID=#ID#
+    </delete>
+    <insert id="insertByObj" parameterClass="TbBusiDeployExampleHisObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT @@IDENTITY AS ID  
+    </selectKey>
+      insert into TB_BUSI_DEPLOY_EXAMPLE_HIS(
+          IP,APPNAME,DEPLOYPATH,ISBACKUP,ISRESTART,DEPLOY_FLAG,START_STOP_FLAG,DEPLOYESTARTTIME,DEPLOYEENDTIME
+      )
+      values(#IP#,#APPNAME#,#DEPLOYPATH#,#isbackup#,#isrestart#,#DEPLOY_FLAG#,#START_STOP_FLAG#,#DEPLOYESTARTTIME#,#DEPLOYEENDTIME#)
+    </insert>
+</sqlMap>

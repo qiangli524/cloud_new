@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="clusterAction" class="com.sitech.basd.yicloud.web.cluster.action.ClusterAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="clusterService">
+			<ref bean="clusterService" />
+		</property>
+		<property name="entityTreeService">
+			<ref bean="entityTreeService" />
+		</property>
+	</bean>
+
+</beans>

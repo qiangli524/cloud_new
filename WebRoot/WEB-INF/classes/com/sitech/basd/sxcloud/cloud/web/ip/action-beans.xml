@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.ip.action.IpAction -->
+	<bean id="ipAction" class="com.sitech.basd.sxcloud.cloud.web.ip.action.IpAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="ipService">
+			<ref bean="ipService" />
+		</property> 
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="busiHostService">
+			<ref bean="busiHostService" />
+		</property>
+		<property name="deployExampleService">
+			<ref bean="deployExampleService" />
+		</property>
+		<property name="netService">
+			<ref bean="netService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

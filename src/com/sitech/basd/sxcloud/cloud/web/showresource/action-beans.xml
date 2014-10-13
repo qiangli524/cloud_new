@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="showResourceAction"
+		class="com.sitech.basd.sxcloud.cloud.web.showresource.action.ShowResourceAction"
+		singleton="false">
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="netService">
+			<ref bean="netService" />
+		</property>
+		<property name="tbCloud2MonitorAlarmService">
+			<ref bean="tbCloud2MonitorAlarmService" />
+		</property>
+		<property name="xenClusterService">
+			<ref bean="xenClusterService" />
+		</property>
+		<property name="showResourceService">
+			<ref bean="showResourceService" />
+		</property>
+	</bean>
+
+
+
+</beans>
+

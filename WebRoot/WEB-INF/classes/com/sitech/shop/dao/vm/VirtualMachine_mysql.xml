@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="VirtualMachine">
+
+<typeAlias alias="VMHostObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj"/>
+<typeAlias alias="VmIpObj" type="com.sitech.ssd.ah.nas.domain.VmIpObj"/>
+
+<sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+         ]]>
+</sql>
+<sql id="queryByObjBase">
+		
+		SELECT
+			a.VH_NAME,
+			a.VH_DESC,
+			a.VH_SYSTEM,
+			a.VH_USER,
+			a.VH_PASS,
+			a.CONNECT_ID connectId,
+			a.VH_UUID
+		FROM
+			tb_cloud2_vmhost_info a
+		WHERE CONCAT(a.CONNECT_ID,a.VH_UUID,'@') NOT IN(select CONCAT(b.CONNECT_ID,b.ENTITY_ID,'@') FROM tb_cloud_entityuser b)
+	<dynamic prepend="and">
+		<isNotEmpty property="VH_SYSTEM" prepend="and">
+			a.VH_SYSTEM =#VH_SYSTEM#
+		</isNotEmpty>
+		<isNotEmpty property="VH_UNITID" prepend="and">
+			a.VH_UNITID =#VH_UNITID#
+		</isNotEmpty>
+    </dynamic>
+</sql>
+<!-- 根据用户查询其对应的虚拟机列表（北京电信） -->
+	<sql id="queryForVmListByUser">
+			SELECT
+				c.VH_CID,
+				c.VH_NAME,
+				c.VH_CPU,
+				c.VH_MEM,
+				c.VH_STORAGE,
+				c.VH_SYSTEM,
+				c.VH_STAT,
+				c.VH_DESC,
+				c.hostCode,
+				c.VH_UUID,
+				c.CONNECT_ID connectId,
+				c.os_type,
+				c.VH_TYPE,
+				c.USER_ID,
+				c.busi_status BUSI_STATUS,
+				f.ipaddress public_ip,
+				g.ip VH_IP
+			FROM
+				(
+					SELECT
+						a.VH_CID,
+						a.VH_NAME,
+						a.VH_CPU,
+						a.VH_MEM,
+						a.VH_STORAGE,
+						a.VH_SYSTEM,
+						a.VH_STAT,
+						a.VH_DESC,
+						a.HOST_CODE hostCode,
+						a.VH_UUID,
+						a.CONNECT_ID,
+						a.TEMPLET_TYPE os_type,
+						a.VH_TYPE,
+						a.busi_status,
+						b.USERID USER_ID
+					FROM
+						tb_cloud2_vmhost_info a,
+						tb_cloud_entityuser b
+					WHERE
+						a.CONNECT_ID = b.CONNECT_ID
+					AND a.VH_UUID = b.ENTITY_ID
+					where b.USERID = #USER_ID#
+				) c
+			INNER JOIN (
+				SELECT
+					e.ipaddress,
+					d.connectid,
+					d.vm_uuid
+				FROM
+					tb_cloud2_vm_ip_relation d
+				LEFT JOIN tb_public_ip e ON d.ip = e.intranet_ip
+				WHERE
+					d.ip_type = 2
+			) f ON c.VH_UUID = f.vm_uuid
+			AND c.CONNECT_ID = f.connectid
+			LEFT JOIN tb_cloud2_vm_ip_relation g ON c.vh_uuid = g.vm_uuid
+			AND c.connect_id = g.connectid
+			WHERE
+				g.ip_type = 3
+		<dynamic prepend="and">
+			<isNotEmpty property="VH_UUID" prepend="and">
+				c.VH_UUID=#VH_UUID#
+			</isNotEmpty>
+			<isNotEmpty property="connectId" prepend="and">
+				c.CONNECT_ID=#connectId#
+			</isNotEmpty>
+			<isNotEmpty property="connectCodeList" prepend="and">
+				c.CONNECT_ID in
+				<iterate close=")" conjunction="," open="(" property="connectCodeList">
+					#connectCodeList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty property="VH_NAME" prepend="and">
+				c.VH_NAME like CONCAT('%',#VH_NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="USER_ID" prepend="and">
+				c.USER_ID=#USER_ID#
+			</isNotEmpty>
+	    </dynamic>
+	</sql>
+
+
+		<!-- 查询未被用户占用的指定操作系统的虚拟机-->
+	  <select id="queryForVmListForFree" parameterClass="VMHostObj" resultClass="VMHostObj">
+	        <include refid="queryByObjBase"/> 
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryForVmCount" parameterClass="VMHostObj" resultClass="int">
+	       select count(id) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <!-- 更新虚拟机的相关信息（北京电信） -->
+	  <update id="updateVmHostObj" parameterClass="VMHostObj" >
+		update tb_cloud2_vmhost_info
+		<dynamic prepend="set">
+			<isNotEmpty property="VH_CPU" prepend=",">
+				VH_CPU = #VH_CPU#
+			</isNotEmpty>
+			<isNotEmpty property="VH_MEM" prepend=",">
+				VH_MEM = #VH_MEM#
+			</isNotEmpty>
+			<isNotEmpty property="VH_STORAGE" prepend=",">
+				VH_STORAGE = #VH_STORAGE#
+			</isNotEmpty>
+			<isNotEmpty property="VH_DESC" prepend=",">
+				VH_DESC = #VH_DESC#
+			</isNotEmpty>
+			<!-- 虚拟机的订单表示 -->
+			<isNotEmpty property="VH_CID" prepend=",">
+				VH_CID = #VH_CID#
+			</isNotEmpty>
+			<isNotEmpty property="os_type" prepend=",">
+				TEMPLET_TYPE = #os_type#
+			</isNotEmpty>
+			<!-- 开机时间 -->
+			<isNotEmpty property="VH_STARTED" prepend=",">
+				VH_STARTED = #VH_STARTED#
+			</isNotEmpty>
+			<!--到期时间  -->
+			<isNotEmpty property="VH_COMPLETED" prepend=",">
+				VH_COMPLETED = #VH_COMPLETED#
+			</isNotEmpty>
+			<!--付费方式-->
+			<isNotEmpty property="VH_STATUS" prepend=",">
+				VH_STATUS = #VH_STATUS#
+			</isNotEmpty>
+			<!-- 用 户名 -->
+			<isNotEmpty property="VH_USER" prepend=",">
+				VH_USER = #VH_USER#
+			</isNotEmpty>
+			<!-- 密码 -->
+			<isNotEmpty property="VH_PASS" prepend=",">
+				VH_PASS = #VH_PASS#
+			</isNotEmpty>
+			<!-- 服务状态 -->
+			<isNotEmpty property="BUSI_STATUS" prepend=",">
+				busi_status = #BUSI_STATUS#
+			</isNotEmpty>
+		</dynamic>
+		where VH_UUID = #VH_UUID# and CONNECT_ID=#connectId#
+	</update>
+	<!-- 查询虚拟机对应IP地址列表（一个虚拟机可能有多个IP地址）（北京电信） -->
+	<select id="queryIpListByVm" parameterClass="VmIpObj" resultClass="VmIpObj">
+			SELECT
+				a.id,
+				a.vm_uuid,
+				a.connectid,
+				a.ip ,
+				a.ip_type ipType,
+				a.vtype
+			FROM
+				tb_cloud2_vm_ip_relation a
+		<dynamic prepend="where">
+		<isNotEmpty property="vm_uuid" prepend="and">
+			a.vm_uuid =#vm_uuid#
+		</isNotEmpty>
+		<isNotEmpty property="connectid" prepend="and">
+			a.connectid =#connectid#
+		</isNotEmpty>
+		<isNotEmpty property="ipType" prepend="and">
+			a.ip_type =#ip_type#
+		</isNotEmpty>
+		<isNotEmpty property="ip" prepend="and">
+			a.ip =#ip#
+		</isNotEmpty>
+		<isNotEmpty property="vtype" prepend="and">
+			a.vtype =#vtype#
+		</isNotEmpty>
+    </dynamic>
+	</select>
+	
+	<!-- 更新虚拟机对应IP地址（北京电信） -->
+	<update id="updateVmIpObj" parameterClass="VmIpObj" >
+		update 
+			tb_cloud2_vm_ip_relation
+		set
+			ip =#ip#
+		where 
+				vm_uuid = #vm_uuid# 
+			and 
+				connectid=#connectid# 
+			and 
+				ip_type =#ipType# 
+			and 
+				vtype =#vtype#
+	</update>
+	
+	<!-- 根据用户查询其对应的虚拟机列表（北京电信） -->
+	 <select id="getVMListByUser" parameterClass="VMHostObj" resultClass="VMHostObj">
+		<include refid="queryForVmListByUser" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	 <!-- 根据用户查询其对应的虚拟机数量（北京电信） --> 
+	 <select id="countVMByUser"
+		parameterClass="VMHostObj" resultClass="int">
+		select count(VH_UUID) from (
+		<include refid="queryForVmListByUser" />
+		) virtual_table
+	 </select>
+	 <!-- 重新命名虚拟机 (北京电信) -->
+	<update id="renameVM" parameterClass="VMHostObj" >
+			update tb_cloud2_vmhost_info set VH_DESC=#VH_DESC# where
+			CONNECT_ID=#connectId# and VH_UUID=#VH_UUID#
+	</update>
+	
+</sqlMap>

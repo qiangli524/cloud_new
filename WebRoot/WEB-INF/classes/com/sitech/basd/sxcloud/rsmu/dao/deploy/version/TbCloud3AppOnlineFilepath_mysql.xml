@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbCloud3AppOnlineFilepath">
+	<typeAlias alias="TbCloud3AppOnlineFilepathVO"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.version.TbCloud3AppOnlineFilepathVO" />
+	
+	<select id="queryVOByObj" parameterClass="TbCloud3AppOnlineFilepathVO" resultClass="TbCloud3AppOnlineFilepathVO">
+		SELECT T.ID,T.INSERTTIME,T.APPID,T.FILEPATH,T.DAY_VERSION  FROM TB_CLOUD3_APP_ONLINE_FILEPATH T
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="appid" prepend="AND">
+					T.APPID=#appid#
+			</isNotEmpty>
+			<isNotEmpty property="day_version" prepend="AND">
+					T.DAY_VERSION=#day_version#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryListByAppId" parameterClass="TbCloud3AppOnlineFilepathVO" resultClass="TbCloud3AppOnlineFilepathVO">
+		SELECT T.ID,DATE_FORMAT(T.INSERTTIME,'%Y-%m-%d %H:%i:%S') INSERTTIME,T.APPID,T.FILEPATH,T.DAY_VERSION,A.VERSIONDesc  FROM  TB_CLOUD3_APP_ONLINE_FILEPATH T LEFT join TB_CLOUD3_APP_VERSION A ON T.DAY_VERSION = A.DAY_VERSION
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="appid" prepend="AND">
+					T.APPID=#appid#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY T.INSERTTIME DESC
+	</select>
+	
+	
+	
+	<select id="queryListByObj" parameterClass="TbCloud3AppOnlineFilepathVO" resultClass="TbCloud3AppOnlineFilepathVO">
+	<![CDATA[	select T.ID,T.INSERTTIME,T.APPID,T.FILEPATH,T.DAY_VERSION from TB_CLOUD3_APP_ONLINE_FILEPATH T where T.DAY_VERSION >= #day_version# AND 
+		T.APPID = #appid#
+		 ]]>
+	</select>
+</sqlMap>

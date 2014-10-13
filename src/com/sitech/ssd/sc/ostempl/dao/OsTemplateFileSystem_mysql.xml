@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplateFileSystem">
+
+	<typeAlias alias="_OsTemplateFileSystem" type="com.sitech.ssd.sc.ostempl.domain.OsTemplateFileSystem" />
+
+	<sql id="partTableColumns">
+		template_id,filesystem_name,filesystem_type,filesystem_size,filesystem_desc,volume_group,logical_volume
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplateFileSystem" parameterClass="_OsTemplateFileSystem">
+		INSERT INTO tb_os_template_file_system(
+		<include refid="partTableColumns" />
+		)
+		VALUES(#template_id#,#filesystem_name#,#filesystem_type#,#filesystem_size#,#filesystem_desc#,#volume_group#,#logical_volume#)
+	</insert>
+
+	<insert id="copyOsTemplateFileSystem" parameterClass="_OsTemplateFileSystem">
+		INSERT INTO tb_os_template_file_system(<include refid="partTableColumns" />)
+		SELECT (SELECT id FROM tb_os_template WHERE templ_name = #id#) 
+		<include refid="partTableColumns" />
+		FROM tb_os_template_file_system WHERE template_id = #template_id#		
+	</insert>
+	
+	<delete id="deleteOsTemplateFileSystem" parameterClass="_OsTemplateFileSystem">
+		DELETE FROM tb_os_template_file_system
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplateFileSystem" parameterClass="_OsTemplateFileSystem">
+		UPDATE tb_os_template_file_system 
+		SET template_id = #template_id#,
+			filesystem_name = #filesystem_name#,
+			filesystem_type = #filesystem_type#,
+			filesystem_size = #filesystem_size#,
+			filesystem_desc = #filesystem_desc#,
+			volume_group = #volume_group#,
+			logical_volume = #logical_volume#
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<select id="selectOsTemplateFileSystemList" parameterClass="_OsTemplateFileSystem"
+		resultClass="_OsTemplateFileSystem">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_file_system
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="filesystem_name" prepend="and">
+				filesystem_name like CONCAT('%',#filesystem_name#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="selectOsTemplateFileSystem" parameterClass="_OsTemplateFileSystem"
+		resultClass="_OsTemplateFileSystem">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_file_system 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="filesystem_name" prepend="and">
+				filesystem_name = #filesystem_name#
+			</isNotEmpty>
+			<isNotEmpty property="filesystem_size" prepend="and">
+				filesystem_size = #filesystem_size#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

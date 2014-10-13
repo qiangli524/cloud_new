@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="appworkflow"
+			 extends="global_package">
+		<action name="appworkflow_*"
+				class="appWorkFlowAction" method="{1}">
+			<result name="add">/sxcloud/cloud/workflow/appworkflow/addAppDeployOrder.jsp</result>
+			<result name="success">/sxcloud/cloud/workflow/appworkflow/appNextDealManInfo.jsp</result>
+			<result name="wrong">/sxcloud/cloud/workflow/appworkflow/addAppDeployOrder.jsp</result>
+			<result name="back" type="redirect">appworkflow_rejectAppDeploy.do</result>
+			<result name="draft" type="redirect">appworkflow_listDraftAppDeploy.do</result>
+			<result name="error">/sxcloud/common/error.jsp</result>
+			<result name="listDraft">/sxcloud/cloud/workflow/appworkflow/listDraftAppDeploy.jsp</result>
+			<result name="alter">/sxcloud/cloud/workflow/appworkflow/alterAppDeployOrder.jsp</result>
+			<result name="listWait" type="redirect">appworkflow_listDealOrder.do?FLOW_TYPE=${FLOW_TYPE}</result>
+			<result name="listDealOrder">/sxcloud/cloud/workflow/appworkflow/listWaitAppDeploy.jsp</result>
+			<result name="dealAppDeploy">/sxcloud/cloud/workflow/appworkflow/dealAppDeploy.jsp</result>
+			<result name="agree">/sxcloud/cloud/workflow/appworkflow/appNextDealManInfo.jsp</result>
+			<result name="edit">/sxcloud/cloud/workflow/appworkflow/editAppOrder.jsp</result>
+			<result name="select">/sxcloud/cloud/workflow/appworkflow/editAppOrder.jsp</result>
+			<result name="check">/sxcloud/cloud/workflow/appworkflow/editAppOrder.jsp</result>
+			<result name="fightback">/sxcloud/cloud/workflow/appworkflow/appNextDealManInfo.jsp</result>
+			<result name="already" type="redirect">appworkflow_listDealOrder.do?FLOW_TYPE=${FLOW_TYPE}</result>
+			<result name="listReject" type="redirect">appworkflow_listDealOrder.do?FLOW_TYPE=${FLOW_TYPE}</result>
+		</action>
+	</package>
+</struts>

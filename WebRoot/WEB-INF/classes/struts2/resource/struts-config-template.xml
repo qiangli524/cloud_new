@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="temman" extends="global_package">
+		<action name="temman_*"
+				class="temManAction" method="{1}">
+			<result name="list">/resource/template/listTem.jsp</result>
+			<result name="vmtree">/resource/template/addTem.jsp</result>
+			<result name="tem_info">/resource/template/temInfo.jsp</result>
+			<result name="mod">/resource/template/editTem.jsp</result>
+			<result name="vmList">/resource/template/listVm.jsp</result>
+			<result name="detail">/resource/template/listTemDetail.jsp</result>
+			<result name="result" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+ </package>
+
+</struts>

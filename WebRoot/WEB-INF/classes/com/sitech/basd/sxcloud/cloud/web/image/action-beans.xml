@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="imageAction" class="com.sitech.basd.sxcloud.cloud.web.image.action.ImageAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="imageService">
+			<ref bean="imageService" />
+		</property> 
+		<property name="netService">
+			<ref bean="netService" />
+		</property>
+		<property name="tbProjectService">
+			<ref bean="tbProjectService" />
+		</property>
+		<property name="virtualService">
+			<ref bean="virtualService" />
+		</property>
+	</bean>
+	<bean name="/listImageInfo" parent="imageAction" />
+	<bean name="/addImageInfo" parent="imageAction" />
+	<bean name="/basicDeploy" parent="imageAction" />
+	<bean name="/advancedDeploy" parent="imageAction" />
+	<bean name="/saveImageInfo" parent="imageAction" />
+	<bean name="/modImageInfo" parent="imageAction" />
+	<bean name="/delImageInfo" parent="imageAction" />
+	<bean name="/deployImage" parent="imageAction" />
+	<bean name="/advancedDeployImage" parent="imageAction"/>
+	<bean name="/virtualImagesConfig" parent="imageAction"/>
+	<bean name="/moveImageInfo" parent="imageAction"/>
+	<bean name="/saveMvImageInfo" parent="imageAction"/>
+</beans>
+
+
+
+
+
+	
+
+
+

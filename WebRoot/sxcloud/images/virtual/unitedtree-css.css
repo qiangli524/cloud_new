@@ -1,0 +1,588 @@
+body {
+	font-size: 12px;margin:0;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+img {
+	border: none;
+}
+
+.panel-datacenter {
+	width: 300px;note hlx
+	border-right: 1px dashed #ccc;
+	/*padding: 4px 20px;note hlx*/
+	padding:4px 10px;
+}
+
+.panel-resource {
+	/*padding: 4px 10px 4px 20px;note hlx*/
+	padding:4px 10px;
+}
+
+h2 {
+	margin: 0;
+	padding: 0;
+}
+
+/* note hlx
+h2.datacenter {
+	background: url(Datacenter1.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+h2.datacenter span {
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+h2.clustertitle {
+	background: url(cluster1.png) no-repeat;
+	height: 34px;
+	margin: 0px;
+	border-bottom: 1px dashed #ccc;
+}
+
+h2.clustertitle span {
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+h2.host {
+	background: url(Host1.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+
+h2.host span {
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+h2.host2 {
+	background: url(Host2.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+
+h2.host2 span {
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+h2.vmtitle {
+	background: url(VirtualMachine1.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+
+h2.vmtitle span {
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+
+h2.vmwaretitle {
+	background: url(vmwaretitle.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+
+h2.xentitle {
+	background: url(xentitle.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+*/
+/*add hlx start*/
+h2.dc-tt{
+	height:40px;
+	border-bottom:1px solid #cde2bd;
+	background:url(icon-dc.png) 0 10px no-repeat;
+	color:#6faa31;
+	font:normal 18px/40px "microsoft yahei";
+	padding-left:30px;
+	clear:both;
+}
+h2.dc-tt .txt{float:left;}
+h2.dc-tt .other{
+	float: right;
+	font-weight:bold;
+	color:#a9a9a9;
+}
+h2.clustertitle{background-position:0 -40px;color:#f8a20f;}
+h2.host{background-position:0 -90px;color:#7dc4ec;}
+h2.vmtitle{background-position:3px -140px;color:#e77e65;}
+h2.host2{background-position:0 -190px;color:#c0a2da;}
+h2.vmwaretitle{background-position:0 -290px;color:#f8a20f;}
+
+h2.datacenter .other .num{color:#6faa31;}
+h2.clustertitle .other .num{color:#f8a20f;}
+h2.host .other .num{color:#7dc4ec;}
+h2.vmtitle .other .num{color:#e77e65;}
+h2.host2 .other .num{color:#c0a2da;}
+h2.vmwaretitle .other .num{color:#c0a2da;}
+/*add hlx end*/
+.mgt-10 {
+	margin-top: 10px;
+}
+
+.font-14 td {
+	font-size: 14px;
+	line-height: 32px;
+}
+
+td.orange-20 {
+	font-size: 20px;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+td.orange-16 {
+	font-size: 15px;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+a.orange-16 {
+	font-size: 15px;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.orange:link {
+	font-size: 20px;
+	text-decoration: underline;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.orange:visited {
+	font-size: 20px;
+	text-decoration: underline;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.orange:hover {
+	font-size: 20px;
+	text-decoration: none;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.blue:link {
+	text-decoration: none;
+	color: #68a8ff;
+}
+
+.blue:visited {
+	text-decoration: none;
+	color: #68a8ff;
+}
+
+.blue:hover {
+	text-decoration: underline;
+	color: #68a8ff;
+}
+
+.font-gray {
+	color: #999;
+	font-size: 14px;
+	padding-left: 8px;
+}
+
+.box {
+	display: none;
+}
+
+.on {
+	display: block;
+}
+
+.clr {
+	clear: both;
+	height: 0;
+	font-size: 0;
+}
+
+.single {
+	border: 1px solid #CCCCCC;
+	background: #fff;
+	float: left;
+	margin: 14px 20px 0 0;
+	width: 290px;
+}
+
+.single dt {
+	color: #868686;
+	border-bottom: 1px solid #98a0c0;
+	margin: 4px 4px 6px 4px;
+	padding: 0 0 4px 2px;
+}
+.single dd {
+	padding: 4px;
+	margin: 0 0 6px 4px;
+}
+.dc-dl{
+	border: 1px solid #CCCCCC;
+	background: #fff;
+	float:none;
+	margin:10px 0 0;
+	width:300px;
+}
+.dc-dl dt{padding:18px 4px 18px 6px;margin:0;border-bottom:1px solid #CCCCCC;}
+.dc-dl dd{color:#6d6d6d;margin:0;padding:4px 4px 4px 6px;line-height:20px;}
+
+.percentage {
+	vertical-align: middle;
+	display: inline-block;
+	background: url(percentage-bg.gif) no-repeat;
+	width: 160px;
+	height: 14px;
+	margin-top: 4px;
+}
+
+.percentage b {
+	display: block;
+	height: 14px;
+	background: url(percentage-bg2.gif) no-repeat;
+}
+
+.percentage b.red {
+	background: url(percentage-bg3.gif) no-repeat;
+}
+
+.percentage b.ora {
+	background: url(percentage-bg4.gif) no-repeat;
+}
+
+.percentage2 {
+	vertical-align: middle;
+	position: relative;
+	display: inline-block;
+	background: url(zhutu-bg.gif) no-repeat;
+	width: 74px;
+	height: 93px;
+	margin-top: 4px;
+}
+
+.percentage2-red {
+	vertical-align: middle;
+	position: relative;
+	display: inline-block;
+	background: url(zhutu-bg3.gif) no-repeat;
+	width: 74px;
+	height: 93px;
+	margin-top: 4px;
+}
+
+.percentage2 b,.percentage2-red b {
+	display: block;
+	height: 93px;
+	background: url(zhutu-bg2.gif) no-repeat;
+}
+
+/*note hlx
+.cancle {
+	background: url(cancel.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	float:left;
+	margin-right: 2px;
+}
+
+.stop {
+	background: url(stop.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.blue {
+	background: url(blue.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.running {
+	background: url(running.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.cpu {
+	background: url(cpu.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.ip {
+	background: url(ip.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 4px;
+	margin-right: 2px;
+}
+
+.net {
+	background: url(net.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.mem {
+	background: url(mem.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.storage {
+	background: url(storage.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.xen {
+	background: url(xen.jpg) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.vmware {
+	background: url(vmware.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.jijia {
+	background: url(jijia.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.x86 {
+	background: url(x86.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.alert {
+	background: url(3alert.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.zhuji {
+	background: url(zhuji.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.cluster {
+	background: url(cluster.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.vm {
+	background: url(vm.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}*/
+
+/*hlx start 20140623*/
+/*progress-percent start*/
+.progress-percent{clear:both;overflow:hidden;zoom:1;font:12px/20px "microsoft yahei";height:20px;}
+.progress-percent label{float:left;width:35px;display:block;font-weight:bold;}
+.progress-bar{width:200px;height:13px;display:block;zoom:1;overflow:hidden;text-align:left;background:url(../images/bg-progressbar.png) 0 0 no-repeat;float:left;margin-top:4px;}
+.progress-bar .bar-inner{background:url(bg-progressbar.png) right -20px no-repeat;margin-left:5px;display:block;height:13px;}
+.progress-bar .current{height:13px;display:block;background:url(bg-progressbar.png) 0 -40px no-repeat;overflow:hidden;margin-left:-5px;}
+.progress-bar .current b{margin-left:5px;height:13px;background:url(bg-progressbar.png) right -60px no-repeat;display:block;}
+.progress-percent .percent{float:left;text-align:right;width:54px;}
+.pgpercent-orange .progress-bar .current{background-position:0 -40px;}
+.pgpercent-orange .progress-bar .current b{background-position:right -60px;}
+.pgpercent-orange .percent{color:#f8a20f;}
+.pgpercent-blue .progress-bar .current{background-position:0 -80px;}
+.pgpercent-blue .progress-bar .current b{background-position:right -100px;}
+.pgpercent-blue .percent{color:#7dc4ec;}
+.pgpercent-red .progress-bar .current{background-position:0 -120px;}
+.pgpercent-red .progress-bar .current b{background-position:right -140px;}
+.pgpercent-red .percent{color:#e77e65;}
+.pgpercent-purple .progress-bar .current{background-position:0 -160px;}
+.pgpercent-purple .progress-bar .current b{background-position:right -180px;}
+.pgpercent-purple .percent{color:#c0a2da;}
+.pgpercent-green .progress-bar .current{background-position:0 -200px;}
+.pgpercent-green .progress-bar .current b{background-position:right -220px;}
+/*progress-percent end*/
+
+ul,li{margin:0;padding:0;list-style:none;}
+.dc-list{clear:both;overflow:hidden;font-size:0;}
+.dc-list li{border:solid 1px #CCCCCC;padding:8px 10px;line-height:20px;display:inline-block;*display:inline;zoom:1;margin:10px 8px 0 0;font-size:12px;}
+.dc-list li i{display:inline-block;width:22px;height:22px;vertical-align:middle;margin-top:0;margin-right:5px;}
+.dc-list li .txt{display:inline-block;vertical-align:middle}
+.dc-list li .num{margin-left:12px;color:#00e;display:inline-block;height:14px;padding:0 5px;line-height:14px;vertical-align:middle;text-decoration:underline;font-weight:bold;font-size:14px;}
+.dc-list li .num_zero{margin-left:12px;color:#D87878;display:inline-block;height:14px;padding:0 5px;line-height:14px;vertical-align:middle;font-weight:bold;font-size:14px;}
+.dc-list li .orange-num{background-color:#f8a20f;color:#fff;}
+.dc-list li .blue-num{background-color:#7dc4ec;color:#fff;}
+.dc-list li .red-num{background-color:#e77e65;color:#fff;}
+.dc-list li .purple-num{background-color:#c0a2da;color:#fff;}
+.vmware-unusual{
+	background: url(vmware-unusual.png) 0 0 no-repeat;
+}
+.xen-unusual{
+	background: url(xen-unusual.png) 0 0 no-repeat;
+}
+.stop {
+	background:url(end2.png) 0 0 no-repeat;
+}
+
+.blue {
+	background: url(blue.gif) 0 0 no-repeat;
+}
+
+.running {
+	background:url(start2.png) 0 0 no-repeat;
+}
+
+.cpu {
+	background: url(cpu.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.ip {
+	background: url(ip.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 4px;
+	margin-right: 2px;
+}
+
+.net {
+	background: url(net.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.mem {
+	background: url(mem.gif) 0 0 no-repeat;
+}
+
+.storage {
+	background: url(storage.png) 0 0 no-repeat;
+}
+
+.xen {
+	background: url(xen2.png) 0 0 no-repeat;
+}
+
+.vmware {
+	background: url(vmware2.png) 0 0 no-repeat;
+}
+
+.jijia {
+	background: url(jijia2.png) 0 0 no-repeat;
+}
+
+.x86 {
+	background: url(x862.png) 0 0 no-repeat;
+}
+
+.alert {
+	background: url(3alert2.png) 0 0 no-repeat;
+}
+
+.zhuji {
+	background: url(zhuji2.png) 0 0 no-repeat;
+}
+
+.cluster {
+	background: url(question.png) 0 0 no-repeat;
+}
+
+.vm {
+	background: url(vm2.png) 0 0 no-repeat;
+}
+
+.dccq {
+	background: url(dataCenter_cq.png) 0 0 no-repeat;
+	height: 20px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.clustercq {
+	background: url(cluster_cq.png) no-repeat;
+	height: 20px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+
+.hostcq {
+	background: url(host_cq.png) no-repeat;
+	height: 20px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.vmcq {
+	background: url(vm_cq.png) no-repeat;
+	height: 20px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.mgt-15{margin-top:15px;}

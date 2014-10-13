@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiHost">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbBusiHostObj" type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusiHostObj"/>
+    <typeAlias alias="TbBusibusiSwitchPortObj" type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusibusiSwitchPortObj"/>
+    <typeAlias alias="TbBusiDeployExampleObj" type="com.sitech.basd.sxcloud.rsmu.domain.deploy.TbBusiDeployExampleObj"/>
+    <sql id="tableTbBusiHostColumnsNoKey">      
+      IP,HOSTNAME,STATUS,FREQUENCY,MEMORY,OPERATE_SYSTEM,MANUFACTURERS,VLAN,HOSTPORT,VLANIP,EQ_TYPE,WORKSTATUS
+    </sql>
+    <sql id="tableTbBusiHostColumns">
+        ID,
+        <include refid="tableTbBusiHostColumnsNoKey"/>
+    </sql>
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+    <sql id="queryTbBusiHostByObjBase">
+        SELECT
+        <include refid="tableTbBusiHostColumns"/>
+        FROM
+        TB_BUSI_HOST
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="IP" prepend="and">
+                IP like '%'||#IP#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="VLAN" prepend="and">
+                VLAN = #VLAN#
+               </isNotEmpty>
+               <isNotEmpty property="STATUS" prepend="and">
+                STATUS =#STATUS#
+               </isNotEmpty>
+               <isNotNull property="HOSTIDS" prepend="and">
+                ID in ($HOSTIDS$)
+               </isNotNull>
+               <isNotNull property="HOSTNAME" prepend="and">
+                HOSTNAME=#HOSTNAME#
+               </isNotNull>
+        </dynamic>
+                order by ID
+    </sql>
+     <select id="queryTbBusiHostForListByObj" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan>
+        <include refid="queryTbBusiHostByObjBase"/>
+        
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryTbBusiHostForListByObjAPPID" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan>
+         SELECT
+        h.ID,h.IP,h.HOSTNAME,h.STATUS,h.FREQUENCY,h.MEMORY,h.OPERATE_SYSTEM,h.MANUFACTURERS,h.VLAN,h.HOSTPORT,h.VLANIP,h.EQ_TYPE
+        FROM
+        tb_busi_host h left join tb_busi_host_config c on h.ID = c.hostid 
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                h.ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="IP" prepend="and">
+                h.IP like '%'||#IP#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="VLAN" prepend="and">
+                h.VLAN = #VLAN#
+               </isNotEmpty>
+               <isNotEmpty property="STATUS" prepend="and">
+                h.STATUS =#STATUS#
+               </isNotEmpty>
+               <isGreaterThan property="APPID" compareValue="0" prepend="and">
+                c.appid =#APPID#
+               </isGreaterThan>
+        </dynamic>
+                order by h.ID
+        
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryTbBusiHostByObjAPPIDForCount" parameterClass="TbBusiHostObj" resultClass="int">
+      select count(ID) from (
+        SELECT
+        h.ID,h.IP,h.HOSTNAME,h.STATUS,h.FREQUENCY,h.MEMORY,h.OPERATE_SYSTEM,h.MANUFACTURERS,h.VLAN,h.HOSTPORT,h.VLANIP,h.EQ_TYPE
+        FROM
+        tb_busi_host h left join tb_busi_host_config c on h.ID = c.hostid 
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                h.ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="IP" prepend="and">
+                h.IP like '%'||#IP#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="VLAN" prepend="and">
+                h.VLAN = #VLAN#
+               </isNotEmpty>
+               <isNotEmpty property="STATUS" prepend="and">
+                h.STATUS =#STATUS#
+               </isNotEmpty>
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                c.appid =#APPID#
+               </isGreaterThan>
+        </dynamic>
+                order by h.ID
+       ) virtual_table
+    </select>
+    <select id="queryHostMinusExampleByObjAPPID" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan>
+         SELECT
+        h.ID,h.IP,h.HOSTNAME,h.STATUS,h.FREQUENCY,h.MEMORY,h.OPERATE_SYSTEM,h.MANUFACTURERS,h.VLAN,h.HOSTPORT,h.VLANIP,h.EQ_TYPE,
+        c.HOSTUSERNAME
+        FROM
+        tb_busi_host h left join tb_busi_host_config c on h.ID = c.hostid 
+        where 
+        	h.ID not in
+         ( SELECT STRATEGY id  FROM TB_SYS_APP 
+         	<dynamic prepend="where">
+         	   <isGreaterThan property="APPID" compareValue="0" prepend="and">
+                ID =#APPID#
+               </isGreaterThan>
+            </dynamic>
+            union 
+            SELECT hostid id  FROM TB_BUSI_DEPLOY_EXAMPLE 
+         	<dynamic prepend="where">
+         	   <isGreaterThan property="APPID" compareValue="0" prepend="and">
+                APPID =#APPID#
+               </isGreaterThan>
+            </dynamic>
+            )
+        	and c.status = 1 
+               <isGreaterThan property="APPID" compareValue="0" prepend="and">
+                c.APPID =#APPID#
+               </isGreaterThan>
+                order by h.ID
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryTbBusiHostByObjForCount" parameterClass="TbBusiHostObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryTbBusiHostByObjBase"/>
+       ) virtual_table
+    </select>
+    <select id="queryKbpClassAndDeviceId" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+      select kbp_class KBP_CLASS,device_id DEVICE_ID from tb_asset_host where ip_addr like '%'||#IP#||'%'
+    </select>
+    <select id="queryCpu_Kpi" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+      select kpi_value CPU_KPI from tb_ato_kpidetail where unit_id like '$KBP_CLASS$%$DEVICE_ID$%' 
+		and kpi_id='CM-00-01-001-04'
+    </select>
+    <select id="queryMemory_kpi" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+      select kpi_value MEMORY_KPI from tb_ato_kpidetail where unit_id like '$KBP_CLASS$%$DEVICE_ID$%' 
+		and kpi_id='CM-00-01-001-07'
+    </select>
+    <delete id="deleteTbBusiHostByObj" parameterClass="TbBusiHostObj">
+    delete from TB_BUSI_HOST where ID=#ID#
+    </delete>
+    <update id="updateTbBusiHostByObj" parameterClass="TbBusiHostObj">
+    update TB_BUSI_HOST set IP=#IP#,VLANIP=#VLANIP#,EQ_TYPE=#EQ_TYPE#,HOSTNAME=#HOSTNAME#,STATUS=#STATUS#,FREQUENCY=#FREQUENCY#,MEMORY=#MEMORY#,OPERATE_SYSTEM=#OPERATE_SYSTEM#,MANUFACTURERS=#MANUFACTURERS#,VLAN=#VLAN#,HOSTPORT=#HOSTPORT#,MAC=#MAC# where ID=#ID#
+   
+    </update>
+    <insert id="insertTbBusiHostByObj" parameterClass="TbBusiHostObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_BUSI_HOST.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+    insert into TB_BUSI_HOST(
+     ID,IP,HOSTNAME,STATUS,FREQUENCY,MEMORY,OPERATE_SYSTEM,MANUFACTURERS,VLAN,HOSTPORT,MAC,VLANIP,EQ_TYPE
+     )
+     values(#ID#,#IP#,#HOSTNAME#,#STATUS#,#FREQUENCY#,#MEMORY#,#OPERATE_SYSTEM#,#MANUFACTURERS#,#VLAN#,#HOSTPORT#,#MAC#,#VLANIP#,#EQ_TYPE#)
+    </insert>
+    <select id="queryTbBusibusiSwitchPortObj" parameterClass="TbBusibusiSwitchPortObj" resultClass="TbBusibusiSwitchPortObj">
+        select * from TB_BUSI_SWITCH_PORT where VLAN=#VLAN# and STATUS=2
+     </select>
+     <update id="updateTbBusiHostVlanByObj" parameterClass="TbBusiHostObj">
+    update TB_BUSI_HOST set IP=#IP#,HOSTNAME=#HOSTNAME#,STATUS=#STATUS#,FREQUENCY=#FREQUENCY#,MEMORY=#MEMORY#,OPERATE_SYSTEM=#OPERATE_SYSTEM#,MANUFACTURERS=#MANUFACTURERS#,VLAN=#VLAN#,HOSTPORT=#HOSTPORT#,EXECUTE_FLAG=0 where ID=#ID#
+   
+    </update>
+      
+    	<sql id="queryAppIpByObj">
+    	SELECT A.IP,A.VLANIP FROM TB_BUSI_HOST A ,(SELECT ID FROM TB_BUSI_HOST minus SELECT HOSTID FROM TB_BUSI_DEPLOY_EXAMPLE WHERE APPID=#APPID#) B WHERE A.ID=B.ID
+    	</sql>
+    <select id="queryAppIp" parameterClass="TbBusiDeployExampleObj" resultClass="TbBusiHostObj">
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan>
+        <include refid="queryAppIpByObj"/>
+        
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+    <select id="queryAppIpForCount" parameterClass="TbBusiDeployExampleObj" resultClass="int">
+	      select count(IP) from (
+	        <include refid="queryAppIpByObj"/>
+	       ) virtual_table
+	  </select>
+     <select id="queryIDByIP" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+     SELECT
+        <include refid="tableTbBusiHostColumns"/>
+        FROM
+        TB_BUSI_HOST
+        <dynamic prepend="where">
+               <isNotEmpty property="IP" prepend="and">
+                IP = #IP#
+               </isNotEmpty>
+        </dynamic>
+                order by ID
+     </select>
+     
+       <!-- 更新部署主机的状态，供应用部署使用 -->
+    <update id="updateHostState" parameterClass="TbBusiHostObj">
+    	update TB_BUSI_HOST set WORKSTATUS=#WORKSTATUS#  where ID=#ID#
+    </update>
+    
+    <select id="countBusiHost" parameterClass="TbBusiHostObj" resultClass="int">
+    	select count(ID) from TB_BUSI_HOST 
+    	<dynamic prepend="where">
+    		<isNotNull property="WORKSTATUS" prepend="and">
+	    		WORKSTATUS = #WORKSTATUS#
+    		</isNotNull>
+    	</dynamic>
+    </select>
+    
+    <select id="countAll" parameterClass="TbBusiHostObj" resultClass="int">
+    	select count(ID) from TB_BUSI_HOST 
+    </select>
+    
+    <select id="queryIfExist" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+    	 SELECT
+        <include refid="tableTbBusiHostColumns"/>
+        FROM
+        TB_BUSI_HOST where 1=1 
+        <isNotNull property="IP" prepend="and">
+                IP = #IP#	<!-- 不能用模糊查询 -->
+        </isNotNull>
+    </select>
+    
+    
+    <select id="queryAllMappingsByObj" parameterClass="TbBusiHostObj" resultClass="TbBusiHostObj">
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationStart"/>
+        </isGreaterThan>
+	    	select
+	    	<include refid="tableTbBusiHostColumnsNoKey"/>
+	    	from TB_BUSI_HOST
+	    	<dynamic prepend="where">
+	    		<isNotEmpty prepend="and" property="WORKSTATUS">
+	    			WORKSTATUS = #WORKSTATUS#
+	    		</isNotEmpty>
+	    		<isNotEmpty prepend="and" property="VLANIP">
+	    			VLANIP like '%'||#VLANIP#||'%'
+	    		</isNotEmpty>
+	    		<isNotEmpty prepend="and" property="HOSTNAME">
+	    			HOSTNAME like '%'||#HOSTNAME#||'%'
+	    		</isNotEmpty>
+	    	</dynamic>
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    
+    <select id="countAllMappings" parameterClass="TbBusiHostObj" resultClass="int">
+    	select count(ID) from TB_BUSI_HOST
+    		<dynamic prepend="where">
+	    		<isNotEmpty prepend="and" property="WORKSTATUS">
+	    			WORKSTATUS = #WORKSTATUS#
+	    		</isNotEmpty>
+	    		<isNotEmpty prepend="and" property="VLANIP">
+	    			VLANIP like '%'||#VLANIP#||'%'
+	    		</isNotEmpty>
+	    		<isNotEmpty prepend="and" property="HOSTNAME">
+	    			HOSTNAME like '%'||#HOSTNAME#||'%'
+	    		</isNotEmpty>
+	    	</dynamic>
+    </select>
+    
+</sqlMap>

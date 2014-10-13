@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>	
+	<!-- 工作流驱动引擎 zengls 201107 -->
+	<bean id="workflowEngineDao" class="com.sitech.basd.sxcloud.workflow.dao.engine.WorkflowEngineDaoImpl" singleton="true" parent="baseDaoBean"/>
+	<!-- 应用部署工作流 -->
+	<bean id="appWorkFlowDao" class="com.sitech.basd.sxcloud.workflow.dao.appworkflow.AppWorkFlowDaoImpl" singleton="true" parent="baseDaoBean"/>
+	<!-- 资源申请 -->
+	<bean id="resourceWorkflowDao" class="com.sitech.basd.sxcloud.workflow.dao.resworkflow.ResourceWorkflowDaoImpl" singleton="true" parent="baseDaoBean"/>
+	<bean id="templetInfoDao" class="com.sitech.basd.sxcloud.workflow.dao.templet.TempletInfoDaoImpl" singleton="true" parent="baseDaoBean"/>
+</beans>
+

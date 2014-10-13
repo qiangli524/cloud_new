@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BusiMonitorCfg">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="MonitorCfgObj" type="com.sitech.ssd.ah.busiMonitor.domain.MonitorCfgObj" />
+	<typeAlias alias="UserManageObj" type="com.sitech.ssd.ah.busiMonitor.domain.UserManageObj" />
+	<typeAlias alias="PaasBusiTreeObj" type="com.sitech.ssd.ah.paas.busiResource.domain.tree.PaasBusiTreeObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+		<sql id="queryByObjBase">
+        select s.id as id,s.EXT_EQ_ID as extEqId,s.HOST_IP as hostIp,
+        s.KPI_ID as kpiId,s.KPI_CFG_VALUE as kpiCfgValue,tb.USERNAME as userId,
+        s.BUSI_DESC as busiDesc,s.BUSI_TYPE as busiType,s.STATUS as status,s.HOST_TYPE as hostType, 
+        (CASE 
+         when s.HOST_TYPE = '2' 
+          then 
+        	(select vh.VH_NAME from TB_CLOUD2_VMHOST_INFO vh where concat(vh.CONNECT_ID,'_',vh.VH_UUID)= s.EXT_EQ_ID) 
+		  ELSE 
+		    (select h.EQ_NAME from tb_cloud2_host_info h where concat(h.eq_ip,'_',IFNULL(h.sn, ''))= s.EXT_EQ_ID) 
+		  END) as extEqName  	
+        from
+        tb_boss_busi_kpi_ref_info s,tb_user_manage tb
+         <dynamic prepend="where">
+                <isNotEmpty property="kpiId" prepend="and">
+              	  s.KPI_ID = #kpiId#
+                </isNotEmpty>
+                <isNotEmpty property="userId" prepend="and">
+              	  tb.USERNAME like  CONCAT('%',#userId#,'%')
+                </isNotEmpty>
+                <isNotEmpty property="status" prepend="and">
+              	  s.STATUS =  #status#
+                </isNotEmpty>
+                 and tb.ID=s.USER_ID
+         </dynamic>
+          
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="MonitorCfgObj" resultClass="MonitorCfgObj">
+	 select * from (
+	        <include refid="queryByObjBase"/>
+	        ) ss
+	  			<dynamic prepend="where">
+	         		<isNotEmpty property="extEqName" prepend="and">
+	              	  ss.extEqName like  CONCAT('%',#extEqName#,'%')
+	                </isNotEmpty>
+         		</dynamic>
+	         order by id asc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+      <select id="queryByObjForCount" parameterClass="MonitorCfgObj" resultClass="int">
+	     select count(id) from (
+        	select * from (
+	        <include refid="queryByObjBase"/>
+	        ) ss
+	  			<dynamic prepend="where">
+	         		<isNotEmpty property="extEqName" prepend="and">
+	              	  ss.extEqName like  CONCAT('%',#extEqName#,'%')
+	                </isNotEmpty>
+         		</dynamic>
+       ) virtual_table
+	  </select>
+	  <!-- 查找单个监控配置 -->
+	 <select id="queryByObj" parameterClass="MonitorCfgObj" resultClass="MonitorCfgObj">
+		select s.id as id,s.EXT_EQ_ID as extEqId,s.HOST_IP as hostIp,
+		s.KPI_ID as kpiId,s.KPI_CFG_VALUE as kpiCfgValue,s.USER_ID as userId,
+		s.BUSI_DESC as busiDesc,s.BUSI_TYPE as busiType,s.STATUS as status,s.HOST_TYPE as hostType, 
+		(CASE 
+         when s.HOST_TYPE = '2' 
+          then 
+        	(select vh.VH_NAME from TB_CLOUD2_VMHOST_INFO vh where concat(vh.CONNECT_ID,'_',vh.VH_UUID)= s.EXT_EQ_ID) 
+		  ELSE 
+		    (select h.EQ_NAME from tb_cloud2_host_info h where concat(h.eq_ip,'_',IFNULL(h.sn, ''))= s.EXT_EQ_ID) 
+		  END) as extEqName 	
+         from tb_boss_busi_kpi_ref_info s
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="id">
+						s.id = #id#
+				</isNotEmpty>
+			</dynamic> 
+	 </select>
+	  <insert id="addByObj" parameterClass="MonitorCfgObj">
+	    insert into tb_boss_busi_kpi_ref_info(
+	     id,EXT_EQ_ID,HOST_IP,KPI_ID,KPI_CFG_VALUE,USER_ID,BUSI_DESC,BUSI_TYPE,STATUS,HOST_TYPE
+	     )
+	     values(#id#,#extEqId#,#hostIp#,#kpiId#,#kpiCfgValue#,#userId#,#busiDesc#,#busiType#,#status#,#hostType#)
+	   </insert>
+	   <update id="updateByObj" parameterClass="MonitorCfgObj">
+	     update tb_boss_busi_kpi_ref_info set EXT_EQ_ID=#extEqId#,HOST_IP=#hostIp#,
+	     KPI_ID=#kpiId#,KPI_CFG_VALUE=#kpiCfgValue#,USER_ID=#userId#, BUSI_DESC=#busiDesc# ,
+	     BUSI_TYPE=#busiType#,STATUS=#status#,HOST_TYPE=#hostType#
+	       where ID=#id#
+       </update>
+       <update id="delByObj" parameterClass="MonitorCfgObj">
+	     update tb_boss_busi_kpi_ref_info set STATUS=#status#
+	       where ID=#id#
+       </update>
+       
+       <!-- 物理主机个数-->
+    <select id="queryHostsListCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+    	select count(*) from TB_CLOUD2_HOST_INFO h 
+	        <dynamic prepend="where" > 
+       		<isNotEmpty property="eq_name" prepend="and">
+				h.eq_name like CONCAT('%',#eq_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="eq_ip" prepend="and">
+			    h.eq_ip like CONCAT('%',#eq_ip#,'%')
+			</isNotEmpty>
+		 </dynamic>
+    </select>
+    <!-- 物理主机列表-->
+    <select id="queryHostsList" parameterClass="PaasBusiTreeObj" resultClass="GreenPlumHostInfoObj">
+    	select h.EQ_NAME,h.eq_ip,h.eq_type,h.H_UUID,h.allocated,h.hasvertual,h.status status,h.sn,h.connect_id connectId from TB_CLOUD2_HOST_INFO h 
+	       <dynamic prepend="where" >
+       		<isNotEmpty property="eq_name" prepend="and">
+				h.eq_name like CONCAT('%',#eq_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="eq_ip" prepend="and">
+			    h.eq_ip like CONCAT('%',#eq_ip#,'%')
+			</isNotEmpty>
+		  </dynamic>
+	   	<isGreaterThan property="PAGESIZE" compareValue="0">
+		        <include refid="paginationEnd"/> 
+		</isGreaterThan>
+    </select>
+    
+    <sql id="vmDetailBase">
+		SELECT
+	    t1.vh_type vmType,
+	    CONCAT(CASE when a2.type = 4 then a22.name ELSE a2.name END) AS busiParent,
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		a222.name AS username,
+	    concat(t1.CONNECT_ID,'_',t1.VH_UUID) as vmId,
+		t1.VH_NAME vmName,
+		IFNULL(t1.VH_IP, '-') as ip
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+	</sql>
+	<sql id="vmDetailBases">
+		select 
+		t1.vh_type vmType,
+	    CONCAT(CASE when a2.type = 4 then a22.name ELSE a2.name END) AS busiParent,
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		a222.name AS username,
+	    concat(t1.CONNECT_ID,'_',t1.VH_UUID) as vmId,
+		t1.VH_NAME vmName,
+		IFNULL(t1.VH_IP, '-') as ip
+ 		from TB_CLOUD2_VMHOST_INFO t1
+	</sql>
+    
+    <!-- 虚拟主机个数-->
+    <select id="queryVmHostsListCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+    	select count(*) from (<include refid="vmDetailBase"/> 
+    	<dynamic prepend="where" >
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.VH_NAME like CONCAT('%',#vmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+			    t1.VH_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+    	) tt 
+		        
+    </select>
+    
+    <!--虚拟主机列表-->
+    <select id="queryVmHostsList" parameterClass="PaasBusiTreeObj" resultClass="VmReportForm">
+    	select * from (<include refid="vmDetailBase"/> 
+    		<dynamic prepend="where" >
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.VH_NAME like CONCAT('%',#vmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+			    t1.VH_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+    	) tt 
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+		        <include refid="paginationEnd"/> 
+		</isGreaterThan>
+    </select>
+    
+    <!-- 查找某个主机下的IP -->
+	 <select id="queryHostIpByVmId" parameterClass="VmReportForm" resultClass="String">
+		select distinct(t.ip) from tb_cloud2_vm_ip_relation t 
+			where t.ip is not null 
+				<isNotEmpty prepend="and" property="vmId">
+						t.vm_uuid = #vmId#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="vmId">
+						t.connectid = #vmName#
+				</isNotEmpty>
+	 </select>
+    <!-- 查找某个IP下的用户 -->
+	 <select id="queryUserByIp" parameterClass="VmReportForm" resultClass="UserManageObj">
+		select t.id,t.username from tb_user_manage t 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="ip">
+						t.ip = #ip#
+				</isNotEmpty>
+			</dynamic> 
+	 </select>
+</sqlMap>

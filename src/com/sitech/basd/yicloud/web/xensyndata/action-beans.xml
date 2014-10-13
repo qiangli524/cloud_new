@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="xenDataCompare" class="com.sitech.basd.yicloud.web.xensyndata.action.XenDataCompare"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="xenClusterService">
+			<ref bean="xenClusterService" />
+		</property>
+		<property name="xenEntityTreeService">
+			<ref bean="xenEntityTreeService" />
+		</property>
+		<property name="xenManService">
+			<ref bean="xenManService" />
+		</property>
+		<property name="xenStoreService">
+			<ref bean="xenStoreService" />
+		</property>
+	</bean>
+	<bean id="xenDataTimingSyn" class="com.sitech.basd.yicloud.web.xensyndata.action.XenDataTimingSyn"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="connInfoDao">
+			<ref bean="connInfoDao" />
+		</property>
+		<property name="xenManService">
+			<ref bean="xenManService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="xenEntityTreeService">
+			<ref bean="xenEntityTreeService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

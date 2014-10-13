@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ExportConfig">
+    
+    <typeAlias alias="ExportConfigObj" type="com.sitech.basd.sxcloud.cloud.domain.exportconfig.ExportConfigObj"/>
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+     <sql id="queryByObjBase">
+        select id,key,value,cfg_desc,type
+        from tb_cloud2_export_config
+         <dynamic prepend="where">
+         		<isNotEmpty property="ID" prepend="and">
+                id =#ID#
+               </isNotEmpty>
+               <isNotEmpty property="KEY" prepend="and">
+                key like '%'||#KEY#||'%'
+               </isNotEmpty>
+               <isNotEqual property="TYPE" compareValue="0" prepend="and">
+				type = #TYPE#
+				</isNotEqual>
+				<isNotEmpty property="CFG_DESC" prepend="and">
+                cfg_desc like '%'||#CFG_DESC#||'%'
+               </isNotEmpty>
+         </dynamic>
+         order by key asc
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="ExportConfigObj" resultClass="ExportConfigObj">
+	        <include refid="queryByObjBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="ExportConfigObj" resultClass="int">
+	      select count(1) from tb_cloud2_export_config
+         <dynamic prepend="where">
+         		<isNotEmpty property="ID" prepend="and">
+                id =#ID#
+               </isNotEmpty>
+               <isNotEmpty property="KEY" prepend="and">
+                key like '%'||#KEY#||'%'
+               </isNotEmpty>
+               <isNotEqual property="TYPE" compareValue="0" prepend="and">
+				type = #TYPE#
+				</isNotEqual>
+				<isNotEmpty property="CFG_DESC" prepend="and">
+                cfg_desc like '%'||#CFG_DESC#||'%'
+               </isNotEmpty>
+         </dynamic>
+	  </select>
+
+	  <insert id="insertByObj" parameterClass="ExportConfigObj">
+	  		insert into tb_cloud2_export_config(
+	  		id,key,value,cfg_desc,type
+	  		)
+	  		values(#ID#,#KEY#,#VALUE#,#CFG_DESC#,#TYPE#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="ExportConfigObj">
+	    update tb_cloud2_export_config set value=#VALUE#,cfg_desc=#CFG_DESC# where id=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="ExportConfigObj">
+	    delete from tb_cloud2_export_config where id=#ID#
+	  </delete>
+	  <select id="queryForObjByObj" parameterClass="ExportConfigObj" resultClass="ExportConfigObj">
+	      select id,`key`,value,cfg_desc,type from tb_cloud2_export_config where `key` = #KEY# and type = #TYPE#
+	  </select> 
+</sqlMap>

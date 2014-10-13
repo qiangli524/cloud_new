@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="cubinet"
+			 extends="global_package">
+		<action name="cubinet_*"
+				class="cubinetManageAction" method="{1}"> 
+			<result name="list">/sxcloud/cloud/cubinet/listCubinet.jsp</result>
+			<result name="host">/sxcloud/cloud/cubinet/allHostList.jsp</result>
+			<result name="add">/sxcloud/cloud/cubinet/editCubinet.jsp</result> 
+			<result name="modify">/sxcloud/cloud/cubinet/editCubinet.jsp</result> 
+			<result name="save" type="redirect">/cubinet_getCubinetHostList.do</result>
+			<result name="del" type="redirect">/cubinet_getCubinetHostList.do</result>
+		</action>
+	</package>
+
+</struts>

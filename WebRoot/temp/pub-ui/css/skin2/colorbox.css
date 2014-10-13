@@ -1,0 +1,69 @@
+/*
+ * @Filename: layout.css
+ * @Description: layout style
+ * @Version: 1.0.0
+ * @Author: wangyq
+ * @Update: wangyq
+*/
+.ued-colorbox-white{
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.ued-colorbox-gray{
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.ued-colorbox-green{
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.ued-colorbox-red {
+    background-color: #f2dede;
+    border-color: #eed3d7;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.ued-colorbox-blue{
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.ued-colorbox-orange{
+    background-color: #fcf8e3;
+    border-color: #fbeed5;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+.api {padding:10px;}
+.api .description table {width:100%;border: 1px solid #dddddd;}
+.api .description table thead {font-weight:bold;}
+.api .description table td {background:#FFF;padding:5px 10px;border:1px solid #ccc;line-height:1.5em;}
+.api .description table tr:nth-child(odd) td {
+    background-color: #f9f9f9;
+}
+
+body>h2{display: none;}

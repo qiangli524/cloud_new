@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TempletTree">
+	<typeAlias alias="TempletTreeObj"
+		type="com.sitech.basd.yicloud.domain.templettree.TempletTreeObj" />
+		
+	<select id="queryForTree" parameterClass="TempletTreeObj" resultClass="TempletTreeObj">
+		select ID,NAME,TYPE,PARENT_ID,TEMPLET_ID from TB_CLOUD_TEMPLET_TREE 
+		<dynamic prepend="where">
+			<isNotEqual property="parent_id" compareValue="0" prepend="and" >
+				PARENT_ID=#parent_id#
+			</isNotEqual>
+			<isNotEqual property="id" compareValue="0" prepend="and" >
+				ID=#id#
+			</isNotEqual>
+			<isNotEqual property="type" compareValue="0" prepend="and" >
+				TYPE=#type#
+			</isNotEqual>
+			<isNotEmpty property="name" prepend="and">
+				NAME = #name#
+			</isNotEmpty>
+		</dynamic>
+		order by ID asc
+	</select>
+	<insert id="insertByobj" parameterClass="TempletTreeObj">
+		<selectKey keyProperty="id" resultClass="int">
+			select ID_TB_CLOUD_TEMPLET_TREE.nextval as ID from dual
+		</selectKey>
+		insert into TB_CLOUD_TEMPLET_TREE(ID,NAME,TYPE,PARENT_ID,TEMPLET_ID)
+		values(#id#,#name#,#type#,#parent_id#,#templet_id#)
+	</insert>
+	<delete id= "deleteByObj" parameterClass="TempletTreeObj">
+		delete from TB_CLOUD_TEMPLET_TREE 
+			<dynamic prepend="where">
+				<isNotEqual property="id" compareValue="0" prepend="and" >
+					ID=#id#
+				</isNotEqual>
+				<isNotEmpty property="templet_id" prepend="and">
+					templet_id = #templet_id#
+				</isNotEmpty>
+			</dynamic>
+	</delete>
+	<update id="updateObj" parameterClass="TempletTreeObj">
+		update tb_cloud_templet_tree set PARENT_ID = #parent_id# where ID = #id#
+	</update>
+</sqlMap>

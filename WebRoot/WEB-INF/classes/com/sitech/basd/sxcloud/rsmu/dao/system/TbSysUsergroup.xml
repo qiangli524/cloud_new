@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysUsergroup">
+<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbSysUsergroupObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysUsergroupObj" />
+	<sql id="tableColumnsNoKey">
+		GROUPNAME,STATUS,REMARK,CREATETIME,CREATEUSER,LEADER
+	</sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		select
+		m.ID,m.GROUPNAME,m.LEADER,m.STATUS,m.REMARK,to_char(m.CREATETIME,'yyyy-mm-dd hh24:mi:ss') CREATETIME,m.CREATEUSER,n.NAME
+		from TB_SYS_USERGROUP m,TB_SYS_USERINFO n where m.CREATEUSER = n.ID
+			<isGreaterThan property="ID" compareValue="0"
+				prepend="and">
+				m.ID =#ID#
+			</isGreaterThan>
+			<isNotEmpty property="GROUPNAME" prepend="and">
+				m.GROUPNAME like '%'||#GROUPNAME#||'%'
+			</isNotEmpty>
+			<isGreaterEqual property="STATUS" compareValue="0" prepend="and">
+			   m.STATUS=#STATUS#
+			</isGreaterEqual>
+		   order by m.ID desc
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbSysUsergroupObj"
+		resultClass="TbSysUsergroupObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="TbSysUsergroupObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<delete id="deleteByObj" parameterClass="TbSysUsergroupObj">
+		delete from TB_SYS_USERGROUP where ID=#ID#
+	</delete>
+	<update id="updateByObj" parameterClass="TbSysUsergroupObj">
+		update TB_SYS_USERGROUP set
+		LEADER=#LEADER#,GROUPNAME=#GROUPNAME#,STATUS=#STATUS#,REMARK=#REMARK#,CREATETIME=CURRENT_TIMESTAMP
+		where ID=#ID#
+	</update>
+	<insert id="insertByObj" parameterClass="TbSysUsergroupObj">
+	<selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_SYS_USERGROUP.NEXTVAL AS ID FROM DUAL
+    </selectKey>	
+		insert into TB_SYS_USERGROUP(
+		ID,GROUPNAME,STATUS,REMARK,CREATEUSER,LEADER,CREATETIME
+		)
+		values(#ID#,#GROUPNAME#,#STATUS#,#REMARK#,#CREATEUSER#,#LEADER#,sysdate)
+	</insert>
+</sqlMap>

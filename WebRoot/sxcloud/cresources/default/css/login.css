@@ -1,0 +1,233 @@
+html {
+	
+}
+body {
+	background:url(../images/login-bg.png) repeat-x;
+	font-size: 12px;
+	color:#4c4c4c;
+	
+}
+.loginPanel {
+	width:631px;
+	height:349px;
+	position:absolute;
+	left:50%;
+	margin-top: 158px;
+	margin-left:-316px;
+	background: #ffffff url(../images/login-bg-2-sitech.png) no-repeat;
+}
+.loginPanel .btn-area {
+	position:absolute;
+	top:216px;
+	left:360px;
+}
+.loginPanel .msg-area {
+	position:absolute;
+	top:260px;
+	left:370px;
+}
+.loginPanel .btn-area input {
+	display: block;
+	float: left;
+	width:83px;
+	height:32px;
+	border:none;
+	margin-right:24px;
+}
+.loginPanel .btn-area input.dl{
+	background:url(../images/btn-dl.gif) no-repeat;
+}
+.loginPanel .btn-area input.cz{
+	background:url(../images/btn-cz.gif) no-repeat;
+}
+.loginPanel .txta {
+	position:absolute;
+	top:120px;
+	left:406px;
+	width:160px;
+}
+.loginPanel .txta input {
+	border:1px solid #3399CC;
+	height:24px;
+	line-height:24px;
+	padding:0 3px;
+	width:156px;
+	margin-bottom:12px;
+}
+.loginPanel .icon {
+	position: absolute;
+	right: 0;
+	top: -18px;
+	width: 89px;
+	height: 18px;
+	background:url(../images/login-bg-3.png) no-repeat;
+}
+.index-panel {
+	width: 850px;
+	margin: 0 auto;
+}
+.index-panel .logo {
+	margin: 10px;
+}
+.index-panel .main {
+	border: 1px solid #8cbfdd;
+	background: #fff;
+	padding: 4px 12px;
+}
+.tit-yun {
+	color: #6ca2ef;
+	font-size: 14px;
+	height: 22px;
+	padding-top: 14px;
+	padding-left: 90px;
+	background:url(../images/tit-yun.gif) no-repeat;
+	_*margin-bottom: 10px;
+}
+.tit-gongdan {
+	height: 22px;
+	padding-top: 14px;
+	background:url(../images/tit-gongdan.png) no-repeat;
+	_*margin-bottom: 10px;
+}
+.tit-yun .icon {
+	margin-right: 20px;
+	padding-top: 2px;
+	float: left;
+}
+.index-single {
+	border: 1px solid #88bddc;
+	width: 388px;
+	list-style: none;
+	float: left;
+	margin-right: 12px;
+	margin-left: 8px;
+	margin-bottom: 0;
+	_*margin-bottom: 10px;
+}
+.index-single dt {
+	background:url(../images/tit-bg-01.png) no-repeat;
+	height: 24px;
+	line-height: 24px;
+	font-size: 12px;
+	color: #fff;
+	font-weight: bold;
+	text-indent: 16px;
+}
+.index-single dt span {
+	float: right;
+	margin-right: 10px;
+}
+.more-btn {
+	background:url(../images/more.gif) no-repeat;
+	height: 13px;
+	width: 41px;
+	border: none;
+	margin-top: 4px;
+	cursor:pointer;
+}
+.index-single .content {
+	padding: 6px 10px;
+	background: #fff;
+	text-align: left;
+	
+}
+.index-single .content .icon-01,.index-single .content .icon-02,.index-single .content .icon-03,.index-single .content .icon-04,.index-single .content .icon-05 {
+	float: left;
+	width: 100px;
+	height: 150px;
+	text-align: center;
+}
+.index-single .content .icon-01 {
+	background:url(../images/icon-01.png) no-repeat;
+}
+.index-single .content .icon-02 {
+	background:url(../images/icon-02.png) no-repeat;
+}
+.index-single .content .icon-03 {
+	background:url(../images/icon-03.png) no-repeat;
+}
+.index-single .content .icon-04 {
+	background:url(../images/icon-04.png) no-repeat;
+}
+.index-single .content .icon-05 {
+	background:url(../images/icon-05.png) no-repeat;
+}
+.index-single .content .text {
+	float: right;
+	width: 260px;
+	padding: 0;
+	height: 150px;
+	overflow-x:auto; 
+}
+.index-single .content .text ul {
+	padding: 0;
+	margin: 0;
+	padding-left: 14px;
+}
+.index-single .content .text ul li {
+	line-height: 1.4em;
+	margin: 2px 0;
+	list-style: disc;
+	color: #5c5c5c;
+}
+.clearfix:after {
+	clear: both;
+	content: ' ';
+	display: block;
+	font-size: 0;
+	line-height: 0;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}
+.clearfix {
+	display: inline-block;
+}
+* html .clearfix {
+	height: 1%;
+}
+.clearfix {
+	display: block;
+}
+.clr {
+	clear: both;
+	font-size: 0;
+	height: 0;
+}
+.gray-panel {
+	background: #f5f5f5;
+	border: 1px solid #e6e6e6;
+	padding: 0 10px;
+	height: 1%;
+	margin: 10px;
+}
+.icon-list {
+	margin: 6px;
+	padding: 0;
+}
+.icon-list li{
+	float: left;
+	width: 110px;
+	text-align: center;
+	list-style: none;
+}
+.icon-list li p {
+	margin: 4px 0;
+}
+.icon-list li p a:link,.icon-list li p a:hover, .icon-list li p a:visited{
+	color: #4c4c4c;
+	text-decoration:none;
+}
+.index-table {
+	border: 1px solid #a1c5e9;
+	border-collapse:collapse;
+}
+.index-table td {
+	border: 1px solid #a1c5e9;
+	padding: 2px 0;
+}
+.index-table th {
+	border: 1px solid #a1c5e9;
+	background: #F4F7FD;
+	padding: 2px 0;
+}

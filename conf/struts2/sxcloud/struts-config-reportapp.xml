@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="reapp"
+			 extends="global_package">
+		<action name="reapp_*"
+				class="reportAppAction" method="{1}">
+			<result name="listAppReport">/sxcloud/cloud/reportapp/listAppReport.jsp</result>
+			<result name="appCurrentReport">/sxcloud/cloud/reportapp/currentReportView.jsp</result>
+			<result name="AppMonthReport">/sxcloud/cloud/reportapp/monthReportView.jsp</result>
+			<result name="appWeekReport">/sxcloud/cloud/reportapp/weekReportView.jsp</result>
+		</action>
+	</package>
+</struts>

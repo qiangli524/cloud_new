@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="interDao"
+		  class="com.sitech.basd.cloud3.dao.monitor.InterDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="newUIFuncDao"
+		  class="com.sitech.basd.cloud3.dao.newui.NewUIFuncDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="roomDao"
+		  class="com.sitech.basd.cloud3.dao.machineroom.RoomDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="areaDao"
+		  class="com.sitech.basd.cloud3.dao.machineroom.AreaDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbCloud3AppFileTreeDao"
+		  class="com.sitech.basd.cloud3.dao.app.TbCloud3AppFileTreeDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+</beans>

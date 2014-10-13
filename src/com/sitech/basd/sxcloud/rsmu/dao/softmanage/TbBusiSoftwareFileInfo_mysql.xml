@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiSoftwareFileInfo">
+    <typeAlias alias="TbBusiSoftwareFileInfoObj" type="com.sitech.basd.sxcloud.rsmu.domain.softmanage.TbBusiSoftwareFileInfoObj"/> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<insert id="insertByObj" parameterClass="TbBusiSoftwareFileInfoObj">
+    	insert into TB_BUSI_SOFTWAREFILEINFO
+    	<dynamic prepend="(">
+    	 	<isNotEmpty prepend="," property="APPID">
+    	 		APPID
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="VERSIONID">
+    	 		VERSIONID
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILEPATH">
+    	 		FILEPATH
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILESIZE">
+    	 		FILESIZE
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILEUPDATETIME">
+    	 		FILEUPDATETIME
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="SOFTWAREID">
+    	 		SOFTWAREID
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILEMD5">
+    	 		FILEMD5
+    	 	</isNotEmpty>
+    	 	
+    	)
+    	</dynamic>
+    	values
+    	<dynamic prepend="(">
+    	 	<isNotEmpty prepend="," property="APPID">
+    	 		#APPID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="VERSIONID">
+    	 		#VERSIONID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILEPATH">
+    	 		#FILEPATH#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILESIZE">
+    	 		#FILESIZE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILEUPDATETIME">
+    	 		#FILEUPDATETIME#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="SOFTWAREID">
+    	 		#SOFTWAREID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="FILEMD5">
+    	 		#FILEMD5#
+    	 	</isNotEmpty>
+    	 	
+    	)
+    	</dynamic>
+    </insert>
+</sqlMap>

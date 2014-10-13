@@ -1,0 +1,161 @@
+/*
+ * @Filename: table.css
+ * @Description: table style
+ * @Version: 1.0.0
+ * @Author: dujj
+ * @Update: yangpl
+  * @skin:{
+		"ued-table":"#42a7e8",
+        "ued-table-1":"#81d515",
+        "ued-table-2":"#fb8e09",
+        "ued-table-3":"#f74b43",
+        "ued-table-4":"#e1f0fa",
+        "ued-table-5":"#f3f3f3"
+    }@skin
+*/
+
+/*默认表格*/
+.ued-table {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+	border:1px solid #d0cfcf;
+}
+.ued-table th {
+	color:#4f5050;
+	margin:0;
+	height:27px;
+	line-height:27px;
+	background:url(images/thbg.jpg) left top repeat-x;
+	border:1px solid #d0cfcf;
+	font-weight:normal;
+}
+.ued-table td {
+	border-bottom:1px solid #d0cfcf;
+	height:24px;
+}
+
+/*表格皮肤1*/
+.ued-table-1 {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+}
+.ued-table-1 th {
+	color:#666;
+	margin:0;
+	height:24px;
+	background:#4abf03;
+	color:#fff;
+	border:1px solid #38a60c;
+}
+.ued-table-1 td {
+	border: 1px solid #d1d1d1;
+	height:24px;
+}
+
+/*表格皮肤2*/
+.ued-table-2 {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+}
+.ued-table-2 th {
+	color:#666;
+	margin:0;
+	height:24px;
+	background:#fb8b09;
+	color:#fff;
+	border:1px solid #ea6601;
+}
+.ued-table-2 td {
+	border: 1px solid #d1d1d1;
+	height:24px;
+}
+
+/*表格皮肤3*/
+.ued-table-3 {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+}
+.ued-table-3 th {
+	color:#666;
+	margin:0;
+	height:24px;
+	background:#f8482b;
+	color:#fff;
+	border:1px solid #dd2a0c;
+}
+.ued-table-3 td {
+	border: 1px solid #d1d1d1;
+	height:24px;
+}
+/*表格皮肤4*/
+.ued-table-4 {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+}
+.ued-table-4 th {
+	color:#666;
+	margin:0;
+	height:24px;
+	background:#a9dcff;
+	color:#39749d;
+	border:1px solid #71beee;
+}
+.ued-table-4 td {
+	border: 1px solid #d1d1d1;
+	height:24px;
+}
+/*表格皮肤5*/
+.ued-table-5 {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+}
+.ued-table-5 th {
+	color:#666;
+	margin:0;
+	height:24px;
+	background:#f5f5f5;
+	color:#666;
+	border:1px solid #d1d1d1;
+}
+.ued-table-5 td {
+	border: 1px solid #d1d1d1;
+	height:24px;
+}
+
+
+.ued-tr-odd{ background:#ffffff;}
+.ued-tr-even{ background:#fbfbfb;}
+.ued-tr-hover{ background:#f6f6f6;}
+
+.ued-table-noborder {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+	border:0 !important;
+}
+.ued-table-noborder th {
+	text-align:left;
+	border:0 !important;
+}
+.ued-table-noborder td {
+	height:24px;
+	border:0 !important;
+}
+
+.ued-table-body {
+	font-size:12px;
+	color:#666666;
+	border-collapse:collapse;
+}
+
+.ued-table-body th,.ued-table-body td {
+	height:24px;
+	border: #d1d1d1 solid 1px;
+	text-align:center;
+}

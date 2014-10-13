@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+        
+<sqlMap namespace = "tasklist">
+	<typeAlias alias="TaskListObj" type="com.sitech.basd.tasklist.domain.TaskListObj"/>
+	<typeAlias alias="TaskRecordObj" type="com.sitech.basd.tasklist.domain.TaskRecordObj"/>
+	<typeAlias alias="TbSysGrpmemberObj" type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysGrpmemberObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryTaskListBase">
+	select
+	a.id id,
+	a.task_type task_type,
+	a.task_content task_content,
+	a.responsible_persion responsible_persion,
+	a.cooperate_persion cooperate_persion,
+	DATE_FORMAT(a.plan_complete_date,'%Y-%m-%d ') plan_complete_date,
+	a.task_status task_status,
+	a.complete_rate complete_rate,
+	DATE_FORMAT(a.complete_date ,'%Y-%m-%d ') complete_date,
+	a.note note,
+	DATE_FORMAT(a.submit_date ,'%Y-%m-%d') submit_date,
+	a.submit_persion submit_persion
+	from tb_cloud2_tasklist  a  
+	<dynamic prepend="where">
+		<isNotNull prepend="and" property="id">
+			<isNotEmpty property="id">
+				a.id=#id#
+			</isNotEmpty>
+		</isNotNull>
+		
+		<isNotNull prepend="and" property="task_content">
+			<isNotEmpty property="task_content">
+				a.task_content like CONCAT('%',#task_content#,'%')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull prepend="and" property="responsible_persion">
+			<isNotEmpty property="responsible_persion">
+				a.responsible_persion like CONCAT('%',#responsible_persion#,'%')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="task_type" prepend="and">
+			<isNotEqual property="task_type" compareValue="-1">
+					a.task_type=#task_type#
+			</isNotEqual>
+		</isNotNull>
+			
+		<isNotNull property="task_status" prepend="and" >
+			<isNotEqual property="task_status" compareValue="-1">
+					a.task_status=#task_status#
+			
+			</isNotEqual>
+		</isNotNull>
+		
+</dynamic> 
+	</sql>
+	
+	<select id="queryTaskList" parameterClass="TaskListObj" resultClass="TaskListObj">
+	
+	        <include refid="queryTaskListBase"/>
+	        ORDER BY a.task_status,a.plan_complete_date,a.submit_date desc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	
+	
+	
+	<select id="queryForCount" parameterClass="TaskListObj" resultClass="int">
+		select count(*)  from (
+		<include refid="queryTaskListBase" />
+		 ) virtual_table
+	 </select>
+	 <insert id="insertTaskList" parameterClass="TaskListObj">
+		insert into tb_cloud2_tasklist(id,task_type,task_content,responsible_persion,cooperate_persion,
+		plan_complete_date,task_status,complete_rate,complete_date,submit_date,submit_persion,note)
+			values(#id#,#task_type#,#task_content#,#responsible_persion#,#cooperate_persion#,
+			#plan_complete_date#,#task_status#,#complete_rate#,#complete_date#,#submit_date#,#submit_persion#,#note#)
+	</insert>
+	 
+	 
+	 <update id="updateTaskList" parameterClass="TaskListObj">
+	   update tb_cloud2_tasklist 
+	   <dynamic prepend="set">
+	     <isNotEmpty prepend="," property="id">
+	       id=#id#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="task_type">
+	       task_type=#task_type#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="task_content">
+	       task_content=#task_content#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="responsible_persion">
+	       responsible_persion=#responsible_persion#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="cooperate_persion">
+	       cooperate_persion=#cooperate_persion#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="plan_complete_date">
+	       plan_complete_date=#plan_complete_date#
+	     </isNotEmpty>
+	    
+	     <isNotEmpty prepend="," property="task_status">
+	       task_status=#task_status#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="complete_rate">
+	       complete_rate=#complete_rate#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="complete_date">
+	       complete_date=#complete_date#
+	     </isNotEmpty>
+	      <isNotEmpty prepend="," property="submit_date">
+	       submit_date=#submit_date#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="submit_persion">
+	       submit_persion=#submit_persion#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="note">
+	       note=#note#
+	     </isNotEmpty>
+	   </dynamic>
+	   where id=#id#
+	</update>
+	 <delete id="deleteTaskList" parameterClass="TaskListObj">
+		delete from tb_cloud2_tasklist 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	 <!-- start add by qism -->
+	 <!-- 分页统计总数 -->
+	 <select id="queryForRecordCount" parameterClass="TaskListObj" resultClass="int">
+		select count(*)  from tb_cloud2_taskworkcontent tw
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					tw.TASK_ID = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	 </select>
+	 <!--用于查询任务对应的具体记录 -->
+	 <select id="queryRecordList" parameterClass="TaskListObj" resultClass="TaskRecordObj">
+	 	select tw.ID,DATE_FORMAT(tw.COMPLETE_DATE,'%Y-%m-%d ') COMPLETE_DATE,tw.COMPLETE_RATE,tw.NOTE,tw.PARTNER,
+	 		DATE_FORMAT(tw.SUBMIT_DATE,'%Y-%m-%d %H:%i:%S')SUBMIT_DATE,tw.SUBMIT_PERSION,tw.TASK_STATUS,tw.WORKCONTENT 
+	 		from tb_cloud2_taskworkcontent tw 
+	 		LEFT JOIN tb_cloud2_tasklist tl ON 
+	 		tw.TASK_ID = tl.ID 
+	 	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					tw.TASK_ID = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+		order by tw.SUBMIT_DATE DESC
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	    </isGreaterThan>
+	 </select>
+	 <!--用于删除记录 -->
+	  <delete id="deleteRecordList" parameterClass="TaskRecordObj">
+		delete from tb_cloud2_taskworkcontent 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="resultList">
+				id  in 
+			    <iterate close=")" conjunction="," open="(" property="resultList">
+						#resultList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<!-- 用于添加记录 -->
+	<insert id="insertRecordList" parameterClass="TaskRecordObj">
+	 	insert into tb_cloud2_taskworkcontent (ID,WORKCONTENT,PARTNER,COMPLETE_DATE,TASK_STATUS,COMPLETE_RATE,NOTE,SUBMIT_PERSION,SUBMIT_DATE,TASK_ID) 
+	 	values(#ID#,#WORKCONTENT#,#PARTNER#,#COMPLETE_DATE#,#TASK_STATUS#,#COMPLETE_RATE#,#NOTE#,#SUBMIT_PERSION#,#SUBMIT_DATE#,#TASK_ID#)
+	</insert>
+	<!-- 用于查询某一条记录 -->
+	<select id="queryRecordListById" parameterClass="TaskRecordObj" resultClass="TaskRecordObj">
+		select tw.ID,DATE_FORMAT(tw.COMPLETE_DATE,'%Y-%m-%d ') COMPLETE_DATE,tw.COMPLETE_RATE,tw.NOTE,tw.PARTNER,
+	 		DATE_FORMAT(tw.SUBMIT_DATE,'%Y-%m-%d %H:%i:%S')SUBMIT_DATE,tw.SUBMIT_PERSION,tw.TASK_STATUS,tw.WORKCONTENT 
+	 		from tb_cloud2_taskworkcontent tw 
+	 	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="ID">
+				<isNotNull property="ID">
+					tw.ID = #ID#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- 用于修改某一条记录 -->
+	<update id="updateRecordListById" parameterClass="TaskRecordObj" >
+		 update tb_cloud2_taskworkcontent 
+	   <dynamic prepend="set">
+	     <isNotEmpty prepend="," property="WORKCONTENT">
+	       WORKCONTENT=#WORKCONTENT#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="PARTNER">
+	       PARTNER=#PARTNER#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="COMPLETE_DATE">
+	       COMPLETE_DATE=#COMPLETE_DATE#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="COMPLETE_RATE">
+	       COMPLETE_RATE=#COMPLETE_RATE#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="TASK_STATUS">
+	       TASK_STATUS=#TASK_STATUS#
+	     </isNotEmpty>
+	     <isNotEmpty prepend="," property="NOTE">
+	       NOTE=#NOTE#
+	     </isNotEmpty>
+	   </dynamic>
+	   where id=#ID#
+	</update>
+	<select id="queryResponPersonList" resultClass="TbSysGrpmemberObj">
+		SELECT
+			m.USERID,
+			m.GROUPID,
+			n.NAME USERNAME
+		FROM
+			TB_SYS_GRPMEMBER m,
+			TB_SYS_USERINFO n		
+		WHERE
+			m.USERID = n.ID
+		AND m.GROUPID in (1076,1077)
+	</select>
+	<!-- end -->
+</sqlMap>

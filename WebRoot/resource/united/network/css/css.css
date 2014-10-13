@@ -1,0 +1,55 @@
+#left,#right{
+	width: 288px;
+	float: left;
+}
+fieldset{
+	width:280px; 
+	border-color: white;
+	padding:2px 0px 2px 2px;
+}
+legend {
+    color:#CFCFCF;
+    font-weight:800;
+    font-size: 8px; 
+    /*background:white;*/
+} 
+.network_content div{
+	font-size: 10px; 
+	height: 20px;
+	color: rgb(101, 101, 104);
+}
+#center{
+	width: 15px;
+	float: left;
+	height: 20px;
+	border: 1px solid;
+	border-color: rgb(109, 98, 98);
+	margin-left: 5px;
+	border-width: 2px;
+}
+.network_obj .name{
+	width: 90%;
+	float: left;
+}
+.network_obj .img{
+	float:left
+}
+.network_obj .line{
+	float: left;
+	position: relative;
+	right: -4px;
+	width:1px;
+}
+.network_obj_right .line{
+	float: left;
+	position: relative;
+	left: -20px;
+	width:1px;
+}
+.network_obj_right .name{
+	width: 86%;
+	float: left;
+}
+.network_obj_right .img{
+	float:left
+}

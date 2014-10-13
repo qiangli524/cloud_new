@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBaseAppFileTree">
+	<typeAlias alias="BaseAppFileTreeVO" type="com.sitech.basd.deployfile.domain.BaseAppFileTreeVO"/>  
+	<typeAlias alias="StandardAppVO1" type="com.sitech.utils.capture.vo.StandardAppVO"/>  
+	<sql id="keys">
+		id,itype,name,file_url,parent_id,baseappId,alias,status
+	</sql>
+	<!-- 插入操作 -->
+	<insert id="insertForTree" parameterClass="BaseAppFileTreeVO">
+		insert into tb_base_app_file_tree(id,name,itype,file_url,parent_id,baseappId,alias,status,update_time)
+		values(#id#,#name#,#itype#,#file_url#,#parent_id#,#baseappId#,#alias#,#status#,now())
+	</insert>
+	
+	<select id="queryTreeObj" parameterClass="BaseAppFileTreeVO" resultClass="BaseAppFileTreeVO">
+		select <include refid="keys" /> from tb_base_app_file_tree
+		<dynamic prepend="where">
+			<isNotNull property="id" prepend="and">
+				id =  #id#
+			</isNotNull>
+			<isNotNull property="file_url" prepend="and">
+				file_url = #file_url#
+			</isNotNull>
+			<isNotNull property="baseappId" prepend="and">
+				baseappId = #baseappId#
+			</isNotNull>
+			<isNotNull property="itype" prepend="and">
+				itype = #itype#
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<select id="queryForTree" parameterClass="BaseAppFileTreeVO" resultClass="BaseAppFileTreeVO">	
+		SELECT
+			t.id,
+			t.name,
+			t.file_url file_url,
+			t.parent_id,
+			t.baseappId,
+			t.update_time,
+			t.alias,
+			t.status
+		FROM
+		tb_base_app_file_tree t
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					t.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="name">
+				<isNotEmpty property="name" prepend="and">
+					t.name like CONCAT('%',#name#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="file_url">
+				<isNotEmpty property="file_url" prepend="and">
+					t.file_url =  #file_url#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="baseappId" prepend="and">
+				<isNotEmpty property="baseappId">
+					t.baseappId = #baseappId#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		order by t.itype
+	</select>
+	
+	<update id="updateByObj" parameterClass="BaseAppFileTreeVO">
+		update tb_base_app_file_tree
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="name">
+				name=#name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="alias">
+				alias=#alias#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					t.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="name">
+				<isNotEmpty property="name" prepend="and">
+					t.name like CONCAT('%',#name#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="file_url">
+				<isNotEmpty property="file_url" prepend="and">
+					t.file_url =  #file_url#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="baseappId" prepend="and">
+				<isNotEmpty property="baseappId">
+					t.baseappId = #baseappId#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</update>
+	
+	<select id="queryBaseAppInfo" parameterClass="StandardAppVO1" resultClass="StandardAppVO1">
+       SELECT
+           u.username hoseusername,
+           u.password sshpwd,
+           c.sshport sshport,
+           c.BASEPATH basepath,
+           h.ip standardIp,
+           	a.ID standardAppId
+      FROM 
+           tb_busi_host_config    c,
+           tb_busi_host           h,
+           tb_sys_app             a,
+           tb_user_manage         u
+     WHERE 
+          a.strategy=h.id
+       and c.user_manage_id=u.id
+       and a.host_config_id=c.hostconfigid
+       and a.ID=#standardAppId#
+	</select>
+</sqlMap>

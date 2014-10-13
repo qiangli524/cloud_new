@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="departproject" extends="global_package">
+ 		<!-- 项目 -->
+		<action name="departproject_*" 
+		        class="departProjectAction" method="{1}">
+		    <result name="success">/cloud3/departproject/listDepartProject.jsp</result>
+		    <result name="listProject">/cloud3/departproject/listProject.jsp</result>
+		    <result name="del" type="redirect">departproject_listDepartProject.do</result>
+			<result name="add">/cloud3/departproject/addDepartProject.jsp</result>
+			<result name="modify">/cloud3/departproject/addDepartProject.jsp</result>
+			<result name="save" type="redirect">departproject_listDepartProject.do</result>
+			<result name="user">/cloud3/departproject/listUserInfoForSel.jsp</result>
+			<result name="domain">/cloud3/departproject/listNetForSel.jsp</result>
+			<result name="his">/cloud3/departproject/listDepartProjectHis.jsp</result>
+			<result name="addVM">/cloud3/departproject/addVM.jsp</result>
+			<result name="showVM">/cloud3/departproject/showVmList.jsp</result>
+			<result name="delVM">/cloud3/departproject/delVM.jsp</result>
+			<result name="vmResourceRate">/cloud3/departproject/vmResourceRate.jsp</result>
+			<result name="projectResourceRate">/cloud3/departproject/vmResourceRate.jsp</result>
+		</action>
+		<!-- 科室 -->
+		<action name="depart_*" 
+		        class="departManAction" method="{1}">
+		    <result name="list">/cloud3/departproject/listDepart.jsp</result>
+			<result name="edit">/cloud3/departproject/editDepart.jsp</result>
+			<result name="result" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="projectResourceRate">/cloud3/departproject/vmResourceRate.jsp</result>
+		</action>
+		<!-- 部门 -->
+		<action name="section_*" 
+		        class="sectionAction" method="{1}">
+		    <result name="list">/cloud3/departproject/listSection.jsp</result>
+			<result name="edit">/cloud3/departproject/editSection.jsp</result>
+			<result name="result" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="projectResourceRate">/cloud3/departproject/vmResourceRate.jsp</result>
+		</action>
+ </package>
+</struts>

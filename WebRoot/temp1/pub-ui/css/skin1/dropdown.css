@@ -1,0 +1,60 @@
+/*
+ * @Filename: dropdown.css
+ * @Description: dropdown style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: wangchen
+*/
+.ued-dropdown li {
+    /*padding:5px;*/
+	list-style: none;
+    display:inline-block;
+    *display: inline;
+    *zoom:1;
+    position: relative;
+}
+.ued-dropdown li a.dropdown{
+	display:inline-block;
+	background: url(images/hlist-arrow3.gif) right center no-repeat;
+	padding-right:16px;
+}
+.ued-dropdown li.on {
+}
+.ued-dropdown-menu{
+	background-clip: padding-box;
+    background-color: #FFFFFF;
+    border: 1px solid #d4d4d4;
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    float: left;
+    left: 0;
+    list-style: none outside none;
+    margin: 2px 0 0;
+    min-width: 160px;
+    /*padding: 5px 0;*/
+    position: absolute;
+    top: 24px;
+    z-index: 1000;
+	*width:160px;
+	white-space:nowrap
+}
+.ued-dropdown-menu li {
+    display: block;
+	width:100%;
+}
+.ued-dropdown-menu li a{
+	clear: both;
+    color: #666;
+    display: block;
+    font-weight: normal;
+    padding: 2px 20px;
+    white-space: nowrap;
+	height:22px;
+	line-height:22px;
+}
+.ued-dropdown-menu li a:hover{
+	background: #279fe9;
+	color:#fff;
+	text-decoration: none;
+}

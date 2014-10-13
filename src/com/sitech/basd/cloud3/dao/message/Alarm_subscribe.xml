@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Alarm_subscribe">
+	<typeAlias alias="AlarmSubscribeObj"
+		type="com.sitech.basd.cloud3.domain.message.AlarmSubscribeObj" />
+	
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="TB_CLOUD3_ALARM_SUBSCRIBE_ColumnsNoKey">
+	SENDSTYLE		,SUBSCRIBE			,ALARMLEVEL	,OBJID	   ,SENDMODE			,SENDTIME1	,SENDTIME2	,UNSENDTIME1,UNSENDTIME2,ALARMUSERID,OBJNAME, CREATETIME
+	</sql>
+	<sql id="TB_CLOUD3_ALARM_SUBSCRIBE_Columns">
+		ID ,
+		<include refid="TB_CLOUD3_ALARM_SUBSCRIBE_ColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_CLOUD3_ALARM_SUBSCRIBE_Columns" />
+		from TB_CLOUD3_ALARM_SUBSCRIBE
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				ID=#id#
+			</isNotEmpty>
+			<isNotEmpty property="alarmuserid" prepend="and">
+				ALARMUSERID = #alarmuserid#
+			</isNotEmpty>
+			<isNotEmpty property="sendmode" prepend="and">
+				<isNotEqual property="sendmode" compareValue="-1">
+					SENDMODE = #sendmode#
+				</isNotEqual>
+			</isNotEmpty>
+			<isNotEmpty property="alarmlevel" prepend="and">
+				<isNotEqual property="alarmlevel" compareValue="-2">
+					ALARMLEVEL = #alarmlevel#
+				</isNotEqual>
+			</isNotEmpty>
+			<isNotEmpty property="subscribe" prepend="and">
+				<isNotEqual property="subscribe" compareValue="-1">
+					SUBSCRIBE = #subscribe#
+				</isNotEqual>
+			</isNotEmpty>
+			<isNotEmpty property="sendstyle" prepend="and">
+				<isNotEqual property="sendstyle" compareValue="-1">
+					SENDSTYLE = #sendstyle#
+				</isNotEqual>
+			</isNotEmpty>
+		</dynamic>
+		order by CREATETIME DESC 
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj"
+		parameterClass="AlarmSubscribeObj"
+		resultClass="AlarmSubscribeObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForObject"
+		parameterClass="AlarmSubscribeObj"
+		resultClass="AlarmSubscribeObj">
+		
+		<include refid="queryByObjBase" />
+
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="AlarmSubscribeObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<insert id="insertByObj" parameterClass="AlarmSubscribeObj">
+		INSERT INTO TB_CLOUD3_ALARM_SUBSCRIBE(ID,SENDSTYLE		,SUBSCRIBE			,ALARMLEVEL	,OBJID	   ,SENDMODE			,SENDTIME1	,SENDTIME2	,UNSENDTIME1,UNSENDTIME2,ALARMUSERID,CREATETIME,OBJNAME) VALUES
+		(#id#,#sendstyle#,#subscribe#,#alarmlevel#,#objid#,#sendmode#,#sendtime1#,#sendtime2#,#unsendtime1#,#unsendtime2#,#alarmuserid#,SYSDATE,#objname#)
+	</insert>
+	<delete id="deleteByObj" parameterClass="AlarmSubscribeObj">
+	delete TB_CLOUD3_ALARM_SUBSCRIBE  where ID=#id#
+	</delete>
+	<update id="updateByObj" parameterClass="AlarmSubscribeObj">
+	update TB_CLOUD3_ALARM_SUBSCRIBE set SENDSTYLE=#sendstyle#,ALARMLEVEL=#alarmlevel#,SENDMODE=#sendmode#,OBJID=#objid#,SENDTIME1=#sendtime1#,SENDTIME2=#sendtime2#,UNSENDTIME1=#unsendtime1#,UNSENDTIME2=#unsendtime2#,CREATETIME=SYSDATE
+	where ID=#id#
+	</update>
+</sqlMap>

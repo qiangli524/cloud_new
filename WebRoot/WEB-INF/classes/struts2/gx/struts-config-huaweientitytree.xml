@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="huaweientitytree" extends="global_package">
+		<action name="huaweientitytree_*"
+				class="huaweiEntityTreeAction" method="{1}">
+			<result name="list">/gx/huaweientitytree/listHauWeiServerTree.jsp</result>
+			<result name="vmtabs">/gx/huaweientitytree/vmtabs.jsp</result>
+			<result name="dataCenterInfo">/gx/huaweientitytree/huaweiDataCenterInfo.jsp</result>
+			<result name="clusterInfo">/gx/huaweientitytree/huaweiClusterInfo.jsp</result>
+			<result name="hostInfo">/gx/huaweientitytree/huaweiHostInfo.jsp</result>
+			<result name="vmInfo">/gx/huaweientitytree/huaweiVMInfo.jsp</result>
+		</action>
+ </package>
+
+</struts>

@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="HadoopUsers">
+	<typeAlias alias="HadoopUserObj" type="domain.users.HadoopUserObj"/>
+	<typeAlias alias="clusObj" type="domain.cluster.HadoopClusterObj"/>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="baseCloumns">
+		a.id,a.ip,a.username,a.password,a.mac,DATE_FORMAT(a.insert_time,'%Y-%m-%d %H:%i:%s') insertTime,
+		DATE_FORMAT(a.update_time,'%Y-%m-%d %H:%i:%s') updateTime,a.type,a.cluster_id
+	</sql>
+	
+	<sql id="baseQuerySql">
+		select 
+			<include refid="baseCloumns"/>,
+			b.id service_id,
+			b.service_type service_type,
+			b.`status`,
+			b.deal_type,
+			c.`NAME` cluster_name,
+			d.id memberId,
+			d.status memberStatus,
+			e.type memberType
+		from tb_hadoop_host_user a
+		left join tb_hadoop_users_service_relation b on a.id = b.entity_id
+		left join tb_hadoop_resource_tree c on a.cluster_id = c.UUID
+		left join tb_hadoop_group_member d on a.id = d.user_id and b.service_type = d.SERVICE_TYPE
+		LEFT JOIN tb_hadoop_users_deal_task e on  d.ID = e.entity_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				a.ID = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="username">
+				a.username like CONCAT('%',#username#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				a.ip like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_id">
+				c.UUID = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				b.service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="typeList">
+				b.service_type in
+				<iterate close=")" conjunction="," open="(" property="typeList">
+					#typeList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="deal_type">
+				b.deal_type = #deal_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				b.`status` = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				b.entity_type = #entity_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="groupId">
+				d.group_id = #groupId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				d.service_type = #service_type#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="HadoopUserObj" resultClass="HadoopUserObj">
+		<include refid="baseQuerySql"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCount" parameterClass="HadoopUserObj" resultClass="int">
+		select count(d.id) from (
+			<include refid="baseQuerySql"/>
+		) d
+	</select>
+	
+	<select id="queryForClusterList" parameterClass="HadoopUserObj" resultClass="clusObj">
+		select d.cluster_name cluster_name,d.cluster_id cluster_id from (
+			<include refid="baseQuerySql"/>
+		) d GROUP BY d.cluster_id
+	</select>
+	
+	<insert id="insertByObj" parameterClass="HadoopUserObj">
+		insert into tb_hadoop_host_user (id,ip,username,password,mac,insert_time,update_time,type,cluster_id) 
+		values(#id#,#ip#,#username#,#password#,#mac#,NOW(),NOW(),#type#,#cluster_id#)
+	</insert>
+	
+	
+	<sql id="baseUnAssoSql">
+		select 
+			<include refid="baseCloumns"/>,
+			b.id service_id,
+			b.service_type service_type,
+			b.`status`,
+			b.deal_type,
+			c.`NAME` cluster_name
+		from tb_hadoop_host_user a
+		left join tb_hadoop_users_service_relation b on a.id = b.entity_id
+		left join tb_hadoop_resource_tree c on a.cluster_id = c.UUID
+		where a.id not in (
+			select a.ID from tb_hadoop_host_user a INNER JOIN tb_hadoop_group_member b on a.id = b.USER_ID 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="groupId">
+					b.GROUP_ID = #groupId#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="service_type">
+					b.service_type = #service_type#
+				</isNotEmpty>
+			</dynamic>
+		)
+		<dynamic>
+			<isNotEmpty prepend="and" property="id">
+				a.ID = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="username">
+				a.username like CONCAT('%',#username#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				a.ip like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_id">
+				c.UUID = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				b.service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="typeList">
+				b.service_type in
+				<iterate close=")" conjunction="," open="(" property="typeList">
+					#typeList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="deal_type">
+				b.deal_type = #deal_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				b.`status` = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				b.entity_type = #entity_type#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryUserListUnAssoed" parameterClass="HadoopUserObj" resultClass="HadoopUserObj">
+		<include refid="baseUnAssoSql"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCountUnAssoed" parameterClass="HadoopUserObj" resultClass="int">
+		select count(a.id) from 
+		(
+			<include refid="baseUnAssoSql"/>
+		) a
+	</select>
+	
+	<sql id="queryForUserListBase">
+		select 
+			<include refid="baseCloumns"/>,
+			b.id service_id,
+			b.service_type service_type,
+			b.`status`,
+			b.deal_type,
+			c.`NAME` cluster_name,
+			d.entity_id,
+			d.queue_id,
+			d.entity_type
+		from tb_hadoop_host_user a
+		left join tb_hadoop_users_service_relation b on a.id = b.entity_id
+		left join tb_hadoop_resource_tree c on a.cluster_id = c.UUID
+		left join tb_hadoop_queue_user_config_relation d on b.id = d.entity_id	
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				a.ID = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="username">
+				a.username like CONCAT('%',#username#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				a.ip like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_id">
+				c.UUID = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				b.service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="deal_type">
+				b.deal_type = #deal_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				b.`status` = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				d.entity_type = #entity_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="queue_id">
+				d.queue_id = #queue_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				d.entity_id = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryForUserListCount" parameterClass="HadoopUserObj" resultClass="int">
+		select count(*) from (
+			<include refid="queryForUserListBase"/>
+		) d
+	</select>
+	
+	<select id="queryForUserList" parameterClass="HadoopUserObj" resultClass="HadoopUserObj">
+		<include refid="queryForUserListBase"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	
+	<sql id="queryConnectUserListBase">
+		select 
+			<include refid="baseCloumns"/>,
+			b.id service_id,
+			b.service_type service_type,
+			b.`status`,
+			b.deal_type,
+			c.`NAME` cluster_name
+		from tb_hadoop_host_user a
+		left join (
+			select b.id, b.entity_id, b.service_type, b.entity_type, b.`status`, b.deal_type 
+			from tb_hadoop_queue_user_config_relation a RIGHT JOIN tb_hadoop_users_service_relation b ON 
+			a.entity_id = b.id where a.entity_id IS NULL
+		) b on a.id = b.entity_id
+		left join tb_hadoop_resource_tree c on a.cluster_id = c.UUID
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="deal_type">
+				b.deal_type = #deal_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				b.`status` = #status#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="queryConnectUserListCount" parameterClass="HadoopUserObj" resultClass="int">
+		select count(*) from (
+			<include refid="queryConnectUserListBase"/>
+		) d
+	</select>
+	
+	<select id="queryConnectUserList" parameterClass="HadoopUserObj" resultClass="HadoopUserObj">
+		<include refid="queryConnectUserListBase"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForList" parameterClass="HadoopUserObj" resultClass="HadoopUserObj">
+		select * from tb_hadoop_host_user 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="username">
+				username = #username#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_id">
+				cluster_id = #cluster_id#
+			</isNotEmpty>
+		</dynamic>	
+	</select>
+	
+	<select id="queryForSystemUser" parameterClass="HadoopUserObj" resultClass="HadoopUserObj">
+		SELECT
+			a.USERNAME,
+			a.`PASSWORD` password,
+			a.IP 
+		FROM
+			tb_user_manage a
+		INNER JOIN (
+			SELECT
+				b.ip
+			FROM
+				tb_hadoop_service_node a
+			INNER JOIN tb_hadoop_host_info b ON a.HOST_ID = b.ID
+			where a.status = 0
+			<dynamic>
+				<isNotEmpty prepend="and" property="cluster_id">
+					a.CLUSTER_ID = #cluster_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="service_type">
+					a.SERVICE_TYPE = #service_type#
+				</isNotEmpty>
+			</dynamic>
+		) b ON a.ip = b.ip
+		<dynamic prepend="where">
+			<isNotEmpty property="entity_type" prepend="and">
+				a.type = #entity_type#
+			</isNotEmpty>
+			<isNotEmpty property="purpose" prepend="and">
+				a.purpose = #purpose#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryUserName" parameterClass="HadoopUserObj" resultClass="HadoopUserObj">
+		select 
+			<include refid="baseCloumns"/>
+		from tb_hadoop_host_user a
+		left join tb_hadoop_users_service_relation b on a.id = b.entity_id
+		left join tb_hadoop_queue_user_config_relation c on b.id = c.entity_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="deal_type">
+				b.deal_type = #deal_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				b.`status` = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				c.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				c.entity_type = #entity_type#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

@@ -1,0 +1,143 @@
+@charset "gb2312";
+/*
+ * Filename: reset.css
+ * Description: init default browser's style
+ * Version: 1.0.0
+ * Author: kevin.si-tech
+ * UpdateBy: kevin
+*/
+html,body {-webkit-text-size-adjust: none;width:100%;}
+body, form, frame, iframe, blockquote, p, pre, sup, sub, table, caption, ol, dl, ul, li, dl, dd, dt, div, span, a, input, button, textarea, fieldset, legend, b, strong, em, i, h1, h2, h3, h4, h5, h6, img, label {
+	margin:0;
+	padding:0;
+}
+h1, h2, h3, h4, h5, h6 {font-size:100%;}
+ol, dl, ul, li, dl, dd, dt {list-style:none;}
+table {border-collapse:collapse;border-spacing:0;}
+caption, th {text-align:center;}
+fieldset,img,abbr,acronym{border:0;}
+a {text-decoration:none;outline:none;}
+a:hover {text-decoration:underline;cursor:pointer;}
+input {outline:none;}
+
+
+.clearfix:after {
+	clear:both;
+	content:' ';
+	display:block;
+	font-size:0;
+	line-height:0;
+	visibility:hidden;
+	width:0;
+	height:0;
+}
+.clearfix {display:inline-block;}
+* html .clearfix {height:1%;}
+
+.tc {text-align:center;}
+.tl {text-align:left;}
+.tr {text-align:right;}
+.fl {float:left;_display:inline;}
+.fr {float:right;_display:inline;}
+.none {display:none;}
+.mc {margin:0 auto;}
+.clear {clear:both;}
+
+.f12 {font-size:12px;}
+.f13 {font-size:13px;}
+.f14 {font-size:14px;}
+.f16 {font-size:16px;}
+.fb {font-weight:bold;}
+.fn {font-weight:normal;}
+.t2 {text-indent:2em;}
+.line15 {line-height:150%}
+.line20 {line-height:200%}
+.line30 {line-height:300%}
+.color333 {color:#333333}
+.color666 {color:#666666}
+.color999 {color:#CCCCCC}
+.colorfff {color:#ffffff}
+.color06f {color:#0066ff}
+.color6be {color: #60b0e3;}
+.color690 {color: #6f9500;}
+.color9a{color:#9A9A9A;}
+.color1E{color:#1E5C83;}
+.colorAd{color:#AD7431}
+.color5f{color:#5F5E5E;}
+.vam {vertical-align:middle;}
+
+.pad5{padding:5px;}
+.pad10{padding:10px;}
+.pt10 {padding-top:10px;}
+.pt15 {padding-top:15px;}
+.pt20 {padding-top:20px;}
+.pt25 {padding-top:25px;}
+.pt30 {padding-top:30px;}
+.pt40 {padding-top:40px;}
+.pt50 {padding-top:50px;}
+.pr10 {padding-right:10px;}
+.pr15 {padding-right:15px;}
+.pr20 {padding-right:20px;}
+.pr25 {padding-right:25px;}
+.pr30 {padding-right:30px;}
+.pr40 {padding-right:40px;}
+.pr50 {padding-right:50px;}
+.pb10 {padding-bottom:10px;}
+.pb15 {padding-bottom:15px;}
+.pb20 {padding-bottom:20px;}
+.pb25 {padding-bottom:25px;}
+.pb30 {padding-bottom:30px;}
+.pb40 {padding-bottom:40px;}
+.pb50 {padding-bottom:50px;}
+.pl10 {padding-left:10px;}
+.pl15 {padding-left:15px;}
+.pl20 {padding-left:20px;}
+.pl25 {padding-left:25px;}
+.pl30 {padding-left:30px;}
+.pl40 {padding-left:40px;}
+.pl50 {padding-left:50px;}
+
+.mt2{margin-top:-2px;}
+.mt5 {margin-top:5px;}
+.mt7 {margin-top:7px;}
+.mt10 {margin-top:10px;}
+.mt15 {margin-top:15px;}
+.mt20 {margin-top:20px;}
+.mt25 {margin-top:25px;}
+.mt30 {margin-top:30px;}
+.mt40 {margin-top:40px;}
+.mt50 {margin-top:50px;}
+.mr7 {margin-right:7px;}
+.mr10 {margin-right:10px;}
+.mr15 {margin-right:15px;}
+.mr20 {margin-right:20px;}
+.mr25 {margin-right:25px;}
+.mr30 {margin-right:30px;}
+.mr40 {margin-right:40px;}
+.mr50 {margin-right:50px;}
+.mb7 {margin-bottom:7px;}
+.mb10 {margin-bottom:10px;}
+.mb15 {margin-bottom:15px;}
+.mb20 {margin-bottom:20px;}
+.mb25 {margin-bottom:25px;}
+.mb30 {margin-bottom:30px;}
+.mb40 {margin-bottom:40px;}
+.mb50 {margin-bottom:50px;}
+.ml7 {margin-left:7px;}
+.ml10 {margin-left:10px;}
+.ml15 {margin-left:15px;}
+.ml20 {margin-left:20px;}
+.ml25 {margin-left:25px;}
+.ml30 {margin-left:30px;}
+.ml40 {margin-left:40px;}
+.ml50 {margin-left:50px;}
+.ml180{margin-left:180px;}
+
+
+.bt0 {border-top:0;}
+.br0 {border-right:0;}
+.bb0 {border-bottom:0;}
+.bl0 {border-left:0;}
+
+.right{float:right;}
+.overflowh {overflow:hidden;}

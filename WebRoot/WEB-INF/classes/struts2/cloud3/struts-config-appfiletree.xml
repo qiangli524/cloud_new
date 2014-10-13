@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="appFileTree"
+			extends="global_package">
+ 		<!-- 虚拟机性能监控cpu，内存，磁盘，网络		-->
+		<action name="appFileTree_*"
+				class="appFileTree" method="{1}">
+			<result name="success">/cloud3/app/appFileTree.jsp</result>
+		</action>
+	
+	</package>
+</struts>

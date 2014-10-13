@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.project.action.ProjectAction -->
+	<bean id="projectAction" class="com.sitech.basd.sxcloud.cloud.web.project.action.ProjectAction"
+		singleton="false">
+		<property name="tbProjectService">
+			<ref bean="tbProjectService"/>
+		</property> 
+		<property name="operationService">
+			<ref bean="operationService"/>
+		</property>
+		<property name="vuserManageService">
+			<ref bean="vuserManageService"/>
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

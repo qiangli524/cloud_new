@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="backup"
+			 extends="global_package">
+		<action name="backup_*"
+				class="backupAction" method="{1}">
+			<result name="devolop">/envmanager/backup/devolopBackup.jsp</result>
+			<result name="test">/envmanager/backup/testBackup.jsp</result>
+			<result name="show">/envmanager/backup/showBackup.jsp</result>
+			<result name="monitor" >/envmanager/backup/monitorBackup.jsp</result>
+			
+			<result name="del" type="redirect">ledger_queryLedgerList.do</result>
+		
+		</action>
+			
+	</package>
+</struts>

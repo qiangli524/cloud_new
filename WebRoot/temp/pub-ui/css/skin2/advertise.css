@@ -1,0 +1,60 @@
+/*
+ * @Filename: advertise.css
+ * @Description: advertise style
+ * @Version: 1.0.0
+ * @Author: wanggq
+ * @Update: wanggq 2013/1/9
+*/
+/*banner start*/
+.banner-1 {
+    position: relative;
+    width:490px;
+    height: 148px;
+    overflow: hidden;
+}
+.banner-1 .scroll-img {
+    height: 148px;
+    overflow: hidden;
+}
+.banner-1 .scroll-img img {
+    height: 148px;
+    width:490px;
+    border:none;
+}
+.banner-1 .scroll-num {
+	margin:0;
+	padding:0;
+    position: absolute;
+    right: 5px;
+    bottom: 10px;
+    font-size: 12px;
+    z-index: 10;
+}
+.banner-1 .scroll-num li {
+    float: left;
+    height: 16px;
+    width: 16px;
+    display: inline;
+    margin-right: 5px;
+    background: #333;
+    color: #FFF;
+    cursor: pointer;
+    line-height: 16px;
+    text-align: center;
+}
+.banner-1 .scroll-num li.on {
+    background:#FFF;
+    color: #000;
+}
+
+.advertise-fixed {
+    position: fixed;
+    _position:absolute;
+    top: 60px;
+    right: 0;
+    display: block;
+    height: 150px;
+    width: 215px;
+    z-index: 1000;
+    cursor:pointer;
+}

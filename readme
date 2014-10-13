@@ -1,0 +1,39 @@
+#svn测试
+1. SqlMap连接池由于Mysql连接超时及网络原因，修改为C3P0连接池@20130806 huojla  备份文件cloud20130806.zip
+2. 删除无用代码 @ 20130807
+3. Spring配置文件路径调整
+<context-param> 
+    <param-name>contextConfigLocation</param-name>  
+    <param-value>/WEB-INF/classes/spring/app-config.xml</param-value> 
+</context-param>
+
+Spring 原配置文件路径调整为com/sitech/basd/config/spring3
+
+beans-annotation.xml
+beans-properties.xml
+beans-webservice.xml
+beans.xml
+sitech-rest.xml
+
+/conf/spring/
+app-config-action.xml                     : 原action-beans配置文件Spring配置文件
+app-config-annotation.xml
+app-config-dao.xml                       :       原dao-beans配置文件Spring配置文件
+app-config-ibatis.xml
+app-config-properties.xml
+app-config-rest.xml
+app-config-service.xml                   : 原service-beans配置文件Spring配置文件
+app-config-webservice.xml
+app-config.xml
+app-config-quartz.xml                     : Spring定时调度框架配置文件  一般用于虚拟化数据定时同步
+thread-service-beans.xml
+
+
+conf/properties/spring-quartz.properties      : Spring定时调度框架时间配置文件   一般用于虚拟化数据定时同步
+
+Java注解：@Scheduled(cron = "${monitor.job.vm.cpu}") 
+
+4. Struts路径调整
+cloud/src/com/sitech/basd/config/struts2
+调整为
+cloud/conf/struts2

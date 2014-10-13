@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="temconfig"
+			 extends="global_package">
+		<action name="templetConfig_*"
+				class="templetConfigAction" method="{1}">
+			<result name="success">/sxcloud/cloud/temconfig/listTempletTypeConfig.jsp</result>
+			<result name="listTempletTypeConfig">/sxcloud/cloud/temconfig/listTempletConfig.jsp</result>
+			<result name="add">/sxcloud/cloud/temconfig/editTempletTypeConfig.jsp</result>
+			<result name="modTempletTypeConfig">/sxcloud/cloud/temconfig/editTempletTypeConfig.jsp</result>
+			<result name="saveTempletType" type="redirect">templetConfig_listTempletTypeConfig.do</result>
+			<result name="delTempletTypeConfig" type="redirect">templetConfig_listTempletTypeConfig.do</result>
+			<result name="addTempletConfig">/sxcloud/cloud/temconfig/editTempletConfig.jsp</result>
+			<result name="saveTempletConfig" type="redirect">templetConfig_listTempletConfig.do?TYPE=${type}</result>
+			<result name="modTempletConfig">/sxcloud/cloud/temconfig/editTempletConfig.jsp</result>
+			<result name="delTempletConfig" type="redirect">templetConfig_listTempletConfig.do?TYPE=${type}</result>
+		</action>
+	</package>
+</struts>

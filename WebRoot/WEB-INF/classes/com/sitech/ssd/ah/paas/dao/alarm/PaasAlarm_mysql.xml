@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasAlarm">
+	<typeAlias alias="PaasAlarmObj" type="com.sitech.ssd.ah.paas.domain.alarm.PaasAlarmObj" />
+
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForAlarmListBase">
+		SELECT
+			a.entity_id, a.event_num, a.event_type, a.content, a.event_level, a.ext_val, a.event_location, a.alarm_time
+		FROM
+			(
+				SELECT
+					t.entity_id,
+					CONCAT('G',DATE_FORMAT(t.coll_time, '%Y%m%d%h%i%s')) event_num,
+					(
+						CASE WHEN t.kpi_type = '3' THEN 'oracle告警'
+								 WHEN t.kpi_type = '5' THEN 'weblogic告警' END) event_type,
+					(
+						CASE
+						WHEN t.ext_val <![CDATA[<=]]> '20' THEN '0'
+						WHEN t.ext_val BETWEEN '20' AND '40' THEN '1'
+						WHEN t.ext_val BETWEEN '40' AND '60' THEN '2'
+						WHEN t.ext_val BETWEEN '60' AND '100' THEN '3' END
+					) event_level,
+					t.ext_val,
+					t.remark content,
+					e.entity_name event_location,
+					t.coll_time alarm_time
+				FROM
+					tb_paas_resource_statistical t
+				LEFT JOIN tb_paas_entity e ON t.entity_id = e.entity_id
+				WHERE
+					t.entity_id = #entity_id#
+					AND t.remark IS NOT NULL
+			) a
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="event_level">
+					a.event_level = #event_level#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="content">
+					a.content like CONCAT('%',#content#,'%')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="event_location">
+					a.event_location like CONCAT('%',#event_location#,'%')
+				</isNotEmpty>
+			</dynamic>
+	</sql>
+	<select id="queryForAlarmList" parameterClass="PaasAlarmObj" resultClass="PaasAlarmObj">
+		<include refid ="queryForAlarmListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForAlarmListCount" parameterClass="PaasAlarmObj" resultClass="int">
+		select count(*)  from (
+		<include refid="queryForAlarmListBase" />
+		 ) virtual_table
+	 </select>
+	 
+</sqlMap>

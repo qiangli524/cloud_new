@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ZookeeperMonitor">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="TaoKeeperStat" type="com.sitech.taokeeper.model.TaoKeeperStat" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="taoKeeperStatObjBaseCloumns">
+			r.cluster_id clusterId,
+			r.server server,
+			r.stat_date_time statDateTime,
+			r.stat_date statDate,
+			r.connections connections,
+			r.watches watches,
+			r.send_times sendTimes,
+			r.receive_times receiveTimes,
+			r.node_count nodeCount,
+			r.rwps rwps
+	</sql>
+	<select id="queryTaoKeeperStatObjList" parameterClass="TaoKeeperStat" resultClass="TaoKeeperStat">
+		SELECT 
+			<include refid ="taoKeeperStatObjBaseCloumns" /> 
+		FROM tb_taokeeper_stat r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="clusterId">
+						r.cluster_id = #clusterId#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="server">
+						r.server = #server#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="statDate">
+						r.stat_date = #statDate#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	
+	<insert id="insertTaokeeperStat" parameterClass="TaoKeeperStat">
+		INSERT INTO tb_taokeeper_stat ( cluster_id, server, stat_date_time, stat_date, connections, watches, send_times, 
+			receive_times, node_count, rwps ) 
+		VALUES ( #clusterId#,#server#,#statDateTime#,#statDate#,#connections#,#watches#,#sendTimes#,#receiveTimes#,#nodeCount#,#rwps#)
+	</insert>
+	
+</sqlMap>

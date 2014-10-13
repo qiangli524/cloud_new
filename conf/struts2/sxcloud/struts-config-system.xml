@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="system" extends="global_package">
+		<action name="login_*" class="baseLoginAction" method="{1}">
+			<result name="input">/sxcloud/index.jsp</result>
+			<!-- 原来登录后的界面 -->
+			<result name="main">/sxcloud/mainFrame.jsp</result>
+			<result name="leader" type="redirect">http://10.208.100.96:8380/cloudflex/mainView.html</result>
+<!-- 			<result name="success" type="redirect">newui_index.do</result> -->
+<!-- 			<result name="success">/sxcloud/mainFrame.jsp</result> -->
+ 			<result name="success" type="redirect">/home_main.do</result>
+			<result name="loginout">/sxcloud/index.jsp</result>
+			<result name="failure" type="redirect">
+				login_login.do
+			</result>
+		</action>
+		<action name="function_*" class="baseFunctionsAction"
+			method="{1}">
+			<result name="list">
+				/sxcloud/system/listFunctions.jsp
+			</result>
+			<result name="add">
+				/sxcloud/system/editFunctions.jsp
+			</result>
+			<result name="redirect" type="redirect">
+				function_listFunctions.do
+			</result>
+			<result name="icon">/sxcloud/system/listIcon.jsp</result>
+		</action>
+		<action name="user_*" class="baseUserInfoAction" method="{1}">
+			<result name="list">
+				/sxcloud/system/listUserInfo.jsp
+			</result>
+			<result name="add">/sxcloud/system/editUserInfo.jsp</result>
+			<result name="redirect" type="redirect">
+				user_listUserInfo.do
+			</result>
+			<result name="success">
+				/sxcloud/system/editUserAuthority.jsp
+			</result>
+			<result name="edituserdataauthority">
+				/sxcloud/system/editUserDataAuthority.jsp
+			</result>
+			<result name="failure">
+				/sxcloud/system/editUserInfo.jsp
+			</result>
+		</action>
+		<action name="ugroup_*" class="baseUsergroupAction"
+			method="{1}">
+			<result name="list">
+				/sxcloud/system/listUsergroup.jsp
+			</result>
+			<result name="add">
+				/sxcloud/system/editUsergroup.jsp
+			</result>
+			<result name="redirect" type="redirect">
+				ugroup_listUsergroup.do
+			</result>
+			<result name="failure" type="redirect">
+				ugroup_listUsergroup.do
+			</result>
+			<result name="groupauthority">
+				/sxcloud/system/editGroupAuthority.jsp
+			</result>
+			<result name="editgrpmember">
+				/sxcloud/system/editGrpmember.jsp
+			</result>
+		</action>
+		<action name="log_*" class="baseLogAction" method="{1}">
+			<result name="listlogin">
+				/sxcloud/system/listLoginLog.jsp
+			</result>
+			<result name="listOperLog">
+				/sxcloud/system/queryListOperationLog.jsp
+			</result>
+			<result name="listoper">
+				/sxcloud/system/listOperationLog.jsp
+			</result>
+		</action>
+		<action name="security_*" class="securityConfigAction" method="{1}">
+			<result name="listSecConfig">
+				/sxcloud/system/listSecurityConfig.jsp
+			</result>
+			<result name="add">
+				/sxcloud/system/editSecurityConfig.jsp
+			</result>
+			<result name="mod">
+				/sxcloud/system/editSecurityConfig.jsp
+			</result>
+			<result name="save" type="redirect">
+				security_listSecurityConfig.do
+			</result>
+			<result name="del" type="redirect">
+				security_listSecurityConfig.do
+			</result>
+		</action>
+	</package>
+
+</struts>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="ibmmanagertree" extends="global_package">
+		<action name="ibmmanager_*"
+				class="ibmManagerTreeAction" method="{1}">
+			<result name="list">/ibmmanager/ibmManagerTree.jsp</result>
+			<result name="addIBM">/ibmmanager/addIBMManager.jsp</result>
+			<result name="updateIBM">/ibmmanager/updIBMManager.jsp</result>
+			
+			<result name="addPower">/ibmmanager/addPower.jsp</result>
+			<result name="updPower">/ibmmanager/updPower.jsp</result>
+			
+			<result name="addLogicPartition">/ibmmanager/addLogicPartition.jsp</result>
+			<result name="updateLogicPartition">/ibmmanager/updLogicPartition.jsp</result>
+			
+			<result name="expandNode" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="querynode" type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		<action name="ibmtab_*" class="ibmManagerTabAction" method="{1}">
+			<result name="tabs">/ibmmanager/tabs.jsp</result>
+			<result name="showCpuView">/ibmmanager/tab/showView.jsp</result>
+			<result name="showMemView">/ibmmanager/tab/showView.jsp</result>
+			<result name="lparInfo">/ibmmanager/tab/lparAbstract.jsp</result>
+			<result name="powerInfo">/ibmmanager/tab/powerAbstract.jsp</result>
+			<result name="showFirstPage">/ibmmanager/tab/showIBMTree.jsp</result>
+			<result name="showMinPage">/ibmmanager/tab/showMinPage.jsp</result>
+			<result name="showCloudOSPage">/ibmmanager/tab/showCloudOSPage.jsp</result>
+			
+			<result name="showHMCPage">/ibmmanager/tab/showHMCPage.jsp</result>
+			<result name="showClusterInfo">/ibmmanager/tab/clusterAbstract.jsp</result>
+			<result name="showHostInfo">/ibmmanager/tab/hostAbstract.jsp</result>
+			<result name="showVMInfo">/ibmmanager/tab/vmAbstract.jsp</result>
+			
+			<result name="showPowerFCSpeed">/ibmmanager/tab/showPowerFCSpeed.jsp</result>
+			<result name="showPowerSEASpeed">/ibmmanager/tab/showPowerSEASpeed.jsp</result>
+			<result name="showPowerNetCardPerformance">/ibmmanager/tab/showPowerNetCardPerformance.jsp</result>
+			<result name="showLparFCSpeed">/ibmmanager/tab/showLparFCSpeed.jsp</result>
+			<result name="showLparDiskSpeed">/ibmmanager/tab/showLparDiskSpeed.jsp</result>
+			<result name="showLparNetCardPerformance">/ibmmanager/tab/showLparNetCardPerformance.jsp</result>
+
+			<result name="showIOSpeed">/ibmmanager/tab/showIOSpeed.jsp</result>
+			<result name="showNetSpeed">/ibmmanager/tab/showNetSpeed.jsp</result>
+			
+		</action>
+		<action name="update_*" class="ibmDataCompareAction" method="{1}">
+			<result name="dataResult" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+ </package>
+</struts>

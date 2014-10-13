@@ -1,0 +1,48 @@
+/*
+ * @Filename: JcropBase.css
+ * @Description: JcropBase style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: wangchen 2013/1/17
+*/
+/*JcropBase start*/
+.Jcrop{
+	
+}
+.Jcrop-select{
+	border-right: 1px solid #DCDCDC;
+    float: left;
+    height: 305px;
+    width: 328px;
+}
+.Jcrop-show{
+	float: left;
+    height: auto;
+    margin:2px 0 0 20px;
+    width: 444px;
+    display: inline;
+    font-size: 12px;
+}
+.explain{
+	width:200px;
+}
+.pic-show{
+	margin-left: 55px;
+    margin-top: 20px;
+    position: relative;
+    width: 387px;
+}
+.pic-show .pic{
+	left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+}
+.pic-show .pic-mes{
+	color: #CCCCCC;
+    line-height: 80px;
+    padding-left: 90px;
+}
+.returnValue b{
+	margin:0 20px; 
+}

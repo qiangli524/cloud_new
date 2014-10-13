@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+    					http://cxf.apache.org/jaxws 
+    					http://cxf.apache.org/schemas/jaxws.xsd"
+	default-autowire="byName">
+	
+	<import resource="classpath:META-INF/cxf/cxf.xml"/>
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+	
+    
+    <jaxws:server  address="/users">
+		<jaxws:serviceBean>
+			<ref bean="sx4aUser"/> <!-- 山西4A用户 -->
+		</jaxws:serviceBean>
+    	
+	</jaxws:server>
+	
+	<jaxws:server  address="/roles">
+		<jaxws:serviceBean >
+			<ref bean="sx4aRole"/> <!--  山西4A角色 -->
+		</jaxws:serviceBean>
+		
+	</jaxws:server>
+	
+	<jaxws:server address="/userinfoManageFor4A" >
+		<jaxws:serviceBean>
+			<ref bean="userinfoManageFor4A"/>
+		</jaxws:serviceBean>
+	</jaxws:server>
+	
+		<jaxws:server address="/userinfoManageForCT4A" >
+		<jaxws:serviceBean>
+			<ref bean="userinfoManageForCT4A"/>
+		</jaxws:serviceBean>
+	</jaxws:server>
+	
+	
+	
+</beans>
+

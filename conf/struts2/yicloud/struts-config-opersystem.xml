@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="opersystem" extends="global_package">
+		<action name="opersystem_*" 
+		        class="operSystemAction" method="{1}">
+		    <param	name="savePath">/software</param>
+		    <result name="addOperSystem">/yicloud/opersystem/addOperSystem.jsp</result>
+			<result name="listOperSystemInfo">/yicloud/opersystem/listOperSystemInfo.jsp</result>
+			<result name="saveOperSystem" type="redirect">opersystem_listOperSystemInfo.do</result>
+			<result name="modOperSystem">/yicloud/opersystem/updateOperSystem.jsp</result>
+			<result name="delOperSystem" type="redirect">opersystem_listOperSystemInfo.do</result>
+		</action>
+ </package>
+
+</struts>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="entitychart" extends="global_package">
+		<action name="entitychart_*" class="entityChartAction" method="{1}">
+			<result name="gotoVmChainChartPage">reportcharts/chain/entityChainChart.jsp</result>
+			<result name="intoEntityTree">reportcharts/chain/initEntityTree.jsp</result>
+		</action>
+ </package>
+</struts>

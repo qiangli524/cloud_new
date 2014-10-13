@@ -1,0 +1,10 @@
+/*
+ * @Filename: register.css
+ * @Description: register module's style
+ * @Version: 1.0.0
+ * @Author: wangyq.si-tech
+ * @Update: wangyq
+*/
+.register input.msize{
+    width: 260px;
+}

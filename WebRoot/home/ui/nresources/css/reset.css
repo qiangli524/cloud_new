@@ -1,0 +1,36 @@
+body,h1,h2,h3,h4,h5,h6{font-size:14px;margin: 0;padding: 0;color:#585858;}
+div, li, ul, img, span, p{
+	margin: 0;
+	padding: 0;
+}
+img {
+	border: 0;
+}
+body {
+	font-family:"microsoft yahei";
+	font-size: 14px;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-size: 12px;
+}
+p,ul,li{
+	padding:0;
+	margin:0;
+	}
+ol, dl, ul, li, dl, dd, dt {
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+a,:visited,a:hover,a:active{
+	text-decoration:none;
+	}
+a { text-decoration:none; color:#585858;}
+a:hover { color:#f60;}
+button{ margin:0; padding:0;}
+.red{ color:#EE5035;}
+.orange { color: #ff7800;}
+.yellow {
+	color: #FDCB02;
+}
+.green { color: #49d15a;}

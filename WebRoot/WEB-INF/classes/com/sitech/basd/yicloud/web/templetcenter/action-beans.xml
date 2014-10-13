@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="templetTreeAction" class="com.sitech.basd.yicloud.web.templetcenter.action.TempletTreeAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="templetTreeService">
+			<ref bean="templetTreeService" />
+		</property>
+		<property name="scriptService">
+			<ref bean="scriptService" />
+		</property>
+		<property name="imageService">
+			<ref bean="imageService" />
+		</property>
+	</bean>
+
+</beans>

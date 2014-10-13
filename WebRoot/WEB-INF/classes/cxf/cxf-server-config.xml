@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+	xmlns:cxf="http://cxf.apache.org/core" xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+						http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+						http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+						http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd"
+	default-autowire="byName">
+	<import resource="classpath:META-INF/cxf/cxf.xml"/>
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml"/>
+    
+     
+    <!-- 根据订购关系操作资源-->
+    <!--
+    <jaxrs:server address="/processingShopService">
+        <jaxrs:serviceBeans >
+        	<ref bean="orderRelationService" />
+        	<ref bean="publicUserSyncService" />
+        	<ref bean="sendMessageUtilService" />
+        	<ref bean="resourceDeleteService" />
+        </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+        </jaxrs:extensionMappings>
+        <jaxrs:inInterceptors>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpInInterceptor"/>
+        </jaxrs:inInterceptors>
+        <jaxrs:outInterceptors>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPreStreamInterceptor"/>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPostStreamInterceptor"/>
+        </jaxrs:outInterceptors>
+        <jaxrs:providers>
+   			<bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+    -->
+    
+    <jaxrs:server address="/service">
+    
+        <jaxrs:features>
+    		<cxf:logging />
+    	</jaxrs:features>
+    	
+        <jaxrs:serviceBeans>
+        	<ref bean="synServiceManage" />
+        	<ref bean="heartbeatAction"/>
+        	<bean class="com.sitech.ws.IncrementalResources">
+		    	<property name="entityTreeService">
+					<ref bean="entityTreeService" />
+				</property>
+				<property name="hostInfoService">
+					<ref bean="hostInfoService" />
+				</property>
+				<property name="vmHostService">
+					<ref bean="vmHostService" />
+				</property>
+		    </bean>
+        </jaxrs:serviceBeans>
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+            <entry key="xml" value="application/xml"/>
+        </jaxrs:extensionMappings>
+        <jaxrs:inInterceptors>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpInInterceptor"/>
+        </jaxrs:inInterceptors>
+        <jaxrs:outInterceptors>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPreStreamInterceptor"/>
+            <bean class="org.apache.cxf.jaxrs.provider.jsonp.JsonpPostStreamInterceptor"/>
+        </jaxrs:outInterceptors>
+        <jaxrs:providers>
+   			<bean class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+</beans>
+

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Order">
+	<typeAlias alias="OrderObj" type="com.sitech.basd.component.tree.domain.order.OrderObj" />
+	<typeAlias alias="OrderRelationTaskObj" type="com.sitech.basd.component.tree.domain.order.OrderRelationTaskObj" />
+	 
+	<sql id="paginationEnd">
+		<![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+<!-- 查询所有的进程，主机和进程组信息	-->
+	<sql id="queryForListBase">
+		select o.*,(o.TASK_COUNT-o.TASK_DEAL_COUNT-o.TASK_COMPLETE_COUNT) as TASK_WAIT_COUNT from(
+		        select t.ID,
+				       t.IS_SUBMIT,
+				       t.ORDER_ID,
+				       t.APP_ID,
+				       t.FILE_LIST,
+				       (select count(b.TASK_ID)
+				          from tb_busi_order_relation_task b
+				         where b.ORDER_ID = t.ID) as TASK_COUNT,
+				       (select count(case when d.ISCOMPLETE = 0 then ISCOMPLETE end) from TB_BUSI_DEPLOY_LOG d
+		               WHERE d.ORDER_ID = t.ID AND d.ID = (SELECT MAX(a.ID) FROM TB_BUSI_DEPLOY_LOG A WHERE A.TASK_ID = D.TASK_ID)) as TASK_DEAL_COUNT,
+				       (select count(case when d.ISCOMPLETE = 1 then ISCOMPLETE end) from TB_BUSI_DEPLOY_LOG d
+		               WHERE d.ORDER_ID = t.ID AND d.ID = (SELECT MAX(a.ID) FROM TB_BUSI_DEPLOY_LOG A WHERE A.TASK_ID = D.TASK_ID)) as TASK_COMPLETE_COUNT,
+				       DATE_FORMAT(t.EFFECT_TIME, '%Y-%m-%d %H:%i:%S') EFFECT_TIME,
+				       t.AUTHORIZATION,
+				       DATE_FORMAT(t.ADD_TIME, '%Y-%m-%d %H:%i:%S') ADD_TIME,
+				       t.VERSIONID,
+				       t.BACKUP_TYPE backupType
+				  from tb_busi_deploy_order t
+         ) o	
+	</sql>
+	<!-- 	查询所有的订单和任务的关系 -->
+	<sql id="queryRelationForTask">
+        select t.ID,t.ORDER_ID,t.APP_ID,t.FILE_LIST,DATE_FORMAT(t.EFFECT_TIME,'%Y-%m-%d %H:%i:%S') EFFECT_TIME,
+		t.AUTHORIZATION,DATE_FORMAT(t.ADD_TIME,'%Y-%m-%d %H:%i:%S') ADD_TIME,t.VERSIONID,
+		r.TASK_ID from TB_BUSI_DEPLOY_ORDER t left join TB_BUSI_ORDER_RELATION_TASK r on t.ID=r.ORDER_ID
+	</sql>
+	
+		<!-- 	查询当前任务的处理状态 0 为处理中，1为处理完成 -->
+	<select id="queryOrderStatus" parameterClass="OrderObj" resultClass="OrderObj">
+		select min(d.ISCOMPLETE) as ISCOMPLETE from TB_BUSI_DEPLOY_LOG d
+	      WHERE d.ORDER_ID = #ID#
+	      AND INSERTTIME = (SELECT MAX(INSERTTIME)
+	                       FROM TB_BUSI_DEPLOY_LOG A
+	                      WHERE A.TASK_ID = D.TASK_ID
+	                        AND A.EXAMPLE_ID = D.EXAMPLE_ID)
+	</select>
+	
+	<!-- 查询订单信息列表 -->
+	<select id="queryForList" parameterClass="OrderObj" resultClass="OrderObj"> 
+		<include refid="queryForListBase" />
+		<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				o.ID =#ID#
+			</isNotEmpty>
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				o.ORDER_ID =#ORDER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="APP_ID" prepend="and">
+				o.APP_ID=#APP_ID#
+			</isNotEmpty>
+			<isNotEmpty property="VERSIONID" prepend="and">
+				o.VERSIONID=#VERSIONID#
+			</isNotEmpty>
+		</dynamic>
+		order by o.ADD_TIME desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryRelationForTaskList" parameterClass="OrderObj" resultClass="OrderObj">
+		<include refid="queryRelationForTask" />
+		<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				t.ID =#ID#
+			</isNotEmpty>
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				r.ORDER_ID =#ORDER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="TASK_ID" prepend="and">
+				t.TASK_ID=#TASK_ID#
+			</isNotEmpty>
+		</dynamic>
+		order by ADD_TIME desc
+	</select>
+	
+	<select id="queryOrderRelationTaskList" parameterClass="OrderRelationTaskObj" resultClass="OrderRelationTaskObj">
+	    select ORDER_ID,TASK_ID from TB_BUSI_ORDER_RELATION_TASK t
+		<dynamic prepend="where">
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				t.ORDER_ID =#ORDER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="TASK_ID" prepend="and">
+				t.TASK_ID=#TASK_ID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertByObj" parameterClass="OrderObj">
+		insert into
+		tb_busi_deploy_order(ID,IS_SUBMIT,ORDER_ID,APP_ID,FILE_LIST,EFFECT_TIME,AUTHORIZATION,ADD_TIME,VERSIONID,backup_type)
+		values(#ID#,#IS_SUBMIT#,#ORDER_ID#,#APP_ID#,#FILE_LIST#,STR_TO_DATE(#EFFECT_TIME#, '%Y-%m-%d %H:%i:%s'),#AUTHORIZATION#,NOW(),#VERSIONID#,#backupType#)
+	</insert>
+	
+		<insert id="insertRelationTaskByObj" parameterClass="OrderRelationTaskObj">
+		insert into
+		TB_BUSI_ORDER_RELATION_TASK(TASK_ID,ORDER_ID) values(#TASK_ID#,#ORDER_ID#)
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="OrderObj">
+	   delete from TB_BUSI_DEPLOY_ORDER
+	   	<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				ID =#ID#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<delete id="deleteRelationTaskByObj" parameterClass="OrderRelationTaskObj">
+	   delete from TB_BUSI_ORDER_RELATION_TASK
+	   	<dynamic prepend="where">
+		    <isNotEmpty property="TASK_ID" prepend="and">
+				TASK_ID =#TASK_ID#
+			</isNotEmpty>
+			<isNotEmpty property="ORDER_ID" prepend="and">
+				ORDER_ID =#ORDER_ID#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+	<!-- 统计进程数目 -->
+	<select id="queryForCount" parameterClass="OrderObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	<!-- 更新一条进程信息 -->
+	<update id="updateByObj" parameterClass="OrderObj">
+	 	   update TB_BUSI_DEPLOY_ORDER
+	 	  <dynamic prepend="set">
+		 	<isNotEmpty prepend="," property="IS_SUBMIT">
+		    	IS_SUBMIT=#IS_SUBMIT#
+		 	</isNotEmpty>
+		 	<isNotEmpty prepend="," property="EFFECT_TIME">
+		    	EFFECT_TIME=str_to_date(#EFFECT_TIME#,'%Y-%m-%d %H:%i:%S')
+		 	</isNotEmpty>
+		 	<isNotEmpty prepend="," property="FILE_LIST">
+		    	FILE_LIST=#FILE_LIST#
+		 	</isNotEmpty>
+		 	<isNotEmpty prepend="," property="AUTHORIZATION">
+		    	AUTHORIZATION=#AUTHORIZATION#
+		 	</isNotEmpty>
+		 	<isNotEmpty prepend="," property="VERSIONID">
+		    	VERSIONID=#VERSIONID#
+		 	</isNotEmpty>
+		 	<isNotEmpty prepend="," property="backupType">
+		 		<isNotNull property="backupType">
+		    		BACKUP_TYPE=#backupType#
+		    	</isNotNull>
+	 		</isNotEmpty>
+	 	  </dynamic>
+	 	where ID = #ID#
+	</update>
+	
+	<select id="countOrderNum" parameterClass="OrderObj" resultClass="int">
+		select count(ID) from tb_busi_deploy_order
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="APP_ID">
+				APP_ID = #APP_ID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryAll" resultClass="OrderObj">
+		select * from tb_busi_deploy_order
+	</select>
+	
+<!-- 	通过版本ID关联软件ID，查询文件清单 -->
+	<select id="queryFileListFromSoftware" resultClass="OrderObj" parameterClass="OrderObj">
+		SELECT
+			t1.SOFTPARTH as FILE_LIST
+			FROM
+				tb_busi_softwareinfo t1
+			INNER JOIN tb_deploy_version t2 ON t1.id = t2.SOFTID
+			<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="VERSIONID">
+				t2.id = #VERSIONID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopMonitor">
+	<typeAlias alias="HadoopMonitorObj" type="domain.monitor.HadoopMonitorObj"/>
+	<typeAlias alias="HadoopKpiObj" type="domain.kpi.HadoopKpiObj" />
+	<typeAlias alias="hadoopHostInfoObj" type="domain.host.HadoopHostInfoObj" />
+	<typeAlias alias="MapDataSet" type="domain.tab.MapDataSet"/>
+	
+		 <sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<select id="queryForListByObjInMonthTable" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+		SELECT
+			a.CLUSTER_NAME,a.HOST_NAME,a.KPI_ID,a.KPI_VALUE,DATE_FORMAT(a.COLL_TIME,'%Y-%m-%d %H:%i:%s') COLL_TIME,b.description,b.unit
+		FROM
+		$tableName$ a
+		LEFT JOIN tb_hadoop_kpi_desc b ON a.KPI_ID = b.kpi_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="kpi_id">
+				a.KPI_ID = #kpi_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_name">
+				a.HOST_NAME = #host_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_name">
+				a.CLUSTER_NAME = #cluster_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="startTime">
+				a.COLL_TIME
+				<![CDATA[
+					>=
+				]]>
+				STR_TO_DATE(#startTime#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="endTime">
+				a.COLL_TIME
+				<![CDATA[
+					<=
+				]]>
+				STR_TO_DATE(#endTime#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForListByObj" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+		SELECT
+			a.CLUSTER_NAME,a.HOST_NAME,a.KPI_ID,a.KPI_VALUE,DATE_FORMAT(a.COLL_TIME,'%Y-%m-%d %H:%i:%s') COLL_TIME,b.description,b.unit
+		FROM
+		tb_hadoop_coll a
+		LEFT JOIN tb_hadoop_kpi_desc b ON a.KPI_ID = b.kpi_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="kpi_id">
+				a.KPI_ID = #kpi_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_name">
+				a.HOST_NAME = #host_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_name">
+				a.CLUSTER_NAME = #cluster_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="startTime">
+				a.COLL_TIME
+				<![CDATA[
+					>=
+				]]>
+				STR_TO_DATE(#startTime#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="endTime">
+				a.COLL_TIME
+				<![CDATA[
+					<=
+				]]>
+				STR_TO_DATE(#endTime#,'%Y-%m-%d %H:%i:%s')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForLatestKpi" parameterClass="java.util.HashMap" resultClass="HadoopMonitorObj">
+		SELECT
+			c.KPI_ID,
+			c.KPI_VALUE,
+			c.host_name,
+			c.ip ipaddress,
+			c.label_name labelname,
+			d.description,
+			d.unit
+		FROM
+			(
+				SELECT
+					a.KPI_ID,
+					a.KPI_VALUE,
+					a.HOST_NAME,
+					b.ip,
+					b.label_name
+				FROM
+					tb_hadoop_coll_last a
+				INNER JOIN tb_hadoop_host_info b ON a.HOST_NAME = b.HOST_NAME
+				WHERE
+					b.ID IN (
+						SELECT
+							uuid
+						FROM
+							tb_hadoop_resource_tree
+						WHERE
+							PARENT_ID = #serviceNodeType#
+					)
+				and a.CLUSTER_NAME IN (
+						SELECT
+							CLUSTER_ID
+						FROM
+							tb_hadoop_cluster_info
+						WHERE
+							ID IN (
+								SELECT DISTINCT
+									CLUSTER_ID
+								FROM
+									tb_hadoop_host_info
+								WHERE
+									ID IN (
+										SELECT
+											uuid
+										FROM
+											tb_hadoop_resource_tree
+										WHERE
+											PARENT_ID = #serviceNodeType#
+									)
+							)
+					)
+				AND a.KPI_ID = #kpi_id#
+				ORDER BY
+					a.COLL_TIME DESC
+			) c
+		INNER JOIN tb_hadoop_kpi_desc d ON c.KPI_ID = d.kpi_id
+		GROUP BY
+			c.HOST_NAME
+		ORDER BY c.KPI_VALUE DESC
+		LIMIT 0,#topnum#
+	</select>
+	
+	<select id="queryHostKpiListByServiceNode" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+		SELECT
+			c.KPI_ID,
+			d.description,
+			d.unit
+		FROM
+			(
+				SELECT
+					a.KPI_ID
+				FROM
+					tb_hadoop_coll_last a
+				INNER JOIN tb_hadoop_host_info b ON a.HOST_NAME = b.HOST_NAME
+				WHERE
+					a.CLUSTER_NAME IN (
+						SELECT
+							CLUSTER_ID
+						FROM
+							tb_hadoop_cluster_info
+						WHERE
+							ID IN (
+								SELECT DISTINCT
+									CLUSTER_ID
+								FROM
+									tb_hadoop_host_info
+								WHERE
+									ID IN (
+										SELECT
+											uuid
+										FROM
+											tb_hadoop_resource_tree
+										<dynamic prepend="WHERE">
+											<isNotEmpty prepend="and" property="uuidList">
+												PARENT_ID IN
+												<iterate close=")" conjunction="," open="(" property="uuidList">
+													#uuidList[]#
+												</iterate>
+											</isNotEmpty>
+										</dynamic>
+									)
+							)
+					)
+				AND b.ID IN (
+					SELECT
+						uuid
+					FROM
+						tb_hadoop_resource_tree
+					<dynamic prepend="WHERE">
+						<isNotEmpty prepend="and" property="uuidList">
+							PARENT_ID IN
+							<iterate close=")" conjunction="," open="(" property="uuidList">
+								#uuidList[]#
+							</iterate>
+						</isNotEmpty>
+					</dynamic>
+				)
+				GROUP BY
+					a.KPI_ID
+			) c
+		INNER JOIN tb_hadoop_kpi_desc d ON c.KPI_ID = d.kpi_id
+	</select>
+	
+	<select id="queryLastestValueForKpi" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+		SELECT
+			e.KPI_ID,
+			e.KPI_VALUE,
+			e.COLL_TIME,
+			f.description,
+			f.unit
+		FROM
+			(
+				SELECT
+					a.KPI_ID,
+					a.KPI_VALUE,
+					a.COLL_TIME
+				FROM
+					tb_hadoop_coll_last a
+				INNER JOIN (
+					SELECT
+						KPI_ID
+					FROM
+						tb_hadoop_servicename_kpi_relation
+					<dynamic prepend="WHERE">
+						<isNotEmpty prepend="and" property="service_name">
+							service_name = #service_name#
+						</isNotEmpty>
+					</dynamic>
+				) b ON a.KPI_ID = b.KPI_ID
+				where a.cluster_name = #cluster_name#
+				ORDER BY
+					a.COLL_TIME DESC
+			) e
+		INNER JOIN (
+			SELECT
+				c.kpi_id,
+				c.description,
+				c.unit
+			FROM
+				tb_hadoop_kpi_desc c
+			INNER JOIN (
+				SELECT
+					KPI_ID
+				FROM
+					tb_hadoop_servicename_kpi_relation
+				<dynamic prepend="WHERE">
+					<isNotEmpty prepend="and" property="service_name">
+							service_name = #service_name#
+					</isNotEmpty>
+				</dynamic>
+			) d ON c.KPI_ID = d.KPI_ID
+		) f ON e.KPI_ID = f.KPI_ID
+		GROUP BY
+			e.KPI_ID
+	</select>
+	<!--查询一段时间的某个指标的性能监控数据-->
+   <select id="queryHostMonitorDataByInterval" parameterClass="MapDataSet" resultClass="Data">
+	<![CDATA[
+	    SELECT a.label,a.value from
+	    (SELECT DATE_FORMAT(COLL_TIME, '%H:%i:%S') label, KPI_VALUE value
+			  FROM tb_hadoop_coll t
+			 WHERE KPI_ID = #kpiId#
+			   AND CLUSTER_NAME=#clusterName#
+			   AND HOST_NAME = #hostName#
+			   AND t.coll_time >= DATE_SUB(now(), INTERVAL #interval# MINUTE)
+			   AND t.coll_time <= now()
+			 ORDER BY t.coll_time desc) a
+		     ORDER BY a.label
+			  ]]>
+	</select>
+	
+<!-- 	按照时间倒序，并查询固定点数 -->
+   <select id="queryHostMonitorDataByPot" parameterClass="MapDataSet" resultClass="Data">
+	<![CDATA[
+	    SELECT a.label,a.value from
+	    (SELECT DATE_FORMAT(COLL_TIME, '%H:%i:%S') label, KPI_VALUE value
+			  FROM tb_hadoop_coll t
+			 WHERE KPI_ID = #kpiId#
+			   AND CLUSTER_NAME=#clusterName#
+			   AND HOST_NAME = #hostName#
+			 ORDER BY t.coll_time desc
+			 limit 0,#potCount#) a
+			 ORDER BY a.label
+			  ]]>
+	</select>
+	
+	
+	<!-- 	通过集群，主机和服务名称来查询主机下所有的kpi指标 -->
+   <select id="queryHostKpiIdByHostCount" parameterClass="HadoopKpiObj" resultClass="int">
+	<![CDATA[
+				SELECT
+				      count(1)
+				FROM
+					tb_hadoop_servicename_kpi_relation t
+				INNER JOIN tb_hadoop_kpi_desc t2 ON t.KPI_ID = t2.KPI_ID
+                   LEFT JOIN tb_hadoop_coll_last t3 on t2.kpi_id=t3.KPI_ID
+			WHERE
+				t.service_name = #service_name# and t3.HOST_NAME=#hostName# and t3.CLUSTER_NAME=#clusterName#
+			  ]]>
+			   <isNotEmpty prepend="and" property="kpi_id">
+			      t2.kpi_id like CONCAT('%',#kpi_id#,'%')
+			  </isNotEmpty>
+			  <isNotEmpty prepend="and" property="description">
+			      t2.description like CONCAT('%',#description#,'%')
+			  </isNotEmpty>
+	</select>
+	
+<!-- 	通过集群，主机和服务名称来查询主机下所有的kpi指标 -->
+   <select id="queryHostKpiIdByHost" parameterClass="HadoopKpiObj" resultClass="HadoopKpiObj">
+	<![CDATA[
+		     SELECT
+			        t2.id as id,
+					t2.KPI_ID AS kpi_id,
+					t2.unit AS unit,
+					t2.description AS description,
+					t2.shape AS shape,
+				    t.service_name,
+				    t2.isEffect as isEffect,
+				    t2.level as level,
+				    t3.KPI_VALUE as lastData
+				FROM
+					tb_hadoop_servicename_kpi_relation t
+				INNER JOIN tb_hadoop_kpi_desc t2 ON t.KPI_ID = t2.KPI_ID
+                   LEFT JOIN tb_hadoop_coll_last t3 on t2.kpi_id=t3.KPI_ID
+			WHERE
+				t.service_name = #service_name# and t3.HOST_NAME=#hostName# and t3.CLUSTER_NAME=#clusterName#
+			  ]]>
+			   <isNotEmpty prepend="and" property="kpi_id">
+			      t2.kpi_id like CONCAT('%',#kpi_id#,'%')
+			  </isNotEmpty>
+			  <isNotEmpty prepend="and" property="description">
+			      t2.description like CONCAT('%',#description#,'%')
+			  </isNotEmpty>
+			  <isGreaterThan property="PAGESIZE" compareValue="0">
+			     <include refid="paginationEnd" />
+		     </isGreaterThan>
+	</select>
+	
+	<select id="queryLatestValueByKpi" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+		select kpi_value from (select kpi_id,kpi_value from tb_hadoop_coll_last
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="kpi_id">
+				kpi_id = #kpi_id# 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_name">
+				cluster_name = #cluster_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_name">
+				host_name = #host_name#
+			</isNotEmpty>
+		</dynamic>
+		order by coll_time desc) a group by a.kpi_id
+	</select>
+	
+	<select id="queryForListOrderByValueDesc" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+		select kpi_id,kpi_value from tb_hadoop_coll_last where cluster_name 
+		<![CDATA[
+			<>
+		]]>
+		host_name
+		<dynamic>
+			<isNotEmpty prepend="and" property="kpi_id">
+				kpi_id = #kpi_id# 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_name">
+				cluster_name = #cluster_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_name">
+				host_name = #host_name#
+			</isNotEmpty>
+		</dynamic>
+		order by kpi_value desc
+	</select>
+
+	<select id="queryKpiValueByHostList" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+		SELECT
+			a.KPI_ID,
+			a.KPI_VALUE
+		FROM
+			tb_hadoop_coll_last a
+		INNER JOIN tb_hadoop_host_info b ON a.CLUSTER_NAME = b.CLUSTER_ID
+		AND a.HOST_NAME = b.HOST_NAME
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="and" property="uuidList">
+				b.ID IN
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+ 			</isNotEmpty>
+ 			<isNotEmpty prepend="and" property="kpi_id">
+ 				a.KPI_ID = #kpi_id#
+ 			</isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- 查询主机对应的相关指标 -->
+	<select id="queryMonitorDataForHost" parameterClass="HadoopMonitorObj" resultClass="HadoopMonitorObj">
+			SELECT
+				f.description,
+				f.KPI_VALUE,
+				f.unit,
+				f.KPI_ID
+			FROM
+				(
+					SELECT
+						b.description,
+						a.KPI_VALUE,
+						b.unit,
+						a.KPI_ID
+					FROM
+						tb_hadoop_coll_last a
+						LEFT JOIN tb_hadoop_kpi_desc b ON a.KPI_ID = b.kpi_id
+					WHERE
+						a.HOST_NAME = #host_name#
+						AND a.CLUSTER_NAME = #cluster_name#
+					and a.KPI_ID LIKE  CONCAT('',#kpi_id#,'%')
+						ORDER BY
+						a.COLL_TIME DESC
+				) f
+				GROUP BY f.KPI_ID
+	</select>
+	<!--查询最后一条监控数据-->
+   <select id="queryHostLastData" parameterClass="MapDataSet" resultClass="HadoopMonitorObj">
+	<![CDATA[
+	   SELECT KPI_ID kpi_id, KPI_VALUE kpi_value
+			  FROM tb_hadoop_coll_last t
+			 WHERE KPI_ID = #kpiId#
+			   AND CLUSTER_NAME=#clusterName#
+			   AND HOST_NAME = #hostName#
+			 ORDER BY t.coll_time desc
+			 limit 0,#potCount#
+			  ]]>
+	</select>
+</sqlMap>

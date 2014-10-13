@@ -1,0 +1,29 @@
+/* CSS Document */
+#theForm{width:775px;height: 300px;}
+
+.blue-table tr td{border-width: 0px 0px 0px 0px;text-align: left;}
+.top{width:772px;height: 65px;background-color: #f4f7fd;font-size: 18px;}
+.left{width: 160px;height: 280px;background-color: #f4f7fd;}
+.right{width: 612px;height: 280px;background-color: #f4f7fd;position: relative;left: 162px;bottom:563px}
+.bottom{width:772px;height: 50px;background-color: #f4f7fd;position: relative;bottom: 565px;margin-right: 20px; text-align:right;}
+
+.verticalhr{width:2px;height:280px;position:relative;bottom: 280px;right: 225px}
+.hr2{width:772px;position: relative;bottom: 565px;}
+
+input[type='button'] {width: 60px;height: 25px;margin: 11px 5px 5px 5px}
+#test {width: 40px;height: 20px;margin: 11px 5px 5px 5px}
+
+ul li {font-size: 15px;height: 25px;}
+ul li font {margin-left: 35px;position: relative;top: 5px;}
+.menuStyle{background-color: #4876FF;color: #ffffff}
+
+table tr td{padding-top: 3px}
+table tr td input[type='radio']{margin-left: 10px}
+.netTypeName{margin-left: 5px}
+.netTypeContent{margin-left: 20px}
+
+.disable{color: #cccccc}
+
+table {position: relative;top: 15px;left: 15px;}
+
+.topLabel{position: relative;bottom: 20px;left: 5px;}

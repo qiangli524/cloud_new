@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BolNodeStatus">
+	<typeAlias alias="bolNodeStatusObj"
+		type="com.sitech.basd.bol.domain.nodestatus.BolNodeStatusObj" />
+
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+	<select id="queryNodeStatus" parameterClass="bolNodeStatusObj" resultClass="bolNodeStatusObj">	
+		select a.NODE_VALUE nodeValue, b.TIME time
+		  from (select NODE_VALUE, TIME
+		          from bol_node_status
+		         <dynamic prepend="where">
+					<isNotNull property="nodeCode" prepend="and">
+						NODE_CODE = #nodeCode#
+					</isNotNull>
+					<isNotNull property="nodeField" prepend="and">
+						NODE_FIELD = #nodeField#
+					</isNotNull>
+				 </dynamic> ) a
+		 right join (select max(TIME) TIME
+		               from bol_node_status
+		              <dynamic prepend="where">
+					<isNotNull property="nodeCode" prepend="and">
+						NODE_CODE = #nodeCode#
+					</isNotNull>
+					<isNotNull property="nodeField" prepend="and">
+						NODE_FIELD = #nodeField#
+					</isNotNull>
+				 </dynamic>) b
+		    on a.TIME = b.TIME
+	</select>
+</sqlMap>

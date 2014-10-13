@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="GlobalTaskObj">
+	<typeAlias alias="GlobalTaskObj"
+		type="com.sitech.basd.yicloud.domain.globaltask.GlobalTaskObj" />
+ 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="ColumnsNoKey">
+		CREATER_NAME createrName,
+ 		NAME name,
+ 		TYPE type,        
+ 		PROGRESS progress,    
+ 		STATUS status,      
+		CONTENT content,     
+ 		DATE_FORMAT(CREATE_TIME,'%Y-%m-%d %H:%i:%s') createTime, 
+ 		DATE_FORMAT(END_TIME,'%Y-%m-%d %H:%i:%s') endTime
+	</sql>
+	<sql id="queryByObjBase">
+			SELECT  
+				ID id,
+		<include refid="ColumnsNoKey"/>          
+ 			FROM TB_GLOBAL_TASK 	
+ 		<dynamic prepend="where">
+ 			<isNotNull property="id" prepend="and">
+				ID = #id#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE = #type#		
+			</isNotNull>
+			<isNotNull property="status" prepend="and">
+				STATUS = #status#
+			</isNotNull>
+			<isNotNull property="name" prepend="and">
+				NAME LIKE CONCAT('%',#name#,'%')
+			</isNotNull>
+			<isNotNull property="createrName" prepend="and">
+				CREATER_NAME = #createrName# <!-- 不要支持模糊查询,要根据创建人过滤 -->
+			</isNotNull>
+ 		</dynamic>	 
+	</sql>
+	<select id="queryForListByObj" parameterClass="GlobalTaskObj" resultClass="GlobalTaskObj">
+	        <include refid="queryByObjBase"/>
+	        order by END_TIME DESC
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	<select id="queryByObjForCount" parameterClass="GlobalTaskObj" resultClass="int">
+	      select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	</select>
+	
+	<select id="queryListProccessing" parameterClass="GlobalTaskObj" resultClass="GlobalTaskObj">
+		<!-- SELECT  
+				ID id,
+		<include refid="ColumnsNoKey"/>          
+ 			FROM TB_GLOBAL_TASK 
+ 		<dynamic prepend="where">
+			<isNotNull property="status" prepend="and">
+				STATUS = #status#
+			</isNotNull>
+			<isNotNull property="createrName" prepend="and">
+				CREATER_NAME = #createrName# 
+			</isNotNull>
+ 		</dynamic>
+ 		union
+ 		
+ 		SELECT ID,
+ 			<include refid="ColumnsNoKey"/>          
+ 			FROM TB_GLOBAL_TASK 
+ 		WHERE STATUS='2' AND END_TIME > DATE_SUB(now(), INTERVAL 1 DAY)
+ 		<isNotNull property="createrName" prepend="and">
+				CREATER_NAME = #createrName#  --><!-- 不要支持模糊查询,要根据创建人过滤 -->
+		<!-- 只显示最近一小时事件 -->
+		SELECT ID,
+ 			<include refid="ColumnsNoKey"/>          
+ 			FROM TB_GLOBAL_TASK 
+ 		WHERE STATUS='1' AND END_TIME > DATE_SUB(now(), INTERVAL 1 HOUR)
+ 		<isNotNull property="createrName" prepend="and">
+				CREATER_NAME = #createrName# 
+		</isNotNull>
+	</select>
+	<insert id="insertByObj" parameterClass="GlobalTaskObj">
+		insert into TB_GLOBAL_TASK(id,creater_name ,name,type,progress,status,content,create_time)
+		values (#id#,#createrName#,#name#,#type#,#progress#,#status#,#content#,now()) 
+	</insert>
+	<update id="updateByObj" parameterClass="GlobalTaskObj">
+		update TB_GLOBAL_TASK set progress=#progress#,status=#status#,content=#content#,end_time=now() where ID=#id# 
+	</update>
+</sqlMap>

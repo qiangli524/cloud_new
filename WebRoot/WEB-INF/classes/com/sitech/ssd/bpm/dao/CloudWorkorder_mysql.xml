@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="CloudWorkorder">
+    <typeAlias alias="CloudWorkorder" type="com.sitech.ssd.bpm.domain.CloudWorkorder"/>   
+    <sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+
+	<sql id="queryByObjBase">
+		SELECT
+			workorderId,
+		    workorderName,
+		    questionType,
+		   	questionContent,
+		    attachment,
+		    contactPhone,
+		    contactEmail,
+		    commitDate,
+		    user_id,
+		    apply_user_id,
+		    workflowId,
+		    malfunctionType,
+		    dateRange,
+		    dateUnit,
+		    isMakeUp,
+		    isOk,
+		    conformDate,
+		    satisfaction
+		FROM
+			tb_publiccloud_workorder_info			
+		<dynamic prepend="where">
+			<isNotEmpty property="workorderId" prepend="and">
+				workorderId=#workorderId#
+			</isNotEmpty>
+			<isNotEmpty property="workorderName" prepend="and">
+				workorderName=#workorderName#
+			</isNotEmpty>
+			<isNotEmpty property="questionType" prepend="and">
+				questionType=#questionType#
+			</isNotEmpty>
+			<isNotEmpty property="questionContent" prepend="and">
+				questionContent=#questionContent#
+			</isNotEmpty>
+			<isNotEmpty property="attachment" prepend="and">
+				attachment=#attachment#
+			</isNotEmpty>
+			<isNotEmpty property="contactPhone" prepend="and">
+				contactPhone=#contactPhone#
+			</isNotEmpty>
+			<isNotEmpty property="contactEmail" prepend="and">
+				contactEmail=#contactEmail#
+			</isNotEmpty>
+			<isNotEmpty property="commitDate" prepend="and">
+				commitDate=#commitDate#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id=#user_id#
+			</isNotEmpty>
+			<isNotEmpty property="apply_user_id" prepend="and">
+				apply_user_id=#apply_user_id#
+			</isNotEmpty>
+			<isNotEmpty property="workflowId" prepend="and">
+				workflowId=#workflowId#
+			</isNotEmpty>
+			<isNotEmpty property="malfunctionType" prepend="and">
+				malfunctionType=#malfunctionType#
+			</isNotEmpty>
+			<isNotEmpty property="dateRange" prepend="and">
+				dateRange=#dateRange#
+			</isNotEmpty>
+			<isNotEmpty property="dateUnit" prepend="and">
+				dateUnit=#dateUnit#
+			</isNotEmpty>
+			<isNotEmpty property="isMakeUp" prepend="and">
+				isMakeUp=#isMakeUp#
+			</isNotEmpty>
+			<isNotEmpty property="isOk" prepend="and">
+				isOk=#isOk#
+			</isNotEmpty>
+			<isNotEmpty property="conformDate" prepend="and">
+				conformDate=#conformDate#
+			</isNotEmpty>
+			<isNotEmpty property="satisfaction" prepend="and">
+				satisfaction=#satisfaction#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForCountByObj" parameterClass="CloudWorkorder" resultClass="int">
+		select count(workorderId) from (
+			<include refid="queryByObjBase"/>
+		) virtual_table
+	</select>
+	
+	<select id="queryForListByObj" parameterClass="CloudWorkorder" resultClass="CloudWorkorder">
+		<include refid="queryByObjBase"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd"/> 
+		</isGreaterThan>
+	</select>
+	
+	<update id="updateByObj" parameterClass="CloudWorkorder" >
+		update 
+			tb_publiccloud_workorder_info
+		<dynamic prepend="set">
+			<isNotEmpty property="user_id" prepend=",">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="workorderName" prepend=",">
+				workorderName=#workorderName#
+			</isNotEmpty>
+			<isNotEmpty property="questionType" prepend=",">
+				questionType=#questionType#
+			</isNotEmpty>
+			<isNotEmpty property="questionContent" prepend=",">
+				questionContent=#questionContent#
+			</isNotEmpty>
+			<isNotEmpty property="attachment" prepend=",">
+				attachment=#attachment#
+			</isNotEmpty>
+			<isNotEmpty property="contactPhone" prepend=",">
+				contactPhone=#contactPhone#
+			</isNotEmpty>
+			<isNotEmpty property="contactEmail" prepend=",">
+				contactEmail=#contactEmail#
+			</isNotEmpty>
+			<isNotEmpty property="commitDate" prepend=",">
+				commitDate=#commitDate#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend=",">
+				user_id=#user_id#
+			</isNotEmpty>
+			<isNotEmpty property="apply_user_id" prepend=",">
+				apply_user_id=#apply_user_id#
+			</isNotEmpty>
+			<isNotEmpty property="workflowId" prepend=",">
+				workflowId=#workflowId#
+			</isNotEmpty>
+			<isNotEmpty property="malfunctionType" prepend=",">
+				malfunctionType=#malfunctionType#
+			</isNotEmpty>
+			<isNotEmpty property="dateRange" prepend=",">
+				dateRange=#dateRange#
+			</isNotEmpty>
+			<isNotEmpty property="dateUnit" prepend=",">
+				dateUnit=#dateUnit#
+			</isNotEmpty>
+			<isNotEmpty property="isMakeUp" prepend=",">
+				isMakeUp=#isMakeUp#
+			</isNotEmpty>
+			<isNotEmpty property="isOk" prepend=",">
+				isOk=#isOk#
+			</isNotEmpty>
+			<isNotEmpty property="conformDate" prepend=",">
+				conformDate=#conformDate#
+			</isNotEmpty>
+			<isNotEmpty property="satisfaction" prepend=",">
+				satisfaction=#satisfaction#
+			</isNotEmpty>			
+		</dynamic>
+		where 
+			workorderId = #workorderId#
+	</update>
+	
+	<insert id="insertByObj" parameterClass="CloudWorkorder">
+		insert into tb_publiccloud_workorder_info(
+			workorderId,
+		    workorderName,
+		    questionType,
+		   	questionContent,
+		    attachment,
+		    contactPhone,
+		    contactEmail,
+		    commitDate,
+		    user_id,
+		    apply_user_id,
+		    workflowId,
+		    malfunctionType,
+		    dateRange,
+		    dateUnit,
+		    isMakeUp,
+		    isOk,
+		    conformDate,
+		    satisfaction
+		) values(
+			#workorderId#,
+		    #workorderName#,
+		    #questionType#,
+		   	#questionContent#,
+		    #attachment#,
+		    #contactPhone#,
+		    #contactEmail#,
+		    now(),
+		    #user_id#,
+		    #apply_user_id#,
+		    #workflowId#,
+		    #malfunctionType#,
+		    #dateRange#,
+		    #dateUnit#,
+		    #isMakeUp#,
+		    #isOk#,
+		    #conformDate#,
+		    #satisfaction#
+		)
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="CloudWorkorder">
+		delete 
+		from 
+			tb_publiccloud_workorder_info
+		where 
+			workorderId=#workorderId#
+	</delete>
+</sqlMap>

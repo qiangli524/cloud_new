@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="xenTreeAction" class="com.sitech.basd.yicloud.web.xentree.action.XenTreeAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="xenEntityTreeService">
+			<ref bean="xenEntityTreeService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="taskEventService">
+			<ref bean="taskEventService" />
+		</property>
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="xenClusterService">
+			<ref bean="xenClusterService" />
+		</property>
+		<property name="templetTreeService">
+			<ref bean="templetTreeService" />
+		</property>
+		<property name="tbGlobalConfigService">
+			<ref bean="tbGlobalConfigService" />
+		</property>
+		<property name="vmAuthorityService">
+			<ref bean="vmAuthorityService" />
+		</property>
+		<property name="xenStoreService">
+			<ref bean="xenStoreService" />
+		</property>
+	</bean>
+	
+</beans>
+
+
+
+
+
+	
+
+
+

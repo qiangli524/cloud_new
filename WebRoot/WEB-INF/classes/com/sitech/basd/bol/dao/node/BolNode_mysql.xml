@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BolNode">
+	<typeAlias alias="BolNodeVO"
+		type="com.sitech.basd.bol.domain.node.BolNodeVO" />
+
+		<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+		</sql>
+	
+	<insert id="insertByBolNodeVO" parameterClass="BolNodeVO">
+		insert into
+		CLOUD_NOTE
+		(NODE_ID,NODE_NAME,NODE_DESC,HOST_ID,GROUP_ID,STATE,STATE_DATE)
+		values
+		(#id#,#name#,#descrip#,#hostId#,#clusterId#,#status#,sysdate())
+	</insert>
+
+	<sql id="Columns">
+		bn.NODE_ID id,bn.NODE_NAME name,bn.NODE_DESC descrip,bn.STATE status,
+		DATE_FORMAT(bn.STATE_DATE,'%Y-%m-%d %H:%i:%S') lastUpdate,bc.GROUP_ID clusterId,bc.GROUP_NAME clusterName,
+		bh.HOST_ID hostId,bh.IP ipaddress,bh.HOST_NAME hostName
+	</sql>
+	
+	<sql id="querySqlBase">
+		select <include refid="Columns"/>
+	      from CLOUD_NOTE bn
+	      left join CLOUD_GROUP bc on bn.GROUP_ID = bc.GROUP_ID
+	      left join HOST bh on bn.HOST_ID = bh.HOST_ID
+		<dynamic prepend="where">
+			<isNotEmpty property="name" prepend="and">
+				bn.NODE_NAME like '%'||#name#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="ipaddress" prepend="and">
+				bh.IP like '%'||#ipaddress#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="clusterName" prepend="and">
+				bc.GROUP_NAME like '%'||#clusterName#||'%'
+			</isNotEmpty>
+			<isGreaterThan property="status" compareValue="-1" prepend="and">
+				STATE =#status#
+			</isGreaterThan>
+		</dynamic>
+		order by bn.NODE_NAME asc
+	</sql>
+	
+	<select id="queryID" resultClass="java.lang.Integer">
+		select max(NODE_ID) from CLOUD_NOTE
+	</select>
+
+	<select id="queryForListByObj" parameterClass="BolNodeVO"
+		resultClass="BolNodeVO">
+		<include refid="querySqlBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryForCount" parameterClass="BolNodeVO"
+		resultClass="int">
+		select count(*) from (
+		<include refid="querySqlBase" />
+		) virtual_table
+	</select>
+	
+	<update id="updateByBolNodeVO" parameterClass="BolNodeVO">
+		update CLOUD_NOTE
+	        <dynamic prepend="set">
+		 		<isNotEmpty prepend="," property="name">
+		 			NODE_NAME=#name#
+		 		</isNotEmpty>
+		 		<isNotEmpty prepend="," property="descrip">
+		 			NODE_DESC=#descrip#
+		 		</isNotEmpty>
+		 		<isNotEmpty prepend="," property="hostId">
+		 			HOST_ID=#hostId#
+		 		</isNotEmpty>
+		 		<isNotEmpty prepend="," property="clusterId">
+		 			GROUP_ID=#clusterId#
+		 		</isNotEmpty>
+		 		<isNotEmpty prepend="," property="status">
+		 			STATE=#status#
+		 		</isNotEmpty>
+		 		<isNotEmpty prepend="," property="lastUpdate">
+		 			STATE_DATE= sysdate()
+		 		</isNotEmpty>
+	 		</dynamic>
+	        where NODE_ID = #id#
+	</update>
+	<delete id="deleteByBolNodeVO" parameterClass="BolNodeVO">
+		delete from CLOUD_NOTE t 
+		<dynamic prepend="where">
+	 		<isNotEmpty prepend="," property="id">
+	 			t.NODE_ID=#id#
+	 		</isNotEmpty>
+	 		<isNotNull property="descrip">
+	 			<isNotEmpty prepend="," property="descrip">
+		 			t.NODE_DESC=#descrip#
+		 		</isNotEmpty>
+	 		</isNotNull>
+	 	</dynamic>
+	</delete>
+	
+	<select id="queryByBolNodeVO" parameterClass="BolNodeVO" resultClass="BolNodeVO">
+		select <include refid="Columns"/>
+		  from CLOUD_NOTE bn
+		  left join CLOUD_GROUP bc on bn.GROUP_ID = bc.GROUP_ID
+		  left join HOST bh on bn.HOST_ID = bh.HOST_ID
+		 where bn.NODE_ID = #id#
+	</select>
+</sqlMap>

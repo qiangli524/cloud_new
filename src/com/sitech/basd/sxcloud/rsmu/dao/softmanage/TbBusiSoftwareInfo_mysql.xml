@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiSoftwareInfo">
+    <typeAlias alias="TbBusiSoftwareInfoObj" type="com.sitech.basd.sxcloud.rsmu.domain.softmanage.TbBusiSoftwareInfoObj"/> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+    <sql id="tableColumnsNoKey">      
+    SOFTWARE_SIZE,MANUFACTURERS,SYSTEM_REQUEST,PROVIDERS,INTRODUCE,REMARK,NAME,VERSION,APPID,DATE_FORMAT(UPDATETIME,'%Y-%m-%d %H:%i:%S') UPDATETIME,SOFTPARTH 
+    ,base_tar_md5,target_tar_md5,CASE WHEN
+			  STRCMP(
+			    `target_tar_md5`,
+			    `base_tar_md5`
+			  ) = 0 THEN 'true'
+			  ELSE 'false'
+			  END
+			  comparevalue
+    </sql>
+    <sql id="tableColumns">
+        ID,
+        <include refid="tableColumnsNoKey"/>
+    </sql>
+    <sql id="queryByObjBase">
+        select
+        <include refid="tableColumns"/>
+        from
+        TB_BUSI_SOFTWAREINFO A
+        <dynamic prepend="where">
+        		<isNotEmpty property="SYSID" prepend="and">
+                EXISTS (SELECT * FROM TB_SYS_APP B WHERE A.APPID = B.id and B.SYS_ID=#SYSID#)
+               </isNotEmpty>
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="NAME" prepend="and">
+                NAME like CONCAT('%',#NAME#,'%')
+               </isNotEmpty>
+               <isGreaterThan property="PROVIDERS" compareValue="0" prepend="and">
+                PROVIDERS like CONCAT('%',#PROVIDERS#,'%')
+               </isGreaterThan>
+                 <isNotNull property="APPIDS" prepend="and">
+               		APPID in ($APPIDS$)
+               </isNotNull>
+        </dynamic> 
+     </sql>
+     <select id="queryForListByObj" parameterClass="TbBusiSoftwareInfoObj" resultClass="TbBusiSoftwareInfoObj">
+        <include refid="queryByObjBase"/>
+        order by ID desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByObjForCount" parameterClass="TbBusiSoftwareInfoObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    
+    <!-- lipp -->
+    <select id="queryForListByObjNew" parameterClass="TbBusiSoftwareInfoObj" resultClass="TbBusiSoftwareInfoObj">
+    	select ID,
+    	<include refid="tableColumnsNoKey"/>
+    	 from TB_BUSI_SOFTWAREINFO
+    	 <dynamic prepend="where">
+    	 	<isNotEmpty prepend="and" property="ID">
+    	 		ID = #ID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTWARE_SIZE">
+    	 		SOFTWARE_SIZE = #SOFTWARE_SIZE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="MANUFACTURERS">
+    	 		MANUFACTURERS like CONCAT('%',#MANUFACTURERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SYSTEM_REQUEST">
+    	 		SYSTEM_REQUEST like CONCAT('%',#SYSTEM_REQUEST#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="PROVIDERS">
+    	 		PROVIDERS like CONCAT('%',#PROVIDERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="INTRODUCE">
+    	 		INTRODUCE like CONCAT('%',#INTRODUCE#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="REMARK">
+    	 		REMARK like CONCAT('%',#REMARK#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="NAME">
+    	 		NAME like CONCAT('%',#NAME#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="VERSION">
+    	 		VERSION = #VERSION#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="APPID">
+    	 		APPID = #APPID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="UPDATETIME">
+    	 		UPDATETIME = STR_TO_DATE(#UPDATETIME#,'%Y-%m-%d %H:%i:%s')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTPARTH">
+    	 		SOFTPARTH = #SOFTPARTH#
+    	 	</isNotEmpty>
+    	 </dynamic>
+    	 <isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+         </isGreaterThan>
+    </select>
+    
+    <select id="countByObj" parameterClass="TbBusiSoftwareInfoObj" resultClass="int">
+    	select count(ID) from TB_BUSI_SOFTWAREINFO
+    	<dynamic prepend="where">
+    	 	<isNotEmpty prepend="and" property="ID">
+    	 		ID = #ID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTWARE_SIZE">
+    	 		SOFTWARE_SIZE = #SOFTWARE_SIZE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="MANUFACTURERS">
+    	 		MANUFACTURERS like CONCAT('%',#MANUFACTURERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SYSTEM_REQUEST">
+    	 		SYSTEM_REQUEST like CONCAT('%',#SYSTEM_REQUEST#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="PROVIDERS">
+    	 		PROVIDERS like CONCAT('%',#PROVIDERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="INTRODUCE">
+    	 		INTRODUCE like CONCAT('%',#INTRODUCE#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="REMARK">
+    	 		REMARK like CONCAT('%',#REMARK#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="NAME">
+    	 		NAME like CONCAT('%',#NAME#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="VERSION">
+    	 		VERSION = #VERSION#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="APPID">
+    	 		APPID = #APPID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="UPDATETIME">
+    	 		UPDATETIME = STR_TO_DATE(#UPDATETIME#,'%Y-%m-%d %H:%i:%s')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTPARTH">
+    	 		SOFTPARTH = #SOFTPARTH#
+    	 	</isNotEmpty>
+    	 </dynamic>
+    </select>
+    
+    <select id="queryForListByAppidUseIn" parameterClass="TbBusiSoftwareInfoObj" resultClass="TbBusiSoftwareInfoObj">
+    	select ID,
+    	<include refid="tableColumnsNoKey"/>
+    	 from TB_BUSI_SOFTWAREINFO where APPID in
+    	 <iterate close=")" conjunction="," open="(" property="appidList">
+    	 	#appidList[]#
+    	 </iterate>
+    	 <dynamic>
+    	 	<isNotEmpty prepend="and" property="ID">
+    	 		ID = #ID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTWARE_SIZE">
+    	 		SOFTWARE_SIZE = #SOFTWARE_SIZE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="MANUFACTURERS">
+    	 		MANUFACTURERS like CONCAT('%',#MANUFACTURERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SYSTEM_REQUEST">
+    	 		SYSTEM_REQUEST like CONCAT('%',#SYSTEM_REQUEST#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="PROVIDERS">
+    	 		PROVIDERS like CONCAT('%',#PROVIDERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="INTRODUCE">
+    	 		INTRODUCE like CONCAT('%',#INTRODUCE#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="REMARK">
+    	 		REMARK like CONCAT('%',#REMARK#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="NAME">
+    	 		NAME like CONCAT('%',#NAME#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="VERSION">
+    	 		VERSION = #VERSION#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="APPID">
+    	 		APPID = #APPID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="UPDATETIME">
+    	 		UPDATETIME = STR_TO_DATE(#UPDATETIME#,'%Y-%m-%d %H:%i:%s')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTPARTH">
+    	 		SOFTPARTH = #SOFTPARTH#
+    	 	</isNotEmpty>
+    	 </dynamic>
+    	 <isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+         </isGreaterThan>
+    </select>
+    
+    <select id="countByAppidUseIn" parameterClass="TbBusiSoftwareInfoObj" resultClass="int">
+     	select count(ID) from TB_BUSI_SOFTWAREINFO where APPID in
+     	<iterate close=")" conjunction="," open="(" property="appidList">
+    	 	#appidList[]#
+    	 </iterate>
+    	 <dynamic>
+    	 	<isNotEmpty prepend="and" property="ID">
+    	 		ID = #ID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTWARE_SIZE">
+    	 		SOFTWARE_SIZE = #SOFTWARE_SIZE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="MANUFACTURERS">
+    	 		MANUFACTURERS like CONCAT('%',#MANUFACTURERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SYSTEM_REQUEST">
+    	 		SYSTEM_REQUEST like CONCAT('%',#SYSTEM_REQUEST#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="PROVIDERS">
+    	 		PROVIDERS like CONCAT('%',#PROVIDERS#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="INTRODUCE">
+    	 		INTRODUCE like CONCAT('%',#INTRODUCE#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="REMARK">
+    	 		REMARK like CONCAT('%',#REMARK#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="NAME">
+    	 		NAME like CONCAT('%',#NAME#,'%')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="VERSION">
+    	 		VERSION = #VERSION#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="APPID">
+    	 		APPID = #APPID#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="UPDATETIME">
+    	 		UPDATETIME = STR_TO_DATE(#UPDATETIME#,'%Y-%m-%d %H:%i:%s')
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="and" property="SOFTPARTH">
+    	 		SOFTPARTH = #SOFTPARTH#
+    	 	</isNotEmpty>
+    	 </dynamic>
+    </select>
+    
+    <delete id="deleteByObj" parameterClass="TbBusiSoftwareInfoObj">
+    	delete from TB_BUSI_SOFTWAREINFO where ID=#ID#
+    </delete>
+    
+    <insert id="insertByObj" parameterClass="TbBusiSoftwareInfoObj">
+    	insert into TB_BUSI_SOFTWAREINFO
+    	<dynamic prepend="(">
+    	 	<isNotEmpty prepend="," property="SOFTWARE_SIZE">
+    	 		SOFTWARE_SIZE
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="MANUFACTURERS">
+    	 		MANUFACTURERS
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="SYSTEM_REQUEST">
+    	 		SYSTEM_REQUEST
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="PROVIDERS">
+    	 		PROVIDERS
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="INTRODUCE">
+    	 		INTRODUCE
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="REMARK">
+    	 		REMARK
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="NAME">
+    	 		NAME
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="VERSION">
+    	 		VERSION
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="APPID">
+    	 		APPID
+    	 	</isNotEmpty>
+    	 	<isEmpty prepend="," property="UPDATETIME">
+    	 		UPDATETIME
+    	 	</isEmpty>
+    	 	<isNotEmpty prepend="," property="SOFTPARTH">
+    	 		SOFTPARTH
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="CATCHFILES">
+    	 		CATCHFILES
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="base_tar_md5">
+    	 		base_tar_md5
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="target_tar_md5">
+    	 		target_tar_md5
+    	 	</isNotEmpty>
+    	)
+    	</dynamic>
+    	values
+    	<dynamic prepend="(">
+    	 	<isNotEmpty prepend="," property="SOFTWARE_SIZE">
+    	 		#SOFTWARE_SIZE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="MANUFACTURERS">
+    	 		#MANUFACTURERS#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="SYSTEM_REQUEST">
+    	 		#SYSTEM_REQUEST#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="PROVIDERS">
+    	 		#PROVIDERS#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="INTRODUCE">
+    	 		#INTRODUCE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="REMARK">
+    	 		#REMARK#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="NAME">
+    	 		#NAME#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="VERSION">
+    	 		#VERSION#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="APPID">
+    	 		#APPID#
+    	 	</isNotEmpty>
+    	 	<isEmpty prepend="," property="UPDATETIME">
+    	 		NOW()
+    	 	</isEmpty>
+    	 	<isNotEmpty prepend="," property="SOFTPARTH">
+    	 		#SOFTPARTH#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="CATCHFILES">
+    	 		#CATCHFILES#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="base_tar_md5">
+    	 		#base_tar_md5#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="target_tar_md5">
+    	 		#target_tar_md5#
+    	 	</isNotEmpty>
+    	)
+    	</dynamic>
+    	<selectKey resultClass="int" keyProperty="ID" >
+        	SELECT @@IDENTITY AS ID
+    	</selectKey>
+    </insert>
+    
+    <update id="updateByObj" parameterClass="TbBusiSoftwareInfoObj">
+   		update TB_BUSI_SOFTWAREINFO 
+		<dynamic prepend="set">
+    	 	<isNotEmpty prepend="," property="SOFTWARE_SIZE">
+    	 		SOFTWARE_SIZE = #SOFTWARE_SIZE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="MANUFACTURERS">
+    	 		MANUFACTURERS = #MANUFACTURERS#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="SYSTEM_REQUEST">
+    	 		SYSTEM_REQUEST = #SYSTEM_REQUEST#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="PROVIDERS">
+    	 		PROVIDERS = #PROVIDERS#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="INTRODUCE">
+    	 		INTRODUCE = #INTRODUCE#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="REMARK">
+    	 		REMARK = #REMARK#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="NAME">
+    	 		NAME = #NAME#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="VERSION">
+    	 		VERSION = #VERSION#
+    	 	</isNotEmpty>
+    	 	<isNotEmpty prepend="," property="APPID">
+    	 		APPID = #APPID#
+    	 	</isNotEmpty>
+    	 	<isEmpty prepend="," property="UPDATETIME">
+    	 		UPDATETIME = NOW()
+    	 	</isEmpty>
+    	 	<isNotEmpty prepend="," property="SOFTPARTH">
+    	 		SOFTPARTH = #SOFTPARTH#
+    	 	</isNotEmpty>
+    	 </dynamic>
+    	 where ID = #ID#
+    </update>
+    
+</sqlMap>

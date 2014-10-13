@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="zookeeper"
+			 extends="global_package">
+		<!-- paas资源树 -->
+		<action name="zookeeperTree_*" class="zookeeperTreeAction" method="{1}">
+			<result name="list">/ah/zookeeper/tree/listZookeeperTree.jsp</result>
+			<result name="tabs">/ah/zookeeper/tree/tabs.jsp</result>
+			<result name="showNodeDetail">/ah/zookeeper/tab/showNodeDetail.jsp</result>
+			<result name="addChildNode">/ah/zookeeper/tab/addChildNode.jsp</result>
+			<result name="editSelfNode">/ah/zookeeper/tab/editSelfNode.jsp</result>
+			<result name="tree" type="json">
+				<param name="root">zookeeperTreeObjList</param>
+			</result>
+			<result name="results" type="json">
+				<param name="root">result</param>
+			</result>
+		 </action>
+		 <action name="zookeeperMonitor_*" class="zookeeperMonitorAction" method="{1}">
+			<result name="list">/ah/zookeeper/tab/zookeeperMonitor.jsp</result>
+		 </action>
+	</package>
+</struts>

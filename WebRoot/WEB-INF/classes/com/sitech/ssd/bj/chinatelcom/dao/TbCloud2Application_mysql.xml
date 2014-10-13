@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="TbCloud2Application">
+	<typeAlias alias="applicationObj" type="com.sitech.ssd.bj.chinatelcom.domain.TbCloud2ApplicationObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                         limit #FIRSTROWNUM#,#PAGESIZE#
+                 ]]>
+	</sql>
+
+	<sql id="baseCloumn">
+		 a.id,a.appname,a.status,a.url,a.description,a.resultcode
+	</sql>
+    
+    <sql id="baseSql">
+    	select 
+    	<include refid="baseCloumn"/>
+    	from tb_cloud2_application a
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="id">
+    			a.id = #id#
+    		</isNotEmpty>
+    		<isNotEmpty property="appname" prepend="and">
+    			a.appname like CONCAT('%',#appname#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="status" prepend="and">
+    			a.status = #status#
+    		</isNotEmpty>
+    		<isNotEmpty property="url" prepend="and">
+    			a.url like CONCAT('%',#url#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="description" prepend="and">
+    			a.description like CONCAT('%',#description#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="resultcode" prepend="and">
+    			a.resultcode = #resultcode#
+    		</isNotEmpty>
+    		<isNotEmpty property="idList" prepend="and">
+    			a.id in
+    			<iterate close=")" conjunction="," open="(" property="idList">
+    				#idList[]#
+    			</iterate>
+    		</isNotEmpty>
+    	</dynamic>
+    </sql>
+    
+    <select id="queryForListByObj" parameterClass="applicationObj" resultClass="applicationObj">
+    	<include refid="baseSql"/>
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+    </select>
+
+	<select id="queryForCountByObj" parameterClass="applicationObj" resultClass="int">
+		select count(id) from
+		(<include refid="baseSql"/>) b
+	</select>
+	
+	<insert id="insertByObj" parameterClass="applicationObj">
+		insert into tb_cloud2_application(id,appname,status,url,description,resultcode) values(#id#,#appname#,#status#,#url#,#description#,#resultcode#)
+	</insert>
+    
+    <delete id="deleteByObj" parameterClass="applicationObj">
+    	delete from tb_cloud2_application
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="id">
+    		 	id = #id#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="idList">
+    			id in
+    			<iterate close=")" conjunction="," open="(" property="idList">
+    				#idList[]#
+    			</iterate>
+    		</isNotEmpty>
+    	</dynamic>
+    </delete>
+    
+    <update id="updateByObj" parameterClass="applicationObj">
+    	update tb_cloud2_application
+    	<dynamic prepend="set">
+    		<isNotEmpty prepend="," property="appname">
+    			appname = #appname#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="url">
+    			url = #url#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="description">
+    			description = #description#
+    		</isNotEmpty>
+    	</dynamic>
+    	where id = #id#
+    </update>
+    
+</sqlMap>

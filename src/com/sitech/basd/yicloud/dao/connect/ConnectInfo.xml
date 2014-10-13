@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ConnectInfo">
+	<typeAlias alias="ConnectObj"
+		type="com.sitech.basd.yicloud.domain.connect.ConnectObj" />
+	<typeAlias alias="DictionaryObj"
+		type="com.sitech.basd.yicloud.domain.dictionary.DictionaryObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select ic.ID,
+      		   ic.INTERFACE_A,
+       		   (da.name_zh || '-' || dia.code) INTERFACE_A_NAME,
+      		   ic.INTERFACE_Z,
+               (dz.name_zh || '-' || diz.code) INTERFACE_Z_NAME,
+               ic.STATUS,
+               dd.NAME STATUSNAME
+          from TB_YiCloud_Interface_CONNECT ic,
+               YI_DATA_DICTIONARY           dd,
+               TB_YiCloud_Device_INTERFACE  dia,
+       		   TB_YiCloud_Device            da,
+               TB_YiCloud_Device_INTERFACE  diz,
+               TB_YiCloud_Device            dz
+         where ic.status = dd.code
+           and dd.group_name = 'InterfaceConnect_status'
+           and ic.interface_a = dia.id
+           and ic.interface_z = diz.id
+           and dia.device_id = da.id
+           and diz.device_id = dz.id
+        ]]>
+
+		<isNotEqual property="ID" compareValue="0" prepend="and">
+			ic.ID = #ID#
+		</isNotEqual>
+
+		<isNotEqual property="INTERFACE_A" compareValue="0"
+			prepend="and">
+			ic.INTERFACE_A = #INTERFACE_A#
+		</isNotEqual>
+
+		<isNotEqual property="INTERFACE_Z" compareValue="0"
+			prepend="and">
+			ic.INTERFACE_Z = #INTERFACE_Z#
+		</isNotEqual>
+
+		<isNotEmpty property="STATUS" prepend="and">
+			ic.STATUS = #STATUS#
+		</isNotEmpty>
+
+		order by ic.id
+
+	</sql>
+
+	<select id="queryForListByObj" parameterClass="ConnectObj"
+		resultClass="ConnectObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="ConnectObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 查询A，Z端外围接口下拉框的值 -->
+	<select id="queryForListByInterface" parameterClass="ConnectObj"
+		resultClass="ConnectObj">
+		<![CDATA[
+		select di.id, 
+           (yd.name_zh || '-' || di.code) INTERFACE_A_NAME
+          from TB_YiCloud_Device_INTERFACE  di,
+               TB_YiCloud_Device            yd
+         where yd.id = di.device_id
+         order by di.id
+		 ]]>
+	</select>
+	<!-- 查询连通状态下拉框的值 -->
+	<select id="queryForListByConStatus" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<![CDATA[
+		select ID,CODE,NAME FROM YI_DATA_DICTIONARY yd 
+		where yd.GROUP_NAME = 'InterfaceConnect_status'
+		 ]]>
+	</select>
+	<!-- 添加接口连通 -->
+	<insert id="insertByObj" parameterClass="ConnectObj">
+		<selectKey resultClass="int" keyProperty="ID">
+			select ID_YICLOUD_INTERFACE_CONNECT.NEXTVAL AS ID FROM dual
+		</selectKey>
+		insert into
+		TB_YiCloud_Interface_CONNECT(ID,INTERFACE_A,INTERFACE_Z,STATUS)
+		values(#ID#,#INTERFACE_A#,#INTERFACE_Z#,#STATUS#)
+	</insert>
+	<!-- 修改接口连通 -->
+	<update id="updateByObj" parameterClass="ConnectObj">
+		update TB_YiCloud_Interface_CONNECT set
+		ID=#ID#,INTERFACE_A=#INTERFACE_A#,INTERFACE_Z=#INTERFACE_Z#,STATUS=#STATUS#
+		where ID=#ID#
+	</update>
+	<!-- 根据ID删除接口连通-->
+	<delete id="deleteByObj" parameterClass="ConnectObj">
+		delete from TB_YiCloud_Interface_CONNECT where ID=#ID#
+	</delete>
+</sqlMap>

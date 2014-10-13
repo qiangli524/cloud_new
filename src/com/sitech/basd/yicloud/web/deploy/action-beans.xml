@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="baseDeployFileAction"
+		  class="com.sitech.basd.yicloud.web.deploy.action.DeployFileAction"
+		  singleton="false">
+		<property name="tbCloud2DepFileService">
+			<ref bean="tbCloud2DepFileService"/>
+		</property>
+		<property name="operationService">
+			<ref bean="operationService"/>
+		</property>
+	</bean>
+</beans>

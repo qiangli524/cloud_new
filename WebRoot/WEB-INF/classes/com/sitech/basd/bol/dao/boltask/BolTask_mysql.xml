@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BolTask">
+<typeAlias alias="bolTaskObj" type="com.sitech.basd.bol.domain.boltask.BolTaskObj"/>
+	
+	<insert id="insertByObj" parameterClass="bolTaskObj">
+		insert into bol_task
+		(ID,HOST,TIME,STATUS,RESOURCE_ID,RESOURCE_NAME,RESOURCE_TYPE,OP)
+		values
+		(#ID#,#HOST#,#TIME#,#STATUS#,#RESOURCE_ID#,#RESOURCE_NAME#,#RESOURCE_TYPE#,#OP#)
+	</insert>	
+</sqlMap>

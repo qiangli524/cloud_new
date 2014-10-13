@@ -1,0 +1,50 @@
+/*
+ * @Filename: table.css
+ * @Description: table style
+ * @Version: 1.0.0
+ * @Author: dujj
+ * @Update: dujj
+*/
+
+
+.ued-nav{  padding-left:10px; border:1px solid #d7d7d7; background:#f9f9f9; color:#666;}
+.ued-nav a{ color:#666; margin:0 2px;}
+.ued-nav a.current{ cursor:default;}
+.ued-nav a.current:hover{ text-decoration:none;}
+
+.ued-nav-01 {
+	height:34px;
+	margin:0;
+	overflow:hidden; 
+}
+.ued-nav-01 li {
+	height:34px;
+	line-height:34px;
+	float:left;
+	display:inline;
+	background:url(images/flow-panel-bg.gif) 0 -68px no-repeat;
+	padding:0 0 0 20px;
+}
+.ued-nav-01 li span {
+	height:34px;
+	float: left;
+	color: #666;
+	background:url(images/flow-panel-bg.gif) right -102px no-repeat;
+	text-align:center;
+	padding:0 40px;
+	position:relative;
+	font-size:14px;
+}
+.ued-nav-01 li.on {
+	background:url(images/flow-panel-bg.gif) 0 0px no-repeat;
+}
+.ued-nav-01 li.on span {
+	color:#fff;
+	background:url(images/flow-panel-bg.gif) right -34px no-repeat;
+}
+.ued-nav-01 li span b{
+	font-size:28px;
+	position:absolute;
+	left:15px;
+}
+

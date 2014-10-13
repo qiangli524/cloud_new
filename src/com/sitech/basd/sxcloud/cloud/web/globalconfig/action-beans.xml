@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="globalConfigAction" class="com.sitech.basd.sxcloud.cloud.web.globalconfig.action.GlobalConfigAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="tbGlobalConfigService">
+			<ref bean="tbGlobalConfigService" />
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

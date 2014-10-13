@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Farms">
+	<typeAlias alias="farmObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.loadBalancing.FarmObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		 farmName,adminStatus,operationalStatus,agingTime,dispatchMethod,connectivityCheckMethod,connectivityCheckPort,
+		connectivityCheckInterval,connectivityCheckRetries,connectionDenials,extendedCheckFrequency,homePage,sessionsMode
+		,bandwidthLimit,authorizedUsername,authorizedPassword,content
+	</sql>
+	<sql id="tableColumns">
+		id,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryForListByObjBase">
+		select
+		<include refid="tableColumns" />
+		from TB_CLOUD2_RDWR_FARMS
+		<dynamic prepend="WHERE">
+		    <isGreaterThan property="id" compareValue="0" prepend="and">
+				id =#id#
+			</isGreaterThan>
+			<isNotEmpty property="farmName" prepend="and">
+				farmName like CONCAT('%',#farmName#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="farmObj"
+		resultClass="farmObj">
+		<include refid="queryForListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="farmObj"
+		resultClass="int">
+		select count(1) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	</select>
+	<delete id="deleteByObj" parameterClass="farmObj">
+		delete from TB_CLOUD2_RDWR_FARMS where id=#id#
+	</delete>
+	<insert id="insertByObj" parameterClass="farmObj">
+		insert into
+		TB_CLOUD2_RDWR_FARMS(id,farmName,adminStatus,operationalStatus,agingTime,dispatchMethod,connectivityCheckMethod,connectivityCheckPort,
+		connectivityCheckInterval,connectivityCheckRetries,connectionDenials,extendedCheckFrequency,homePage,sessionsMode
+		,bandwidthLimit,authorizedUsername,authorizedPassword,content)
+		values
+		(ID_FARMS.NEXTVAL,#farmName#,#adminStatus#,#operationalStatus#,#agingTime#,#dispatchMethod#,#connectivityCheckMethod#,#connectivityCheckPort#,
+		#connectivityCheckInterval#,#connectivityCheckRetries#,#connectionDenials#,#extendedCheckFrequency#,#homePage#,#sessionsMode#
+		,#bandwidthLimit#,#authorizedUsername#,#authorizedPassword#,#content#)
+	</insert>
+
+	<update id="updateByObj" parameterClass="farmObj">
+		update TB_CLOUD2_RDWR_FARMS set
+		farmName=#farmName#,adminStatus=#adminStatus#,operationalStatus=#operationalStatus#,agingTime=#agingTime#,dispatchMethod=#dispatchMethod#,connectivityCheckMethod=#connectivityCheckMethod#,connectivityCheckPort=#connectivityCheckPort#,
+		connectivityCheckInterval=#connectivityCheckInterval#,connectivityCheckRetries=#connectivityCheckRetries#,connectionDenials=#connectionDenials#,extendedCheckFrequency=#extendedCheckFrequency#,homePage=#homePage#,sessionsMode=#sessionsMode#
+		,bandwidthLimit=#bandwidthLimit#,authorizedUsername=#authorizedUsername#,authorizedPassword=#authorizedPassword#,content=#content# where
+		id=#id#
+	</update>
+</sqlMap>

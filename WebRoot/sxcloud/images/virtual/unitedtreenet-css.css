@@ -1,0 +1,235 @@
+
+body{
+	font-size: 12px;
+}
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+}
+img {
+	border: none;
+}
+
+.panel-datacenter {
+	width: 300px;
+	border-right: 1px dashed #ccc;
+	padding: 4px 20px;
+}
+.panel-resource {
+	padding: 4px 10px 4px 20px;
+}
+h2 {
+	margin: 0;
+	padding: 0;
+}
+h2.datacenter {
+	background: url(Datacenter1.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+h2.datacenter span{
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+h2.cluster {
+	background: url(cluster1.png) no-repeat;
+	height: 34px;
+	margin: 0px;
+	border-bottom: 1px dashed #ccc;
+}
+h2.cluster span{
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+h2.host {
+	background: url(Host1.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+h2.host span{
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+h2.vm {
+	background: url(VirtualMachine1.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+h2.vm span{
+	float: right;
+	margin-right: 10px;
+	margin-top: 6px;
+	width: 100px;
+	font-size: 12px;
+	font-weight: normal;
+}
+h2.vmware {
+	background: url(vmwaretitle.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+h2.xen {
+	background: url(xentitle.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+h2.ip {
+	background: url(tit-ip.gif) no-repeat;
+	height: 34px;
+	margin: 0px 20px;
+	border-bottom: 1px dashed #ccc;
+}
+.mgt-10 {
+	margin-top: 10px;
+}
+.font-14 td {
+	font-size: 14px;
+	line-height: 32px;
+}
+td.orange-20 {
+	font-size: 20px;
+	color:#F60;
+	font-family:Verdana, Geneva, sans-serif;
+}
+td.orange-16 {
+	font-size: 15px;
+	color:#F60;
+	font-family:Verdana, Geneva, sans-serif;
+}
+a.orange-16 {
+	font-size: 15px;
+	color:#F60;
+	font-family:Verdana, Geneva, sans-serif;
+}
+.orange:link {
+	font-size: 20px;
+	text-decoration:underline;
+	color:#F60;
+	font-family:Verdana, Geneva, sans-serif;
+}
+.orange:visited {
+	font-size: 20px;
+	text-decoration:underline;
+	color:#F60;
+	font-family:Verdana, Geneva, sans-serif;
+}
+.orange:hover {
+	font-size: 20px;
+	text-decoration: none;
+	color:#F60;
+	font-family:Verdana, Geneva, sans-serif;
+}
+.blue:link {
+	text-decoration:none;
+	color:#68a8ff;
+}
+.blue:visited {
+	text-decoration:none;
+	color:#68a8ff;
+}
+.blue:hover {
+	text-decoration: underline;
+	color:#68a8ff;
+}
+.font-gray {
+	color: #999;
+	font-size: 14px;
+	padding-left: 8px;
+}
+.box {
+	display:none;
+}
+.on {
+	display:block;
+}
+.clr {
+	clear: both;
+	height: 0;
+	font-size: 0;
+}
+.single {
+	width: 650px;
+	border: 1px solid #CCCCCC;
+	background: #fff;
+	margin: 14px 20px 0 0;
+	float: left;
+}
+.single dt {
+	border-bottom: 1px solid #98a0c0;
+	margin: 4px 4px 6px 4px;
+	padding: 0 0 4px 2px;
+	color: #868686;
+}
+.single dd {
+	padding: 4px;
+	margin: 0 0 6px 4px;
+}
+.percentage { vertical-align:middle;  display:inline-block; background: url(percentage-bg.gif) no-repeat; width:160px; height:14px; margin-top: 4px;}
+.percentage b{ display:block; height:14px; background:url(percentage-bg2.gif) no-repeat; }
+.percentage b.red {background:url(percentage-bg3.gif) no-repeat;}
+.percentage b.ora {background:url(percentage-bg4.gif) no-repeat;}
+.percentage2 { vertical-align:middle; position:relative; display:inline-block; background: url(zhutu-bg.gif) no-repeat; width:74px; height:93px; margin-top: 4px;}
+.percentage2-red { vertical-align:middle; position:relative; display:inline-block; background: url(zhutu-bg3.gif) no-repeat; width:74px; height:93px; margin-top: 4px;}
+.percentage2 b,.percentage2-red b{ display:block; height:93px; background:url(zhutu-bg2.gif) no-repeat; }
+.panel-ip {
+	padding: 4px 20px;
+}
+.panel-ip li {
+	width: 180px;
+	list-style: none;
+	float: left;
+	text-align: center;
+}
+.panel-ip li p {
+	margin: 2px 0;
+}
+
+.ippng {
+	background: url(ip.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 4px;
+	margin-right: 2px;
+}
+
+.net {
+	background: url(net.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.domain {
+	background: url(domain.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+.subdomain {
+	background: url(subdomain.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+.network {
+	background: url(network.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}

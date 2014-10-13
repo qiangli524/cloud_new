@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.yicloud.web.healthy.action.HealthyManagerAction -->
+	<bean id="healthyManagerAction" class="com.sitech.basd.yicloud.web.healthy.action.HealthyManagerAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]--> 
+		<property name="healthyManagerService">
+			<ref bean="healthyManagerService" />
+		</property> 
+		<property name="monitorService">
+			<ref bean="monitorService" />
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- 多Xen资源池标识-->
+	<entry key="1ec64db9-8dd2-a5d7-6bcf-17f429ad83bc">domain.type.IT_XEN.m0</entry>
+</properties>

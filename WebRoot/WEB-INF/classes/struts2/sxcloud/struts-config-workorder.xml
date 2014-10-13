@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="workorder"
+			 extends="global_package" namespace="/workorder">
+		<action name="workorder_*"
+				class="workOrderAction" method="{1}">
+			
+			<result name="listWorkOrder">/sxcloud/cloud/workorder/listWorkOrder.jsp</result>
+			<result name="viewDealedWorkOrder">/sxcloud/cloud/workorder/viewDealedWorkOrder.jsp</result>
+			<result name="addw">/sxcloud/cloud/workorder/addWorkOrder.jsp</result>
+			<result name="listpro">/sxcloud/cloud/workorder/listProject.jsp</result>
+			<result name="listBusi">/sxcloud/cloud/workorder/listBusi.jsp</result>
+			
+			<result name="addr">/sxcloud/cloud/workorder/addResource.jsp</result>
+			<result name="addrr">/sxcloud/cloud/workorder/addRecoverResource.jsp</result>
+			<result name="adda">/sxcloud/cloud/workorder/addResourceAdjust.jsp</result>
+			<result name="listTem">/sxcloud/cloud/workorder/listTemMan.jsp</result>
+			<result name="listip">/sxcloud/cloud/workorder/listIP.jsp</result>
+			<result name="listcluster">/sxcloud/cloud/workorder/listCluster.jsp</result>
+			<result name="listhost">/sxcloud/cloud/workorder/listHost.jsp</result>
+			<result name="listEntity">/sxcloud/cloud/workorder/listEntity.jsp</result>
+			<result name="editr">/sxcloud/cloud/workorder/addResource.jsp</result>
+			<result name="editrr">/sxcloud/cloud/workorder/addRecoverResource.jsp</result>
+			<result name="edita">/sxcloud/cloud/workorder/addResourceAdjust.jsp</result>
+			<result name="listResource">/sxcloud/cloud/workorder/listResource.jsp</result>
+			<result name="listWOByResource">/sxcloud/cloud/workorder/listWOByResource.jsp</result>
+			<result name="listWorkOrderForTabs">/sxcloud/cloud/workorder/listWorkOrderForTabs.jsp</result>
+			
+			<result name="resourceDetail">/sxcloud/cloud/workorder/resourceDetail.jsp</result>
+		</action>
+	</package>
+</struts>

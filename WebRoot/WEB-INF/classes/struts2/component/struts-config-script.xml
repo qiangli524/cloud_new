@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="script" extends="global_package">
+		<action name="script_*" class="scriptAction" method="{1}">
+			<result name="list">/component/script/listScriptInfo.jsp</result>
+			<!-- 	进程使用的脚本list页面 ，请在维护上面（listScriptInfo.jsp）的页面的时候一并维护这个页面，因为他们用的是一个action方法-->
+			<result name="listprocess">/component/script/listScriptInfoForProcess.jsp</result>
+			<result name="edit" >/component/script/editScriptInfo.jsp</result>
+			<result name="alert" >/component/script/alert.jsp</result>
+		</action>
+		<action name="scriptgroup_*" class="scriptGroupAction" method="{1}">
+			<result name="list">/component/script/listGroup.jsp</result>
+			<result name="edit" >/component/script/editGroup.jsp</result>
+			<result name="member" >/component/script/selectMember.jsp</result>
+			<result name="listmember" >/component/script/listMember.jsp</result>
+		</action>
+		<!-- 部署管理的相关配置 -->
+		<action name="deployscript_*" class="deployScriptAction" method="{1}">
+			<result name="list">/component/tree/script/listScript.jsp</result>
+			<result name="edit">/component/tree/script/editScript.jsp</result>
+			<result name="execute">/component/tree/script/executeScript.jsp</result>
+			<result name="content">/component/tree/config/configFileInfo.jsp</result>
+		</action>
+ </package>
+
+</struts>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplateSoft">
+
+	<typeAlias alias="_OsTemplateSoft" type="com.sitech.ssd.sc.ostempl.domain.OsTemplateSoft" />
+
+	<sql id="partTableColumns">
+		template_id,soft_type,soft_name,soft_desc
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplateSoft" parameterClass="_OsTemplateSoft">
+		insert into tb_os_template_soft(
+		<include refid="partTableColumns" />
+		)
+		values(#template_id#,#soft_type#,#soft_name#,#soft_desc#)
+	</insert>
+	
+	<insert id="copyOsTemplateSoft" parameterClass="_OsTemplateSoft">
+		insert into tb_os_template_soft(<include refid="partTableColumns" />)
+		select (SELECT id FROM tb_os_template WHERE templ_name = #id#) <include refid="partTableColumns" />
+		from tb_os_template_soft where template_id = #template_id#
+	</insert>	
+
+	<delete id="deleteOsTemplateSoft" parameterClass="_OsTemplateSoft">
+		DELETE FROM tb_os_template_soft
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplateSoft" parameterClass="_OsTemplateSoft">
+		UPDATE tb_os_template_soft 
+		SET template_id = #template_id#,
+		    soft_type = #soft_type#,
+		    soft_name = #soft_name#,
+		    soft_desc = #soft_desc#
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<select id="selectOsTemplateSoftList" parameterClass="_OsTemplateSoft"
+		resultClass="_OsTemplateSoft">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_soft 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="soft_type" prepend="and">
+				soft_type LIKE CONCAT('%',#soft_type#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="soft_name" prepend="and">
+				soft_name LIKE CONCAT('%',#soft_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="soft_desc" prepend="and">
+				soft_desc LIKE CONCAT('%',#soft_desc#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="selectOsTemplateSoft" parameterClass="_OsTemplateSoft"
+		resultClass="_OsTemplateSoft">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_soft
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="soft_type" prepend="and">
+				soft_type = #soft_type# 
+			</isNotEmpty>
+			<isNotEmpty property="soft_name" prepend="and">
+				soft_name = #soft_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="appDeployWorkFlow">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="DisposeManObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.DisposeManObj"/>
+    <typeAlias alias="AppNeedObj" type="com.sitech.basd.sxcloud.workflow.domain.appdeployworkflow.AppNeedObj"/>
+    <typeAlias alias="FlowTaskObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.FlowTaskObj"/> 
+    <typeAlias alias="ProcessInfoObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.ProcessInfoObj"/>
+    <typeAlias alias="FlowRuleObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.FlowRuleObj"/>
+    <typeAlias alias="FlowNodeDescObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.FlowNodeDescObj"/>
+    <typeAlias alias="OrderInfoObj" type="com.sitech.basd.sxcloud.workflow.domain.appdeployworkflow.OrderInfoObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+     
+   <select id="getStartProcessDisposeMan" parameterClass="DisposeManObj" resultClass="DisposeManObj">
+           select PROCESS_ID applicationType,CURR_NODEID currNodeId,NEXT_NODEID nextNodeId,
+           NODE_WORKGROUP_NAME groupName,DISPOSE_MAN userId,TASK_OPERATE oprate 
+           from TB_ASLM_FLOW_NODE_WORKGROUP 
+           where PROCESS_ID=#applicationType# and DISPOSE_MAN=#userId# and CURR_NODEID = 0
+    </select>
+    
+    <!-- 新增申请 -->
+    <insert id="addAppNeedInfo" parameterClass="AppNeedObj">
+
+    	INSERT INTO TB_CLOUD2_APPDEPLOY_NEED(NEED_NUMBERS,NEED_SPONSOR,NEED_CONT,START_DATE,END_DATE,NEED_STATUS,APP_IPMODEL,APP_IP,DEFEND_FLAG ,DEFEND_DIR,APP_SIZE,APPID,APPNAME,VLANIP)
+    	VALUES(#NEED_NUMBERS#,#NEED_SPONSOR#,#NEED_CONT#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(#END_DATE#,'%Y-%m-%d'),#NEED_STATUS#,#APP_IPMODEL#,#APP_IP#,#defendflag#,#DEFEND_DIR#,#APP_SIZE#,#APPID#,#APPNAME#,#VLANIP#)		
+	</insert> 
+	<!-- 删除申请 -->
+	<delete id="deleteAppNeedInfo" parameterClass="java.lang.String">
+		DELETE FROM TB_CLOUD2_APPDEPLOY_NEED WHERE NEED_NUMBERS = #NEED_NUMBERS# 	
+	</delete>  
+	<!-- 删除申请信息中的内容 -->
+	<delete id="deleteAppNeedOrder" parameterClass="java.lang.String">
+		DELETE FROM TB_CLOUD2_APPDEPLOY_APPLYINFO WHERE NEED_NUMBERS = #NEED_NUMBERS# 	
+	</delete> 
+	<!-- 查询申请-->
+	
+	 <sql id="queryAppNeedListSql">
+		SELECT A.ID
+			,A.NEED_NUMBERS
+			,A.NEED_SPONSOR
+			,DATE_FORMAT(A.START_DATE,'%Y-%m-%d') START_DATE
+			,DATE_FORMAT(A.END_DATE,'%Y-%m-%d') END_DATE
+			,A.APP_IP
+			,A.VLANIP
+			,A.NEED_CONT
+			,A.APP_IPMODEL
+			,A.APP_SIZE
+			,A.NEED_STATUS 
+			,A.APPNAME
+			,A.DEFEND_DIR
+			,A.DEFEND_FLAG defendflag
+		FROM TB_CLOUD2_APPDEPLOY_NEED A
+        <dynamic prepend="where">
+               <isNotEmpty property="NEED_NUMBERS" prepend="AND">
+                	A.NEED_NUMBERS = #NEED_NUMBERS#
+               </isNotEmpty>
+               <isNotEmpty property="NEED_SPONSOR" prepend="AND">
+               		A.NEED_SPONSOR = #NEED_SPONSOR#
+               </isNotEmpty>
+                <isGreaterThan property="NEED_STATUS" compareValue="-1" prepend="AND">
+               		A.NEED_STATUS = #NEED_STATUS#
+               </isGreaterThan>
+               <isNotEmpty property="START_DATE" prepend="AND">
+               		A.START_DATE  = DATE_FORMAT(#START_DATE#, '%Y-%m-%d') 
+               </isNotEmpty>
+               <isNotEmpty property="END_DATE" prepend="AND">
+               		A.END_DATE > = DATE_FORMAT(#END_DATE#, '%Y-%m-%d') 
+               </isNotEmpty>                              
+        </dynamic> 
+	</sql>
+	 
+	<select id="queryAppNeedList"  parameterClass="AppNeedObj" resultClass="AppNeedObj">
+			<include refid="queryAppNeedListSql"/>
+			 order by ID asc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	  
+	<select id="queryAppNeedForCount" parameterClass="AppNeedObj" resultClass="int">
+       select count(1) from (
+        <include refid="queryAppNeedListSql"/>
+       ) virtual_table
+    </select>   
+    <!-- 修改申请  -->   
+	<update id="alterAppNeedInfo" parameterClass="AppNeedObj">
+		UPDATE TB_CLOUD2_APPDEPLOY_NEED
+		SET END_DATE = DATE_FORMAT(#END_DATE#,'%Y-%m-%d')
+    		,NEED_STATUS = #NEED_STATUS#,NEED_CONT=#NEED_CONT#,APP_SIZE=#APP_SIZE#,APPID=#APPID#,APPNAME=#APPNAME#
+		WHERE NEED_NUMBERS = #NEED_NUMBERS#
+	</update>
+	<update id="updateByObj" parameterClass="AppNeedObj">
+	    update TB_CLOUD2_APPDEPLOY_NEED set NEED_STATUS=#NEED_STATUS#  where NEED_NUMBERS = #NEED_NUMBERS#
+    </update> 
+    <!-- 新增应用部署信息 -->
+    <insert id ="insertAppInfo" parameterClass="OrderInfoObj">
+  
+    	INSERT INTO TB_CLOUD2_APPDEPLOY_APPLYINFO(NEED_NUMBERS,KV1,KV2,KV3,KV4,KV5,KV6,KV7 ,KV8,KV9,KV10,KV11,KV_NUM,TYPE)
+    	VALUES(#NEED_NUMBERS#,#KV1#,#KV2#,#KV3#,#KV4#,#KV5#,#KV6#,#KV7#,#KV8#,#KV9#,#KV10#,#KV11#,#kvnum#,#TYPE#)
+    </insert>
+    <!-- 修改应用部署信息  -->
+    <update id="updateOrderInfo" parameterClass="OrderInfoObj">
+		UPDATE TB_CLOUD2_APPDEPLOY_APPLYINFO
+		SET KV1 = #KV1#
+    		,KV2 = #KV2#
+    		,KV3 = #KV3#
+    		,KV4 = #KV4#
+    		,KV5 = #KV5#
+    		,KV6 = #KV6#
+    		,KV7 = #KV7#
+    		,KV8 = #KV8#
+    		,KV9 = #KV9#
+    		,KV10 = #KV10#
+    		,KV11 = #KV11#
+    		,KV_NUM = #kvnum#
+    		,TYPE = #TYPE#
+		WHERE NEED_NUMBERS = #NEED_NUMBERS#
+	</update>
+	<!-- 查询应用部署的信息 -->
+		 <sql id="queryAppInfoListSql">
+		SELECT B.ID
+			,B.NEED_NUMBERS
+			,B.KV1,B.KV2,B.KV3,B.KV4,B.KV5,B.KV6,B.KV7,B.KV8,B.KV9,B.KV10,B.KV11,B.KV_NUM,B.TYPE
+		FROM TB_CLOUD2_APPDEPLOY_APPLYINFO B
+        <dynamic prepend="where">
+               <isNotEmpty property="NEED_NUMBERS" prepend="AND">
+                	B.NEED_NUMBERS = #NEED_NUMBERS#
+               </isNotEmpty>    
+        </dynamic>
+        order by B.ID asc
+	</sql>
+	<!-- 同意申请单时将IP插入表中 --> 
+	<update id="updateAppIpInfo" parameterClass="AppNeedObj">
+		UPDATE TB_CLOUD2_APPDEPLOY_NEED
+		SET APP_IP = #APP_IP#,VLANIP=#VLANIP#,APP_IPMODEL=#APP_IPMODEL#
+		WHERE NEED_NUMBERS = #NEED_NUMBERS#
+	</update>
+	<!-- 同意申请单时添加防篡改信息 -->
+	<update id="updateDefend" parameterClass="AppNeedObj">
+		UPDATE TB_CLOUD2_APPDEPLOY_NEED SET  DEFEND_FLAG=#defendflag#,DEFEND_DIR=#DEFEND_DIR#
+		WHERE NEED_NUMBERS = #NEED_NUMBERS#
+	</update>
+	<select id="queryAppInfoList"  parameterClass="OrderInfoObj" resultClass="OrderInfoObj">
+			<include refid="queryAppInfoListSql"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+</sqlMap>

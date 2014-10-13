@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ConnInfo">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="connectionInfo" type="com.sitech.basd.yicloud.domain.xenconn.ConnectionInfo"/>
+	  <insert id="insertConnInfoByObj" parameterClass="connectionInfo">
+	  	insert into TB_XEN_CONN_INFO(
+		ADDRESS,      
+  		USERNAME,       
+  		PASSWORD,        
+  		POOLUUID)
+		values(#ADDRESS#,#USERNAME#,#PASSWORD#,#POOLUUID#)
+	  </insert>
+	  <select id="queryConnInfoByPoolUuid" parameterClass="connectionInfo" resultClass="connectionInfo">
+	  	select 
+		ADDRESS,      
+  		USERNAME,       
+  		PASSWORD,        
+  		POOLUUID 
+	  	from TB_XEN_CONN_INFO
+	  	<dynamic prepend="where">
+			<isNotNull property="POOLUUID" prepend="and">
+				POOLUUID =#POOLUUID#
+			</isNotNull>
+			<isNotNull property="ADDRESS" prepend="and">
+				ADDRESS =#ADDRESS#
+			</isNotNull>
+		</dynamic>
+	  </select>
+
+	<update id="updateConnInfoByObj" parameterClass="connectionInfo">
+		update TB_XEN_CONN_INFO set
+		ADDRESS=#ADDRESS#,USERNAME=#USERNAME#,PASSWORD=#PASSWORD#
+		<dynamic prepend="where">
+			<isNotNull property="POOLUUID" prepend="and">
+				POOLUUID =#POOLUUID#
+		</isNotNull>
+		</dynamic>
+	</update>
+</sqlMap>

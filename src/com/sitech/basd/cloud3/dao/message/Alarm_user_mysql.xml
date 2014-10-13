@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Alarm_user">
+	<typeAlias alias="AlarmUserObj"
+		type="com.sitech.basd.cloud3.domain.message.AlarmUserObj" />
+	 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="TB_CLOUD3_ALARM_USER_ColumnsNoKey">
+	NAME,EMAIL,TELEPHONE
+	</sql>
+	<sql id="TB_CLOUD3_ALARM_USER_Columns">
+		ID ,
+		<include refid="TB_CLOUD3_ALARM_USER_ColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_CLOUD3_ALARM_USER_Columns" />
+		from TB_CLOUD3_ALARM_USER
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				ID=#id#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				NAME like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="email" prepend="and">
+				EMAIL like CONCAT('%',#email#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="telephone" prepend="and">
+				TELEPHONE like CONCAT('%',#telephone#,'%')
+			</isNotEmpty>
+		</dynamic> 
+	</sql>
+	<sql id="queryByObjBaseOrderBy">
+		order by NAME
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj"
+		parameterClass="AlarmUserObj"
+		resultClass="AlarmUserObj"> 
+		<include refid="queryByObjBase" />
+		<include refid="queryByObjBaseOrderBy" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="AlarmUserObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<insert id="insertByObj" parameterClass="AlarmUserObj">
+		INSERT INTO TB_CLOUD3_ALARM_USER(ID,NAME,EMAIL,TELEPHONE) VALUES
+		(#id#,#name#,#email#,#telephone#)
+	</insert>
+	<delete id="deleteByObj" parameterClass="AlarmUserObj">
+	delete from TB_CLOUD3_ALARM_USER  where ID=#id#
+	</delete>
+	<update id="updateByObj" parameterClass="AlarmUserObj">
+	update TB_CLOUD3_ALARM_USER set NAME=#name#,EMAIL=#email#,TELEPHONE=#telephone#
+	where ID=#id#
+	</update>
+</sqlMap>

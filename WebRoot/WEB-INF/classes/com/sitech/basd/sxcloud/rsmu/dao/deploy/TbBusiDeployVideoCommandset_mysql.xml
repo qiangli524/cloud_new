@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiDeployVideoCommandset">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiDeployVideoCommandsetObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.TbBusiDeployVideoCommandsetObj" />
+	<sql id="tableColumnsNoKey">      
+      VIDEOID,COMMAND
+    </sql> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #FIRSTROWNUM#+#PAGESIZE#
+                 ]]>
+	</sql>
+
+    
+    <sql id="queryByObjBase">
+       select a.ID,a.VIDEOID,a.COMMAND
+       from tb_busi_deploy_videocommandset a where 1=1
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                a.ID =#ID#
+               </isGreaterThan>
+               <isGreaterThan property="VIDEOID" compareValue="0" prepend="and">
+                a.VIDEOID =#VIDEOID#
+               </isGreaterThan>
+               <isNotEmpty property="COMMAND" prepend="and">
+                a.COMMAND =#COMMAND#
+               </isNotEmpty> 
+    </sql>
+    <select id="queryForListByObj" parameterClass="TbBusiDeployVideoCommandsetObj" resultClass="TbBusiDeployVideoCommandsetObj">
+        <include refid="queryByObjBase"/>
+        order by a.ID desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    <select id="queryByObjForCount" parameterClass="TbBusiDeployVideoCommandsetObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiDeployVideoCommandsetObj">
+      delete from tb_busi_deploy_videocommandset where 1=1
+      <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isGreaterThan property="VIDEOID" compareValue="0" prepend="and">
+                VIDEOID =#VIDEOID#
+               </isGreaterThan>
+    </delete>
+    <insert id="insertByObj" parameterClass="TbBusiDeployVideoCommandsetObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT id_busi_deploy_videocommandset.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+      insert into tb_busi_deploy_videocommandset(
+      ID,VIDEOID,COMMAND
+      )
+      values(#ID#,#VIDEOID#,#COMMAND#)
+    </insert>
+    <update id="updateByObj" parameterClass="TbBusiDeployVideoCommandsetObj">
+      update tb_busi_deploy_videocommandset set VIDEOID=#VIDEOID#,COMMAND=#COMMAND#
+      where ID=#ID#
+    </update>
+    
+    <select id="queryForCommandListByVideoid" parameterClass="TbBusiDeployVideoCommandsetObj" resultClass="TbBusiDeployVideoCommandsetObj">
+        
+        <include refid="queryByObjBase"/>
+        
+    </select>
+</sqlMap>

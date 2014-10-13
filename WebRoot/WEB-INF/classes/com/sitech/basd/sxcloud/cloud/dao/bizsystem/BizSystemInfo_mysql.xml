@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BizSystemInfo">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="BizSystemObj" type="com.sitech.basd.sxcloud.cloud.domain.bizsystem.BizSystemObj"/>
+    <typeAlias alias="DomainObj" type="com.sitech.basd.sxcloud.cloud.domain.bizsystem.DomainObj"/>
+    
+  
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+ 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	 <sql id="queryByObjBase">
+	         select SYS_ID,
+       SYS_NAME,
+       REGION_ID,
+       SYS_DESC,
+       STATU,
+       DATE_FORMAT(INSERT_DATE,'%Y-%m-%d %H:%i:%s') INSERT_DATE,
+       DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d %H:%i:%s') UPDATE_DATE
+  		from TB_CLOUD2_BIZSYS_INFO
+	         <dynamic prepend="where">
+	      	 <isNotEmpty property="SYS_ID" prepend="and">
+                SYS_ID =#SYS_ID#
+               </isNotEmpty>
+                <isNotEmpty property="SYS_NAME" prepend="and">
+                SYS_NAME like CONCAT('%',#SYS_NAME#,'%')
+               </isNotEmpty>
+	      </dynamic>
+	  </sql>
+	   <select id="queryForListByObj" parameterClass="BizSystemObj" resultClass="BizSystemObj">
+	        <include refid="queryByObjBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="BizSystemObj" resultClass="int">
+	       select count(SYS_ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <insert id="insertByObj" parameterClass="BizSystemObj">
+	  		insert into TB_CLOUD2_BIZSYS_INFO(
+	  		SYS_ID,SYS_NAME,REGION_ID,SYS_DESC,STATU,INSERT_DATE
+	  		)
+	  		values(#SYS_ID#,#SYS_NAME#,#REGION_ID#,#SYS_DESC#,#STATU#,SYSDATE())
+	  </insert>
+	  <select id="queryForListByDomainObj" parameterClass="DomainObj" resultClass="DomainObj">
+	      select REGION_ID,REGION_NAME from TB_CLOUD2_DOMAIN_INFO
+	  </select>
+	  
+	 
+	  <update id="updateByObj" parameterClass="BizSystemObj">
+	    update TB_CLOUD2_BIZSYS_INFO set SYS_NAME=#SYS_NAME#,REGION_ID=#REGION_ID#,SYS_DESC=#SYS_DESC#,STATU=#STATU#,UPDATE_DATE=SYSDATE()
+	    where SYS_ID=#SYS_ID#
+	  </update>
+	  
+	  <delete id="deleteByObj" parameterClass="BizSystemObj">
+	    delete from TB_CLOUD2_BIZSYS_INFO where SYS_ID=#SYS_ID#
+	  </delete>
+	  
+	  <select id="busiSystemInfo" parameterClass="BizSystemObj" resultClass="BizSystemObj">
+				SELECT
+					a.sys_id,
+					a.sys_name,
+					a.statu,
+					a.sys_desc,
+					a.countApp,
+					count(c.id) countDeploy
+				FROM (select d.*, count(b.id) as countApp  from 
+					TB_CLOUD2_BIZSYS_INFO d LEFT JOIN TB_SYS_APP b ON d.sys_id = b.sys_id
+				group by d.SYS_ID )a
+				LEFT JOIN TB_BUSI_DEPLOY_EXAMPLE c ON a.sys_id = c.sys_id
+                <isNotNull property="SYS_NAME" prepend="where">
+		  			a.SYS_NAME like CONCAT('%',#SYS_NAME#,'%')
+		  		</isNotNull>
+		  		 group by a.sys_id
+                <!-- 
+   		select t.sys_id,t.sys_name,t.statu,t.sys_desc,t.countApp,count(c.id) countDeploy
+  			from (select a.sys_id,a.sys_name,a.statu,a.sys_desc, count(b.id) countApp
+          		from TB_CLOUD2_BIZSYS_INFO a
+          		left join TB_SYS_APP b on a.sys_id = b.sys_id
+         			group by a.sys_id,a.sys_name,a.statu,a.sys_desc) t
+  			left join TB_BUSI_DEPLOY_EXAMPLE c on t.sys_id = c.sys_id
+  		<isNotNull property="SYS_NAME" prepend="where">
+  			t.SYS_NAME like CONCAT('%',#SYS_NAME#,'%')
+  		</isNotNull>
+ 		group by t.sys_id,t.countApp,t.sys_name,t.statu,t.sys_desc
+ 		 -->
+	  </select>
+	 
+</sqlMap>

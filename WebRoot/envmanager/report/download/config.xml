@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="GBK"?>
+<docformat>
+	<sheet id="1" name="开发环境使用情况">
+		<linetext id="1" pid="0" name="系统域" scol="0" srow="0" ecol="0" erow="2" merge="true"/>
+		<linetext id="2" pid="0" name="资源域" scol="1" srow="0" ecol="1" erow="2" merge="true"/>
+		<linetext id="3" pid="0" name="分类" scol="2" srow="0" ecol="2" erow="2" merge="true"/>
+		<linetext id="4" pid="0" name="主机类型" scol="3" srow="0" ecol="3" erow="2" merge="true"/>
+		<linetext id="5" pid="0" name="型号" scol="4" srow="0" ecol="4" erow="2" merge="true"/>
+		<linetext id="6" pid="0" name="配置" scol="5" srow="0" ecol="5" erow="2" merge="true"/>
+		<linetext id="7" pid="0" name="操作系统" scol="6" srow="0" ecol="6" erow="2" merge="true"/>
+		<linetext id="8" pid="0" name="主机名" scol="7" srow="0" ecol="7" erow="2" merge="true"/>
+		<linetext id="9" pid="0" name="IP地址" scol="8" srow="0" ecol="8" erow="2" merge="true"/>
+		<linetext id="10" pid="0" name="使用产品线" scol="9" srow="0" ecol="9" erow="2" merge="true"/>
+		<linetext id="11" pid="0" name="研发产品" scol="10" srow="0" ecol="10" erow="2" merge="true"/>
+		<linetext id="12" pid="0" name="申请资源情况" scol="11" srow="0" ecol="14" erow="0" merge="true"/>
+		<linetext id="13" pid="0" name="使用情况" scol="15" srow="0" ecol="22" erow="0" merge="true"/>
+		<linetext id="14" pid="0" name="剩余资源情况" scol="23" srow="0" ecol="25" erow="1" merge="true"/>
+		<linetext id="15" pid="12" name="数据库" scol="11" srow="1" ecol="12" erow="1" merge="true"/>
+		<linetext id="16" pid="12" name="应用" scol="13" srow="1" ecol="14" erow="1" merge="true"/>
+		<linetext id="17" pid="13" name="应用" scol="15" srow="1" ecol="18" erow="1" merge="true"/>
+		<linetext id="18" pid="13" name="数据库" scol="19" srow="1" ecol="22" erow="1" merge="true"/>
+		<linetext id="19" pid="15" name="实例" col="11" row="2" merge="false"/>
+		<linetext id="20" pid="15" name="表空间（G）" col="12" row="2" merge="false"/>
+		<linetext id="21" pid="16" name="文件系统" col="13" row="2" merge="false"/>
+		<linetext id="22" pid="16" name="文件系统大小（G）" col="14" row="2" merge="false"/>
+		<linetext id="23" pid="17" name="CPU" col="15" row="2" merge="false"/>
+		<linetext id="24" pid="17" name="内存（M）" col="16" row="2" merge="false"/>
+		<linetext id="25" pid="17" name="文件系统（G）" col="17" row="2" merge="false"/>
+		<linetext id="26" pid="17" name="文件系统使用率" col="18" row="2" merge="false"/>
+		<linetext id="27" pid="18" name="实例" col="19" row="2" merge="false"/>
+		<linetext id="28" pid="18" name="表空间（G）" col="20" row="2" merge="false"/>
+		<linetext id="29" pid="18" name="表空间使用率" col="21" row="2" merge="false"/>
+		<linetext id="30" pid="18" name="内存（G）" col="22" row="2" merge="false"/>
+		<linetext id="31" pid="14" name="CPU" col="23" row="2" merge="false"/>
+		<linetext id="32" pid="14" name="内存（M）" col="24" row="2" merge="false"/>
+		<linetext id="33" pid="14" name="存储（G）" col="25" row="2" merge="false"/>
+	</sheet>
+	<sheet id="2" name="测试环境使用情况">
+		<linetext id="1" pid="0" name="系统域" scol="0" srow="0" ecol="0" erow="2" merge="true"/>
+		<linetext id="2" pid="0" name="资源域" scol="1" srow="0" ecol="1" erow="2" merge="true"/>
+		<linetext id="3" pid="0" name="分类" scol="2" srow="0" ecol="2" erow="2" merge="true"/>
+		<linetext id="4" pid="0" name="主机类型" scol="3" srow="0" ecol="3" erow="2" merge="true"/>
+		<linetext id="5" pid="0" name="型号" scol="4" srow="0" ecol="4" erow="2" merge="true"/>
+		<linetext id="6" pid="0" name="配置" scol="5" srow="0" ecol="5" erow="2" merge="true"/>
+		<linetext id="7" pid="0" name="操作系统" scol="6" srow="0" ecol="6" erow="2" merge="true"/>
+		<linetext id="8" pid="0" name="主机名" scol="7" srow="0" ecol="7" erow="2" merge="true"/>
+		<linetext id="9" pid="0" name="IP地址" scol="8" srow="0" ecol="8" erow="2" merge="true"/>
+		<linetext id="10" pid="0" name="使用产品线" scol="9" srow="0" ecol="9" erow="2" merge="true"/>
+		<linetext id="11" pid="0" name="研发产品" scol="10" srow="0" ecol="10" erow="2" merge="true"/>
+		<linetext id="12" pid="0" name="申请资源情况" scol="11" srow="0" ecol="14" erow="0" merge="true"/>
+		<linetext id="13" pid="0" name="使用情况" scol="15" srow="0" ecol="22" erow="0" merge="true"/>
+		<linetext id="14" pid="0" name="剩余资源情况" scol="23" srow="0" ecol="25" erow="1" merge="true"/>
+		<linetext id="15" pid="12" name="数据库" scol="11" srow="1" ecol="12" erow="1" merge="true"/>
+		<linetext id="16" pid="12" name="应用" scol="13" srow="1" ecol="14" erow="1" merge="true"/>
+		<linetext id="17" pid="13" name="应用" scol="15" srow="1" ecol="18" erow="1" merge="true"/>
+		<linetext id="18" pid="13" name="数据库" scol="19" srow="1" ecol="22" erow="1" merge="true"/>
+		<linetext id="19" pid="15" name="实例" col="11" row="2" merge="false"/>
+		<linetext id="20" pid="15" name="表空间（G）" col="12" row="2" merge="false"/>
+		<linetext id="21" pid="16" name="文件系统" col="13" row="2" merge="false"/>
+		<linetext id="22" pid="16" name="文件系统大小（G）" col="14" row="2" merge="false"/>
+		<linetext id="23" pid="17" name="CPU" col="15" row="2" merge="false"/>
+		<linetext id="24" pid="17" name="内存（M）" col="16" row="2" merge="false"/>
+		<linetext id="25" pid="17" name="文件系统（G）" col="17" row="2" merge="false"/>
+		<linetext id="26" pid="17" name="文件系统使用率" col="18" row="2" merge="false"/>
+		<linetext id="27" pid="18" name="实例" col="19" row="2" merge="false"/>
+		<linetext id="28" pid="18" name="表空间（G）" col="20" row="2" merge="false"/>
+		<linetext id="29" pid="18" name="表空间使用率" col="21" row="2" merge="false"/>
+		<linetext id="30" pid="18" name="内存（G）" col="22" row="2" merge="false"/>
+		<linetext id="31" pid="14" name="CPU" col="23" row="2" merge="false"/>
+		<linetext id="32" pid="14" name="内存（M）" col="24" row="2" merge="false"/>
+		<linetext id="33" pid="14" name="存储（G）" col="25" row="2" merge="false"/>
+	</sheet>
+	<sheet id="3" name="演示环境使用情况">
+		<linetext id="1" pid="0" name="系统域" scol="0" srow="0" ecol="0" erow="2" merge="true"/>
+		<linetext id="2" pid="0" name="资源域" scol="1" srow="0" ecol="1" erow="2" merge="true"/>
+		<linetext id="3" pid="0" name="分类" scol="2" srow="0" ecol="2" erow="2" merge="true"/>
+		<linetext id="4" pid="0" name="主机类型" scol="3" srow="0" ecol="3" erow="2" merge="true"/>
+		<linetext id="5" pid="0" name="型号" scol="4" srow="0" ecol="4" erow="2" merge="true"/>
+		<linetext id="6" pid="0" name="配置" scol="5" srow="0" ecol="5" erow="2" merge="true"/>
+		<linetext id="7" pid="0" name="操作系统" scol="6" srow="0" ecol="6" erow="2" merge="true"/>
+		<linetext id="8" pid="0" name="主机名" scol="7" srow="0" ecol="7" erow="2" merge="true"/>
+		<linetext id="9" pid="0" name="IP地址" scol="8" srow="0" ecol="8" erow="2" merge="true"/>
+		<linetext id="10" pid="0" name="使用产品线" scol="9" srow="0" ecol="9" erow="2" merge="true"/>
+		<linetext id="11" pid="0" name="研发产品" scol="10" srow="0" ecol="10" erow="2" merge="true"/>
+		<linetext id="12" pid="0" name="申请资源情况" scol="11" srow="0" ecol="14" erow="0" merge="true"/>
+		<linetext id="13" pid="0" name="使用情况" scol="15" srow="0" ecol="22" erow="0" merge="true"/>
+		<linetext id="14" pid="0" name="剩余资源情况" scol="23" srow="0" ecol="25" erow="1" merge="true"/>
+		<linetext id="15" pid="12" name="数据库" scol="11" srow="1" ecol="12" erow="1" merge="true"/>
+		<linetext id="16" pid="12" name="应用" scol="13" srow="1" ecol="14" erow="1" merge="true"/>
+		<linetext id="17" pid="13" name="应用" scol="15" srow="1" ecol="18" erow="1" merge="true"/>
+		<linetext id="18" pid="13" name="数据库" scol="19" srow="1" ecol="22" erow="1" merge="true"/>
+		<linetext id="19" pid="15" name="实例" col="11" row="2" merge="false"/>
+		<linetext id="20" pid="15" name="表空间（G）" col="12" row="2" merge="false"/>
+		<linetext id="21" pid="16" name="文件系统" col="13" row="2" merge="false"/>
+		<linetext id="22" pid="16" name="文件系统大小（G）" col="14" row="2" merge="false"/>
+		<linetext id="23" pid="17" name="CPU" col="15" row="2" merge="false"/>
+		<linetext id="24" pid="17" name="内存（M）" col="16" row="2" merge="false"/>
+		<linetext id="25" pid="17" name="文件系统（G）" col="17" row="2" merge="false"/>
+		<linetext id="26" pid="17" name="文件系统使用率" col="18" row="2" merge="false"/>
+		<linetext id="27" pid="18" name="实例" col="19" row="2" merge="false"/>
+		<linetext id="28" pid="18" name="表空间（G）" col="20" row="2" merge="false"/>
+		<linetext id="29" pid="18" name="表空间使用率" col="21" row="2" merge="false"/>
+		<linetext id="30" pid="18" name="内存（G）" col="22" row="2" merge="false"/>
+		<linetext id="31" pid="14" name="CPU" col="23" row="2" merge="false"/>
+		<linetext id="32" pid="14" name="内存（M）" col="24" row="2" merge="false"/>
+		<linetext id="33" pid="14" name="存储（G）" col="25" row="2" merge="false"/>
+	</sheet>
+	<sheet id="4" name="简明汇总">
+		<linetext id="1" pid="0" name="存储汇总报表" scol="0" srow="0" ecol="5" erow="0" merge="true"/>
+		<linetext id="2" pid="0" name="使用产品线" col="0" row="1" merge="false"/>
+		<linetext id="3" pid="0" name="域" col="1" row="1" merge="false"/>
+		<linetext id="4" pid="0" name="申请存储汇总(G)" col="2" row="1" merge="false"/>
+		<linetext id="5" pid="0" name="存储使用汇总(G)" col="3" row="1" merge="false"/>
+		<linetext id="6" pid="0" name="存储使用率(%)" col="4" row="1" merge="false"/>
+		<linetext id="7" pid="0" name="内存使用汇总(G)" col="5" row="1" merge="false"/>
+	</sheet>
+</docformat>

@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="XenStore">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="XenStoreObj"
+		type="com.sitech.basd.yicloud.domain.xenstore.XenStoreObj" />
+	<typeAlias alias="cmsObj" type="com.sitech.basd.resource.domain.united.CMSObj"/>
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="TB_XEN_STORAGE_INFOColumnsNoKey">
+		STORE_UUID,NAME,SR_URL,SR_SIZE,TYPE,DEPENDENT_HOST_UUID,SR_DESC,STATE,SHARED,FREE_SIZE,USE_PER,DEVICE_ID
+	</sql>
+	<sql id="TB_XEN_STORAGE_INFOColumns">
+		<include refid="TB_XEN_STORAGE_INFOColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		a.STORE_UUID,a.NAME,a.SR_URL,a.SR_SIZE,a.TYPE,a.DEPENDENT_HOST_UUID,a.SR_DESC,STATE,a.SHARED,a.FREE_SIZE,a.USE_PER,b.NAME deviceName,b.TYPE deviceType
+		from TB_STORE_DEVICE b
+		right JOIN(
+			select
+		<include refid="TB_XEN_STORAGE_INFOColumns" />
+		from TB_XEN_STORAGE_INFO
+		<dynamic prepend="where">
+			<isNotEqual property="id" prepend="and" compareValue="0">
+				ID = #id#
+			</isNotEqual>
+			<isNotNull property="store_uuid" prepend="and">
+				STORE_UUID = #store_uuid#
+			</isNotNull>
+			<isNotNull property="dependent_host_uuid" prepend="and">
+				DEPENDENT_HOST_UUID =#dependent_host_uuid#
+			</isNotNull>
+			<isNotNull property="name" prepend="and">
+				NAME like '%'||#name#||'%'
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE = #type#
+			</isNotNull>
+			<isNotNull prepend="and" property="state">
+				STATE = #state#
+			</isNotNull>
+			<isNotNull property="connect_id" prepend="and">
+				CONNECT_ID = #connect_id#
+			</isNotNull>
+		</dynamic>
+		)a ON a.DEVICE_ID=b.ID
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj" parameterClass="XenStoreObj"
+		resultClass="XenStoreObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="XenStoreObj"
+		resultClass="int">
+		select count(STORE_UUID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	
+	<!-- 向TB_XEN_STORAGE_INFO表插入信息 -->
+	<insert id="insertDatastore" parameterClass="XenStoreObj">
+		insert into TB_XEN_STORAGE_INFO
+		(ID,STORE_UUID,NAME,SR_URL,SR_SIZE,TYPE,DEPENDENT_HOST_UUID,SR_DESC,STATE,SHARED,FREE_SIZE,PURCHASE_SPACE,USE_PER,CONNECT_ID)
+		values
+		(#id#,#store_uuid#,#name#,#sr_url#,#sr_size#,#type#,#dependent_host_uuid#,#sr_desc#,#state#,#shared#,#free_size#,#purchase_space#,#use_per#,#connect_id#)
+	</insert>
+	<!-- 更新TB_XEN_STORAGE_INFO表信息 -->
+	<update id="updateByObj" parameterClass="XenStoreObj">
+		update TB_XEN_STORAGE_INFO set STATE=#state#,NAME=#name# where STORE_UUID=#store_uuid#
+	</update>
+	<!-- 删除TB_XEN_STORAGE_INFO表信息 -->
+	<delete id="deleteByObj" parameterClass="XenStoreObj">
+		delete from TB_XEN_STORAGE_INFO
+		<dynamic prepend="where">
+			<isNotNull property="store_uuid" prepend="and">
+				STORE_UUID=#store_uuid#
+			</isNotNull>
+			<isGreaterThan property="id" compareValue="0" prepend="and">
+				ID = #id#
+			</isGreaterThan>
+			<isNotNull property="connect_id" prepend="and">
+				CONNECT_ID=#store_uuid#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	
+	<update id="updateXenStoreMess" parameterClass="XenStoreObj">
+		update TB_XEN_STORAGE_INFO 
+		set NAME=#name#,SR_URL=#sr_url#,SR_SIZE=#sr_size#,STATE=#state#,SHARED=#shared#,
+			FREE_SIZE=#free_size#,PURCHASE_SPACE=#purchase_space#,USE_PER=#use_per#
+		where STORE_UUID=#store_uuid#
+	</update>
+	
+	<delete id="deleteStoreRelation" parameterClass="XenStoreObj">
+		delete from TB_XEN_STORAGE_INFO where STORE_UUID=#store_uuid# and DEPENDENT_HOST_UUID=#dependent_host_uuid#
+	</delete>
+	<select id="queryForStoreList" parameterClass="XenStoreObj"
+		resultClass="XenStoreObj">
+		<include refid="queryByObjBase" />
+	</select>
+	<!-- 查询存储关联的主机数 -->
+	<select id="queryForCountByObj" parameterClass="XenStoreObj"
+		resultClass="int">
+		select count(DEPENDENT_HOST_UUID) from TB_XEN_STORAGE_INFO
+		  where STORE_UUID = #store_uuid#
+	</select>
+	
+	<select id="queryByObj" parameterClass="XenStoreObj" resultClass="XenStoreObj">
+    	select distinct store_uuid,sr_size,free_size from tb_xen_storage_info
+    </select>
+	
+	<select id="queryNoRepeatListByObj" parameterClass="XenStoreObj" resultClass="XenStoreObj">
+    	select distinct STORE_UUID,NAME,SR_URL,SR_SIZE,TYPE,SR_DESC,STATE,SHARED,FREE_SIZE,USE_PER 
+    	from tb_xen_storage_info
+    	<dynamic prepend="where">
+			<isNotEqual property="id" prepend="and" compareValue="0">
+				ID = #id#
+			</isNotEqual>
+			<isNotNull property="store_uuid" prepend="and">
+				STORE_UUID = #store_uuid#
+			</isNotNull>
+			<isNotNull property="dependent_host_uuid" prepend="and">
+				DEPENDENT_HOST_UUID =#dependent_host_uuid#
+			</isNotNull>
+			<isNotNull property="name" prepend="and">
+				NAME like '%'||#name#||'%'
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE = #type#
+			</isNotNull>
+			<isNotNull prepend="and" property="state">
+				STATE = #state#
+			</isNotNull>
+			<isNotNull property="connect_id" prepend="and">
+				CONNECT_ID = #connect_id#
+			</isNotNull>
+		</dynamic>
+    </select>
+    
+    <select id="countResource" parameterClass="XenStoreObj" resultClass="cmsObj">
+    	<!-- SELECT
+			SUM(a.SR_SIZE) allsr,
+			SUM(a.FREE_SIZE) usedsr
+		FROM
+			(
+				SELECT DISTINCT
+					STORE_UUID,
+					SR_SIZE,
+					FREE_SIZE
+				FROM
+					tb_xen_storage_info
+				where DEPENDENT_HOST_UUID in
+				<iterate close=")" conjunction="," open="(" property="hostidlist">
+					#hostidlist[]#
+				</iterate>	
+			) a -->
+		SELECT
+			SUM(a.SR_SIZE) allsr,
+			SUM(a.FREE_SIZE) usedsr,
+			SUM(a.purchase_Space) allosr
+		FROM
+			(
+				SELECT DISTINCT
+					b.STORE_UUID,
+					b.SR_SIZE,
+					b.FREE_SIZE,
+					b.purchase_Space
+				FROM
+					tb_xen_storage_info b
+					inner join tb_store_device c
+					on b.device_id = c.id
+					where c.type
+					<![CDATA[
+						<> 0
+					]]>
+				and b.DEPENDENT_HOST_UUID in
+				<iterate close=")" conjunction="," open="(" property="hostidlist">
+					#hostidlist[]#
+				</iterate>	
+				<dynamic>
+					<isNotEmpty prepend="and" property="connect_id">
+						b.connect_id = #connect_id#
+					</isNotEmpty>
+				</dynamic>
+			) a
+    </select>
+    
+    <update id="relevanceDataStore" parameterClass="XenStoreObj">
+		update TB_XEN_STORAGE_INFO 
+		set DEVICE_ID=#deviceId#
+		where STORE_UUID = #store_uuid#
+	</update>
+</sqlMap>

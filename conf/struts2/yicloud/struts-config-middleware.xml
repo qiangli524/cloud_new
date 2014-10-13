@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="middleware" extends="global_package">
+		<action name="middleware_*" 
+		        class="middlewareAction" method="{1}">
+		    <param	name="savePath">/software</param>
+		    <result name="addMiddleware">/yicloud/middleware/addMiddleware.jsp</result>
+			<result name="listMiddlewareInfo">/yicloud/middleware/listMiddlewareInfo.jsp</result>
+			<result name="saveMiddleware" type="redirect">middleware_listMiddlewareInfo.do</result>
+			<result name="modMiddleware">/yicloud/middleware/updateMiddleware.jsp</result>
+			<result name="delMiddleware" type="redirect">middleware_listMiddlewareInfo.do</result>
+		</action>
+ </package>
+
+</struts>

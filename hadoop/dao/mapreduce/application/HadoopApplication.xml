@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopApplication">
+	<typeAlias alias="HadoopApplicationObj" type="domain.mapreduce.application.HadoopApplicationObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryApplicationListByObjBase">
+	SELECT
+		t.id,
+		t.user user,
+		t.name name,
+		t.queue,
+		to_char(t.start_time,'yyyy-mm-dd hh24:mi:ss') start_time,
+		to_char(t.finish_time,'yyyy-mm-dd hh24:mi:ss') finish_time,
+		t.state,
+		t.final_status,
+		t.progress,
+		t.tacking_ui,
+		t.cluster_id,
+		t.host_id
+	FROM
+		tb_hadoop_application t
+	LEFT JOIN tb_hadoop_cluster_info b ON  t.cluster_id = b.ID
+	<dynamic prepend="WHERE">
+		<isNotNull property="name">
+			<isNotEmpty property="name">
+				t.name LIKE CONCAT('%',#name#,'%')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="queue" prepend="and">
+			<isNotEmpty property="queue">
+					t.queue = #queue#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="state" prepend="and">
+				<isNotEmpty property="state">
+					t.state = #state#
+				</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="final_status" prepend="and">
+				<isNotEmpty property="final_status">
+					t.final_status = #final_status#
+				</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="progress" prepend="and">
+				<isNotEmpty property="progress">
+					t.progress = #progress#
+				</isNotEmpty>
+		</isNotNull>
+	</dynamic>
+	ORDER BY t.name
+	</sql>
+	<select id="queryApplicationListByObjCount" parameterClass="HadoopApplicationObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryApplicationListByObjBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 查询应用列表 -->
+	<select id="queryApplicationListByObj" parameterClass="HadoopApplicationObj" resultClass="HadoopApplicationObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	    </isGreaterThan>
+		<include refid ="queryApplicationListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+</sqlMap>

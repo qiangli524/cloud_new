@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="vmManagerAction" class="com.sitech.basd.yicloud.web.vmman.action.VMManagerAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="vmManagerService">
+			<ref bean="vmManagerService" />
+		</property>
+		<property name="imageService">
+			<ref bean="imageService" />
+		</property>
+		<property name="ipService">
+			<ref bean="ipService" />
+		</property>
+		<property name="netService">
+			<ref bean="netService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="vmman" extends="global_package">
+		<action name="vmvm_*"
+				class="vmManagerAction" method="{1}">
+			<result name="list">/yicloud/vmman/listServerTree.jsp</result>
+			<result name="listimg">/yicloud/vmman/listImageTree.jsp</result>	
+			<result name="add_host">/yicloud/vmman/addHost.jsp</result>
+			<result name="save_host" type="redirect">yvm_addHost.do?ID=${ID}</result>
+			<result name="lookupimg">/yicloud/vmman/listImageInfo.jsp</result>
+			<result name="checkkvm">/yicloud/vmman/listVirtualInfo.jsp</result>
+			<result name="listmac">/yicloud/vmman/listDevice.jsp</result>
+			<result name="listhealth">/yicloud/vmman/listHealthState.jsp</result>
+			<result name="vmtabs">/yicloud/vmman/vmtabs.jsp</result>
+			<result name="success">/ajax/ajax.jsp</result>
+			<result name="add_cluster">/yicloud/vmman/addCluster.jsp</result>
+			<result name="save_cluster">/yicloud/vmman/addCluster.jsp</result>
+			<result name="dataCenterInfo">/yicloud/vmman/dataCenterInfo.jsp</result>
+			<result name="dataCenterVM">/yicloud/vmman/dataCenterVM.jsp</result>
+			<result name="dataCenterHost">/yicloud/vmman/dataCenterHost.jsp</result>
+			<result name="clusterInfo">/yicloud/vmman/clusterInfo.jsp</result>
+			<result name="hostInfo">/yicloud/vmman/hostInfo.jsp</result>
+			<result name="vmInfo">/yicloud/vmman/vmInfo.jsp</result>
+			<result name="clusterResource">/yicloud/vmman/clusterResource.jsp</result>
+		</action>
+ </package>
+
+</struts>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="staticRouter">
+	<typeAlias alias="StaticRouterObj" type="com.sitech.basd.resource.domain.switchBoard.StaticRouterObj"/>
+	 
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForListBase">
+	SELECT a.id,a.source_ip,a.subnet_mask,a.ip,a.switch_id
+	FROM tb_resource_static_router a
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				a.id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="source_ip" prepend="and">
+				a.source_ip like CONCAT('%',#source_ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="subnet_mask" prepend="and">
+				a.subnet_mask like CONCAT('%',#subnet_mask#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+				a.ip like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="switch_id" prepend="and">
+				a.switch_id= #switch_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForList" parameterClass="StaticRouterObj" resultClass="StaticRouterObj">
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForListCount" parameterClass="StaticRouterObj" resultClass="int">
+		select count(*)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 <insert id="insertByObj" parameterClass="StaticRouterObj">
+	 	insert into tb_resource_static_router
+        (id,source_ip,subnet_mask,ip,switch_id) 
+		values(#id#,#source_ip#,#subnet_mask#,#ip#,#switch_id#)
+	 </insert>
+	 <update id="updateByObj" parameterClass="StaticRouterObj">
+	 	UPDATE tb_resource_static_router 
+	 	<dynamic prepend="set">
+			<isNotEmpty property="source_ip" prepend=",">
+				source_ip = #source_ip#
+			</isNotEmpty>
+			<isNotEmpty property="subnet_mask" prepend=",">
+				subnet_mask = #subnet_mask#
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend=",">
+				ip  = #ip#
+			</isNotEmpty>
+	 	</dynamic>
+        where id=#id#
+	 </update>
+	 <delete id="deleteByObj" parameterClass="StaticRouterObj">
+	 	delete from tb_resource_static_router where id = #id#
+	 </delete>
+</sqlMap>

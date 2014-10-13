@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="chartsAction" class="com.sitech.basd.cloud3.web.charts.action.HighChartsAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="reportVirtualService">
+			<ref bean="reportVirtualService" />
+		</property>
+		<property name="reportHostService">
+			<ref bean="reportHostService" />
+		</property>
+		<property name="xenClusterService">
+			<ref bean="xenClusterService" />
+		</property>
+		<property name="showResourceService">
+			<ref bean="showResourceService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

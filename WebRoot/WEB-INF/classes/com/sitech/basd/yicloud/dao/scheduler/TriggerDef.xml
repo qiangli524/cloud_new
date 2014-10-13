@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Trigger">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="DefinitionObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.DefinitionObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryListBase">
+		select a.trigger_id,
+       a.name,
+       a.tigger_level "level",
+       a.type,
+       a.tigger_n,
+       a.trigger_m,
+       a.interval,
+      a.description,
+       a.kpi_id,
+       a.operator,
+       a.threshold,
+      a.min,
+       a.max,
+       b.kpi_desc kpi_name,
+       to_char(ins_date, 'yyyy-mm-dd hh24:mi:ss') ins_date
+  from TB_SCHEDULER_TRIGGER_DEF a,TB_KPI_WEIGHT b
+  where a.kpi_id = b.kpi_id
+  	<isNotNull prepend="and" property="trigger_id">
+  		a.trigger_id = #trigger_id#
+  	</isNotNull>
+  	<isNotNull prepend="and" property="type">
+  		a.type = #type#
+  	</isNotNull>
+  	<isNotNull prepend="and" property="level">
+  		a.tigger_level = #level#
+  	</isNotNull>
+  	<isNotNull prepend="and" property="name">
+  		a.name like '%'||#name#||'%'
+  	</isNotNull>
+  	order by ins_date desc
+	</sql>
+	<select id="queryForList" parameterClass="DefinitionObj" resultClass="DefinitionObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		
+		<include refid="queryListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForCount" parameterClass="DefinitionObj" resultClass="int">
+		select count(trigger_id)  from (
+		<include refid="queryListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 
+	 <insert id="insertTriggerDefinition" parameterClass="DefinitionObj">
+		<selectKey resultClass="java.lang.String" keyProperty="trigger_id" >
+	  		select ID_TRIGGER_DEFINITION.nextval as trigger_id from dual
+	  	</selectKey>
+		insert into TB_SCHEDULER_TRIGGER_DEF(
+			trigger_id,name,tigger_level,type,tigger_n,trigger_m,interval,description,kpi_id,operator,threshold,min,max,ins_date	
+		)values(#trigger_id#,#name#,#level#,#type#,#tigger_n#,#trigger_m#,#interval#,#description#,#kpi_id#,#operator#,#threshold#,#min#,#max#,sysdate)
+	</insert>
+	<delete id="delTriggerDefinition" parameterClass="DefinitionObj">
+		delete from TB_SCHEDULER_TRIGGER_DEF where trigger_id = #trigger_id#
+	</delete>
+	<update id="updateTriggerDefinition" parameterClass="DefinitionObj">
+		update TB_SCHEDULER_TRIGGER_DEF set name=#name#,tigger_level=#level#,type=#type#,tigger_n=#tigger_n#,trigger_m=#trigger_m#,interval=#interval#,description=#description#,
+		kpi_id=#kpi_id#,operator=#operator#,threshold=#threshold#,min=#min#,max=#max# where trigger_id=#trigger_id#
+	</update>
+</sqlMap>

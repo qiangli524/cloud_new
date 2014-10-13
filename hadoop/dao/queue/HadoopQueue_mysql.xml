@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopQueue">
+	<typeAlias alias="HadoopQueueObj" type="domain.queue.HadoopQueueObj"/>
+	
+		 <sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+	<sql id="baseCloumns">
+		a.id,a.queue_name,a.tactics,a.cpu_max,a.cpu_min,a.mem_max,a.mem_min,a.type,a.parent_id
+	</sql>
+
+	<sql id="queryHadoopQueueListBase">
+		SELECT
+			<include refid="baseCloumns"/>
+		FROM tb_hadoop_queue AS a
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="queue_name">
+				a.queue_name like CONCAT('%',#queue_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="tactics">
+				a.tactics = #tactics#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				a.ID = #id#
+			</isNotEmpty>
+			<isNotEmpty property="parent_id" prepend="and">
+				a.parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				a.type = #type#
+			</isNotEmpty>
+			<isNotEmpty property="idList" prepend="and">
+				a.ID in
+				<iterate close=")" conjunction="," open="(" property="idList">
+					#idList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="HadoopQueueObj" resultClass="HadoopQueueObj">
+		<include refid="queryHadoopQueueListBase"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForListCount" parameterClass="HadoopQueueObj" resultClass="java.lang.Integer">
+		select count(*)  from (
+		<include refid="queryHadoopQueueListBase" />
+		 ) virtual_table
+	</select>
+	
+	<select id="queryForParentList" parameterClass="HadoopQueueObj" resultClass="HadoopQueueObj">
+		SELECT
+			<include refid="baseCloumns"/>, count(b.id) subQueueCount,d.`NAME` config_name
+		FROM
+			tb_hadoop_queue a
+		LEFT JOIN tb_hadoop_queue b ON b.parent_id = a.id
+		LEFT JOIN tb_hadoop_queue_user_config_relation c ON c.queue_id = a.id
+		LEFT JOIN tb_config_info d ON c.entity_id = d.ID
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="type">
+				a.type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="queue_name">
+				a.queue_name like CONCAT('%',#queue_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="tactics">
+				a.tactics = #tactics#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				a.ID = #id#
+			</isNotEmpty>
+			<isNotEmpty property="parent_id" prepend="and">
+				a.parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty property="idList" prepend="and">
+				a.ID in
+				<iterate close=")" conjunction="," open="(" property="idList">
+					#idList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				c.entity_type = #entity_type#
+			</isNotEmpty>
+		</dynamic>
+		GROUP BY
+			a.id
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForSubQueueList" parameterClass="HadoopQueueObj" resultClass="HadoopQueueObj">
+		SELECT
+			<include refid="baseCloumns"/>,COUNT(b.id) subQueueCount,d.`NAME` config_name
+		FROM
+			(
+				SELECT
+					<include refid="baseCloumns"/>
+				FROM
+					tb_hadoop_queue a
+				<dynamic prepend="WHERE">
+					<isNotEmpty prepend="parent_id">
+						a.parent_id = #parent_id#
+					</isNotEmpty>
+				</dynamic>
+			) a
+		LEFT JOIN tb_hadoop_queue b ON b.parent_id = a.id
+		LEFT JOIN tb_hadoop_queue_user_config_relation c ON c.queue_id = a.id
+		LEFT JOIN tb_config_info d ON c.entity_id = d.ID
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="and" property="entity_type">
+				c.entity_type = #entity_type#
+			</isNotEmpty>
+		</dynamic>
+		GROUP BY
+			a.id
+	</select>
+	
+	<insert id="insertByObj" parameterClass="HadoopQueueObj">
+		INSERT INTO tb_hadoop_queue(ID,queue_name,tactics,cpu_max,cpu_min,mem_max,mem_min,parent_id,type) VALUES(#id#,#queue_name#,#tactics#,#cpu_max#,#cpu_min#,#mem_max#,#mem_min#,#parent_id#,#type#)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="HadoopQueueObj">
+		update tb_hadoop_queue
+		<dynamic prepend="set">
+			<isNotEmpty property="queue_name" prepend=",">
+				queue_name = #queue_name#
+			</isNotEmpty>
+			<isNotEmpty property="tactics" prepend=",">
+				tactics = #tactics#
+			</isNotEmpty>
+			<isNotEmpty property="cpu_max" prepend=",">
+				cpu_max = #cpu_max#
+			</isNotEmpty>
+			<isNotEmpty property="cpu_min" prepend=",">
+				cpu_min = #cpu_min#
+			</isNotEmpty>
+			<isNotEmpty property="mem_max" prepend=",">
+				mem_max = #mem_max#
+			</isNotEmpty>
+			<isNotEmpty property="mem_min" prepend=",">
+				mem_min = #mem_min#
+			</isNotEmpty>
+		</dynamic>
+		WHERE id = #id#
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="HadoopQueueObj">
+		DELETE FROM tb_hadoop_queue 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="idList">
+				id in
+				<iterate close=")" conjunction="," open="(" property="idList">
+					#idList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<select id="queryConfigInfo" parameterClass="HadoopQueueObj" resultClass="HadoopQueueObj">
+			SELECT a.PATH config_path,b.id,b.ip,b.USERNAME user_name,b.`PASSWORD` pass_word
+				FROM tb_config_info a LEFT JOIN tb_user_manage b ON a.USER_ID = b.ID
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="configId">
+					a.ID = #configId#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	
+	<select id="validateQueueName" parameterClass="HadoopQueueObj" resultClass="HadoopQueueObj">
+		select <include refid="baseCloumns"/> from tb_hadoop_queue a where a.queue_name = #queue_name#
+	</select>	
+</sqlMap>

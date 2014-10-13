@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="interface" extends="global_package">
+		<action name="interfacesinfo_*" 
+		        class="interfaceAction" method="{1}">
+		    <result name="success">/yicloud/interfaces/listInterface.jsp</result>
+			<result name="add">/yicloud/interfaces/addInterface.jsp</result>
+			<result name="modify">/yicloud/interfaces/editInterface.jsp</result>
+			<result name="redirect" type="redirect">interfacesinfo_listInterface.do</result>
+		</action>
+ </package>
+
+</struts>

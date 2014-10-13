@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ResourceView">
+	<typeAlias alias="ResourceViewObj" type="dao.resourceV.ResourceViewObj"/>
+	
+	 <!-- 查询类型 -->
+	 <select id="queryResourceViewObj" parameterClass="ResourceViewObj" resultClass="ResourceViewObj">
+			select t.`connect_id`, t.`uuid`,t.`type`, t.`entity_id`,t.`domain`
+			from v_resource_domain_view t
+			 <dynamic prepend="where">
+			 	<isNotEmpty property="connect_id" prepend="and">t.connect_id=#connect_id#</isNotEmpty>
+			 	<isNotEmpty property="uuid" prepend="and">t.uuid=#uuid#</isNotEmpty>
+			 	<isNotEmpty property="type" prepend="and">t.type=#type#</isNotEmpty>
+			 	<isNotEmpty property="entity_id" prepend="and">
+					(t.entity_id=#entity_id# or t.entity_id_=#entity_id#)
+				</isNotEmpty>
+			 	<isNotEmpty property="domain" prepend="and">t.domain=#domain#</isNotEmpty>
+			 </dynamic>
+	 </select>
+	 
+</sqlMap>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="condevice" extends="global_package">
+		<action name="condevice_*" 
+		        class="condeviceAction" method="{1}">
+		    <result name="manage">/envmanager/device/listManage.jsp</result>
+		    <result name="success">/envmanager/device/listDevice.jsp</result>
+			<result name="add">/envmanager/device/addDevice.jsp</result>
+			<result name="modify">/envmanager/device/editDevice.jsp</result>
+			<result name="redirect" type="redirect">condevice_listDevice.do</result>
+			<result name="host">/envmanager/device/editHost.jsp</result>
+			<result name="switch">/envmanager/device/editTrans.jsp</result>
+			<result name="raid">/envmanager/device/editRaid.jsp</result>
+			<result name="info">/envmanager/device/configureInfo.jsp</result>		
+			<result name="export">/envmanager/report/download/ExportEnv.jsp</result>
+
+		</action>
+ </package>
+
+</struts>

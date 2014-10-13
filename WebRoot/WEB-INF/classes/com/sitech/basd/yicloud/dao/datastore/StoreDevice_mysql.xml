@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="StoreDevice">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="storeDeviceObj"
+		type="com.sitech.basd.yicloud.domain.datastore.StoreDeviceObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+        	 limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+	<sql id="TB_STORE_DEVICEColumnsNoKey">
+		NAME name,CAPACITY/1024 capacity,FREE_SPACE/1024 freeSpace,TYPE type,STORE_NUMBER storeNum,IP ip,CACHE_SPACE,RAID_WAY,SUPPORTER,valid_space,port_num,domain
+	</sql>
+	<sql id="TB_STORE_DEVICEColumns">
+		ID id,
+		<include refid="TB_STORE_DEVICEColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		a.ID id,a.NAME name,SUM(b.totalSize)/1024 capacity,SUM(b.freeSize)/1024 freeSpace,a.TYPE type,a.STORE_NUMBER storeNum,a.IP ip,COUNT(b.STORE_UUID) usedStoreNum
+		,a.CACHE_SPACE,a.RAID_WAY,a.SUPPORTER,a.valid_space,a.port_num,a.device_num
+		from(
+		select 
+		ID,NAME,CAPACITY,FREE_SPACE,TYPE,STORE_NUMBER,IP,CACHE_SPACE,RAID_WAY,SUPPORTER,valid_space,port_num,device_num
+		from
+			TB_STORE_DEVICE 
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="id">
+				ID = #id#
+			</isNotNull>
+			<isNotNull prepend="and" property="name">
+				NAME like CONCAT('%',#name#,'%')
+			</isNotNull>
+			<isNotNull prepend="and" property="type">
+				TYPE = #type#
+			</isNotNull>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+		) a
+		LEFT JOIN(select c.DEVICE_ID,c.STORE_UUID,c.SR_SIZE totalSize,c.FREE_SIZE freeSize,c.CONNECT_ID connectId 
+			from TB_XEN_STORAGE_INFO c  
+			inner join  (select max(id) tempid from TB_XEN_STORAGE_INFO   group by CONNECT_ID,STORE_UUID ) c1 on c1.tempid = c.id
+		union all 
+		select d.DEVICE_ID,d.STORE_UUID,d.CAPACITY totalSize,d.FREE_SPACE freeSize,d.CONNECT_ID connectId 
+			from TB_YICLOUD_DATASTORE d 
+			inner join (select max(id) tempid from TB_YICLOUD_DATASTORE  group by  CONNECT_ID,STORE_UUID ) d1 on d1.tempid = d.id
+		)b
+		on a.id=b.DEVICE_ID
+		GROUP BY a.id
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj" parameterClass="storeDeviceObj"
+		resultClass="storeDeviceObj"> 
+		<include refid="queryByObjBase" />
+		order by ID asc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="storeDeviceObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	
+	<insert id="insertDatastore" parameterClass="storeDeviceObj">
+		insert into TB_STORE_DEVICE
+		(ID,NAME,CAPACITY,FREE_SPACE,TYPE,STORE_NUMBER,IP,VALID_SPACE,CACHE_SPACE,PORT_NUM,RAID_WAY,SUPPORTER,domain,DEVICE_NUM)
+		values
+		(#id#,#name#,#capacity#*1024,#freeSpace#*1024,#type#,#storeNum#,#ip#,#valid_space#,#cache_space#,#port_num#,#raid_way#,#supporter#,#domain#,#device_num#)
+	</insert>
+	<!-- 更新TB_STORE_DEVICE表信息 -->
+	<update id="updateByObj" parameterClass="storeDeviceObj">
+		update TB_STORE_DEVICE set NAME=#name#,CAPACITY=#capacity#*1024,FREE_SPACE=#freeSpace#*1024,TYPE=#type#,STORE_NUMBER=#storeNum#,IP=#ip#,
+			VALID_SPACE=#valid_space#,CACHE_SPACE=#cache_space# ,PORT_NUM=#port_num#,RAID_WAY=#raid_way#,SUPPORTER=#supporter#,DEVICE_NUM=#device_num#
+		<isNotEmpty prepend="," property="domain">     
+			domain=#domain#      
+		</isNotEmpty> 
+		where ID=#id#
+	</update>
+	<!-- 删除TB_STORE_DEVICE表信息 -->
+	<delete id="deleteByObj" parameterClass="storeDeviceObj">
+		delete from TB_STORE_DEVICE where ID=#id#
+	</delete>
+	
+	<select id="queryForListByUseIn" parameterClass="storeDeviceObj" resultClass="storeDeviceObj">
+		select id,store_number storeNum,name,capacity/1024 capacity,free_space/1024 freeSpace,ip,type from tb_store_device where id in
+		<iterate close=")" conjunction="," open="(" property="idList">
+    		#idList[]#
+    	</iterate>
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	    </isGreaterThan>
+	</select>
+	
+	<select id="countByUseIn" parameterClass="storeDeviceObj" resultClass="int">
+		select count(ID) from tb_store_device where id in
+		<iterate close=")" conjunction="," open="(" property="idList">
+    		#idList[]#
+    	</iterate>
+	</select>
+	<!-- 查询单条记录 -->
+	<select id="queryByObj" parameterClass="storeDeviceObj"  resultClass="storeDeviceObj">
+		select a.ID id, a.NAME name,a.CAPACITY/1024 capacity,
+		a.FREE_SPACE/1024 freeSpace,a.TYPE type,a.STORE_NUMBER storeNum,a.IP ip ,a.CACHE_SPACE,a.RAID_WAY,a.SUPPORTER,a.valid_space,a.port_num,
+		SUM(b.totalSize)/1024 storeBlockTotalSize,SUM(b.freeSize)/1024 storeBlockFreeSpace,sum(b.purchaseSpace)/1024 purchaseSpace
+		from tb_store_device  a
+		LEFT JOIN(select c.DEVICE_ID,c.STORE_UUID,c.SR_SIZE totalSize,c.FREE_SIZE freeSize,c.CONNECT_ID connectId,'0' purchaseSpace 
+			from TB_XEN_STORAGE_INFO c  
+			inner join  (select max(id) tempid from TB_XEN_STORAGE_INFO   group by CONNECT_ID,STORE_UUID ) c1 on c1.tempid = c.id
+		union all 
+		select d.DEVICE_ID,d.STORE_UUID,d.CAPACITY totalSize,d.FREE_SPACE freeSize,d.CONNECT_ID connectId ,d.purchaseSpace
+			from TB_YICLOUD_DATASTORE d 
+			inner join (select max(id) tempid from TB_YICLOUD_DATASTORE  group by  CONNECT_ID,STORE_UUID) d1 on d1.tempid = d.id
+		)b on a.id=b.DEVICE_ID
+		where a.id = #id#
+	</select>
+	
+	<select id="queryVmwareCapacity" parameterClass="storeDeviceObj" resultClass="storeDeviceObj">
+		<!-- select a.ID id, a.NAME name,a.CAPACITY/1024/1024 capacity,
+		a.FREE_SPACE/1024/1024 freeSpace,a.TYPE type,a.STORE_NUMBER storeNum,a.IP ip ,a.CACHE_SPACE,a.RAID_WAY,a.SUPPORTER,a.valid_space,a.port_num,
+		SUM(b.totalSize)/1024/1024 storeBlockTotalSize,SUM(b.freeSize)/1024/1024 storeBlockFreeSpace,sum(b.purchaseSpace)/1024/1024 purchaseSpace
+		from tb_store_device  a
+		LEFT JOIN(select c.DEVICE_ID,c.STORE_UUID,c.SR_SIZE totalSize,c.FREE_SIZE freeSize,c.CONNECT_ID connectId,'0' purchaseSpace 
+			from TB_XEN_STORAGE_INFO c  
+			inner join  (select max(id) tempid from TB_XEN_STORAGE_INFO   group by DATACENTER_ID,STORE_UUID ) c1 on c1.tempid = c.id
+		union all 
+		select d.DEVICE_ID,d.STORE_UUID,d.CAPACITY totalSize,d.FREE_SPACE freeSize,d.CONNECT_ID connectId ,d.purchaseSpace
+			from TB_YICLOUD_DATASTORE d 
+			inner join (select max(id) tempid from TB_YICLOUD_DATASTORE  group by DATACENTER_ID,STORE_UUID ) d1 on d1.tempid = d.id
+		)b on a.id=b.DEVICE_ID
+		<dynamic prepend="where">
+			<isNotEmpty property="type">
+				type = #type#
+			</isNotEmpty>
+		</dynamic> -->
+			SELECT
+				SUM(c.CAPACITY) / 1024 / 1024 capacity,
+				SUM(c.FREE_SPACE) / 1024 / 1024 freeSpace,
+				SUM(c.purchaseSpace) / 1024 / 1024 purchaseSpace
+			FROM
+				(
+					SELECT
+						a.DATACENTER_ID,
+						a.STORE_UUID,
+						a.CAPACITY,
+						a.FREE_SPACE,
+						a.purchaseSpace,
+						a.connect_id
+			FROM
+				tb_yicloud_datastore a
+			INNER JOIN tb_store_device b ON a.DEVICE_ID = b.id
+		    INNER JOIN tb_united_tree d ON d.uuid=b.id 
+		    INNER JOIN tb_united_tree e ON d.parent_id=e.id
+		    
+		    where b.type 
+				<![CDATA[
+					<> 0
+				]]>
+				<dynamic>
+					<isNotEmpty property="type" prepend="and">
+						b.type = #type#
+					</isNotEmpty>
+					<isNotEmpty property="id" prepend="and">
+						e.id = #id#
+					</isNotEmpty>
+					<isNotEmpty property="uuid" prepend="and">
+						a.DEVICE_ID = #uuid#
+					</isNotEmpty>
+				</dynamic>
+			GROUP BY
+				a.DATACENTER_ID,
+				a.STORE_UUID,
+				a.CONNECT_ID
+			) c
+	</select>
+	
+	<select id="queryXenCapacity" parameterClass="storeDeviceObj" resultClass="storeDeviceObj">
+		SELECT
+			SUM(c.SR_SIZE)/1024/1024 capacity,
+			SUM(c.FREE_SIZE)/1024/1024 freeSpace,
+			SUM(c.purchaseSpace)/1024/1024 purchaseSpace
+		FROM
+			(
+				SELECT 
+					a.STORE_UUID,
+					a.SR_SIZE,
+					a.FREE_SIZE,
+					a.purchase_Space purchaseSpace
+				FROM
+					tb_xen_storage_info a
+				INNER JOIN tb_store_device b ON a.DEVICE_ID = b.id
+				where b.type 
+				<![CDATA[
+					<> 0
+				]]>
+				<dynamic>
+					<isNotEmpty property="type" prepend="and">
+						b.type = #type#
+					</isNotEmpty>
+					<isNotEmpty property="id" prepend="and">
+						b.id = #id#
+					</isNotEmpty>
+				</dynamic>
+				group by a.STORE_UUID
+			) c
+	</select>
+	
+	<select id="queryStoreType" parameterClass="storeDeviceObj" resultClass="storeDeviceObj">
+		select (
+			case when type='0' then '本地存储'
+			when type='1' then 'SAN存储'
+			when type='2' then 'NAS存储'
+			end) typeName,type
+		from tb_store_device
+		group by type
+	</select>
+	
+	<select id="countByType" parameterClass="storeDeviceObj" resultClass="int">
+		select count(id) from tb_store_device
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>	
+		</dynamic>
+	</select>
+	
+<!-- 	原存储获取存储设备大小的查询语句 -->
+	<select id="queryValidSpace" parameterClass="storeDeviceObj" resultClass="double">
+		select sum(valid_space)/1024 from tb_store_device
+		<dynamic prepend="where">
+			<isNotEmpty property="type" prepend="and">
+				type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryValidSpace_sh" parameterClass="storeDeviceObj" resultClass="double">
+		select  sum(d.valid_space)/1024 from (select a.id, a.valid_space,b.parent_id,a.type from tb_store_device a INNER JOIN tb_united_tree b on a.id=b.uuid) d
+            INNER JOIN tb_united_tree c on c.id=d.parent_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="type">
+				d.type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="id">
+				c.id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uuid">
+				d.id= #uuid#
+			</isNotEmpty>
+		</dynamic>
+	</select>	
+	
+	<select id="queryForList" parameterClass="storeDeviceObj" resultClass="storeDeviceObj">
+		select id,name,store_number storeNum,capacity,free_space freeSpace,ip,type,cache_space,raid_way,supporter,
+			port_num,valid_space,device_num,location,status from tb_store_device
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="storeNum">
+				store_number = #storeNum#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="capacity">
+				capacity = #capacity#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="freeSpace">
+				free_space = #freeSpace#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+				ip = #ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cache_space">
+				cache_space = #cache_space#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="raid_way">
+				raid_way = #raid_way#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="supporter">
+				supporter = #supporter#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="port_num">
+				port_num = #port_num#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="valid_space">
+				valid_space = #valid_space#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="device_num">
+				device_num = #device_num#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="location">
+				location = #location#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				status = #status#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

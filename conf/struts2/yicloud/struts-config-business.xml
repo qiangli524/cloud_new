@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="business" extends="global_package">
+		<action name="business_*"
+				class="tbYicloudBusinessAppAction" method="{1}">
+			<result name="success">/yicloud/business/appservice/listAppService.jsp</result>
+			<result name="add">/yicloud/business/appservice/addAppService.jsp</result>
+			<result name="modify">/yicloud/business/appservice/modAppService.jsp</result>
+			<result name="redirect" type="redirect">business_listAppService.do</result>
+		</action>
+ </package>
+
+</struts>

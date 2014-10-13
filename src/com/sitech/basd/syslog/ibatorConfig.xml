@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ibatorConfiguration PUBLIC "-//Apache Software Foundation//DTD Apache iBATIS Ibator Configuration 1.0//EN" "http://ibatis.apache.org/dtd/ibator-config_1_0.dtd" >
+<ibatorConfiguration>
+	
+	<classPathEntry location="D:/ProgramFiles/eclipse/GT_PRO/cloud/WebRoot/WEB-INF/lib/mysql-connector-java-5.1.15-bin.jar" />
+	
+	<ibatorContext id="context1">
+	
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver" connectionURL="jdbc:mysql://172.21.0.67:3306/ah_cloud" userId="cloudroot" password="cl20!$r.ct" />
+		
+		<javaModelGenerator targetPackage="webservice.domain" targetProject="cloud/mysql_db/">
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="true" />
+		</javaModelGenerator>
+		
+		
+		<sqlMapGenerator targetPackage="webservice.dao" targetProject="cloud/mysql_db/">
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+		
+		<daoGenerator targetPackage="webservice.dao" targetProject="cloud/mysql_db/" type="SPRING">
+			<property name="enableSubPackages" value="false" />
+		</daoGenerator>
+
+		<table schema="ah_cloud" tableName="tb_sys_userinfo"></table>
+	</ibatorContext>
+</ibatorConfiguration>

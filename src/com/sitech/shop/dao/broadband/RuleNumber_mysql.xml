@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="RuleNumber">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="RuleNumberObj" type="com.sitech.shop.domain.broadband.RuleNumberObj"/>    
+    <sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	 <sql id="queryByObjBase">
+	 	SELECT
+			a.id,			
+			a.acl_id,		
+			a.isused,
+			a.user_id,
+			a.rule,
+			a.type
+		FROM
+			tb_public_rule a left join tb_public_acl b on a.acl_id=b.id
+	 	<dynamic prepend="where">
+			<isNotEmpty property="id"  prepend="and" >
+				a.id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="acl_id"  prepend="and" >
+				a.acl_id=#acl_id#
+			</isNotEmpty>
+			<isNotEmpty property="isused" prepend="and">
+				a.isused=#isused#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				a.type=#type#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				a.user_id=#user_id#
+			</isNotEmpty>
+		</dynamic>
+	 </sql>
+	 
+	 <!-- 查询列表 -->
+	 <select id="queryForList" parameterClass="RuleNumberObj" resultClass="RuleNumberObj">
+        <include refid="queryByObjBase"/> 
+        	<isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	 </select>
+	  <select id="queryByObjForCount" parameterClass="RuleNumberObj" resultClass="int">
+	       select count(id) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <!-- 更新一条记录 -->
+	  <update id="updateByObj" parameterClass="RuleNumberObj">
+	  	update tb_public_rule 
+	  	<dynamic prepend="set">
+			<isNotEmpty prepend="," property="isused">
+				isused=#isused#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="acl_id">
+				acl_id=#acl_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="user_id">
+				user_id=#user_id#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id=#id#
+			</isNotEmpty>
+		</dynamic>
+	  </update>
+	  <!-- 插入一条记录 -->
+	  <insert id="insertByObj" parameterClass="RuleNumberObj">
+	  	insert into tb_public_rule 
+	  	(
+	  		id,			
+			rule,		
+			isused,
+			user_id,
+			acl_id,
+			type
+	  	) 
+	  	values (
+			#id#,			
+			#rule#,		
+			#isused#,
+			#user_id#,
+			#acl_id#,
+			#type#)
+	  </insert>
+	  <!-- 删除一条记录 -->
+	  <delete id="deleteByObj" parameterClass="RuleNumberObj">
+	  	delete from tb_public_rule
+	  	<dynamic prepend="where">
+	 		<isNotNull property="id"  prepend="and" >
+				id= #id#
+			</isNotNull>
+		</dynamic> 
+	  </delete>
+	  <update id="releaseRuleNum" parameterClass="RuleNumberObj">
+	  	update tb_public_rule set isused = '0',user_id=''
+	  	where id=#id#
+	  </update>
+</sqlMap>

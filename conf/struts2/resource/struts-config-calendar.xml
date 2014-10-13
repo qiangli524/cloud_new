@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="calendar" extends="global_package">
+		<!-- 资源日历 -->
+		<action name="calendar_*" class="calendarAction" method="{1}">
+			<result name="showResource">/ah/calendar/resourceCalendar.jsp</result>
+		</action>
+		<!-- 资源日历  实际在用by qism -->
+		<action name="calendarNew_*" class="calendarActionNew" method="{1}">
+			<result name="showResource">/ah/calendar/resourceCalendar.jsp</result>
+		</action>
+	</package>
+</struts>

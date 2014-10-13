@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TemVmRelation">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TemVmRelationObj" type="com.sitech.basd.resource.domain.template.TemVmRelationObj"/>    
+    
+  
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+    <sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	 <sql id="queryByObjBase">
+	 	select vmCode,temCode,connectCode from tb_vm_tem_relation
+	 	<dynamic prepend="where">
+			<isNotEmpty property="vmCode" prepend="and">
+					vmCode=#vmCode#
+			</isNotEmpty>
+			<isNotNull property="connectCode" prepend="and">
+				connectCode = #connectCode#
+			</isNotNull>
+		</dynamic> 
+	 </sql>
+	   <select id="queryForList" parameterClass="TemVmRelationObj" resultClass="TemVmRelationObj">
+	        <include refid="queryByObjBase"/> 
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="TemVmRelationObj" resultClass="int">
+	       select count(vmCode) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <insert id="insertByObj" parameterClass="TemVmRelationObj">
+	  	insert into tb_vm_tem_relation (vmCode,temCode,connectCode) 
+	  	values (#vmCode#,#temCode#,#connectCode#)
+	  </insert>
+	  <delete id="deleteByObj" parameterClass="TemVmRelationObj">
+	  	delete from tb_vm_tem_relation where vmCode= #vmCode# and connectCode =#connectCode#
+	 </delete>
+</sqlMap>

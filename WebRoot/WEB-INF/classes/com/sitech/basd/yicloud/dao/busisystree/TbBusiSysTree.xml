@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiSysTree">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiSysTree"
+		type="com.sitech.basd.yicloud.domain.busisystree.TbBusiSysTree" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="TbBusiSysTreeColumnsNoKey">
+		tree.NAME,tree.TYPE,tree.PARENT_ID parentId,tree.BUSI_ID busiId,tree.HOST_IP hostIP
+	</sql>
+	<sql id="TbBusiSysTreeColumns">
+		tree.ID,
+		<include refid="TbBusiSysTreeColumnsNoKey" />
+	</sql>
+
+	<select id="queryForTree" parameterClass="TbBusiSysTree"
+		resultClass="TbBusiSysTree">
+		select
+		<include refid="TbBusiSysTreeColumns" />
+		from
+		TB_BUSI_SYS_TREE tree
+		<dynamic prepend="where">
+			<isNotEmpty property="parentId" prepend="and">
+				tree.parent_id=#parentId#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				tree.TYPE=#type#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				tree.ID=#id#
+			</isNotEmpty>
+			<isNotEmpty property="busiId" prepend="and">
+				tree.BUSI_ID=#busiId#
+			</isNotEmpty>
+			<isNotNull property="name">
+				<isNotEmpty property="name" prepend="and">
+					tree.NAME=#name#	
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="username">
+				<isNotEqual property="username" prepend="and"
+					compareValue="admin">
+					tree.ID in
+					(select limit.TREE_NODE_ID from TB_BUSI_SYS_TREE_LIMIT limit where
+					limit.username=#username#)
+				</isNotEqual>
+			</isNotNull>
+		</dynamic>
+		order by type asc
+	</select>
+
+	<select id="queryForLimitTree" parameterClass="TbBusiSysTree"
+		resultClass="TbBusiSysTree">
+		select
+		<include refid="TbBusiSysTreeColumns" />
+		from
+		TB_BUSI_SYS_TREE tree
+		<dynamic prepend="where">
+			<isNotEmpty property="parentId" prepend="and">
+				tree.parent_id=#parentId#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				tree.TYPE=#type#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				tree.ID=#id#
+			</isNotEmpty>
+			<isNotEmpty property="busiId" prepend="and">
+				tree.BUSI_ID=#busiId#
+			</isNotEmpty>
+		</dynamic>
+		order by type asc
+	</select>
+
+	<insert id="insertTbBusiSysTree" parameterClass="TbBusiSysTree">
+		insert into TB_BUSI_SYS_TREE(ID,NAME,TYPE,PARENT_ID,BUSI_ID,HOST_IP)
+		values(#id#,#name#,#type#,#parentId#,#busiId#,#hostIP#)
+	</insert>
+	
+	<delete id="deleteTbBusiSysTreeById" parameterClass="TbBusiSysTree">
+		delete from TB_BUSI_SYS_TREE
+		<dynamic prepend="where">
+			<isNotNull property="id" prepend="and" >
+				ID=#id#
+			</isNotNull>
+			<isGreaterThan property="type" compareValue="0" prepend="and">
+				TYPE=#type#
+			</isGreaterThan>
+			<isNotNull property="busiId" prepend="and" >
+				BUSI_ID=#busiId#
+			</isNotNull>
+			<isNotNull property="hostIP" prepend="and" >
+				HOST_IP=#hostIP#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	
+	<update id="updateTbBusiSysTreeByObj" parameterClass="TbBusiSysTree">
+		update TB_BUSI_SYS_TREE 
+		<dynamic prepend="set">
+			<isNotNull property="name" prepend="," >
+				NAME=#name#
+			</isNotNull>
+			<isGreaterThan property="type" compareValue="0" prepend=",">
+				TYPE=#type#
+			</isGreaterThan>
+			<isNotNull property="parentId" prepend="," >
+				PARENT_ID=#parentId#
+			</isNotNull>
+			<isNotNull property="busiId" prepend="," >
+				BUSI_ID=#busiId#
+			</isNotNull>
+			<isNotNull property="hostIP" prepend="," >
+				HOST_IP=#hostIP#
+			</isNotNull>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotNull property="id" prepend="and" >
+				ID=#id#
+			</isNotNull>
+		</dynamic>
+	</update>
+	
+		<!-- lipengpeng -->
+	<select id="countByObj" parameterClass="TbBusiSysTree" resultClass="int">
+		select count(id) from tb_busi_sys_tree 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				TYPE = #type#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				NAME = #name#
+			</isNotEmpty>
+			<isNotEmpty property="parentId" prepend="and">
+				PARENT_ID = #parentId#
+			</isNotEmpty>
+			<isNotEmpty property="busiId" prepend="and">
+				BUSI_ID = #busiId#
+			</isNotEmpty>
+			<isNotEmpty property="hostIP" prepend="and">
+				HOST_IP = #hostIP#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForListByParentIdList" parameterClass="TbBusiSysTree" resultClass="TbBusiSysTree">
+		select 
+		<include refid="TbBusiSysTreeColumns"/>
+		from tb_busi_sys_tree tree where 1=1
+		<dynamic>
+			<isNotEmpty prepend="and" property="type">
+				tree.TYPE = #type#
+			</isNotEmpty>
+		</dynamic>
+		and tree.PARENT_ID in
+		<iterate close=")" conjunction="," open="(" property="pidlist">
+			#pidlist[]#
+		</iterate>
+	</select>
+	
+</sqlMap>

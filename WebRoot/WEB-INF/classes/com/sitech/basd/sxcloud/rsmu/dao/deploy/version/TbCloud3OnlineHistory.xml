@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbCloud3OnlineHistory">
+	<typeAlias alias="TbCloud3OnlineHistoryVO"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.version.TbCloud3OnlineHistoryVO" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+	<select id="queryListByObj" parameterClass="TbCloud3OnlineHistoryVO"
+		resultClass="TbCloud3OnlineHistoryVO">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		select b.IP,
+		d.APPNAME,
+		e.SYS_NAME,
+		a.day_version,
+		f.EXAMPLEID,
+		f.ID,
+		f.ONLINEPATH,
+		f.ISROLLBACK,
+		f.ISSUCCESS,
+		TO_CHAR(f.INSERTTIME,'yyyy-mm-dd hh24:mi:ss') INSERTTIME
+		from TB_BUSI_DEPLOY_EXAMPLE a,
+		TB_BUSI_HOST b,
+		TB_SYS_APP d,
+		TB_CLOUD2_BIZSYS_INFO e,
+		TB_CLOUD3_ONLINE_HISTORY f
+		where a.HOSTID = b.ID
+		and a.APPID = d.ID
+		and a.SYS_ID = e.SYS_ID
+		and a.id = f.exampleid
+		order by f.INSERTTIME desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="TbCloud3OnlineHistoryVO"
+		resultClass="int">
+		select count(1) from (
+		select b.IP,
+		d.APPNAME,
+		e.SYS_NAME,
+		a.day_version,
+		f.EXAMPLEID,
+		f.ID,
+		f.ONLINEPATH,
+		f.ISROLLBACK,
+		f.ISSUCCESS,
+		f.INSERTTIME
+		from TB_BUSI_DEPLOY_EXAMPLE a,
+		TB_BUSI_HOST b,
+		TB_SYS_APP d,
+		TB_CLOUD2_BIZSYS_INFO e,
+		TB_CLOUD3_ONLINE_HISTORY f
+		where a.HOSTID = b.ID
+		and a.APPID = d.ID
+		and a.SYS_ID = e.SYS_ID
+		and a.id = f.exampleid
+		) virtual_table
+	</select>
+
+	<insert id="insertByVO" parameterClass="TbCloud3OnlineHistoryVO">
+		<selectKey resultClass="String" keyProperty="id">
+			SELECT
+			sys_guid() AS id FROM DUAL
+		</selectKey>
+		INSERT INTO
+		TB_CLOUD3_ONLINE_HISTORY(ID,EXAMPLEID,ONLINEPATH,ISROLLBACK,ISSUCCESS,INSERTTIME)
+		VALUES(#id#,#exampleId#,#onlinePath#,#isRollback#,#isSuccess#,sysdate)
+	</insert>
+
+
+</sqlMap>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Middleware">
+	<typeAlias alias="MiddlewareObj"
+		type="com.sitech.basd.yicloud.domain.middleware.MiddlewareObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select m.ID,
+               m.NAME,
+               m.VERSION,
+               m.REMARK,
+               m.PARTH,
+               to_char(m.UPDATETIME,'yyyy-MM-dd HH24:mi:ss') UPDATETIME
+          from TB_YICLOUD_MIDDLEWARE m
+        ]]>
+			<dynamic prepend="where">
+				<isNotEqual property="ID" compareValue="0" prepend="and" >
+					m.ID=#ID#
+				</isNotEqual>
+				<isNotEmpty property="NAME" prepend="and">
+					m.NAME like '%'||#NAME#||'%'
+				</isNotEmpty>
+			</dynamic>
+			order by m.ID
+	</sql>
+	
+
+	<select id="queryForListByObj" parameterClass="MiddlewareObj"
+		resultClass="MiddlewareObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="MiddlewareObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	  <insert id="insertByObj" parameterClass="MiddlewareObj">
+	  <selectKey resultClass="Integer" keyProperty="ID" >
+	  	select ID_TB_YICLOUD_MIDDLEWARE.nextval as ID from dual
+	  	</selectKey>
+		insert into TB_YICLOUD_MIDDLEWARE(
+		ID,NAME,VERSION,REMARK,PARTH
+		)
+		values(#ID#,#NAME#,#VERSION#,#REMARK#,#PARTH#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="MiddlewareObj">
+		update TB_YICLOUD_MIDDLEWARE set NAME=#NAME#,VERSION=#VERSION#,REMARK=#REMARK#,PARTH=#PARTH#
+		where ID=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="MiddlewareObj">
+		delete from TB_YICLOUD_MIDDLEWARE where ID=#ID#
+	  </delete>
+</sqlMap>

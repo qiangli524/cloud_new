@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiDeployExample">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiDeployExampleObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.TbBusiDeployExampleObj" />
+	<sql id="tableColumnsNoKey">      
+      HOSTID,DEPLOYESTARTTIME,DEPLOYEENDTIME,STRATEGYID,DEPLOY_FLAG,START_STOP_FLAG,UPDATETIME,RESULT,RELEASE_FLAG,TRUST_FLAG,DEPLOYEXAMPLE_TYPE
+    </sql>
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+    
+    <sql id="queryByObjBase">
+    	 SELECT
+					a.isbackup,a.isrestart,a.NEED_NUMBER,a.ID,a.HOSTID,a.APPID,a.DEPLOY_FLAG,a.START_STOP_FLAG,
+					to_char(a.DEPLOYESTARTTIME,'mm-dd hh24:mi') DEPLOYESTARTTIME,
+					to_char(a.DEPLOYEENDTIME,'mm-dd hh24:mi') DEPLOYEENDTIME,
+					to_char(a.UPDATETIME,'mm-dd hh24:mi') UPDATETIME,
+					a.RESULT,a.RELEASE_FLAG,a.day_version,a.HOST_CONFIG_ID,a.EXAMPLE_NAME exampleName,a.TRUST_FLAG,a.DEPLOYEXAMPLE_TYPE,
+					a.DEPLOY_PERCENT DEPLOY_PERCENT,
+					b.IP,b.VLANIP,
+					d.APPNAME,
+					e.SYS_NAME,
+					f.BASEPATH DEPLOYPATH,
+					f.APPPATH appVisitPath
+				FROM
+					TB_BUSI_DEPLOY_EXAMPLE a,
+					TB_BUSI_HOST b,
+					TB_SYS_APP d,
+					TB_CLOUD2_BIZSYS_INFO e,
+					TB_BUSI_HOST_CONFIG f
+				WHERE
+					a.HOSTID = b.ID
+				AND 
+					a.APPID = d.ID
+				AND 
+					a.SYS_ID = e.SYS_ID
+				AND 
+					a.HOST_CONFIG_ID = f.HOSTCONFIGID
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                a.ID =#ID#
+               </isGreaterThan>
+               <isGreaterThan property="APPID" compareValue="0" prepend="and">
+                a.APPID =#APPID#
+               </isGreaterThan>
+               <isNotEmpty property="DEPLOY_FLAG" prepend="and">
+                a.DEPLOY_FLAG =#DEPLOY_FLAG#
+               </isNotEmpty>
+               <isNotEmpty property="START_STOP_FLAG" prepend="and">
+                a.START_STOP_FLAG =#START_STOP_FLAG#
+               </isNotEmpty>
+               <isGreaterThan property="HOSTID" compareValue="0" prepend="and">
+                a.HOSTID =#HOSTID#
+               </isGreaterThan>
+               <isNotEmpty property="DATAAUTHORITY" prepend="and">
+                a.APPID in ($DATAAUTHORITY$)
+               </isNotEmpty>
+               <isNotNull property="SYS_ID" prepend="and">
+               e.SYS_ID=#SYS_ID#
+               </isNotNull>   
+           <!--    <isNotEqual property="user_id" compareValue="0" prepend="and">
+               		a.uuid in (select uuid from TB_SYS_DATA_AUTHORITY t where t.user_id = #user_id#)
+               </isNotEqual>
+           		<isEqual property="user_id" compareValue="0" prepend="and">
+               		m.user_id = n.id and a.uuid = m.uuid
+               	</isEqual>  --> 
+               	
+                order by a.ID desc
+    </sql>
+    
+<!--     通过部署实例和task之间的关系查找部署实例信息 -->
+    <sql id="queryByObjJoinTaskBase">
+		select * from (
+			select a.isbackup,
+			a.HOST_USERNAME as hostUsername,
+			a.EXAMPLE_NAME exampleName,
+			a.isrestart,
+			a.NEED_NUMBER,
+			a.ID,
+			a.HOSTID,
+			a.APPID,
+			to_char(a.DEPLOYESTARTTIME, 'mm-dd hh24:mi') DEPLOYESTARTTIME,
+			to_char(a.DEPLOYEENDTIME, 'mm-dd hh24:mi') DEPLOYEENDTIME,
+			a.DEPLOY_FLAG,
+			a.START_STOP_FLAG,
+			to_char(a.UPDATETIME, 'yyyy-mm-dd hh24:mi:ss') UPDATETIME,
+			a.RESULT,
+			a.RELEASE_FLAG,
+			a.TRUST_FLAG,
+			a.DEPLOYEXAMPLE_TYPE,
+			a.DEPLOY_PERCENT DEPLOY_PERCENT,
+			b.IP,
+			b.VLANIP,
+			d.APPNAME,
+			e.SYS_NAME,
+			a.day_version,
+			f.BASEPATH DEPLOYPATH
+			from TB_BUSI_DEPLOY_EXAMPLE a,
+			TB_BUSI_HOST b,
+			TB_SYS_APP d,
+			TB_CLOUD2_BIZSYS_INFO e,
+			TB_BUSI_HOST_CONFIG f
+			where a.HOSTID = b.ID
+			and a.HOST_CONFIG_ID = f.HOSTCONFIGID
+			and a.APPID = d.ID
+			and a.SYS_ID = e.SYS_ID
+		) g join tb_busi_task_relation_example f
+		on g.ID=f.EXAMPLE_ID
+		<dynamic prepend="where">
+         <isNotEmpty prepend="and" property="TASK_ID">
+            TASK_ID=#TASK_ID#
+         </isNotEmpty>
+        </dynamic>
+    </sql>
+    <!-- 因为每次查询的列不定，需要将remapResults设定为true，默认为false 
+    	只有当列不定时需要这样做
+     -->
+  	<select id="queryForListByObj" parameterClass="TbBusiDeployExampleObj" resultClass="TbBusiDeployExampleObj"> 
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan>
+        <include refid="queryByObjBase"/>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    
+   <select id="queryByObjJoinTaskList" parameterClass="TbBusiDeployExampleObj" resultClass="TbBusiDeployExampleObj">
+    <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan> 
+        <include refid="queryByObjJoinTaskBase"/>
+         <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    
+     <select id="queryByObjJoinTaskListCount" parameterClass="TbBusiDeployExampleObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjJoinTaskBase"/>
+       ) virtual_table
+    </select>
+    
+    <select id="queryByObjForCount" parameterClass="TbBusiDeployExampleObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    
+    <sql id="queryForBizListByObjBase">
+    	SELECT
+			a.isbackup,
+			a.isrestart,
+			a.NEED_NUMBER,
+			a.ID,
+			a.HOSTID,
+			a.APPID,
+			to_char(a.DEPLOYESTARTTIME, 'yyyy-mm-dd hh24:mi:ss') DEPLOYESTARTTIME,
+			to_char(a.DEPLOYEENDTIME, 'yyyy-mm-dd hh24:mi:ss') DEPLOYEENDTIME,
+			a.DEPLOY_FLAG,
+			a.START_STOP_FLAG,
+			to_char(
+				a.UPDATETIME,
+				'yyyy-mm-dd hh24:mi:ss'
+			) UPDATETIME,
+			a.RESULT,
+			a.RELEASE_FLAG,
+			a.TRUST_FLAG,
+			a.DEPLOYEXAMPLE_TYPE,
+			a.DEPLOY_PERCENT DEPLOY_PERCENT,
+			b.IP,
+			b.VLANIP,
+			d.APPNAME,
+			e.SYS_NAME,
+			f.BASEPATH DEPLOYPATH
+		FROM
+			TB_BUSI_DEPLOY_EXAMPLE a,
+			TB_BUSI_HOST b,
+			TB_SYS_APP d,
+			TB_CLOUD2_BIZSYS_INFO e,
+			TB_BUSI_HOST_CONFIG f
+		WHERE
+			f.HOSTCONFIGID = a.HOST_CONFIG_ID
+		AND a.HOSTID = b.ID
+		AND a.APPID = d.ID
+		AND a.SYS_ID = e.SYS_ID
+        <isGreaterThan property="ID" compareValue="0" prepend="and">
+         a.ID =#ID#
+        </isGreaterThan>
+        <isGreaterThan property="APPID" compareValue="0" prepend="and">
+         a.APPID =#APPID#
+        </isGreaterThan>
+        <isNotEmpty property="DEPLOY_FLAG" prepend="and">
+         a.DEPLOY_FLAG =#DEPLOY_FLAG#
+        </isNotEmpty>
+        <isNotEmpty property="START_STOP_FLAG" prepend="and">
+         a.START_STOP_FLAG =#START_STOP_FLAG#
+        </isNotEmpty>
+        <isGreaterThan property="HOSTID" compareValue="0" prepend="and">
+         a.HOSTID =#HOSTID#
+        </isGreaterThan>
+        <isNotEmpty property="DATAAUTHORITY" prepend="and">
+         a.APPID in ($DATAAUTHORITY$)
+        </isNotEmpty>
+        <isNotNull property="SYS_ID" prepend="and">
+        e.SYS_ID=#SYS_ID#
+        </isNotNull>   
+         order by a.ID desc
+    </sql>
+    
+  	<select id="queryForBizListByObj" parameterClass="TbBusiDeployExampleObj" resultClass="TbBusiDeployExampleObj"> 
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan>
+        <include refid="queryForBizListByObjBase"/>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    
+    <select id="queryForBizListByObjForCount" parameterClass="TbBusiDeployExampleObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryForBizListByObjBase"/>
+       ) virtual_table
+    </select>
+    
+    <select id="queryListIDByObj" parameterClass="TbBusiDeployExampleObj" resultClass="TbBusiDeployExampleObj">
+      select ID,DEPLOY_FLAG,START_STOP_FLAG,DEPLOY_PERCENT,START_STOP_PERCENT,to_char(DEPLOYESTARTTIME,'mm-dd hh24:mi') DEPLOYESTARTTIME,to_char(DEPLOYEENDTIME,'mm-dd hh24:mi') DEPLOYEENDTIME,isrestart,isbackup,day_version from TB_BUSI_DEPLOY_EXAMPLE where ID in (#LONGID#) order by ID desc
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiDeployExampleObj">
+      delete from TB_BUSI_DEPLOY_EXAMPLE where ID=#ID#
+    </delete>
+    <insert id="insertByObj" parameterClass="TbBusiDeployExampleObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_BUSI_DEPLOY_EXAMPLE.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+      insert into TB_BUSI_DEPLOY_EXAMPLE(
+          ID,HOSTID,APPID,DEPLOY_FLAG,START_STOP_FLAG,RESULT,RELEASE_FLAG,APPPORT,KEYNAME,DEPLOY_PERCENT,isrestart,isbackup,SYS_ID,DAY_VERSION,HOST_USERNAME,DEPLOYPATH,HOST_CONFIG_ID,EXAMPLE_NAME,TRUST_FLAG,DEPLOYEXAMPLE_TYPE
+      )
+      values(#ID#,#HOSTID#,#APPID#,0,1,#RESULT#,#RELEASE_FLAG#,#APPPORT#,#KEYNAME#,#DEPLOY_PERCENT#,#isrestart#,#isbackup#,#SYS_ID#,#day_version#,#hostUsername#,#DEPLOYPATH#,#HOST_CONFIG_ID#,#exampleName#,#TRUST_FLAG#,#DEPLOYEXAMPLE_TYPE#)
+    </insert>
+    <update id="updateByObj" parameterClass="TbBusiDeployExampleObj">
+      update TB_BUSI_DEPLOY_EXAMPLE set HOSTID=#HOSTID#,APPID=#APPID#,DEPLOY_FLAG=#DEPLOY_FLAG#
+      ,RESULT=#RESULT#,KEYNAME=#KEYNAME#,TRUST_FLAG=#TRUST_FLAG# where ID=#ID#
+    </update>
+    <update id="startandstopByObj" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_DEPLOY_EXAMPLE set START_STOP_FLAG =#START_STOP_FLAG# where
+		ID=#ID#
+	</update>
+	<update id="deployRequestByObj" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_DEPLOY_EXAMPLE set DEPLOY_FLAG =#DEPLOY_FLAG# 
+		<isEqual property="DEPLOY_FLAG" prepend="," compareValue="1">DEPLOYESTARTTIME=SYSDATE,DEPLOYEENDTIME=null</isEqual>
+		<isNotEmpty property="DEPLOY_PERCENT" prepend=",">DEPLOY_PERCENT=#DEPLOY_PERCENT#</isNotEmpty>
+		<isNotEmpty property="EXECUTE_FLAG" prepend=",">DEPLOYESTARTTIME=SYSDATE,EXECUTE_FLAG=#EXECUTE_FLAG#</isNotEmpty>
+		where ID=#ID#
+	</update>
+	
+	
+	
+	<update id="updateDEPLOY_PERCENT" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_DEPLOY_EXAMPLE set DEPLOY_PERCENT = #DEPLOY_PERCENT# where id = #ID#
+	</update>
+	
+	<update id="updateSTART_STOP_PERCENT" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_DEPLOY_EXAMPLE set START_STOP_PERCENT = #START_STOP_PERCENT# where id = #ID#
+	</update>
+	
+	<update id="updateExampleIsRestart" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_DEPLOY_EXAMPLE set isrestart = #isrestart# where id = #ID#
+	</update>
+	
+	<update id="updateExampleIsBackup" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_DEPLOY_EXAMPLE set isbackup = #isbackup# where id = #ID#
+	</update>
+	
+	<select id="queryOnlineExampleList" parameterClass="TbBusiDeployExampleObj" resultClass="TbBusiDeployExampleObj">
+		
+	</select>
+	
+	<select id="countExample" parameterClass="TbBusiDeployExampleObj" resultClass="int">
+		select count(id) from tb_busi_deploy_example where SYS_ID in 
+		<iterate close=")" open="(" property="bizids" conjunction=",">
+			#bizids[]#
+		</iterate>
+	</select>
+	
+	<select id="queryDepExampleNumOfApp" parameterClass="TbBusiDeployExampleObj" resultClass="int">
+		select  count(ID) from TB_BUSI_DEPLOY_EXAMPLE  where APPID=#APPID#
+	</select>
+</sqlMap>

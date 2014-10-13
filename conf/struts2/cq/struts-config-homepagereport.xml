@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="homepagereport" extends="global_package">
+		<action name="homepagereport_*" class="homePageReportAction" method="{1}">
+			<result name="resourceStatistics">/reportcharts/homepage/resource_all_chart.jsp</result>
+			<result name="resourceHisTrend">/reportcharts/homepage/resource_his_trend.jsp</result>
+			<result name="historyAlarmTrend">/reportcharts/homepage/history_alarm_trend.jsp</result>
+			<!-- add by wangjl_cmi_jl 20140804 服务器性能情况页面-->
+			<result name="vmHostPfmcSummary">/reportcharts/homepage/vmHostPfmcSummary.jsp</result>
+			<!-- add by wangjl_cmi_jl 20140806 虚拟服务器详细信息页面-->
+			<result name="vmHostDetailInfo">/reportcharts/homepage/vmHostDetailInfo.jsp</result>
+			<!--  LAN（半双工）端口利用率报表  -->
+			<result name="LANPortRateReport">/reportcharts/homepage/lanPortRateChart.jsp</result>
+			<!--  WAN（全双工）端口流入利用率报表  -->
+			<result name="WANPortInRateReport">/reportcharts/homepage/wanPortInRateChart.jsp</result>
+			<!--  WAN（全双工）端口流出利用率报表  -->
+			<result name="WANPortOutRateReport">/reportcharts/homepage/wanPortInRateChart.jsp</result>
+			<!-- 端口误码率报表 -->
+			<result name="PortErrorRateReport">/reportcharts/homepage/portErrorRateChart.jsp</result>
+			<!-- 端口丢包率报表 -->
+			<result name="PortLostRateReport">/reportcharts/homepage/portLostRateChart.jsp</result>
+			<!-- 设备CPU利用率报表 -->
+			<result name="CPUUsedRateReport">/reportcharts/homepage/cpuUsedRateChart.jsp</result>
+			<!-- 设备内存利用率报表 -->
+			<result name="MemUsedRateReport">/reportcharts/homepage/memUsedRateChart.jsp</result>
+			<!-- 资源总池利用率报表 -->
+			<result name="resourceMainReport">/reportcharts/homepage/resource_main_chart.jsp</result>
+			<!-- 数据中心利用率报表 -->
+			<result name="resourceDCReport">/reportcharts/homepage/resource_dc_chart.jsp</result>
+			<!-- 集群利用率报表 -->
+			<result name="resourceGroupReport">/reportcharts/homepage/resource_group_chart.jsp</result>
+			<!-- 主机利用率报表 -->
+			<result name="resourceHostReport">/reportcharts/homepage/resource_host_chart.jsp</result>
+			<!-- IP利用率报表 -->
+			<result name="resourceNextIpReport">/reportcharts/homepage/resource_ip_chart.jsp</result>
+			
+		</action>
+ </package>
+
+</struts>

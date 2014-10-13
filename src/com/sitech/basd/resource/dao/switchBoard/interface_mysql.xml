@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="switchInterface">
+	<typeAlias alias="switch" type="com.sitech.basd.resource.domain.switchBoard.SwitchObj"/>
+	<typeAlias alias="switchPerformance" type="com.sitech.basd.resource.domain.switchBoard.SwitchPerformanceObj"/>
+	<typeAlias alias="vlan" type="com.sitech.basd.resource.domain.switchBoard.VlanObj"/>
+	<typeAlias alias="interface" type="com.sitech.basd.resource.domain.switchBoard.SwitchInterfaceObj"/>
+	 
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForListBase">
+	SELECT
+		i.id,
+		i.interf_name,
+		i.interf_status,
+		i.workModle,
+		i.interf_speed,
+		i.auto_negotiation,
+		i.switch_id,
+		i.insert_time,
+		i.update_time,
+		i.vlan_id,
+   		v.vlan_name,
+   		i.descript
+	FROM tb_resource_interface AS i LEFT JOIN tb_resource_vlan v on i.vlan_id = v.id
+		<dynamic prepend="where">
+			<isNotNull property="interf_name" prepend="and">
+				i.interf_name like CONCAT('%',#interf_name#,'%')
+			</isNotNull>
+			<isNotNull property="interf_status">
+				<isGreaterThan prepend="and" property="interf_status" compareValue="-1">
+					i.interf_status=#interf_status#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="switch_id" prepend="and">
+				i.switch_id= #switch_id#
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				i.id= #id#
+			</isNotNull>
+			<isNotNull property="vlan_id" prepend="and">
+				<isNotEmpty property="vlan_id">
+					i.vlan_id = #vlan_id#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+    <!-- 查询所有Interface-->
+	<select id="queryInterfaceList" parameterClass="interface" resultClass="interface">
+		<include refid="queryForListBase" />
+		ORDER BY i.interf_name
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 增加一条Interface记录 -->
+	 <insert id="insertInterface" parameterClass="interface">
+	 	insert into tb_resource_interface
+        (id,interf_name,interf_status,workModle,interf_speed,auto_negotiation,switch_id,insert_time,update_time,vlan_id,descript) 
+		values(#id#,#interf_name#,#interf_status#,#workModle#,#interf_speed#,#auto_negotiation#,#switch_id#,#insert_time#,#update_time#,#vlan_id#,#descript#)
+	 </insert>
+	<!-- 更新一条Interface记录 -->
+	 <update id="updateInterface" parameterClass="interface">
+	 	UPDATE tb_resource_interface 
+	 	<dynamic prepend="set">
+	 		<isNotEmpty prepend="," property="interf_status">
+	 		interf_status=#interf_status#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="workModle">
+	 		workModle=#workModle#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="interf_speed">
+	 		interf_speed=#interf_speed#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="auto_negotiation">
+	 		auto_negotiation=#auto_negotiation#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="update_time">
+	 		update_time=#update_time#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="descript">
+	 		descript=#descript#
+	 		</isNotEmpty>
+ 			<isNotNull prepend="," property="vlan_id">
+				vlan_id=#vlan_id#
+ 			</isNotNull>
+	 	</dynamic>
+        where id=#id#
+	 </update>
+	 <!-- 删除一条Interface记录 -->
+	 <delete id="deleteInterface" parameterClass="interface">
+	 	delete from tb_resource_interface where id = #id#
+	 </delete>
+	<!-- 统计Interface记录条数 -->
+	<select id="queryForCount" parameterClass="interface" resultClass="int">
+		select count(*)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <update id="updateVlanId" parameterClass="interface">
+	 	UPDATE tb_resource_interface set update_time=#update_time#,vlan_id=#vlan_id#
+        where id=#id#
+	 </update>
+	 
+	 <update id="updateVlanIdNull" parameterClass="interface">
+	 	UPDATE tb_resource_interface set vlan_id=#vlanId#
+        where vlan_id=#vlan_id#
+	 </update>
+	 <update id="deleteVlanByInterfaceId" parameterClass="interface">
+	 	UPDATE tb_resource_interface set vlan_id=#vlanId#
+        where id=#id#
+	 </update>
+	 <select id="queryVlanIDandInterName" parameterClass="interface" resultClass="interface">
+	 	SELECT i.interf_name,v.vlan_id from tb_resource_interface i LEFT JOIN tb_resource_vlan v ON i.vlan_id = v.id where i.id = #id#
+	 </select>
+	 <select id="queryInterList" parameterClass="interface" resultClass="interface">
+	 	SELECT
+			i.id,
+			i.interf_name,
+			i.interf_status,
+			i.workModle,
+			i.interf_speed,
+			i.auto_negotiation,
+			i.switch_id,
+			i.insert_time,
+			i.update_time,
+			i.vlan_id,
+	   		v.vlan_name,
+	   		i.descript
+		FROM tb_resource_interface AS i LEFT JOIN tb_resource_vlan v on i.vlan_id = v.id where i.vlan_id IS NULL or i.vlan_id = ''
+			<isNotNull property="switch_id" prepend="and">
+				i.switch_id= #switch_id#
+			</isNotNull>
+			ORDER BY i.interf_name
+	 </select>
+	 
+</sqlMap>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiSysTreeLimit">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiSysTreeLimit"
+		type="com.sitech.basd.yicloud.domain.busisystree.TbBusiSysTreeLimit" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="TbBusiSysTreeLimitColumnsNoKey">
+		TREE_NODE_ID treeNodeId,USERNAME
+	</sql>
+	<sql id="TbBusiSysTreeLimitColumns">
+		ID,
+		<include refid="TbBusiSysTreeLimitColumnsNoKey" />
+	</sql>
+	
+	<select id="queryTbBusiSysTreeLimit" parameterClass="TbBusiSysTreeLimit" resultClass="TbBusiSysTreeLimit">
+		select <include refid="TbBusiSysTreeLimitColumns"/> from TB_BUSI_SYS_TREE_LIMIT
+		<dynamic prepend="where">
+			<isNotEmpty property="username" prepend="and">
+				username=#username#
+			</isNotEmpty>
+			<isNotEmpty property="treeNodeId" prepend="and">
+				TREE_NODE_ID=#treeNodeId#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertTbBusiSysTreeLimit" parameterClass="TbBusiSysTreeLimit">
+		insert into TB_BUSI_SYS_TREE_LIMIT(id,TREE_NODE_ID,USERNAME)
+		values(#id#,#treeNodeId#,#username#)
+	</insert>
+	
+	<delete id="deleteTbBusiSysTreeLimitByUser" parameterClass="string">
+		delete from TB_BUSI_SYS_TREE_LIMIT where username=#username#
+	</delete>
+	
+	<delete id="deleteOneTbBusiSysTreeLimit" parameterClass="TbBusiSysTreeLimit">
+		delete from TB_BUSI_SYS_TREE_LIMIT where username=#username# and TREE_NODE_ID = #treeNodeId#
+	</delete>
+</sqlMap>

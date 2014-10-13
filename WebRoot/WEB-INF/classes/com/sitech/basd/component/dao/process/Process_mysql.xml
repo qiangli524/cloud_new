@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Process">
+	<typeAlias alias="ProcessObj" type="com.sitech.basd.component.domain.process.ProcessObj" />
+	<typeAlias alias="hadoopTreeObj" type="domain.tree.HadoopTreeObj"/>
+	 <sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+<!--  查询所有的进程，主机和进程组信息	-->
+	<sql id="queryForListBase">
+		select t.ID,
+		       t.PARENT_ID,
+		       t.PROCESS,
+		       t.PROCESS_COUNT,
+		       t.PROCESS_COUNT_ACTUAL,
+		       t.PROCESS_KEY,
+		       t.ISRUNNING,
+		       t.OPERATION,
+		       t.TAST_TYPE,
+		       t.PROCESS_STATE,
+		       t.PROCESS_LEVEL,
+		       t.USER_ID,
+		       t.START_SCRIPT,
+		       t.STOP_SCRIPT,
+		       DATE_FORMAT(t.ADD_TIME, '%Y-%m-%d %H:%i:%S') ADD_TIME,
+		       DATE_FORMAT(t.UPDATE_TIME, '%Y-%m-%d %H:%i:%S') UPDATE_TIME,
+		       DATE_FORMAT(t.START_TIME, '%Y-%m-%d %H:%i:%S') START_TIME,
+		       DATE_FORMAT(t.STOP_TIME, '%Y-%m-%d %H:%i:%S') STOP_TIME,
+		       t.PROCESS_DESC,
+		       t.ADD_USER,
+		       t.UPDATE_USER,
+		       t.TYPE,
+		       t.IS_CHECK,
+		       u.IP,
+		       u.USERNAME
+		  from TB_BUSI_APP_PROCESS t
+		  left join TB_USER_MANAGE u on t.USER_ID = u.ID
+	</sql>
+	
+	<!-- 	获取基准应用下所有实例的进程信息 -->
+	<sql id="queryProcessAppBase">
+		select distinct t.ID,
+		        t.PARENT_ID,
+		        t.PROCESS,
+		        t.PROCESS_COUNT,
+		        t.PROCESS_COUNT_ACTUAL,
+		        t.PROCESS_KEY,
+		        t.ISRUNNING,
+		        t.OPERATION,
+		        t.TAST_TYPE,
+		        t.PROCESS_STATE,
+		        t.PROCESS_LEVEL,
+		        t.USER_ID,
+		        t.START_SCRIPT,
+		        t.STOP_SCRIPT,
+		        DATE_FORMAT(t.ADD_TIME, 'yyyy-mm-dd hh24:mi:ss') ADD_TIME,
+		        DATE_FORMAT(t.UPDATE_TIME, 'yyyy-mm-dd hh24:mi:ss') UPDATE_TIME,
+		        DATE_FORMAT(t.START_TIME, 'yyyy-mm-dd hh24:mi:ss') START_TIME,
+		        DATE_FORMAT(t.STOP_TIME, 'yyyy-mm-dd hh24:mi:ss') STOP_TIME,
+		        t.PROCESS_DESC,
+		        t.ADD_USER,
+		        t.UPDATE_USER,
+		        t.TYPE,
+		        t.IS_CHECK,
+				c.IP,
+				c.USERNAME,
+				c.PASSWORD,
+				b.ENTITY_ID
+			FROM
+				TB_BUSI_APP_PROCESS t,
+				TB_EXAMPLE_RELATION b,
+				TB_USER_MANAGE c,
+				TB_BUSI_SYS_TREE d
+			WHERE
+				t.ID = b.ENTITY_ID
+			AND t.USER_ID = c.ID
+			AND d.PARENT_ID = #EXAMPLE_ID#
+			<isNotNull property="encodeExampleStr" prepend="and">
+				b.example_id in ($encodeExampleStr$) 
+			</isNotNull>
+				order by t.ADD_TIME
+	</sql>
+	
+	<!-- 查询进程信息列表 -->
+	<select id="queryForList" parameterClass="ProcessObj" resultClass="ProcessObj">
+		<include refid="queryForListBase" />
+		<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				t.ID =#ID#
+			</isNotEmpty>
+			<isNotEmpty property="PARENT_ID" prepend="and">
+				t.PARENT_ID =#PARENT_ID#
+			</isNotEmpty>
+			<isNotEmpty property="PROCESS" prepend="and">
+				t.PROCESS like CONCAT('%',#PROCESS#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="PROCESS_KEY" prepend="and">
+				t.PROCESS_KEY like CONCAT('%',#PROCESS_KEY#,'%')
+			</isNotEmpty>
+			<isGreaterThan property="PROCESS_STATE" compareValue="-1" prepend="and">
+				t.PROCESS_STATE =#PROCESS_STATE#
+			</isGreaterThan>
+			<isGreaterThan property="ISRUNNING" compareValue="-1" prepend="and">
+				t.ISRUNNING=#ISRUNNING#
+			</isGreaterThan>
+			<isGreaterThan property="OPERATION" compareValue="-1" prepend="and">
+				t.OPERATION=#OPERATION#
+			</isGreaterThan>
+			<isGreaterThan property="TAST_TYPE" compareValue="-1" prepend="and">
+				t.TAST_TYPE=#TAST_TYPE#
+			</isGreaterThan>
+			<isGreaterThan property="TYPE" compareValue="-1" prepend="and">
+				t.TYPE=#TYPE#
+			</isGreaterThan>
+			<isNotEmpty property="IP" prepend="and">
+				u.IP like CONCAT('%',#IP#,'%')
+			</isNotEmpty>
+		</dynamic>
+		order by t.ADD_TIME desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+    <!--查询基准应用下进程的个数 -->
+    <select id="queryProcessAppCount" parameterClass="ProcessObj" resultClass="int">
+		select count(distinct t.ID)
+			FROM
+				TB_BUSI_APP_PROCESS t,
+				TB_EXAMPLE_RELATION b,
+				TB_USER_MANAGE c,
+				TB_BUSI_SYS_TREE d
+			WHERE
+				t.ID = b.ENTITY_ID
+			AND t.USER_ID = c.ID
+			AND d.PARENT_ID = #EXAMPLE_ID#
+			<isNotNull property="encodeExampleStr" prepend="and">
+				b.example_id in ($encodeExampleStr$) 
+			</isNotNull>
+				order by t.ADD_TIME
+	</select>
+	
+	<!-- 查询部署实例的对应的进程文件(包括基准应用对应的进程文件) -->
+	 <select id="queryForDeployList" parameterClass="ProcessObj" resultClass="ProcessObj">
+	 <!-- 新增查询限制字段 update by huojla @ 20140107 -->
+	 	select a.ID,
+	       a.PARENT_ID,
+	       a.PROCESS,
+	       a.PROCESS_COUNT,
+	       a.PROCESS_COUNT_ACTUAL,
+	       a.PROCESS_KEY,
+	       a.ISRUNNING,
+	       a.OPERATION,
+	       a.TAST_TYPE,
+	       a.PROCESS_STATE,
+	       a.PROCESS_LEVEL,
+	       a.USER_ID,
+	       a.START_SCRIPT,
+	       a.STOP_SCRIPT,
+	       a.ADD_TIME,
+	       a.UPDATE_TIME,
+	       a.START_TIME,
+	       a.STOP_TIME,
+	       a.PROCESS_DESC,
+	       a.ADD_USER,
+	       a.UPDATE_USER,
+	       a.TYPE,
+	       a.IP,
+	       a.USERNAME
+		 from (<include refid="queryForListBase" />) a join TB_EXAMPLE_RELATION b 
+		  on a.ID = b.ENTITY_ID where b.EXAMPLE_ID=#EXAMPLE_ID#
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan> 
+	 </select>
+	 <!-- 查询部署实例的对应的进程文件(包括基准应用对应的进程文件)个数 -->
+	 <select id="queryForDeployListCount" parameterClass="ProcessObj" resultClass="int">
+	 	select count(*)
+		 from (<include refid="queryForListBase" />) a join TB_EXAMPLE_RELATION b 
+		  on a.ID = b.ENTITY_ID where b.EXAMPLE_ID=#EXAMPLE_ID#
+	 </select>
+	 
+	 <!-- 	 查询在基准应用下的所有进程信息 -->
+	 <select id="queryForAppProcess" parameterClass="ProcessObj" resultClass="ProcessObj">
+		<include refid="queryProcessAppBase" />
+	    <isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	
+	<insert id="insertByObj" parameterClass="ProcessObj">
+		insert into
+		  TB_BUSI_APP_PROCESS(ID,ISRUNNING,OPERATION,TAST_TYPE,PROCESS_STATE,PARENT_ID,PROCESS,PROCESS_COUNT,PROCESS_COUNT_ACTUAL,PROCESS_KEY,PROCESS_LEVEL,USER_ID,START_SCRIPT,STOP_SCRIPT,ADD_TIME,UPDATE_TIME,START_TIME,STOP_TIME,PROCESS_DESC,ADD_USER,UPDATE_USER,TYPE,IS_CHECK)
+		values(#ID#,#ISRUNNING#,#OPERATION#,#TAST_TYPE#,#PROCESS_STATE#,#PARENT_ID#,#PROCESS#,#PROCESS_COUNT#,#PROCESS_COUNT_ACTUAL#,#PROCESS_KEY#,#PROCESS_LEVEL#,#USER_ID#,#START_SCRIPT#,#STOP_SCRIPT#,now(),now(),#START_TIME#,#STOP_TIME#,#PROCESS_DESC#,#ADD_USER#,#UPDATE_USER#,#TYPE#,#IS_CHECK#)
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="ProcessObj">
+	   delete from TB_BUSI_APP_PROCESS
+	   	<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				ID =#ID#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<!-- 统计进程数目 -->
+	<select id="queryForCount" parameterClass="ProcessObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				t.ID =#ID#
+			</isNotEmpty>
+			<isNotEmpty property="PARENT_ID" prepend="and">
+				t.PARENT_ID =#PARENT_ID#
+			</isNotEmpty>
+			<isNotEmpty property="PROCESS" prepend="and">
+				t.PROCESS like CONCAT('%',#PROCESS#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="PROCESS_KEY" prepend="and">
+				t.PROCESS_KEY like CONCAT('%',#PROCESS_KEY#,'%')
+			</isNotEmpty>
+			<isGreaterThan property="PROCESS_STATE" compareValue="-1" prepend="and">
+				t.PROCESS_STATE =#PROCESS_STATE#
+			</isGreaterThan>
+			<isGreaterThan property="ISRUNNING" compareValue="-1" prepend="and">
+				t.ISRUNNING=#ISRUNNING#
+			</isGreaterThan>
+			<isGreaterThan property="OPERATION" compareValue="-1" prepend="and">
+				t.OPERATION=#OPERATION#
+			</isGreaterThan>
+			<isGreaterThan property="TAST_TYPE" compareValue="-1" prepend="and">
+				t.TAST_TYPE=#TAST_TYPE#
+			</isGreaterThan>
+			<isGreaterThan property="TYPE" compareValue="-1" prepend="and">
+				t.TYPE=#TYPE#
+			</isGreaterThan>
+			<isNotEmpty property="IP" prepend="and">
+				u.IP like CONCAT('%',#IP#,'%')
+			</isNotEmpty>
+		</dynamic>	
+		 ) virtual_table	
+	 </select>
+	 
+	<!-- 更新一条进程信息 -->
+	 <update id="updateProcessByObj" parameterClass="ProcessObj">
+	 update TB_BUSI_APP_PROCESS
+	 	<dynamic prepend="set">
+	 	<isNotEmpty property="PROCESS_DESC" prepend=",">
+	 	   PROCESS_DESC=#PROCESS_DESC#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty property="PROCESS" prepend=",">
+	 	   PROCESS=#PROCESS#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty property="PROCESS_KEY" prepend=",">
+	 	   PROCESS_KEY=#PROCESS_KEY#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty property="START_SCRIPT" prepend=",">
+	 	   START_SCRIPT=#START_SCRIPT#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty property="STOP_SCRIPT" prepend=",">
+	 	   STOP_SCRIPT=#STOP_SCRIPT#
+	 	 </isNotEmpty>
+	 	 <isNotEmpty property="PARENT_ID" prepend=",">
+	 	   PARENT_ID=#PARENT_ID#
+	 	 </isNotEmpty>
+	    <isGreaterThan property="PROCESS_STATE" compareValue="-1" prepend=",">
+		   PROCESS_STATE =#PROCESS_STATE#
+		 </isGreaterThan>
+		 <isGreaterThan property="ISRUNNING" compareValue="-1" prepend=",">
+		   ISRUNNING=#ISRUNNING#
+		 </isGreaterThan>
+		 <isGreaterThan property="OPERATION" compareValue="-1" prepend=",">
+		   OPERATION=#OPERATION#
+		 </isGreaterThan>
+		 <isGreaterThan property="TAST_TYPE" compareValue="-1" prepend=",">
+		   TAST_TYPE=#TAST_TYPE#
+		 </isGreaterThan>
+		 <isGreaterThan property="TYPE" compareValue="-1" prepend=",">
+		   TYPE=#TYPE#
+		 </isGreaterThan>
+	 	 <isNotEmpty property="PROCESS_COUNT" prepend=",">
+	 	   PROCESS_COUNT=#PROCESS_COUNT#
+	 	 </isNotEmpty >
+	 	 <isNotEmpty property="PROCESS_COUNT_ACTUAL" prepend=",">
+	 	   PROCESS_COUNT_ACTUAL=#PROCESS_COUNT_ACTUAL#
+	 	 </isNotEmpty >
+	 	 <isNotEmpty property="IS_CHECK" prepend=",">
+	 	   IS_CHECK=#IS_CHECK#
+	 	 </isNotEmpty >  
+	 	 <isNotEmpty prepend=",">
+	 	  UPDATE_TIME= now()
+	 	 </isNotEmpty>
+	 	 
+	 	</dynamic>
+	 	where ID = #ID#
+	 </update>
+
+	<select id="countProcess" parameterClass="ProcessObj" resultClass="int">
+		select count(t.ID) from TB_BUSI_APP_PROCESS t left join TB_USER_MANAGE u on t.USER_ID = u.ID
+		<dynamic prepend="where">
+			<isNotNull property="PROCESS_STATE" prepend="and">
+				t.PROCESS_STATE = #PROCESS_STATE#
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<select id="countProcessUnNor" resultClass="int">
+		select count(t.ID) from TB_BUSI_APP_PROCESS t left join TB_USER_MANAGE u on t.USER_ID = u.ID
+		where t.PROCESS_STATE != 2
+	</select>
+
+	<select id="queryUnNormalProcess" parameterClass="ProcessObj" resultClass="ProcessObj">
+		<include refid="queryForListBase"/>
+		where t.PROCESS_STATE != 2
+		<dynamic>
+			<isNotEmpty property="ID" prepend="and">
+				t.ID =#ID#
+			</isNotEmpty>
+			<isNotEmpty property="PARENT_ID" prepend="and">
+				t.PARENT_ID =#PARENT_ID#
+			</isNotEmpty>
+			<isNotEmpty property="PROCESS" prepend="and">
+				t.PROCESS like CONCAT('%',#PROCESS#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="PROCESS_KEY" prepend="and">
+				t.PROCESS_KEY like CONCAT('%',#PROCESS_KEY#,'%')
+			</isNotEmpty>
+			<isGreaterThan property="PROCESS_STATE" compareValue="-1" prepend="and">
+				t.PROCESS_STATE =#PROCESS_STATE#
+			</isGreaterThan>
+			<isGreaterThan property="ISRUNNING" compareValue="-1" prepend="and">
+				t.ISRUNNING=#ISRUNNING#
+			</isGreaterThan>
+			<isGreaterThan property="OPERATION" compareValue="-1" prepend="and">
+				t.OPERATION=#OPERATION#
+			</isGreaterThan>
+			<isGreaterThan property="TAST_TYPE" compareValue="-1" prepend="and">
+				t.TAST_TYPE=#TAST_TYPE#
+			</isGreaterThan>
+			<isGreaterThan property="TYPE" compareValue="-1" prepend="and">
+				t.TYPE=#TYPE#
+			</isGreaterThan>
+			<isNotEmpty property="IP" prepend="and">
+				u.IP like CONCAT('%',#IP#,'%')
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<!-- 查询应用进程列表 -->
+	 <select id="queryAppProcessList" parameterClass="ProcessObj" resultClass="ProcessObj">
+	 	select distinct t.ID,
+                t.PARENT_ID,
+                t.PROCESS,
+                t.PROCESS_COUNT,
+                t.PROCESS_KEY,
+                t.USER_ID,
+                t.START_SCRIPT,
+                t.STOP_SCRIPT,
+                to_char(t.ADD_TIME, 'yyyy-mm-dd hh24:mi:ss') ADD_TIME,
+                t.PROCESS_DESC,
+                t.IS_CHECK,
+                c.IP,
+                c.USERNAME,
+                c.PASSWORD,
+                CONCAT(e.example_name ,'@', e.id)example_name,
+                 b.ENTITY_ID
+	  FROM TB_BUSI_APP_PROCESS t,
+	       TB_EXAMPLE_RELATION b,
+	       TB_USER_MANAGE      c,
+	       TB_BUSI_SYS_TREE    d,
+	       tb_busi_deploy_example e,
+	       tb_busi_host_config f
+	 WHERE t.ID = b.ENTITY_ID
+	   AND t.USER_ID = c.ID
+	   and e.id = d.busi_id
+	   and e.host_config_id = f.hostconfigid
+	   and f.user_manage_id = c.id
+	   AND d.PARENT_ID = #EXAMPLE_ID#
+			<isNotNull property="encodeExampleStr" prepend="and">
+				b.example_id in ($encodeExampleStr$) 
+			</isNotNull>
+	    order by ADD_TIME
+	 </select>
+	 <!-- 查询Hadoop中进程列表 -->
+	<sql id="queryForHadoopProcessBase">
+		select distinct t.ID,
+		        t.PARENT_ID,
+		        t.PROCESS,
+		        t.PROCESS_COUNT,
+		        t.PROCESS_COUNT_ACTUAL,
+		        t.PROCESS_KEY,
+		        t.ISRUNNING,
+		        t.OPERATION,
+		        t.TAST_TYPE,
+		        t.PROCESS_STATE,
+		        t.PROCESS_LEVEL,
+		        t.USER_ID,
+		        t.START_SCRIPT,
+		        t.STOP_SCRIPT,
+		        DATE_FORMAT(t.ADD_TIME, 'yyyy-mm-dd hh24:mi:ss') ADD_TIME,
+		        DATE_FORMAT(t.UPDATE_TIME, 'yyyy-mm-dd hh24:mi:ss') UPDATE_TIME,
+		        DATE_FORMAT(t.START_TIME, 'yyyy-mm-dd hh24:mi:ss') START_TIME,
+		        DATE_FORMAT(t.STOP_TIME, 'yyyy-mm-dd hh24:mi:ss') STOP_TIME,
+		        t.PROCESS_DESC,
+		        t.ADD_USER,
+		        t.UPDATE_USER,
+		        t.TYPE,
+		        t.IS_CHECK,
+				c.IP,
+				c.USERNAME,
+				c.PASSWORD,
+				b.ENTITY_ID
+			FROM
+				TB_BUSI_APP_PROCESS t,
+				TB_EXAMPLE_RELATION b,
+				TB_USER_MANAGE c
+			WHERE
+				t.ID = b.ENTITY_ID
+			AND t.USER_ID = c.ID
+			<isNotEmpty prepend="and" property="PROCESS">
+				<isNotNull>
+					t.PROCESS like CONCAT('%',#PROCESS#,'%')
+				</isNotNull>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROCESS_KEY">
+				<isNotNull>
+					t.PROCESS_KEY = #PROCESS_KEY#
+				</isNotNull>
+			</isNotEmpty>
+	</sql>
+	 <select id="queryHadoopHostNodeProcessCount" parameterClass="ProcessObj" resultClass="int">
+	 	select count(*)
+		 from (<include refid="queryForHadoopProcessBase" /> AND b.EXAMPLE_ID = #EXAMPLE_ID#
+			) virtual_table
+	 </select>
+	 <select id="queryHadoopHostNodeProcess" parameterClass="ProcessObj" resultClass="ProcessObj">
+		<include refid="queryForHadoopProcessBase" /> 
+			AND b.EXAMPLE_ID = #EXAMPLE_ID# 
+	    <isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	
+	<select id="queryHadoopOtherNodeProcessCount" parameterClass="ProcessObj" resultClass="int">
+	 	select count(*)
+		 from (<include refid="queryForHadoopProcessBase" />
+		 	AND b.EXAMPLE_ID in 
+		 	<iterate close=")" conjunction="," open="(" property="nodeIdList" >
+		 		#nodeIdList[]#
+		 	</iterate>
+		 ) virtual_table
+	 </select>
+	 
+	 <select id="queryHadoopOtherNodeProcess" parameterClass="ProcessObj" resultClass="ProcessObj">
+		<include refid="queryForHadoopProcessBase" />
+		AND b.EXAMPLE_ID in 
+			<iterate close=")" conjunction="," open="(" property="nodeIdList" >
+		 		#nodeIdList[]#
+		 	</iterate>
+	    <isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	
+		<delete id="deleteRelation" parameterClass="ProcessObj">
+		 delete from tb_example_relation
+	   	<dynamic prepend="where">
+		    <isNotEmpty property="ID" prepend="and">
+				ENTITY_ID =#ID#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<!-- update by qism 设置状态5也为正常 -->
+	<select id="queryHadoopServiceNodeStatus" resultClass="ProcessObj" parameterClass="ProcessObj">
+		SELECT
+			count(CASE WHEN a.PROCESS_STATE = 2 THEN 'normal'
+					   WHEN a.PROCESS_STATE = 5 THEN 'normal' END) normalcount,
+			count(a.ID) allcount,
+			b.EXAMPLE_ID ENTITY_ID 
+		FROM
+			tb_busi_app_process a
+		INNER JOIN tb_example_relation b ON a.ID = b.ENTITY_ID 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="nodeIdList">
+				b.EXAMPLE_ID in 
+				<iterate close=")" conjunction="," open="(" property="nodeIdList">
+					#nodeIdList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+		GROUP BY b.EXAMPLE_ID
+	</select>
+	<!-- 查询出进程表中异常的进程 -->
+	<select id="querySeriousHadoopProcess" resultClass="ProcessObj" parameterClass="hadoopTreeObj">
+		SELECT a.ID,a.PROCESS_STATE,a.PROCESS FROM tb_busi_app_process a 
+		INNER JOIN tb_example_relation b ON a.ID = b.ENTITY_ID
+		WHERE b.EXAMPLE_ID = #id#
+		  AND a.PROCESS_STATE not in(2,5)	
+	</select>
+</sqlMap>

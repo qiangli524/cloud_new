@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopJvm">
+<typeAlias alias="HadoopJvmObj" type="domain.jvm.HadoopJvmObj"/>
+<typeAlias alias="JvmData" type="domain.jvm.JvmData"/>
+<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+<typeAlias alias="Category" type="com.sitech.basd.fusioncharts.vo.Category"/>
+	 <select id="queryTimeLable" parameterClass="HadoopJvmObj" resultClass="Category">
+	 	 select DATE_FORMAT(t.coll_time, '%Y-%m-%d %H:%i:%s') label
+  				from tb_hadoop_coll t
+ 			<dynamic prepend="where">
+			       <isNotEmpty property="kpi_id" prepend="and">
+				         <isNotNull property="kpi_id">
+				         	 t.kpi_id = #kpi_id#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="cluster_name" prepend="and">
+				         <isNotNull property="cluster_name">
+				         	 t.cluster_name = #cluster_name#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="host_name" prepend="and">
+				         <isNotNull property="host_name">
+				         	 t.host_name = #host_name#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty prepend="and" property="startTime">
+						t.COLL_TIME
+						<![CDATA[
+							>=
+						]]>
+						STR_TO_DATE(#startTime#,'%Y-%m-%d %H:%i:%s')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="endTime">
+						t.COLL_TIME
+						<![CDATA[
+							<=
+						]]>
+						STR_TO_DATE(#endTime#,'%Y-%m-%d %H:%i:%s')
+				</isNotEmpty>
+				LIMIT 1,$points$
+			  </dynamic>
+	 </select>
+	 <select id="queryHadoopJvm" parameterClass="HadoopJvmObj" resultClass="Data">
+	 select a.label,a.value from 
+	 (	 	 	select DATE_FORMAT(t.coll_time, '%Y-%m-%d %H:%i:%s') label,round(t.kpi_value,2) value
+  				from tb_hadoop_coll t
+ 			<dynamic prepend="where">
+			       <isNotEmpty property="kpi_id" prepend="and">
+				         <isNotNull property="kpi_id">
+				         	 t.kpi_id = #kpi_id#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="cluster_name" prepend="and">
+				         <isNotNull property="cluster_name">
+				         	 t.cluster_name = #cluster_name#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="host_name" prepend="and">
+				         <isNotNull property="host_name">
+				         	 t.host_name = #host_name#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty prepend="and" property="startTime">
+						t.COLL_TIME
+						<![CDATA[
+							>=
+						]]>
+						STR_TO_DATE(#startTime#,'%Y-%m-%d %H:%i:%s')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="endTime">
+						t.COLL_TIME
+						<![CDATA[
+							<=
+						]]>
+						STR_TO_DATE(#endTime#,'%Y-%m-%d %H:%i:%s')
+				</isNotEmpty>
+				order by t.COLL_TIME desc
+					LIMIT 1,$points$
+			  </dynamic>) a
+			  order by a.label
+
+	 </select>
+	 <select id="queryLogList" parameterClass="HadoopJvmObj" resultClass="HadoopJvmObj">
+		select a.CLUSTER_NAME,a.HOST_NAME,a.KPI_ID  from (
+				SELECT t.CLUSTER_NAME,t.HOST_NAME,t.KPI_ID
+				FROM tb_hadoop_coll t  WHERE t.CLUSTER_NAME = (
+						SELECT c.CLUSTER_ID FROM tb_hadoop_cluster_info c
+					<dynamic prepend="where">
+						<isNotEmpty prepend="and" property="cluster_name">
+							<isNotNull property="cluster_name">
+								c.id = #cluster_name#
+							</isNotNull>
+						</isNotEmpty>
+					</dynamic>
+					)
+				AND t.KPI_ID = #kpi_id# ) a 
+				WHERE a.HOST_NAME IN ( SELECT a.HOST_NAME FROM tb_hadoop_host_info a
+					WHERE a.ID IN 
+					<iterate close=")" conjunction="," open="(" property="uuidList">
+						#uuidList[]#
+					</iterate>
+				) GROUP BY a.HOST_NAME
+	 </select>
+</sqlMap>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="IBM.SCE.IP">localhost</entry>
+	<entry key="IBM.SCE.PORT">8080</entry>
+	<entry key="IBM.SCE.USERNAME">admin</entry>
+	<entry key="IBM.SCE.PASSWORD">admin1234!</entry>
+</properties>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Tactics">
+	<typeAlias alias="TacticsObj" type="com.sitech.basd.component.tree.domain.tactics.TacticsObj"/>
+	
+	<resultMap class="TacticsObj" id="rmap" >
+		<result property="ID" column="ID" javaType="java.lang.String"/>
+		<result property="TASKID" column="TASKID" javaType="java.lang.String"/>
+		<result property="EXECUTEMETHOD" column="EXECUTEMETHOD" javaType="java.lang.Short"/>
+		<result property="TIMEMODE" column="TIMEMODE" javaType="java.lang.Short"/>
+		<result property="EXECUTETIME" column="EXECUTETIME" javaType="java.lang.String" jdbcType="DATE"/>
+		<result property="ISCOPY" column="ISCOPY" javaType="java.lang.Short"/>
+		<result property="ISNEEDCHECK" column="ISNEEDCHECK" javaType="java.lang.Short"/>
+		<result property="ISRESTART" column="ISRESTART" javaType="java.lang.Short"/>
+	</resultMap>
+	
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<insert id="insertTacticsObj" parameterClass="TacticsObj">
+		insert into TB_BUSI_TACTICS 
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="ID">
+				ID
+			</isNotNull>		
+			<isNotNull prepend="," property="TASKID">
+				TASKID
+			</isNotNull>		
+			<isNotNull prepend="," property="EXECUTEMETHOD">
+				EXECUTEMETHOD
+			</isNotNull>		
+			<isNotNull prepend="," property="TIMEMODE">
+				TIMEMODE
+			</isNotNull>		
+			<isNotNull prepend="," property="EXECUTETIME">
+				EXECUTETIME
+			</isNotNull>		
+			<isNotNull prepend="," property="ISCOPY">
+				ISCOPY
+			</isNotNull>		
+			<isNotNull prepend="," property="ISNEEDCHECK">
+				ISNEEDCHECK
+			</isNotNull>
+			<isNotNull prepend="," property="ISRESTART">
+				ISRESTART
+			</isNotNull>
+			)		
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="ID">
+				#ID#
+			</isNotNull>
+			<isNotNull prepend="," property="TASKID">
+				#TASKID#
+			</isNotNull>
+			<isNotNull prepend="," property="EXECUTEMETHOD">
+				#EXECUTEMETHOD#
+			</isNotNull>
+			<isNotNull prepend="," property="TIMEMODE">
+				#TIMEMODE#
+			</isNotNull>
+			<isNotNull prepend="," property="EXECUTETIME">
+				to_date(#EXECUTETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotNull>
+			<isNotNull prepend="," property="ISCOPY">
+				#ISCOPY#
+			</isNotNull>
+			<isNotNull prepend="," property="ISNEEDCHECK">
+				#ISNEEDCHECK#
+			</isNotNull>
+			<isNotNull prepend="," property="ISRESTART">
+				#ISRESTART#
+			</isNotNull>
+		)
+		</dynamic>
+	</insert>
+	
+	<delete id="deleteTacticsObj" parameterClass="TacticsObj">
+		delete from TB_BUSI_TACTICS  where ID = #ID#
+	</delete>
+	
+	<delete id="deleteTacticsByTaskId" parameterClass="TacticsObj">
+		delete from TB_BUSI_TACTICS  where TASKID = #TASKID#
+	</delete>
+	
+	<update id="updateTacticsObj" parameterClass="TacticsObj">
+		update TB_BUSI_TACTICS t
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="ID">
+				t.ID = #ID#
+			</isNotNull>
+			<isNotNull prepend="," property="TASKID">
+				t.TASKID = #TASKID#
+			</isNotNull>
+			<isNotNull prepend="," property="EXECUTEMETHOD">
+				t.EXECUTEMETHOD = #EXECUTEMETHOD#
+			</isNotNull>
+			<isNotNull prepend="," property="TIMEMODE">
+				t.TIMEMODE = #TIMEMODE#
+			</isNotNull>
+			<isNotNull prepend="," property="EXECUTETIME">
+				t.EXECUTETIME = to_date(#EXECUTETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotNull>
+			<isNotNull prepend="," property="ISCOPY">
+				t.ISCOPY = #ISCOPY#
+			</isNotNull>
+			<isNotNull prepend="," property="ISNEEDCHECK">
+				t.ISNEEDCHECK = #ISNEEDCHECK#
+			</isNotNull>
+			<isNotNull prepend="," property="ISRESTART">
+				t.ISRESTART = #ISRESTART#
+			</isNotNull>
+		</dynamic>
+		where t.ID = #ID#
+	</update>
+	
+	<select id="queryTacticsList" parameterClass="TacticsObj" resultClass="TacticsObj">
+		<isGreaterThan compareValue="0" property="PAGESIZE">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+			select t.ID,t.TASKID,t.EXECUTEMETHOD,t.TIMEMODE,to_char(t.EXECUTETIME,'yyyy-mm-dd HH24:mi:ss') EXECUTETIME,t.ISCOPY,t.ISNEEDCHECK,t.ISRESTART from TB_BUSI_TACTICS t
+			<dynamic prepend="where">
+				<isNotNull prepend="and" property="ID">
+					ID = #ID#
+				</isNotNull>
+				<isNotNull prepend="and" property="TASKID">
+					TASKID = #TASKID#
+				</isNotNull>
+				<isNotNull prepend="and" property="EXECUTEMETHOD">
+					EXECUTEMETHOD = #EXECUTEMETHOD#
+				</isNotNull>
+				<isNotNull prepend="and" property="TIMEMODE">
+					TIMEMODE = #TIMEMODE#
+				</isNotNull>
+				<isNotNull prepend="and" property="EXECUTETIME">
+					<![CDATA[
+						EXECUTETIME >= to_date(#EXECUTETIME#,'yyyy-mm-dd HH24:mi:ss')
+					]]>
+				</isNotNull>
+				<isNotNull prepend="and" property="ISCOPY">
+					ISCOPY = #ISCOPY#
+				</isNotNull>
+				<isNotNull prepend="and" property="ISNEEDCHECK">
+					ISNEEDCHECK = #ISNEEDCHECK#
+				</isNotNull>
+				<isNotNull prepend="and" property="ISRESTART">
+					ISRESTART = #ISRESTART#
+				</isNotNull>
+			</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryTacticsCount" parameterClass="TacticsObj" resultClass="int">
+		select count(*) from (
+			select t.ID,t.TASKID,t.EXECUTEMETHOD,t.TIMEMODE,to_char(t.EXECUTETIME,'yyyy-mm-dd HH24:mi:ss') EXECUTETIME,t.ISCOPY,t.ISNEEDCHECK,t.ISRESTART from TB_BUSI_TACTICS t
+			<dynamic prepend="where">
+				<isNotNull prepend="and" property="ID">
+					ID = #ID#
+				</isNotNull>
+				<isNotNull prepend="and" property="TASKID">
+					TASKID = #TASKID#
+				</isNotNull>
+				<isNotNull prepend="and" property="EXECUTEMETHOD">
+					EXECUTEMETHOD = #EXECUTEMETHOD#
+				</isNotNull>
+				<isNotNull prepend="and" property="TIMEMODE">
+					TIMEMODE = #TIMEMODE#
+				</isNotNull>
+				<isNotNull prepend="and" property="EXECUTETIME">
+					<![CDATA[
+						EXECUTETIME >= to_date(#EXECUTETIME#,'yyyy-mm-dd HH24:mi:ss')
+					]]>
+				</isNotNull>
+				<isNotNull prepend="and" property="ISCOPY">
+					ISCOPY = #ISCOPY#
+				</isNotNull>
+				<isNotNull prepend="and" property="ISNEEDCHECK">
+					ISNEEDCHECK = #ISNEEDCHECK#
+				</isNotNull>
+				<isNotNull prepend="and" property="ISRESTART">
+					ISRESTART = #ISRESTART#
+				</isNotNull>
+			</dynamic>
+		) virtual_table
+	</select>
+	
+</sqlMap>

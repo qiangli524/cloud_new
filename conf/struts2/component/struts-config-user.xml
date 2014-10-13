@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="usermanage" extends="default">
+ <!-- 全局异常配置 -->
+ 		<global-results>
+ 			<result name="exception">/yicloud/vmman/exception.jsp</result>
+ 		</global-results>
+ 		<global-exception-mappings>
+ 			<exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>
+ 		</global-exception-mappings>
+		<action name="usermanage_*" class="userAction" method="{1}">
+			<result name="list">/component/user/listUserList.jsp</result>
+			<result name="logUser">/component/user/logUserList.jsp</result>
+			<result name="listUsers">/component/user/listUsers.jsp</result>
+			<result name="listHadoopUsers">/component/user/listHadoopUsers.jsp</result>
+			<result name="edit">/component/user/editUser.jsp</result>
+			<result name="listusertype">/dbmanager/dbexample/listUsers.jsp</result>
+		</action>
+		<action name="deployuser_*" class="deployUserAction" method="{1}">
+			<result name="list">/component/tree/user/listUserList.jsp</result>
+			<result name="listuserprocess">/component/user/processlistUserList.jsp</result>
+			<result name="logUser">/component/user/logUserList.jsp</result>
+		</action>
+ </package>
+
+</struts>

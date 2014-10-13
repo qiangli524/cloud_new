@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PhysicalVlan">
+<typeAlias alias="PhysicalVlanObj" type="com.sitech.shop.domain.vlan.PhysicalVlanObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+         ]]>
+	</sql>
+	<sql id="queryNoAssign">
+	        SELECT
+			id,         
+			`name`,     
+			ip,          
+			gateway,     
+			subnet_mask,
+			vlan_id,     
+			isused,     
+			area_id,
+			user_id,
+			vlan_type,
+			DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			DATE_FORMAT(end_time,'%Y-%m-%d %H:%i:%s') end_time,
+			obtain_way,
+			rule_id
+		FROM
+			tb_physical_vlan
+		WHERE (user_id is null || user_id='') 
+			<isNotEmpty property="isused" prepend="and">
+				isused = #isused#
+			</isNotEmpty>
+			<isNotEmpty property="vlan_type" prepend="and">
+				vlan_type = #vlan_type#
+			</isNotEmpty>
+			<isNotEmpty property="area_id" prepend="and">
+				area_id = #area_id#
+			</isNotEmpty>
+			<isNotEmpty property="service_type" prepend="and">
+				service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty property="rule_id" prepend="and">
+				rule_id = #rule_id#
+			</isNotEmpty>
+	  </sql>
+	<sql id="queryByObjBase">
+				SELECT
+			a.id,         
+			a.name,     
+			a.ip,          
+			a.gateway,     
+			a.subnet_mask,
+			a.vlan_id,     
+			a.isused,     
+			a.area_id,
+			a.user_id,
+			a.behavior,
+			a.qos_num,
+			a.flow_class,
+			a.flow_size,
+			a.vlan_type,
+			a.service_type,
+			DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			DATE_FORMAT(a.end_time,'%Y-%m-%d %H:%i:%s') end_time,
+			a.obtain_way,
+			a.rule_id,
+			b.name router_name 
+		FROM
+			tb_physical_vlan a left join tb_public_router b
+			on a.router_id=b.id
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					a.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="name" >
+				<isNotEmpty property="name" prepend="and">
+					a.name like '%$name$%'
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="ip" >
+				<isNotEmpty property="ip" prepend="and">
+					a.ip = #ip#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="gateway" >
+				<isNotEmpty property="gateway" prepend="and">
+					a.gateway = #gateway#
+				</isNotEmpty>
+			</isNotNull>
+				
+			<isNotNull property="subnet_mask" >
+				<isNotEmpty property="subnet_mask" prepend="and">
+					a.subnet_mask = #subnet_mask#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="vlan_id" >
+				<isNotEmpty property="vlan_id" prepend="and">
+					a.vlan_id = #vlan_id#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="area_id" >
+				<isNotEmpty property="area_id" prepend="and">
+					a.area_id = #area_id#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="user_id" prepend="and">
+				<isNotEmpty property="user_id">
+					a.user_id = #user_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="router_id" prepend="and">
+					a.router_id = #router_id#
+			</isNotEmpty>
+			<isNotEmpty property="vlan_type" prepend="and">
+					a.vlan_type = #vlan_type#
+			</isNotEmpty>
+			<isNotEmpty property="rule_id" prepend="and">
+					a.rule_id = #rule_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	
+	
+	<!-- 查找快照列表记录 -->
+	 <!--  <select id="queryNoAssignForList" parameterClass="PhysicalVlanObj" resultClass="PhysicalVlanObj">
+	        SELECT
+			id,         
+			`name`,     
+			ip,          
+			gateway,     
+			subnet_mask,
+			vlan_id,     
+			isused,     
+			area_id,
+			user_id,
+			DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s') create_time   
+		FROM
+			tb_physical_vlan
+		WHERE
+			user_id is null
+			<isNotNull property="area_id" >
+				<isNotEmpty property="area_id" prepend="and">
+					area_id = #area_id#
+				</isNotEmpty>
+			</isNotNull>
+	  </select> -->
+	
+	  <!-- 查找快照列表记录 -->
+	  <select id="queryForPhysicalVlanObj" parameterClass="PhysicalVlanObj" resultClass="PhysicalVlanObj">
+	        <include refid="queryByObjBase"/> 
+	  </select>
+	  
+	  <!-- 获得未被使用的vlan-->
+	  <select id="getUnAssignedVlanList" parameterClass="PhysicalVlanObj" resultClass="PhysicalVlanObj">
+	        <include refid="queryNoAssign"/>
+	  </select>
+	  
+	
+	  <!-- 查找快照列表记录 -->
+	  <select id="queryForPhysicalVlanList" parameterClass="PhysicalVlanObj" resultClass="PhysicalVlanObj">
+	        <include refid="queryByObjBase"/> 
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="PhysicalVlanObj" resultClass="int">
+	       select count(id) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <!-- 插入一条记录 -->
+	  <insert id="insertByObj" parameterClass="PhysicalVlanObj">
+	  	INSERT INTO tb_physical_vlan (
+			id,         
+			name,     
+			ip,          
+			gateway,     
+			subnet_mask,
+			vlan_id,     
+			isused,     
+			area_id,
+			user_id,
+			vlan_type,
+			service_type,
+			rule_id
+		)
+			VALUES
+		(
+			#id#,         
+			#name#,     
+			#ip#,          
+			#gateway#,     
+			#subnet_mask#,
+			#vlan_id#,     
+			#isused#,     
+			#area_id#,
+			#user_id#,
+			#vlan_type#,
+			#service_type#,
+			#rule_id#
+		)
+	  </insert>
+	  
+	  <!-- 更新一条记录 -->
+	  <update id="updateByObj" parameterClass="PhysicalVlanObj">
+	  	UPDATE tb_physical_vlan 
+	  	<dynamic prepend="set">
+				 <isNotEmpty prepend="," property="name">     
+			         name=#name#      
+			     </isNotEmpty> 
+			    <isNotEmpty prepend="," property="ip">     
+			         ip=#ip#      
+			     </isNotEmpty>  
+			     <isNotEmpty prepend="," property="gateway">     
+			         gateway=#gateway# 
+			     </isNotEmpty>  
+			      <isNotEmpty prepend="," property="subnet_mask">     
+			         subnet_mask=#subnet_mask#      
+			     </isNotEmpty> 
+			     <isNotEmpty prepend="," property="vlan_id">     
+			         vlan_id=#vlan_id#      
+			     </isNotEmpty>  
+			     <isNotEmpty prepend="," property="isused">     
+			         isused=#isused#      
+			     </isNotEmpty>
+			     <isNotEmpty prepend="," property="area_id">     
+			         area_id=#area_id#      
+			     </isNotEmpty> 
+			    <isNotEmpty prepend="," property="user_id">     
+			         user_id=#user_id#      
+			     </isNotEmpty>  
+			     <isNotEmpty prepend="," property="create_time">     
+				         create_time=#create_time# 
+				</isNotEmpty> 
+				 <isNotEmpty prepend="," property="end_time">     
+				         end_time=#end_time# 
+				</isNotEmpty>
+			    <isNotEmpty prepend="," property="router_id">     
+				         router_id=#router_id# 
+				</isNotEmpty >  
+				 <isGreaterThan prepend="," property="flow_size"  compareValue="-1">     
+				         flow_size=#flow_size# 
+				</isGreaterThan>
+				 <isNotEmpty prepend="," property="payment_type">     
+				         payment_type=#payment_type# 
+				</isNotEmpty>
+				 <isNotEmpty prepend="," property="obtain_way">     
+				         obtain_way=#obtain_way# 
+				</isNotEmpty>
+				<!-- 服务状态 -->
+				 <isNotEmpty prepend="," property="behavior">     
+				         behavior=#behavior# 
+				</isNotEmpty>
+				<isNotEmpty prepend="," property="rule_id">     
+				         rule_id=#rule_id# 
+				</isNotEmpty>
+		</dynamic>
+		WHERE
+			id=#id#
+	  </update>
+	  
+	  <!-- 删除一条记录 -->
+	  <delete id="deleteByObj" parameterClass="PhysicalVlanObj">
+	  		delete from tb_physical_vlan 
+	  		<dynamic prepend="where">
+	  			<isNotNull property="id" >
+					<isNotEmpty property="id" prepend="and">
+					   	id=#id#
+					</isNotEmpty>
+				</isNotNull>
+				<isNotNull property="vlan_id" >
+					<isNotEmpty property="vlan_id" prepend="and">
+					   	vlan_id=#vlan_id#
+					</isNotEmpty>
+				</isNotNull>
+	  		</dynamic>
+	  </delete>
+	  
+	  <!-- 设置user_id 为  null-->
+	  <update id="setUserNull" parameterClass="PhysicalVlanObj">
+	  	update tb_physical_vlan set user_id = NULL, isused = '0' where id=#id#;
+	  </update>
+	
+</sqlMap>

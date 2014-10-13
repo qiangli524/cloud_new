@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="paasBusiTree"
+			 extends="global_package">
+		<!-- paas业务资源树 -->
+		<action name="paasBusiTree_*" class="paasBusiTreeAction" method="{1}">
+			<result name="list">/ah/paas/paasBusiResource/tree/listPaasBusiTree.jsp</result>
+			<result name="tabs">/ah/paas/paasBusiResource/tree/tabs.jsp</result>
+			<result name="tree" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="results" type="json">
+				<param name="root">result</param>
+			</result>
+			<!-- 节点操作 -->
+			<result name="addChildSys">/ah/paas/paasBusiResource/tree/childNode/addChildSys.jsp</result>
+			<result name="addApp">/ah/paas/paasBusiResource/tree/childNode/addApp.jsp</result>
+			<result name="addHosts">/ah/paas/paasBusiResource/tree/childNode/addHosts.jsp</result>
+			<result name="addBusi">/ah/paas/paasBusiResource/tree/childNode/addBusi.jsp</result>
+			<result name="addVmHosts">/ah/paas/paasBusiResource/tree/childNode/addVmHosts.jsp</result>
+		</action>
+		<!-- 监控页面 -->
+		<action name="paasBusiStatistics_*" class="paasBusiStatisticsAction" method="{1}">
+			<result name="bossResourcePool">/ah/paas/paasBusiResource/statistics/root/bossResourcePool.jsp</result>
+			<result name="childSysResourcePool">/ah/paas/paasBusiResource/statistics/childSys/childSysResourcePool.jsp</result>
+			<result name="businessResourcePool">/ah/paas/paasBusiResource/statistics/childBusi/businessResourcePool.jsp</result>
+			<result name="serviceResourcePool">/ah/paas/paasBusiResource/statistics/childServer/serviceResourcePool.jsp</result>
+			<result name="hostsList" >/ah/paas/paasBusiResource/statistics/childServer/hostsList.jsp</result>
+			<result name="vmHostsList" >/ah/paas/paasBusiResource/statistics/childServer/vmHostsList.jsp</result>
+			<result name="zookeeperMonDetail">/ah/paas/paasBusiResource/statistics/childSys/zookeeperMonDetail.jsp</result>
+		</action>
+		<!-- paas主机监控 -->
+		<action name="paasHostMonitor_*" class="paasHostMonitorAction" method="{1}">
+			<result name="tabs">/ah/paas/paasBusiResource/paasHostMonitor/tabs.jsp</result>
+			<result name="greenPlumTabs">/ah/paas/tab/daas/gp/greenPlumTabs.jsp</result>
+			<result name="showFirstTabData">/ah/paas/paasBusiResource/paasHostMonitor/showFirstTabData.jsp</result>
+			<result name="hostMonitor_f">/ah/paas/paasBusiResource/paasHostMonitor/showView_CpuAndMemData.jsp</result>
+			<result name="hostMonitorDNData_fusion">/ah/paas/paasBusiResource/paasHostMonitor/showView_IOandNetData.jsp</result>
+			<result name="showHostMonitorPage">/ah/paas/paasBusiResource/paasHostMonitor/showView_monitorDetailData.jsp</result>
+			<result name="queryChartFileSystemDayDataView">/ah/paas/paasBusiResource/paasHostMonitor/showView_fileSystemData.jsp</result>
+			<result name="toSwapPage">/ah/paas/paasBusiResource/paasHostMonitor/showView_SwapData.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="SysApp">
+
+	<typeAlias alias="SysAppObj" type="com.sitech.basd.cloud3.domain.sysapp.SysAppObj" />
+	
+	<resultMap class="SysAppObj" id="rmap">
+		<result property="id" column="ID" javaType="java.lang.Integer" ></result>
+		<result property="appname" column="APPNAME" javaType="java.lang.String"></result>
+		<result property="status" column="STATUS" javaType="java.lang.Short"></result>
+		<result property="type" column="TYPE" javaType="java.lang.Short"></result>
+		<result property="remark" column="REMARK" javaType="java.lang.String"></result>
+		<result property="app_identify" column="APP_IDENTIFY" javaType="java.lang.String"></result>
+		<result property="deploypath" column="DEPLOYPATH" javaType="java.lang.String"></result>
+		<result property="hoseusername" column="HOSEUSERNAME" javaType="java.lang.String"></result>
+		<result property="startshell" column="STARTSHELL" javaType="java.lang.String"></result>
+		<result property="stopshell" column="STOPSHELL" javaType="java.lang.String"></result>
+		<result property="start_stop_flag" column="START_STOP_FLAG" javaType="java.lang.Short"></result>
+		<result property="execute_flag" column="EXECUTE_FLAG" javaType="java.lang.Short"></result>
+		<result property="release_flag" column="RELEASE_FLAG" javaType="java.lang.Short"></result>
+		<result property="strategytype" column="STRATEGYTYPE" javaType="java.lang.Short"></result>
+		<result property="strategy" column="STRATEGY" javaType="java.lang.Short"></result>
+		<result property="basepath" column="BASEPATH" javaType="java.lang.String"></result>
+		<result property="operationname" column="OPERATIONNAME" javaType="java.lang.String"></result>
+		<result property="catch_time" column="CATCH_TIME" javaType="java.util.Date"></result>
+		<result property="catch_status" column="CATCH_STATUS" javaType="java.lang.Short"></result>
+		<result property="sys_id" column="SYS_ID" javaType="java.lang.String"></result>
+		<result property="initversionstatus" column="INITVERSIONSTATUS" javaType="java.lang.Short"></result>
+		<result property="onlinepath" column="ONLINEPATH" javaType="java.lang.String" jdbcType="CLOB"></result>
+		<result property="appmark" column="APPMARK" javaType="java.lang.String"></result>
+		<result property="versiondesc" column="VERSIONDESC" javaType="java.lang.String"></result>
+	</resultMap>
+	
+	<select id="queryAllAttach" resultMap="rmap">
+		select t.ID,t.APPNAME,t.STATUS,t.TYPE,t.REMARK,t.APP_IDENTIFY,t.DEPLOYPATH,t.HOSEUSERNAME,t.STARTSHELL,t.STOPSHELL, t.START_STOP_FLAG,
+		t.EXECUTE_FLAG,t.RELEASE_FLAG,t.STRATEGYTYPE,t.STRATEGY,t.BASEPATH,t.OPERATIONNAME,t.CATCH_TIME,t.CATCH_STATUS,t.SYS_ID,t.INITVERSIONSTATUS,
+		t.ONLINEPATH,t.APPMARK,t.VERSIONDESC from TB_SYS_APP t where t.ID not in (select CONFIG_ID from tb_sys_app_config)
+	</select>
+	
+	<select id="queryOne" parameterClass="SysAppObj" resultMap="rmap">
+		select t.ID,t.APPNAME,t.STATUS,t.TYPE,t.REMARK,t.APP_IDENTIFY,t.DEPLOYPATH,t.HOSEUSERNAME,t.STARTSHELL,t.STOPSHELL, t.START_STOP_FLAG,
+		t.EXECUTE_FLAG,t.RELEASE_FLAG,t.STRATEGYTYPE,t.STRATEGY,t.BASEPATH,t.OPERATIONNAME,t.CATCH_TIME,t.CATCH_STATUS,t.SYS_ID,t.INITVERSIONSTATUS,
+		t.ONLINEPATH,t.APPMARK,t.VERSIONDESC from TB_SYS_APP t where t.ID = #id#
+	</select>
+	
+	<select id="querySysAppConfiged" resultMap="rmap">
+		select t.ID,t.APPNAME,t.STATUS,t.TYPE,t.REMARK,t.APP_IDENTIFY,t.DEPLOYPATH,t.HOSEUSERNAME,t.STARTSHELL,t.STOPSHELL, t.START_STOP_FLAG,
+		t.EXECUTE_FLAG,t.RELEASE_FLAG,t.STRATEGYTYPE,t.STRATEGY,t.BASEPATH,t.OPERATIONNAME,t.CATCH_TIME,t.CATCH_STATUS,t.SYS_ID,t.INITVERSIONSTATUS,
+		t.ONLINEPATH,t.APPMARK,t.VERSIONDESC from TB_SYS_APP t where t.ID in (select CONFIG_ID from tb_sys_app_config)
+	</select>
+	
+</sqlMap>

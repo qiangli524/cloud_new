@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="GBK"?>
+<docformat>
+	<sheet id="1" name="设备总表">
+		<linetext id="1" pid="0" name="主机类型" scol="0" srow="0" ecol="0" erow="1" merge="true"/>
+		<linetext id="2" pid="0" name="设备ID" scol="1" srow="0" ecol="1" erow="1" merge="true"/>
+		<linetext id="3" pid="0" name="资产编号" scol="2" srow="0" ecol="2" erow="1" merge="true"/>
+		<linetext id="4" pid="0" name="型号" scol="3" srow="0" ecol="3" erow="1" merge="true"/>
+		<linetext id="5" pid="0" name="配置" scol="4" srow="0" ecol="4" erow="1" merge="true"/>
+		<linetext id="6" pid="0" name="操作系统" scol="5" srow="0" ecol="5" erow="1" merge="true"/>
+		<linetext id="7" pid="0" name="主机名" scol="6" srow="0" ecol="6" erow="1" merge="true"/>
+		<linetext id="8" pid="0" name="VM分区" scol="7" srow="0" ecol="7" erow="1" merge="true"/>
+		<linetext id="9" pid="0" name="IP地址" scol="8" srow="0" ecol="10" erow="0" merge="true"/>
+		<linetext id="10" pid="0" name="系统口令" scol="11" srow="0" ecol="11" erow="1" merge="true"/>
+		<linetext id="11" pid="0" name="console用户/口令" scol="12" srow="0" ecol="12" erow="1" merge="true"/>
+		<linetext id="12" pid="0" name="对应存储" scol="13" srow="0" ecol="13" erow="1" merge="true"/>
+		<linetext id="13" pid="0" name="用途" scol="14" srow="0" ecol="17" erow="0" merge="true"/>
+		<linetext id="14" pid="0" name="责任人" scol="18" srow="0" ecol="18" erow="1" merge="true"/>
+		<linetext id="15" pid="0" name="借用记录" scol="19" srow="0" ecol="19" erow="1" merge="true"/>
+		<linetext id="16" pid="0" name="维修记录" scol="20" srow="0" ecol="20" erow="1" merge="true"/>
+		<linetext id="17" pid="0" name="是否在保" scol="21" srow="0" ecol="21" erow="1" merge="true"/>
+		<linetext id="18" pid="0" name="是否需要报废" scol="22" srow="0" ecol="22" erow="1" merge="true"/>
+		<linetext id="19" pid="0" name="管理说明" scol="23" srow="0" ecol="23" erow="1" merge="true"/>
+		<linetext id="20" pid="9" name="物理IP地址" col="8" row="1" merge="false"/>
+		<linetext id="21" pid="9" name="虚拟机IP地址" col="9" row="1" merge="false"/>
+		<linetext id="22" pid="9" name="管理地址" col="10" row="1" merge="false"/>
+		<linetext id="23" pid="13" name="归属域" col="14" row="1" merge="false"/>
+		<linetext id="24" pid="13" name="资源池" col="15" row="1" merge="false"/>
+		<linetext id="25" pid="13" name="使用部门" col="16" row="1" merge="false"/>
+		<linetext id="26" pid="13" name="用户说明" col="17" row="1" merge="false"/>
+	</sheet>
+</docformat>

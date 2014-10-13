@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="dhcp"
+			 extends="global_package">
+		<action name="dhcp_*"
+				class="dhcpAction" method="{1}">
+			<result name="list">/component/dhcp/listDhcp.jsp</result>
+			<result name="edit">/component/dhcp/editDhcp.jsp</result>
+			<result name="add" >/component/dhcp/editDhcp.jsp</result>
+			<result name="save" type="redirect">dhcp_queryDhcpList.do</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="inter"
+			 extends="global_package">
+		<action name="inter_*"
+				class="interAction" method="{1}">
+			<result name="detail">/cloud3/monitor/listInterDetail.jsp</result>
+			<result name="list">/cloud3/monitor/listInterInfo.jsp</result>
+		</action>
+	</package>
+</struts>

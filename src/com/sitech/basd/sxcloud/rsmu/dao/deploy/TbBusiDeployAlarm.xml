@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiDeployAlarm">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiDeployAlarmObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.TbBusiDeployAlarmObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		APPID,HOSTID,to_char(INSERTTIME,'yyyy-mm-dd hh24:mi:ss') INSERTTIME,
+		COMMAND,RESULT,ALARM_LEVEL
+	</sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryForListByObjBase">
+		select
+		<include refid="tableColumns" />
+		from TB_BUSI_DEPLOY_ALARM
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="start_time" prepend="AND">
+				INSERTTIME <![CDATA[>]]> to_date(#start_time#,'yyyy-MM-dd')
+			</isNotEmpty>
+			<isNotEmpty property="end_time" prepend="AND">
+				INSERTTIME <![CDATA[<]]> to_date(#end_time#,'yyyy-MM-dd')
+			</isNotEmpty>
+			<isGreaterThan property="APPID" compareValue="0" prepend="AND">
+				APPID = #APPID#
+			</isGreaterThan>
+			<isNotNull property="APPIDS" prepend="AND">
+				APPID in ($APPIDS$)
+			</isNotNull>
+		</dynamic>
+		ORDER BY INSERTTIME DESC
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbBusiDeployAlarmObj"
+		resultClass="TbBusiDeployAlarmObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForListByObjForCount"
+		parameterClass="TbBusiDeployAlarmObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	</select>
+</sqlMap>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="message"
+			 extends="global_package">
+		<action name="message_*"
+				class="alarmUserAction" method="{1}">
+			<result name="list">/cloud3/message/listAlarmUser.jsp</result>
+			<result name="listSubscribe">/cloud3/message/listSubscribe.jsp</result>
+			<result name="tree">/cloud3/message/listServerTree.jsp</result>
+			<result name="modify">/cloud3/message/editAlarmUser.jsp</result>
+			<result name="del" type="redirect">message_listAlarmUser.do</result>
+			<result name="add" >/cloud3/message/editAlarmUser.jsp</result>
+			<result name="save" type="redirect">message_listAlarmUser.do</result>
+			<result name="redirect" type="redirect">message_listAlarmUser.do</result>
+			<result name="redirectSubscribe" type="redirect">message_listUserSubscribe.do?USERID=${theSubscribeForm.alarmuserid}</result>
+			<result name="editUserWarning">/cloud3/message/editUserWarning.jsp</result>
+			<result name="editBusiUserWarning">/cloud3/message/warningBusiInfoPage.jsp</result>
+			<result name="editUserSubscribe">/cloud3/message/editUserSubscribe.jsp</result>
+			<result name="warningInfoPage">/cloud3/message/warningInfoPage.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiDeployVideorecord">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiDeployVideorecordObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.TbBusiDeployVideorecordObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	  limit #FIRSTROWNUM# , #FIRSTROWNUM#+#PAGESIZE#
+                 ]]>
+	</sql>
+
+	<sql id="queryByObjBase">
+       select ID,VIDEOID,CONTENT,FLAG,to_char(INSERTTIME,'yyyy-mm-dd hh24:mi:ss') INSERTTIME from TB_BUSI_DEPLOY_VIDEORECORD where 1=1 
+       		  <isGreaterThan property="VIDEOID" compareValue="0" prepend="and">
+                VIDEOID =#VIDEOID#
+               </isGreaterThan>
+               <isEqual property="FLAG" compareValue="1" prepend="and">
+                FLAG=#FLAG#
+               </isEqual>
+              <isNotEmpty property="STARTTIME" prepend="AND">
+				<isNotEmpty property="ENDTIME">
+					INSERTTIME BETWEEN
+					TO_DATE(#STARTTIME#,'yyyy-mm-dd hh24:mi:ss') AND TO_DATE(#ENDTIME#,'yyyy-mm-dd hh24:mi:ss')
+               </isNotEmpty>
+			</isNotEmpty> 
+    </sql>
+	<select id="queryForListByObj" parameterClass="TbBusiDeployVideorecordObj" resultClass="TbBusiDeployVideorecordObj">
+		select ID,VIDEOID,CONTENT,FLAG,INSERTTIME from TB_BUSI_DEPLOY_VIDEORECORD
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	<select id="queryIDListByObj" parameterClass="TbBusiDeployVideorecordObj" resultClass="TbBusiDeployVideorecordObj">
+        <include refid="queryByObjBase"/>
+         ORDER BY ID
+	</select>
+	<select id="queryByObjForCount" parameterClass="TbBusiDeployVideorecordObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <insert id="insertByObj" parameterClass="TbBusiDeployVideorecordObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_BUSI_DEPLOY_VIDEORECORD.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+		insert into TB_BUSI_DEPLOY_VIDEORECORD(ID,VIDEOID,CONTENT,FLAG,INSERTTIME,FREQ_SEQUENCES,EXECUTE_FLAG,EXECUTE_USER) 
+		values (#ID#,#VIDEOID#,#CONTENT#,#FLAG#,sysdate,#FREQ_SEQUENCES#,#EXECUTE_FLAG#,#EXECUTE_USER#)
+		
+	</insert>
+	<select id="queryForID_FREQ_SEQUENCES"  resultClass="int">
+		 SELECT ID_FREQ_SEQUENCES.NEXTVAL AS ID FROM DUAL
+	</select>
+</sqlMap>

@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BolResource">
+<typeAlias alias="bolResourceObj" type="com.sitech.basd.bol.domain.bolresource.BolResourceObj"/>
+<typeAlias alias="bolResourcesRegisterObj" type="com.sitech.basd.bol.domain.bolresource.BolResourcesRegisterObj"/>
+	
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<sql id="baseCloumns">
+		t.ID,t.TYPE,t.SUBTYPE,t.RSIZE,t.RUSAGE,t.PROG,t.NAME,t.BUSY,t.LOC,t.STATUS,
+		t.HOST 
+	</sql>
+
+	<select id="countForResource" parameterClass="bolResourceObj" resultClass="int">	
+		SELECT 
+		count(t.ID)
+		from bol_resource t
+		<dynamic prepend="where">
+			<isNotEmpty property="ID" prepend="and">
+				t.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				t.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="SUBTYPE" prepend="and">
+				t.SUBTYPE = #SUBTYPE#
+			</isNotEmpty>
+			<isNotEmpty property="RSIZE" prepend="and">
+				t.RSIZE = #RSIZE#
+			</isNotEmpty>
+			<isNotEmpty property="RUSAGE" prepend="and">
+				t.RUSAGE = #RUSAGE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="PROG" prepend="and">
+				t.PROG = #PROG#
+			</isNotEmpty>
+			<isNotEmpty property="BUSY" prepend="and">
+				t.BUSY = #BUSY#
+			</isNotEmpty>
+			<isNotEmpty property="LOC" prepend="and">
+				t.LOC = #LOC#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				t.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="HOST" prepend="and">
+				t.HOST = #HOST#
+			</isNotEmpty>
+			<isNotEmpty property="TIME" prepend="and">
+				t.TIME = to_date(#TIME#,'yyyy-mm-dd HH:mi:ss')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="countHostNum" resultClass="int">
+		select count(*) from 
+		(select distinct HOST from bol_resource) a
+	</select>
+	
+	<select id="queryForSum" parameterClass="bolResourceObj" resultClass="java.lang.Double">
+		select sum(t.RSIZE) from bol_resource t
+		<dynamic prepend="where">
+			<isNotEmpty property="ID" prepend="and">
+				t.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				t.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="SUBTYPE" prepend="and">
+				t.SUBTYPE = #SUBTYPE#
+			</isNotEmpty>
+			<isNotEmpty property="RSIZE" prepend="and">
+				t.RSIZE = #RSIZE#
+			</isNotEmpty>
+			<isNotEmpty property="RUSAGE" prepend="and">
+				t.RUSAGE = #RUSAGE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="PROG" prepend="and">
+				t.PROG = #PROG#
+			</isNotEmpty>
+			<isNotEmpty property="BUSY" prepend="and">
+				t.BUSY = #BUSY#
+			</isNotEmpty>
+			<isNotEmpty property="LOC" prepend="and">
+				t.LOC = #LOC#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				t.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="HOST" prepend="and">
+				t.HOST = #HOST#
+			</isNotEmpty>
+			<isNotEmpty property="TIME" prepend="and">
+				t.TIME = to_date(#TIME#,'yyyy-mm-dd HH:mi:ss')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForUsed" parameterClass="bolResourceObj" resultClass="java.lang.Double">
+		select sum(t.RUSAGE) from bol_resource t 
+		<dynamic prepend="where">
+			<isNotEmpty property="ID" prepend="and">
+				t.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				t.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="SUBTYPE" prepend="and">
+				t.SUBTYPE = #SUBTYPE#
+			</isNotEmpty>
+			<isNotEmpty property="RSIZE" prepend="and">
+				t.RSIZE = #RSIZE#
+			</isNotEmpty>
+			<isNotEmpty property="RUSAGE" prepend="and">
+				t.RUSAGE = #RUSAGE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="PROG" prepend="and">
+				t.PROG = #PROG#
+			</isNotEmpty>
+			<isNotEmpty property="BUSY" prepend="and">
+				t.BUSY = #BUSY#
+			</isNotEmpty>
+			<isNotEmpty property="LOC" prepend="and">
+				t.LOC = #LOC#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				t.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="HOST" prepend="and">
+				t.HOST = #HOST#
+			</isNotEmpty>
+			<isNotEmpty property="TIME" prepend="and">
+				t.TIME = to_date(#TIME#,'yyyy-mm-dd HH:mi:ss')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForListByObj" parameterClass="bolResourceObj" resultClass="bolResourceObj">
+		select 
+		<include refid="baseCloumns"/>
+		from bol_resource t
+		<dynamic prepend="where">
+			<isNotEmpty property="ID" prepend="and">
+				t.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				t.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="SUBTYPE" prepend="and">
+				t.SUBTYPE = #SUBTYPE#
+			</isNotEmpty>
+			<isNotEmpty property="RSIZE" prepend="and">
+				t.RSIZE = #RSIZE#
+			</isNotEmpty>
+			<isNotEmpty property="RUSAGE" prepend="and">
+				t.RUSAGE = #RUSAGE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="PROG" prepend="and">
+				t.PROG = #PROG#
+			</isNotEmpty>
+			<isNotEmpty property="BUSY" prepend="and">
+				t.BUSY = #BUSY#
+			</isNotEmpty>
+			<isNotEmpty property="LOC" prepend="and">
+				t.LOC = #LOC#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				t.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="HOST" prepend="and">
+				t.HOST = #HOST#
+			</isNotEmpty>
+			<isNotEmpty property="TIME" prepend="and">
+				t.TIME = to_date(#TIME#,'yyyy-mm-dd HH:mi:ss')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="countByObj" parameterClass="bolResourceObj" resultClass="int">
+		select count(t.ID) from bol_resource t
+		<dynamic prepend="where">
+			<isNotEmpty property="ID" prepend="and">
+				t.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				t.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="SUBTYPE" prepend="and">
+				t.SUBTYPE = #SUBTYPE#
+			</isNotEmpty>
+			<isNotEmpty property="RSIZE" prepend="and">
+				t.RSIZE = #RSIZE#
+			</isNotEmpty>
+			<isNotEmpty property="RUSAGE" prepend="and">
+				t.RUSAGE = #RUSAGE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="PROG" prepend="and">
+				t.PROG = #PROG#
+			</isNotEmpty>
+			<isNotEmpty property="BUSY" prepend="and">
+				t.BUSY = #BUSY#
+			</isNotEmpty>
+			<isNotEmpty property="LOC" prepend="and">
+				t.LOC = #LOC#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				t.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="HOST" prepend="and">
+				t.HOST = #HOST#
+			</isNotEmpty>
+			<isNotEmpty property="TIME" prepend="and">
+				t.TIME = to_date(#TIME#,'yyyy-mm-dd HH:mi:ss')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryResourceForProcess" parameterClass="bolResourceObj" resultClass="bolResourceObj">
+		select 
+		<include refid="baseCloumns"/>
+		from bol_resource t
+		<dynamic prepend="where">
+			<isNotEmpty property="ID" prepend="and">
+				t.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				<![CDATA[
+					t.TYPE <> #TYPE#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty property="SUBTYPE" prepend="and">
+				t.SUBTYPE = #SUBTYPE#
+			</isNotEmpty>
+			<isNotEmpty property="RSIZE" prepend="and">
+				t.RSIZE = #RSIZE#
+			</isNotEmpty>
+			<isNotEmpty property="RUSAGE" prepend="and">
+				t.RUSAGE = #RUSAGE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="PROG" prepend="and">
+				t.PROG = #PROG#
+			</isNotEmpty>
+			<isNotEmpty property="BUSY" prepend="and">
+				t.BUSY = #BUSY#
+			</isNotEmpty>
+			<isNotEmpty property="LOC" prepend="and">
+				t.LOC = #LOC#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				t.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="HOST" prepend="and">
+				t.HOST = #HOST#
+			</isNotEmpty>
+			<isNotEmpty property="TIME" prepend="and">
+				t.TIME = to_date(#TIME#,'yyyy-mm-dd HH:mi:ss')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="countResourceForProcess" parameterClass="bolResourceObj" resultClass="int">
+		select count(t.ID) from bol_resource t
+		<dynamic prepend="where">
+			<isNotEmpty property="ID" prepend="and">
+				t.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				<![CDATA[
+					t.TYPE <> #TYPE#
+				]]>
+			</isNotEmpty>
+			<isNotEmpty property="SUBTYPE" prepend="and">
+				t.SUBTYPE = #SUBTYPE#
+			</isNotEmpty>
+			<isNotEmpty property="RSIZE" prepend="and">
+				t.RSIZE = #RSIZE#
+			</isNotEmpty>
+			<isNotEmpty property="RUSAGE" prepend="and">
+				t.RUSAGE = #RUSAGE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="PROG" prepend="and">
+				t.PROG = #PROG#
+			</isNotEmpty>
+			<isNotEmpty property="BUSY" prepend="and">
+				t.BUSY = #BUSY#
+			</isNotEmpty>
+			<isNotEmpty property="LOC" prepend="and">
+				t.LOC = #LOC#
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				t.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="HOST" prepend="and">
+				t.HOST = #HOST#
+			</isNotEmpty>
+			<isNotEmpty property="TIME" prepend="and">
+				t.TIME = to_date(#TIME#,'yyyy-mm-dd HH:mi:ss')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<sql id="queryResourcesRegisterBase">
+		select	a.NAME name,a.ID id,nvl(b.RUSAGE,-1) M,nvl(c.RUSAGE,-1) S,nvl(d.RUSAGE,-1) Q,nvl(e.RUSAGE,-1) SN,nvl(f.RUSAGE,-1) N,nvl(g.RUSAGE,-1) P,nvl(h.RUSAGE,-1) DB,nvl(i.RUSAGE,-1) C,nvl(j.RUSAGE,-1) PH,nvl(k.RUSAGE,-1) CH,nvl(l.RUSAGE,-1) DH 
+		from bol_resource a
+		right join 
+	  (select max(time) time,prog,EXTEND_NUM,host,NAME,STATUS from bol_resource
+	    where type = 'HLA'
+	    group by prog,EXTEND_NUM,host,NAME) z on 
+	    a.prog = z.prog and nvl(a.EXTEND_NUM,0) = nvl(z.EXTEND_NUM,0) and a.host = z.host and a.NAME = z.name and a.time = z.time and a.STATUS = z.STATUS
+	       left join bol_resource b on b.PROG = a.PROG AND b.type = 'M'
+	       left join bol_resource c on c.PROG = a.PROG AND c.type = 'S'
+	       left join bol_resource d on d.PROG = a.PROG AND d.type = 'Q'
+	       left join bol_resource e on e.PROG = a.PROG AND e.type = 'SN'
+	       left join bol_resource f on F.PROG = a.PROG AND f.type = 'N'
+	       left join bol_resource g on g.PROG = a.PROG AND g.type = 'P'
+	       left join bol_resource h on h.PROG = a.PROG AND h.type = 'DB'
+	       left join bol_resource i on i.PROG = a.PROG AND i.type = 'C'
+	       left join bol_resource j on j.PROG = a.PROG AND j.type = 'PH'
+	       left join bol_resource k on k.PROG = a.PROG AND k.type = 'CH'
+	       left join bol_resource l on l.PROG = a.PROG AND l.type = 'DH'
+		<dynamic prepend="where">
+			<isNotNull property="host" prepend="and">
+				a.HOST = #host#
+			</isNotNull>
+			<isNotNull property="name" prepend="and">
+				a.NAME like '%'||#name#||'%'
+			</isNotNull>
+			<isNotNull property="status" prepend="and">
+				a.STATUS = #status#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<select id="queryResourcesRegisterCount" resultClass="int">
+		select count(*) from (
+		<include refid="queryResourcesRegisterBase" />
+		) virtual_table
+	</select>
+	
+	<select id="queryResourcesRegister" parameterClass="bolResourcesRegisterObj" resultClass="bolResourcesRegisterObj">
+		<include refid="queryResourcesRegisterBase" />
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="UserManage">
+	<typeAlias alias="UserObj"
+		type="com.sitech.basd.component.domain.user.UserObj" />
+	 
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForListBase">
+		select ID,IP,USERNAME,PASSWORD,MAC,INSERT_TIME,UPDATE_TIME,TYPE,PURPOSE from TB_USER_MANAGE
+		<dynamic prepend="where">
+			<isNotNull property="ip" prepend="and">
+				IP like CONCAT('%',#ip#,'%')
+			</isNotNull>
+			<isNotNull property="username" prepend="and">
+				USERNAME like CONCAT('%',#username#,'%')
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				ID= #id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+	<sql id="queryForObjByID">
+		select u.ID,u.IP,u.USERNAME,u.PASSWORD,u.MAC,u.INSERT_TIME,u.UPDATE_TIME,h.HOSTPORT from TB_USER_MANAGE u,tb_busi_host h where u.ip=h.ip
+		<dynamic prepend="and">
+			<isNotNull property="id" prepend="and">
+				u.ID= #id#
+			</isNotNull>
+			<isNotNull property="ip" prepend="and">
+				u.IP= #ip#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<!-- 查询用户列表 -->
+	<select id="queryForList" parameterClass="UserObj" resultClass="UserObj">
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForObjByID" parameterClass="UserObj" resultClass="UserObj">
+		<include refid="queryForObjByID" />
+	</select>
+	
+	<!-- 统计配置文件数目 -->
+	<select id="queryForCount" parameterClass="UserObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	<!-- 插入一条数据 -->
+	<insert id="insertByObj" parameterClass="UserObj">
+		insert into TB_USER_MANAGE (ID,IP,USERNAME,PASSWORD,MAC,INSERT_TIME,UPDATE_TIME,TYPE,PURPOSE)
+		values (#id#,#ip#,#username#,#password#,#mac#,now(),now(),#type#,#purpose#)
+	</insert>
+	<update id="updateByObj" parameterClass="UserObj">
+		update TB_USER_MANAGE set IP=#ip#,USERNAME=#username#,PASSWORD=#password#,TYPE=#type#,PURPOSE=#purpose# where ID=#id#
+	</update>
+	<!-- 删除 -->
+	<delete id="deleteByObj" parameterClass="UserObj">
+		delete from TB_USER_MANAGE where ID=#id#
+	</delete>
+	<!-- 查询部署实例及基准应用主机对应的用户信息 -->
+	<select id="queryDeployUserList" parameterClass="java.util.HashMap" resultClass="UserObj">
+		SELECT
+			u.id,
+			u.ip,
+			u.username,
+			u. PASSWORD,
+			e.id example_id,
+			e.APPID,
+			e.EXAMPLE_NAME
+		FROM
+			Tb_User_Manage u,
+			tb_busi_deploy_example e,
+			tb_busi_host_config c 
+		where 
+			e.HOST_CONFIG_ID=c.HOSTCONFIGID
+			and u.ID=c.USER_MANAGE_ID
+ 		<dynamic prepend="and">
+ 			<isNotNull property="app_id" prepend="and">
+ 				e.APPID=#app_id#
+ 			</isNotNull>
+ 			<isNotNull property="example_id" prepend="and">
+ 				e.id=#example_id#
+ 			</isNotNull>
+ 		</dynamic>
+	</select>
+	<!-- 查询基准应用主机及对应用户信息 -->
+	<select id="queryAppUserList" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select a.basepath BASEPATH, a.appname APPNAME, c.ip IP, c.username USERNAME, c.password PASSWORD,h.hostport HOSTPORT
+		  from tb_sys_app a, tb_busi_host_config b, tb_user_manage c,tb_busi_host h
+		 where a.host_config_id = b.hostconfigid
+		   and b.user_manage_id = c.id
+		   and c.ip=h.ip
+		  <isNotNull property="appID" prepend="and">
+		  		a.id = #appID#
+		  </isNotNull>
+	</select>
+	<select id="queryForExampleUserListByObj" parameterClass="UserObj" resultClass="UserObj">
+		<include refid="queryForObjByID" />
+	</select>	
+	
+	<select id="queryForListByType" parameterClass="UserObj" resultClass="UserObj">
+		select ID,IP,USERNAME,PASSWORD,MAC,INSERT_TIME,UPDATE_TIME,TYPE from TB_USER_MANAGE where TYPE = #type#
+	</select>
+	 <!-- 验证名字是否重复 -->
+	    <select id="validateNameByEdit" parameterClass="UserObj" resultClass="java.lang.Integer">
+	    	select count(*) from TB_USER_MANAGE 
+	    	<dynamic prepend="where">
+	    		<isNotNull property="username" prepend="and">
+	    			USERNAME = #username#
+	    		</isNotNull>
+	    		<isNotNull property="ip" prepend="and">
+					IP= #ip#
+				</isNotNull>
+	    		<isNotNull property="id" prepend="and">
+	    			ID != #id#
+	    		</isNotNull>
+	    	</dynamic>
+	    </select>
+</sqlMap>

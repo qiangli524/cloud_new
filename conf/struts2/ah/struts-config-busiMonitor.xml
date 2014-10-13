@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="busiMonitor"
+			 extends="global_package">
+			 <!-- 监控配置管理 -->
+			 <action name="monitorCfg_*" class="monitorCfgAction" method="{1}">
+				 <result name="list">/ah/busiMonitor/monitorCfg/monitorCfgList.jsp </result>
+				 <result name="add">/ah/busiMonitor/monitorCfg/addMonitorCfg.jsp </result>
+				 <result name="update">/ah/busiMonitor/monitorCfg/addMonitorCfg.jsp </result>
+				 <result name="redirect" type="redirect">monitorCfg_queryList.do</result>
+				 <result name="del" type="json"><param name="root">delResult</param></result>
+				 <result name="hostsList">/ah/busiMonitor/monitorCfg/hostsList.jsp</result>
+				 <result name="vmHostsList">/ah/busiMonitor/monitorCfg/vmHostsList.jsp</result>
+				 <result name="userList" type="json"><param name="root">userList</param></result>
+				 <result name="hostIpList" type="json"><param name="root">hostIpList</param></result>
+			 </action>
+			 <!-- 运营指标 -->
+			 <action name="monitorReport_*" class="monitorReportAction" method="{1}">
+				 <result name="reportMain">/ah/busiMonitor/monitorReport/reportMain.jsp </result>
+				 <result name="trafficStatistics">/ah/busiMonitor/monitorReport/trafficStatistics.jsp </result>
+			 </action>
+	</package>
+</struts>

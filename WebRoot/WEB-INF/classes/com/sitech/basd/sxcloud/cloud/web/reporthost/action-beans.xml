@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.reporthost.action.ReportHostAction -->
+	<bean id="reportHostAction" class="com.sitech.basd.sxcloud.cloud.web.reporthost.action.ReportHostAction"
+		singleton="false">
+		<property name="reportHostService">
+			<ref bean="reportHostService" />
+		</property> 
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+	</bean>
+</beans>  
+
+
+
+
+
+
+	
+
+
+

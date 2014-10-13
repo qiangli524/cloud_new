@@ -1,0 +1,785 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ReportFormHost">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="VmReportForm" type="com.sitech.ssd.ah.reportform.vm.domain.VmReportForm"/>
+	<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	
+	<!-- 查询虚拟机监控数据 highCharts进行数据展示 -->
+	<sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="vmHostList">
+		SELECT
+	    t1.vh_type vmType,
+	    CONCAT(CASE when a2.type = 4 then a22.name ELSE a2.name END) AS busiParent,
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		a222.name AS username,
+	    concat(t1.CONNECT_ID,'_',t1.VH_UUID) as vmId,
+		t1.VH_NAME vmName,
+		IFNULL(t1.VH_IP, '-') as ip
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+	</sql>
+    <!-- 查询所有可以监控的虚拟机 -->
+	<select id="queryAllHostCount" parameterClass="VmReportForm"   resultClass="int">
+			 <![CDATA[
+	    SELECT
+		  count(t1.H_UUID)
+				FROM
+				TB_CLOUD2_HOST_INFO t1
+				LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.eq_ip=a3.IPADDRESS
+				LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+				LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.H_UUID and host_global.connect_uuid=t1.connect_id
+				LEFT JOIN (
+				   SELECT t2.EQ_ID hostId,
+					MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_maxKpiValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_minKpiValue,
+					ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-H-01-010-11' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2)) END),2) cpu_avgKpiValue,
+					MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_maxKpiValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_minKpiValue,
+					ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-H-01-010-12' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	),2) mem_avgKpiValue,
+					MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-17' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) store_maxKpiValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-13' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioReadMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-13' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioReadMinValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-14' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioWriteMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-14' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioWriteMinValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-15' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioUpMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-15' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioUpMinValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-16' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioDownMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-16' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioDownMinValue
+				  FROM tb_cloud2_host_coll t2
+				  WHERE t2.KPI_ID in ( 'PM-H-01-010-11' ,'PM-H-01-010-12' ,'PM-H-01-010-13','PM-H-01-010-14','PM-H-01-010-15','PM-H-01-010-16','PM-H-01-010-17')
+		]]>
+		<isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.coll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<![CDATA[
+		GROUP BY t2.EQ_ID) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.H_UUID) = t3.hostId
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.EQ_NAME like CONCAT('%',#hostName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="network" prepend="and">
+			    a4.`NAME`like CONCAT('%',#network#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="cpuStartUsage" >
+				<isEqual property="cpuUsageType" compareValue="cpuMax">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        (t3.cpu_maxKpiValue is null or t3.cpu_maxKpiValue between #cpuStartUsage# and #cpuEndUsage# )
+				    </isGreaterThan>
+				</isEqual>
+				<isEqual property="cpuUsageType" compareValue="cpuMin">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				       ( t3.cpu_minKpiValue is null  or t3.cpu_minKpiValue between #cpuStartUsage# and #cpuEndUsage# )
+				    </isGreaterThan>
+			    </isEqual>
+			    <isEqual property="cpuUsageType" compareValue="cpuAvg">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        (t3.cpu_avgKpiValue is null or t3.cpu_avgKpiValue between #cpuStartUsage# and #cpuEndUsage#)
+				    </isGreaterThan>
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="memStartUsage" >
+			  <isEqual property="memUsageType" compareValue="memMax">
+			    <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        (t3.mem_maxKpiValue is null or t3.mem_maxKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memMin">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        (t3.mem_minKpiValue is null or t3.mem_minKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memAvg">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			       ( t3.mem_avgKpiValue is null or t3.mem_avgKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual> 
+		    </isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryHostReportFormData" parameterClass="VmReportForm"  resultClass="VmReportForm">
+	  <![CDATA[
+			    SELECT 
+			    concat(t1.CONNECT_ID,'_',t1.H_UUID) as hostId,
+			    t1.cpu_cl cpuAll,
+				t3.cpu_maxKpiValue,t3.cpu_minKpiValue,t3.cpu_avgKpiValue,
+		    t3.disk_ioReadMaxValue,t3.disk_ioReadMinValue,t3.disk_ioWriteMaxValue,t3.disk_ioWriteMinValue,
+		    t3.network_ioUpMaxValue,t3.network_ioUpMinValue,t3.network_ioDownMaxValue,t3.network_ioDownMinValue,
+				CAST(t1.memory/1024 AS DECIMAL(10, 2)) memAll,
+				t3.mem_maxKpiValue,t3.mem_minKpiValue,t3.mem_avgKpiValue,
+				CAST( t1.STORE/1024 AS DECIMAL(10,2)) storeAll,
+				CAST(t3.store_maxKpiValue/1024 AS DECIMAL(10,2)) storeUsed_maxKpiValue,
+				CAST( t3.store_maxKpiValue/t1.STORE AS DECIMAL(10,5))*100 storeUsedPercent,
+				t3.hostId as eqId,
+				t1.EQ_NAME hostName,
+				IFNULL(t1.EQ_IP, '-') as ip,
+				a4.`NAME` as network,
+				CASE
+				WHEN t1.eq_type = '4' THEN
+					'VMWARE'
+				WHEN t1.eq_type = '2' THEN
+					'xenServer'
+				END AS hostType
+				FROM
+				TB_CLOUD2_HOST_INFO t1
+				LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.eq_ip=a3.IPADDRESS
+				LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+				LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.H_UUID and host_global.connect_uuid=t1.connect_id
+				LEFT JOIN (
+				   SELECT t2.EQ_ID hostId,
+					MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_maxKpiValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_minKpiValue,
+					ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-H-01-010-11' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2)) END),2) cpu_avgKpiValue,
+					MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_maxKpiValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_minKpiValue,
+					ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-H-01-010-12' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	),2) mem_avgKpiValue,
+					MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-17' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) store_maxKpiValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-13' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioReadMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-13' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioReadMinValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-14' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioWriteMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-14' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) disk_ioWriteMinValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-15' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioUpMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-15' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioUpMinValue,
+		      MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-16' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioDownMaxValue,
+					min(CASE t2.KPI_ID	WHEN 'PM-H-01-010-16' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) network_ioDownMinValue
+				  FROM tb_cloud2_host_coll t2
+				  WHERE t2.KPI_ID in ( 'PM-H-01-010-11' ,'PM-H-01-010-12' ,'PM-H-01-010-13','PM-H-01-010-14','PM-H-01-010-15','PM-H-01-010-16','PM-H-01-010-17')
+		]]>
+		<isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.coll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<![CDATA[
+		GROUP BY t2.EQ_ID) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.H_UUID) = t3.hostId
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.EQ_NAME like CONCAT('%',#hostName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="network" prepend="and">
+			    a4.`NAME`like CONCAT('%',#network#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="cpuStartUsage" >
+				<isEqual property="cpuUsageType" compareValue="cpuMax">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        (t3.cpu_maxKpiValue is null or t3.cpu_maxKpiValue between #cpuStartUsage# and #cpuEndUsage# )
+				    </isGreaterThan>
+				</isEqual>
+				<isEqual property="cpuUsageType" compareValue="cpuMin">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				       ( t3.cpu_minKpiValue is null  or t3.cpu_minKpiValue between #cpuStartUsage# and #cpuEndUsage# )
+				    </isGreaterThan>
+			    </isEqual>
+			    <isEqual property="cpuUsageType" compareValue="cpuAvg">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        (t3.cpu_avgKpiValue is null or t3.cpu_avgKpiValue between #cpuStartUsage# and #cpuEndUsage#)
+				    </isGreaterThan>
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="memStartUsage" >
+			  <isEqual property="memUsageType" compareValue="memMax">
+			    <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        (t3.mem_maxKpiValue is null or t3.mem_maxKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memMin">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        (t3.mem_minKpiValue is null or t3.mem_minKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memAvg">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			       ( t3.mem_avgKpiValue is null or t3.mem_avgKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual> 
+		    </isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		</dynamic>
+		order by t1.EQ_NAME 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<!--查询agent表内的 -->
+	<select id="queryVMReportFormAgentData" parameterClass="VmReportForm"  resultClass="VmReportForm">
+	  <![CDATA[
+	    SELECT
+	    CONCAT(CASE when a2.type = 4 then a22.name ELSE a2.name END) AS busiParent,
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		a222.name AS username,
+	    concat(t1.CONNECT_ID,'_',t1.VH_UUID) as vmId,
+	    t1.vh_cpu cpuAll,
+		t3.cpu_maxKpiValue,t3.cpu_minKpiValue,t3.cpu_avgKpiValue,
+		CAST(t1.vh_mem/1024 AS DECIMAL(10, 2)) memAll,
+		t3.mem_maxKpiValue,t3.mem_minKpiValue,t3.mem_avgKpiValue,
+		CAST( t1.VH_STORAGE/1024 AS DECIMAL(10,2)) storeAll,
+		CAST(t3.store_maxKpiValue/1024 AS DECIMAL(10,2)) storeUsed_maxKpiValue,
+		CAST( t3.store_maxKpiValue/t1.VH_STORAGE AS DECIMAL(10,5))*100 storeUsedPercent,
+		t3.vmId as hyId,
+		t1.VH_NAME vmName,
+		IFNULL(t1.VH_IP, '-') as ip,
+		a4.`NAME` as network,
+		CASE
+		WHEN t1.vh_type = '1' THEN
+			'VMWARE'
+		WHEN t1.vh_type = '3' THEN
+			'XEN'
+		END AS vmType
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+		LEFT JOIN tb_vm_tem_relation a6 ON t1.vh_uuid = a6.vmCode AND t1.CONNECT_ID = a6.connectCode
+		LEFT JOIN tb_tem_manage a7 ON a6.temCode = a7.template_code
+		LEFT JOIN (
+		   SELECT t2.EXT_EQ_ID vmId,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2)) END),2) cpu_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	),2) mem_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-17' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) store_maxKpiValue
+		  FROM tb_cloud2_agent_coll t2
+		  WHERE t2.KPI_ID in ( 'PM-V-01-010-11' ,'PM-V-01-010-12' ,'PM-H-01-010-17')
+		]]>
+		<isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.cll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<![CDATA[
+		GROUP BY t2.EXT_EQ_ID) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.VH_UUID) = t3.vmId
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.VH_NAME like CONCAT('%',#vmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="busi" prepend="and">
+			    a2.name like CONCAT('%',#busi#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="network" prepend="and">
+			    a4.`NAME`like CONCAT('%',#network#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="cpuStartUsage" >
+				<isEqual property="cpuUsageType" compareValue="cpuMax">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        (t3.cpu_maxKpiValue is null or t3.cpu_maxKpiValue between #cpuStartUsage# and #cpuEndUsage# )
+				    </isGreaterThan>
+				</isEqual>
+				<isEqual property="cpuUsageType" compareValue="cpuMin">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				       ( t3.cpu_minKpiValue is null  or t3.cpu_minKpiValue between #cpuStartUsage# and #cpuEndUsage# )
+				    </isGreaterThan>
+			    </isEqual>
+			    <isEqual property="cpuUsageType" compareValue="cpuAvg">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        (t3.cpu_avgKpiValue is null or t3.cpu_avgKpiValue between #cpuStartUsage# and #cpuEndUsage#)
+				    </isGreaterThan>
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="memStartUsage" >
+			  <isEqual property="memUsageType" compareValue="memMax">
+			    <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        (t3.mem_maxKpiValue is null or t3.mem_maxKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memMin">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        (t3.mem_minKpiValue is null or t3.mem_minKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memAvg">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			       ( t3.mem_avgKpiValue is null or t3.mem_avgKpiValue between #memStartUsage# and #memEndUsage#)
+			    </isGreaterThan>
+			  </isEqual> 
+		    </isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		</dynamic>
+		order by busiParent DESC, busi ASC,t1.VH_NAME 
+	</select>
+	<!--用于top图表列表显示 -->
+	<select id="queryVMReportFormDataForChartList" parameterClass="VmReportForm"  resultClass="VmReportForm">
+	  <![CDATA[
+	    SELECT
+	    CONCAT(CASE when a2.type = 4 then a22.name ELSE a2.name END) AS busiParent,
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		a222.name AS username,
+	    concat(t1.CONNECT_ID,'_',t1.VH_UUID) as vmId,
+		t3.cpu_maxKpiValue,t3.cpu_minKpiValue,t3.cpu_avgKpiValue,t3.mem_maxKpiValue,t3.mem_minKpiValue,t3.mem_avgKpiValue,
+		CAST( t1.VH_STORAGE/1024 AS DECIMAL(10,2)) storeAll,
+		CAST(t3.store_maxKpiValue/1024 AS DECIMAL(10,2)) storeUsed_maxKpiValue,
+		CAST( t3.store_maxKpiValue/t1.VH_STORAGE AS DECIMAL(10,5))*100 storeUsedPercent,
+		t3.vmId as hyId,
+		t1.VH_NAME vmName,
+		IFNULL(t1.VH_IP, '-') as ip,
+		a4.`NAME` as network,
+		CASE
+		WHEN t1.vh_type = '1' THEN
+			'VMWARE'
+		WHEN t1.vh_type = '3' THEN
+			'XEN'
+		END AS vmType
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+		LEFT JOIN (
+		   SELECT t2.HY_ID vmId,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2)) END),2) cpu_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	),2) mem_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-17' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) store_maxKpiValue
+		  FROM $tableName$ t2
+		  WHERE t2.KPI_ID in ( 'PM-V-01-010-11' ,'PM-V-01-010-12' ,'PM-H-01-010-17')
+		]]>
+		<isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.coll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<![CDATA[
+		GROUP BY t2.HY_ID) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.VH_UUID) = t3.vmId
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmId" prepend="and">
+			    CONCAT_WS("_",t1.CONNECT_ID,t1.VH_UUID)  in 
+			    <iterate close=")" conjunction="," open="(" property="resultList">
+						#resultList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty property="busi" prepend="and">
+			    a2.name like CONCAT('%',#busi#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="network" prepend="and">
+			    a4.`NAME`like CONCAT('%',#network#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="cpuStartUsage" >
+				<isEqual property="cpuUsageType" compareValue="cpuMax">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				       t3.cpu_maxKpiValue  between #cpuStartUsage# and #cpuEndUsage# 
+				    </isGreaterThan>
+				</isEqual>
+				<isEqual property="cpuUsageType" compareValue="cpuMin">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				       t3.cpu_minKpiValue  between #cpuStartUsage# and #cpuEndUsage# 
+				    </isGreaterThan>
+			    </isEqual>
+			    <isEqual property="cpuUsageType" compareValue="cpuAvg">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				       t3.cpu_avgKpiValue   between #cpuStartUsage# and #cpuEndUsage# 
+				    </isGreaterThan>
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="memStartUsage" >
+			  <isEqual property="memUsageType" compareValue="memMax">
+			    <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        t3.mem_maxKpiValue between #memStartUsage# and #memEndUsage#
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memMin">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        t3.mem_minKpiValue between #memStartUsage# and #memEndUsage#
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memAvg">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			       t3.mem_avgKpiValue between #memStartUsage# and #memEndUsage#
+			    </isGreaterThan>
+			  </isEqual> 
+		    </isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		</dynamic>
+		<isEqual property="cpu_mem" compareValue="cpu">
+				        order by cpu_maxKpiValue DESC 
+	   					LIMIT 0,#top_num# 
+		</isEqual>
+		<isEqual property="cpu_mem" compareValue="mem">
+				        order by mem_maxKpiValue DESC 
+	   					LIMIT 0,#top_num# 
+		</isEqual>
+	</select>
+	<!-- top图形展示 -->
+	<select id="queryVMIndexNameLable_cpu" parameterClass="VmReportForm" resultClass="data">
+		<![CDATA[
+		SELECT
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		t3.cpu_maxKpiValue label,t3.cpu_minKpiValue label2,t3.cpu_avgKpiValue label3,
+		t1.VH_NAME value 
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+		LEFT JOIN (
+		   SELECT t2.HY_ID vmId,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2)) END),2) cpu_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	),2) mem_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-17' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) store_maxKpiValue
+		  FROM $tableName$ t2
+		  WHERE t2.KPI_ID in ( 'PM-V-01-010-11' ,'PM-V-01-010-12' ,'PM-H-01-010-17')
+		]]>
+		<isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.coll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="vmId" prepend="and">
+			    t2.HY_ID  in 
+			    <iterate close=")" conjunction="," open="(" property="resultList">
+						#resultList[]#
+				</iterate>
+			</isNotEmpty>
+		<![CDATA[
+		GROUP BY t2.HY_ID) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.VH_UUID) = t3.vmId
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			
+			<isNotEmpty property="busi" prepend="and">
+			    a2.name like CONCAT('%',#busi#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="network" prepend="and">
+			    a4.`NAME`like CONCAT('%',#network#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="cpuStartUsage" >
+				<isEqual property="cpuUsageType" compareValue="cpuMax">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        t3.cpu_maxKpiValue between #cpuStartUsage# and #cpuEndUsage# 
+				    </isGreaterThan>
+				</isEqual>
+				<isEqual property="cpuUsageType" compareValue="cpuMin">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				       t3.cpu_minKpiValue between #cpuStartUsage# and #cpuEndUsage# 
+				    </isGreaterThan>
+			    </isEqual>
+			    <isEqual property="cpuUsageType" compareValue="cpuAvg">
+				    <isGreaterThan property="cpuEndUsage" compareValue="0" prepend="and">
+				        t3.cpu_avgKpiValue between #cpuStartUsage# and #cpuEndUsage#
+				    </isGreaterThan>
+				</isEqual>
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		</dynamic>
+		order by label DESC 
+	    LIMIT 0,#top_num# 
+	</select>
+	<select id="queryVMIndexNameLable_mem" parameterClass="VmReportForm" resultClass="data">
+		<![CDATA[
+		SELECT
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		t3.mem_maxKpiValue label,t3.mem_minKpiValue label2,t3.mem_avgKpiValue label3,
+		t1.VH_NAME value 
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+		LEFT JOIN (
+		   SELECT t2.HY_ID vmId,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) cpu_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2)) END),2) cpu_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_maxKpiValue,
+			min(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) mem_minKpiValue,
+			ROUND(avg(CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN	CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	),2) mem_avgKpiValue,
+			MAX(CASE t2.KPI_ID	WHEN 'PM-H-01-010-17' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	) store_maxKpiValue
+		  FROM $tableName$ t2
+		  WHERE t2.KPI_ID in ( 'PM-V-01-010-11' ,'PM-V-01-010-12' ,'PM-H-01-010-17')
+		]]>
+		<isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.coll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="vmId" prepend="and">
+			    t2.HY_ID in 
+			    <iterate close=")" conjunction="," open="(" property="resultList">
+				#resultList[]#
+				</iterate>
+		</isNotEmpty>
+		<![CDATA[
+		GROUP BY t2.HY_ID) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.VH_UUID) = t3.vmId
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="busi" prepend="and">
+			    a2.name like CONCAT('%',#busi#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="network" prepend="and">
+			    a4.`NAME`like CONCAT('%',#network#,'%')
+			</isNotEmpty>		
+			<isNotEmpty property="memStartUsage" >
+			  <isEqual property="memUsageType" compareValue="memMax">
+			    <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        t3.mem_maxKpiValue between #memStartUsage# and #memEndUsage#
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memMin">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        t3.mem_minKpiValue between #memStartUsage# and #memEndUsage#
+			    </isGreaterThan>
+			  </isEqual>
+			  <isEqual property="memUsageType" compareValue="memAvg">
+			     <isGreaterThan property="memEndUsage" compareValue="0" prepend="and">
+			        t3.mem_avgKpiValue between #memStartUsage# and #memEndUsage#
+			    </isGreaterThan>
+			  </isEqual> 
+		    </isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		</dynamic>
+		order by label DESC LIMIT 0,#top_num#
+	</select>
+	<!-- 折线图形展示 ，查询横坐标 add by qism -->
+	<select id="queryVMIndexNameLable__zx" parameterClass="VmReportForm" resultClass="data">
+		<![CDATA[
+		select distinct DATE_FORMAT(t3.COLL_TIME,'%Y-%m-%d %H:%i:%S') value 
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+		LEFT JOIN 
+		(SELECT t2.HY_ID vmId,t2.COLL_TIME,
+		  CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	 cpuValue, 
+		  CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))  END	 memValue 
+		  FROM $tableName$ t2
+		  WHERE t2.KPI_ID in ( 'PM-V-01-010-11' ,'PM-V-01-010-12' ,'PM-H-01-010-17')
+		]]>
+		<isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.coll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="vmId" prepend="and">
+			   t2.HY_ID  in 
+			    <iterate close=")" conjunction="," open="(" property="resultList">
+						#resultList[]#
+				</iterate>
+		</isNotEmpty>
+		<![CDATA[
+		) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.VH_UUID) = t3.vmId
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="busi" prepend="and">
+			    a2.name like CONCAT('%',#busi#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="network" prepend="and">
+			    a4.`NAME`like CONCAT('%',#network#,'%')
+			</isNotEmpty>					
+			<isEqual property="cpu_mem" compareValue="cpu" >
+			    t3.cpuValue is not NULL
+			</isEqual>
+		 	<isEqual property="cpu_mem" compareValue="mem" >
+			    t3.memValue is not NULL
+		 	</isEqual>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		 </dynamic>
+		order by value ASC 
+	    LIMIT 0,#dots#
+	  </select>
+	  <!-- 用于查询单个时间点和指定虚拟机对应的cpu或内存的值 -->
+	  <select id="queryVMIndexNameLable_time" parameterClass="VmReportForm" resultClass="data">
+	  	<![CDATA[
+		select t1.VH_NAME label,t3.cpuValue label2,t3.memValue label3,DATE_FORMAT(t3.COLL_TIME,'%Y-%m-%d %H:%i:%S') value
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN 
+		(SELECT t2.HY_ID vmId,t2.COLL_TIME,
+		  CASE t2.KPI_ID	WHEN 'PM-V-01-010-11' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))	END	 cpuValue,
+		  CASE t2.KPI_ID	WHEN 'PM-V-01-010-12' THEN CAST(t2.KPI_VALUE AS DECIMAL(10,2))  END	 memValue 
+		  FROM $tableName$ t2
+		  WHERE t2.KPI_ID in ( 'PM-V-01-010-11' ,'PM-V-01-010-12' ,'PM-H-01-010-17')
+		]]>
+		 <isNotEmpty property="startDate">
+		 <isNotEmpty property="endDate" prepend="and">
+		    t2.coll_time between #startDate# and #endDate#
+		 </isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty property="vmId" prepend="and">
+			t2.HY_ID = #vmId#
+		</isNotEmpty>
+		<![CDATA[
+		) t3 ON CONCAT_WS("_",t1.CONNECT_ID,t1.VH_UUID) = t3.vmId
+		]]>
+		<dynamic prepend="where">
+		<isEqual property="cpu_mem" compareValue="cpu" >
+			     t3.cpuValue is not NULL
+			     order by value ASC,label2 ASC
+		 </isEqual>
+		 <isEqual property="cpu_mem" compareValue="mem">
+			     t3.memValue is not NULL
+			     order by value ASC,label3 ASC
+		 </isEqual>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t1.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		 </dynamic>
+	  </select>
+	  <!-- 查询没添加的虚拟机总数 -->
+	  <select id="queryVmhostListForCount" parameterClass="VmReportForm"  resultClass="int">
+	  	select count(*) from (
+	  	<include refid="vmHostList" />
+		<dynamic prepend="where" >
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.VH_NAME like CONCAT('%',#vmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="busi" prepend="and">
+			    t1.VH_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+		order by busiParent DESC, busi ASC,t1.VH_NAME) tt 
+		where tt.vmId not in
+		 (select tt1.entity_id from tb_paas_busi_tree tt1 
+			left join tb_paas_busi_tree tt2 on tt2.uuid = tt1.parent_id 
+			where tt2.uuid = #uuid# 
+			and tt1.node_type = 5)
+	  </select>
+	  <!-- 查询虚拟机列表 -->
+	  <select id="queryVmhostList" parameterClass="VmReportForm"  resultClass="VmReportForm">
+	    select * from (
+	    <include refid="vmHostList" />
+		<dynamic prepend="where" >
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.VH_NAME like CONCAT('%',#vmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="busi" prepend="and">
+			    t1.VH_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+		order by busiParent DESC, busi ASC,t1.VH_NAME) tt 
+		where tt.vmId not in
+		 (select tt1.entity_id from tb_paas_busi_tree tt1 
+			left join tb_paas_busi_tree tt2 on tt2.uuid = tt1.parent_id 
+			where tt2.uuid = #uuid# 
+			and tt1.node_type = 5)
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	  </select>
+</sqlMap>

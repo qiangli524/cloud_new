@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="huaweiHost">
+    <typeAlias alias="huaweiHostObj" type="com.sitech.ssd.gx.domain.huaweihost.HuaweiHostObj"/>
+     
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	
+    <sql id="huaweiHostColumns">
+    	 ID,CODE,URI,NAME,DESCRIPTION,IP,CLUSTER_CODE,STATUS,VENDOR,MODEL,MEMINMB,CPUNUM,NICNUM,CPUMHZ
+    </sql>
+    
+    <insert id="insertByObj" parameterClass="huaweiHostObj">
+	 	INSERT INTO TB_HUAWEI_HOST_INFO(
+		ID,CODE,URI,NAME,DESCRIPTION,IP,CLUSTER_CODE,STATUS,VENDOR,MODEL,MEMINMB,CPUNUM,NICNUM,CPUMHZ) 
+		VALUES(#id#,#code#,#uri#,#name#,#description#,#ip#,#cluster_code#,#status#,#vendor#,#model#,#memInMB#,#cpuNum#,#nicNum#,#cpuMHz#)
+    </insert>
+   
+    <select id="queryForListByObj" parameterClass="huaweiHostObj" resultClass="huaweiHostObj">
+    	SELECT <include refid="huaweiHostColumns"/>
+    	FROM TB_HUAWEI_HOST_INFO 
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="code">
+    			<isNotEmpty property="code" prepend="AND">
+    				CODE = #code# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="id">
+    			<isNotEmpty property="id" prepend="AND">
+    				ID = #id# 
+    			</isNotEmpty>
+    		</isNotNull>
+    	</dynamic>
+    </select>
+	
+</sqlMap>

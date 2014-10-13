@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="FarmsService"> 
+	<typeAlias alias="farmServerObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.loadBalancing.FarmServerObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		farmName,serverAddress,serverPort,serverName,adminStatus,operationalStatus,weight,
+		operationMode,type,connectionLimit,bandwidthLimit,redirectTo,clientNAT
+		,serverDescription,responseThreshold,backupServerAddress,ADServerBackupPreemption,clientNATAddressRange,farmNameForLocalFarm
+	</sql>
+	<sql id="tableColumns">
+		id,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryForListByObjBase">
+		select
+		<include refid="tableColumns" />
+		from TB_CLOUD2_RDWR_FARMSERVERS
+		<dynamic prepend="WHERE">
+		    <isGreaterThan property="id" compareValue="0" prepend="and">
+				id =#id#
+			</isGreaterThan>
+			<isNotEmpty property="farmName" prepend="and">
+				farmName like CONCAT('%',#farmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="serverName" prepend="and">
+				serverName like CONCAT('%',#serverName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="serverAddress" prepend="and">
+				serverAddress like CONCAT('%',#serverAddress#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="farmServerObj"
+		resultClass="farmServerObj">
+		<include refid="queryForListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="farmServerObj"
+		resultClass="int">
+		select count(1) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	</select>
+	<delete id="deleteByObj" parameterClass="farmServerObj">
+		delete from TB_CLOUD2_RDWR_FARMSERVERS where id=#id#
+	</delete>
+	<insert id="insertByObj" parameterClass="farmServerObj">
+		
+		insert into
+		TB_CLOUD2_RDWR_FARMSERVERS(id,farmName,serverAddress,serverPort,serverName,adminStatus,operationalStatus,weight,
+		operationMode,type,connectionLimit,bandwidthLimit,redirectTo,clientNAT
+		,serverDescription,responseThreshold,backupServerAddress,ADServerBackupPreemption,clientNATAddressRange,farmNameForLocalFarm)
+		values
+		(ID_CLOUD2_RDWR_FARMSERVERS.NEXTVAL,#farmName#,#serverAddress#,#serverPort#,#serverName#,#adminStatus#,#operationalStatus#,#weight#,
+		#operationMode#,#type#,#connectionLimit#,#bandwidthLimit#,#redirectTo#,#clientNAT#
+		,#serverDescription#,#responseThreshold#,#backupServerAddress#,#ADServerBackupPreemption#,#clientNATAddressRange#,#farmNameForLocalFarm#)
+	</insert>
+
+	<update id="updateByObj" parameterClass="farmServerObj">
+		update TB_CLOUD2_RDWR_FARMSERVERS set
+		farmName=#farmName#,serverAddress=#serverAddress#,serverPort=#serverPort#,serverName=#serverName#,adminStatus=#adminStatus#,operationalStatus=#operationalStatus#,weight=#weight#,
+		operationMode=#operationMode#,type=#type#,connectionLimit=#connectionLimit#,bandwidthLimit=#bandwidthLimit#,redirectTo=#redirectTo#,clientNAT=#clientNAT#
+		,serverDescription=#serverDescription#,responseThreshold=#responseThreshold#,backupServerAddress=#backupServerAddress#,ADServerBackupPreemption=#ADServerBackupPreemption#,clientNATAddressRange=#clientNATAddressRange#,farmNameForLocalFarm=#farmNameForLocalFarm# where
+		id=#id#
+	</update>
+</sqlMap>

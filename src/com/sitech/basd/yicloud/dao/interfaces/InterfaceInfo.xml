@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="InterfaceInfo">
+	<typeAlias alias="InterfaceObj"
+		type="com.sitech.basd.yicloud.domain.interfaces.InterfaceObj" />
+	<typeAlias alias="DeviceObj"
+		type="com.sitech.basd.yicloud.domain.device.DeviceObj" />
+	<typeAlias alias="DictionaryObj"
+		type="com.sitech.basd.yicloud.domain.dictionary.DictionaryObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select m.ID,
+               m.DEVICE_ID,
+               td.name_zh DEVICENAME,
+               m.CODE,
+               m.STATUS,
+               ds.name STATUSNAME,
+               m.TYPE,
+               dt.NAME TYPENAME
+          from TB_YiCloud_Device_INTERFACE m,
+               Yi_Data_Dictionary          dt,
+               Yi_Data_Dictionary          ds,
+               TB_YiCloud_Device           td
+         where m.TYPE = dt.CODE
+           and dt.GROUP_NAME = 'DeviceInterface_type'
+           and m.STATUS = ds.CODE
+           and ds.GROUP_NAME = 'DeviceInterface_status'
+           and td.ID = m.DEVICE_ID
+        ]]>
+
+		<isNotEqual property="ID" compareValue="0" prepend="and">
+			m.ID = #ID#
+		</isNotEqual>
+		<isNotEqual property="DEVICE_ID" compareValue="0"
+			prepend="and">
+			m.DEVICE_ID = #DEVICE_ID#
+		</isNotEqual>
+
+		<isNotEmpty property="CODE" prepend="and">
+			m.CODE = #CODE#
+		</isNotEmpty>
+
+		<isNotEmpty property="STATUS" prepend="and">
+			m.STATUS = #STATUS#
+		</isNotEmpty>
+		<isNotEmpty property="TYPE" prepend="and">
+			m.TYPE = #TYPE#
+		</isNotEmpty>
+
+		order by m.ID asc
+
+	</sql>
+
+	<select id="queryForListByObj" parameterClass="InterfaceObj"
+		resultClass="InterfaceObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="InterfaceObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 查询设备主机ID下拉值 -->
+	<select id="queryForListByDeviceObj" parameterClass="DeviceObj"
+		resultClass="DeviceObj">
+		select td.ID ,td.NAME_ZH from TB_YiCloud_Device td
+	</select>
+	<!-- 查询端口状态下拉值  -->
+	<select id="queryForListByStatusObj" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<![CDATA[
+		select ID,CODE,NAME from Yi_Data_Dictionary where GROUP_NAME =
+		'DeviceInterface_status' order by CODE asc
+		 ]]>
+	</select>
+	<!-- 查询外围接口类型下拉值  -->
+	<select id="queryForListByTypeObj" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<![CDATA[
+		select ID,CODE,NAME from Yi_Data_Dictionary where GROUP_NAME =
+		'DeviceInterface_type' order by CODE asc
+		 ]]>
+	</select>
+
+	<!-- 添加设备主机 -->
+	<insert id="insertByObj" parameterClass="InterfaceObj">
+		<selectKey resultClass="int" keyProperty="ID">
+			SELECT ID_YICLOUD_DEVICE_INTERFACE.NEXTVAL AS ID FROM dual
+		</selectKey>
+		insert into
+		TB_YiCloud_Device_INTERFACE(ID,DEVICE_ID,CODE,STATUS,TYPE,BELONG_NETWORKS)
+		values(#ID#,#DEVICE_ID#,#CODE#,#STATUS#,#TYPE#,#BELONG_NETWORKS#)
+	</insert>
+	<!-- 修改设备主机 -->
+	<update id="updateByObj" parameterClass="InterfaceObj">
+		update TB_YiCloud_Device_INTERFACE set
+		ID=#ID#,DEVICE_ID=#DEVICE_ID#,CODE=#CODE#,STATUS=#STATUS#,TYPE=#TYPE#,BELONG_NETWORKS=#BELONG_NETWORKS#
+		where ID=#ID#
+	</update>
+	<!-- 根据ID删除设备主机 -->
+	<delete id="deleteByObj" parameterClass="InterfaceObj">
+		delete from TB_YiCloud_Device_INTERFACE where ID=#ID#
+	</delete>
+</sqlMap>

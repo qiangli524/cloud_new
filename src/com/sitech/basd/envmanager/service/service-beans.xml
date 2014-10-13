@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="performanceService"
+		class="com.sitech.basd.envmanager.service.performance.PerformanceServiceImpl"
+		singleton="false">
+		<property name="performanceDao">
+			<ref bean="performanceDao"/>
+		</property>
+	</bean>
+	<bean id="ledgerService"
+		class="com.sitech.basd.envmanager.service.ledger.LedgerServiceImpl"
+		singleton="false">
+		<property name="ledgerDao">
+			<ref bean="ledgerDao"/>
+		</property>
+	</bean>
+	<bean id="versionService"
+		class="com.sitech.basd.envmanager.service.version.VersionServiceImpl"
+		singleton="false">
+		<property name="versionDao">
+			<ref bean="versionDao"/>
+		</property>
+	</bean>
+	<bean id="configureService"
+		class="com.sitech.basd.envmanager.service.configure.ConfigureServiceImpl"
+		singleton="false">
+		<property name="configureDao">
+			<ref bean="configureDao"/>
+		</property>
+	</bean>
+	<bean id="condeviceService"
+		class="com.sitech.basd.envmanager.service.condevice.CondeviceServiceImpl"
+		singleton="false">
+		<property name="condeviceDao">
+			<ref bean="condeviceDao"/>
+		</property>
+	</bean>
+	<bean id="updatepwdService"
+		class="com.sitech.basd.envmanager.service.updatepwd.UpdatepwdServiceImpl"
+		singleton="false">
+		<property name="updatepwdDao">
+			<ref bean="updatepwdDao"/>
+		</property>
+	</bean>
+	<bean id="scriptmanageService"
+		class="com.sitech.basd.envmanager.service.scriptmanage.ScriptmanageServiceImpl"
+		singleton="false">
+		<property name="scriptmanageDao">
+			<ref bean="scriptmanageDao"/>
+		</property>
+	</bean>
+	
+</beans>
+

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="SnapShot">
+<typeAlias alias="SnapShotObj" type="com.sitech.basd.resource.domain.united.SnapShotObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+         ]]>
+	</sql>
+	 <sql id="queryByObjBase">
+		SELECT
+			a.id,
+			a.`name`,
+			a.connect_id,
+			DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+			a.description,
+			a.snapshot_uuid,
+			a.vm_uuid,
+			b.VH_NAME vm_name,
+			a.vm_type,
+			a.user_id
+		FROM
+			tb_vm_snapshot a 
+		LEFT JOIN 
+			tb_cloud2_vmhost_info b 
+		ON 
+			a.vm_uuid = b.VH_UUID
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					a.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="name" >
+				<isNotEmpty property="name" prepend="and">
+					a.name like '%$name$%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="connect_id" prepend="and">
+				<isNotEmpty property="connect_id">
+					a.connect_id = #connect_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="vm_uuid" prepend="and">
+				<isNotEmpty property="vm_uuid">
+					a.vm_uuid = #vm_uuid#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="snapshot_uuid" prepend="and">
+				<isNotEmpty property="snapshot_uuid">
+					a.snapshot_uuid = #snapshot_uuid#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="user_id" prepend="and">
+				<isNotEmpty property="user_id">
+					a.user_id = #user_id#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotEmpty property="connectCodeList" prepend="and">
+				a.connect_id in
+				<iterate close=")" conjunction="," open="(" property="connectCodeList">
+					#connectCodeList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY a.create_time DESC
+	</sql>
+		
+	 <!-- 查找快照列表记录 -->
+	  <select id="queryForSnapShotList" parameterClass="SnapShotObj" resultClass="SnapShotObj">
+	        <include refid="queryByObjBase"/> 
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="SnapShotObj" resultClass="int">
+	       select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <!-- 插入一条记录 -->
+	  <insert id="insertByObj" parameterClass="SnapShotObj">
+	  	INSERT INTO tb_vm_snapshot (
+			id,
+			name,
+			vm_uuid,
+			vm_type,
+			connect_id,
+			snapshot_uuid,
+			description,
+			create_time,
+			user_id
+		)
+			VALUES
+		(
+			#id#,
+			#name#,
+			#vm_uuid#,
+			#vm_type#,
+			#connect_id#,
+			#snapshot_uuid#,
+			#description#,
+			now(),
+			#user_id#
+		)
+	  </insert>
+	  
+	  <!-- 删除一条记录 -->
+	  <delete id="deleteByObj" parameterClass="SnapShotObj">
+	  		delete from tb_vm_snapshot 
+	  		<dynamic prepend="where">
+	  			<isNotNull property="id" >
+					<isNotEmpty property="id" prepend="and">
+					   	id=#id#
+					</isNotEmpty>
+				</isNotNull>
+				<isNotNull property="snapshot_uuid" >
+					<isNotEmpty property="snapshot_uuid" prepend="and">
+					   	snapshot_uuid=#snapshot_uuid#
+					</isNotEmpty>
+				</isNotNull>
+				<isNotNull property="connect_id" >
+					<isNotEmpty property="connect_id" prepend="and">
+					   	connect_id=#connect_id#
+					</isNotEmpty>
+				</isNotNull>
+	  		</dynamic>
+	  </delete>
+	
+</sqlMap>

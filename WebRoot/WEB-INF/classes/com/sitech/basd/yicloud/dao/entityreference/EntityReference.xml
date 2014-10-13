@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="EntityReference">
+	<typeAlias alias="EntityReference"
+		type="com.sitech.basd.yicloud.domain.entityreference.EntityReferenceObj" />
+	<insert id="insertByObj" parameterClass="EntityReference">
+		insert into TB_CLOUD_ENTITY_REFERENCE(UNIT_ID,CODE,C_ID) values (#unit_id#,#code#,#c_id#)
+	</insert>
+	<select id="queryByObj" parameterClass="EntityReference">
+		select unit_id,code,c_id from TB_CLOUD_ENTITY_REFERENCE where code = #code#
+	</select>
+</sqlMap>

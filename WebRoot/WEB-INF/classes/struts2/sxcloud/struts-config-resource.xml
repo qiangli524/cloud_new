@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="resource"
+			 extends="global_package">
+		<action name="resource_*"
+				class="hostManageAction" method="{1}"> 
+			<result name="list">/sxcloud/cloud/host/listHost.jsp</result>
+			<result name="add">/sxcloud/cloud/host/editHost.jsp</result> 
+			<result name="modify">/sxcloud/cloud/host/editHost.jsp</result> 
+			<result name="save" type="redirect">/resource_listHost.do</result>
+			<result name="hostsave" type="redirect">/resource_allHostList.do</result>
+			<result name="del" type="redirect">/resource_listHost.do</result>
+			<result name="hostdel" type="redirect">/resource_allHostList.do</result>
+			<result name="listconfig">/sxcloud/cloud/host/listHostConfig.jsp</result>
+			<result name="addconfig">/sxcloud/cloud/host/editHostConfig.jsp</result>
+			<result name="modconfig">/sxcloud/cloud/host/editHostConfig.jsp</result>
+			<result name="hosthis">/sxcloud/cloud/host/listHostHis.jsp</result>
+			<result name="allHost">/sxcloud/cloud/host/allHostList.jsp</result>
+			<result name="ah_allHost">/ah/resource/host/allHostList.jsp</result>
+			<result name="showHostDevice">/resource/united/storage/showHostDevice.jsp</result>
+			<result name="addHostInfo">/sxcloud/cloud/host/updateHostState.jsp</result>
+			<result name="showConsole">/sxcloud/cloud/host/showConsole.jsp</result>
+		</action>
+		<action name="resourcepool_*" 
+		        class="hostPoolAction" method="{1}">
+		     <result name="allPool">/sxcloud/cloud/pool/allPoolList.jsp</result>
+		     <result name="del" type="redirect">resourcepool_allHostPoolList.do</result>
+		     <result name="modify">/sxcloud/cloud/pool/addPool.jsp</result>
+		     <result name="save" type="redirect">resourcepool_allHostPoolList.do</result>
+		     <result name="add">/sxcloud/cloud/pool/addPool.jsp</result>
+		     <result name="host2pool">/sxcloud/cloud/pool/host2pool.jsp</result>
+		</action>
+		 
+ 
+	</package>
+
+</struts>

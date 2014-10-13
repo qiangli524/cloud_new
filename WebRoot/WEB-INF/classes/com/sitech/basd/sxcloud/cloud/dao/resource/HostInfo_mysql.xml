@@ -1,0 +1,1607 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HostInfo">
+    <typeAlias alias="HostInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.resource.TbCloud2HostInfoObj"/>
+    <typeAlias alias="HostHisObj"  type="com.sitech.basd.sxcloud.cloud.domain.resource.TbCloud2HostHisObj"/>
+    <typeAlias alias="TbCloud2HostConfigObj"  type="com.sitech.basd.sxcloud.cloud.domain.resource.TbCloud2HostConfigObj"/>
+    <typeAlias alias="cmsObj"  type="com.sitech.basd.resource.domain.united.CMSObj"/>
+     
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+    
+    <sql id="hostInfoSql">
+    	id,H_UUID,EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,EQ_TEMPERATURE,HASVERTUAL,CQ_ID,PROTOCOL,CONTROL,DEVICE_ID,CPU_FQ,CPU_CL,MEMORY mem,STORE store,MODEL,NIC_NUM,CPU_DESC,
+    	HOST_PROC,STATUS,CONNECT_ID connectId, MAX_VCPU maxVcpu,USED_VCPU usedVcpu,ALLOCATED allocated,CONNECT_STATUS connectStatus,domain
+    </sql>
+   
+    <select id="queryForListByObj" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    	SELECT <include refid="hostInfoSql"/>,DATE_FORMAT(INS_DATE,'%Y-%m-%d %H:%i:%S') AS INS_DATE
+    	FROM TB_CLOUD2_HOST_INFO A
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="eq_id">
+    			<isNotEmpty property="eq_id" prepend="AND">
+    				A.EQ_ID = #eq_id# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="eq_ip">
+    			<isNotEmpty property="eq_ip" prepend="AND">
+    				A.EQ_IP like CONCAT('%',#eq_ip#,'%')
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="eq_type">
+    			<isNotEmpty property="eq_type" prepend="AND">
+    				A.EQ_TYPE = #eq_type# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="hasvertual">
+    			<isNotEmpty property="hasvertual" prepend="AND">
+    				A.HASVERTUAL = #hasvertual# 
+    			</isNotEmpty>
+    		</isNotNull> 
+    		<isNotEqual property="control" compareValue="0" prepend="AND">
+    			A.CONTROL = #control# 
+    		</isNotEqual>
+    		<isNotEqual property="device_id" compareValue="0" prepend="AND">
+    			A.DEVICE_ID = #device_id# 
+    		</isNotEqual>
+    		<isNotEqual property="id" compareValue="0" prepend="and">
+    			A.ID=#id#
+    		</isNotEqual>
+    		<isNotNull property="h_uuid">
+    			<isNotEmpty property="h_uuid" prepend="AND">
+    				A.h_uuid = #h_uuid# 
+    			</isNotEmpty>
+    		</isNotNull> 
+    		<isNotNull property="connectId">
+    			<isNotEmpty property="connectId" prepend="AND">
+    				A.CONNECT_ID = #connectId# 
+    			</isNotEmpty>
+    		</isNotNull> 
+    		<isNotNull property="eq_name">
+    			<isNotEmpty property="eq_name" prepend="AND">
+    				A.eq_name = #eq_name# 
+    			</isNotEmpty>
+    		</isNotNull> 
+    		<isNotNull property="allocated">
+    			<isNotEmpty property="allocated" prepend="AND">
+    				ALLOCATED = #allocated#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>	
+    	</dynamic>
+    	ORDER BY A.INS_DATE desc
+    </select>
+    <!--  
+	<select id="getIdSequence" resultClass="int">
+       		SELECT max(ID)+1 from TB_CLOUD2_HOST_INFO
+	</select>
+	-->
+	 <insert id="insertByObj" parameterClass="HostInfoObj">
+	 	INSERT INTO TB_CLOUD2_HOST_INFO(
+		id,H_UUID,EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,
+		EQ_TEMPERATURE,HASVERTUAL,CQ_ID,PROTOCOL,CONTROL,DEVICE_ID,
+		CPU_FQ,CPU_CL,MEMORY,STORE,MODEL,NIC_NUM,CPU_DESC,HOST_PROC,
+		STATUS,INS_DATE,MAC,CONNECT_ID,MAX_VCPU,USED_VCPU,MAX_CPU,USED_MEM,USED_CPU,ALLOCATED,CONNECT_STATUS,domain) 
+		VALUES(#id#,#h_uuid#,#eq_id#,#eq_name#,#eq_type#,#eq_ip#,
+		#eq_hostname#,#eq_temperature#,#hasvertual#,#cq_id#,#PROTOCOL#,
+		#control#,#device_id#,#cpu_fq#,#cpu_cl#,#mem#,#store#,#MODEL#,
+		#NIC_NUM#,#CPU_DESC#,#HOST_PROC#,'1',DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),
+		#MAC#,#connectId#,#maxVcpu#,#usedVcpu#,#maxCpu#,#usedMemMb#,#usedCpu#,#allocated#,#connectStatus#,#domain#)
+    </insert>
+     <update id="updateByObj" parameterClass="HostInfoObj">
+    	UPDATE TB_CLOUD2_HOST_INFO A SET A.EQ_NAME = #eq_name#,A.EQ_TYPE = #eq_type#
+    		,A.EQ_IP = #eq_ip#,A.EQ_HOSTNAME = #eq_hostname#
+    		,A.EQ_TEMPERATURE = #eq_temperature#,A.INS_DATE = DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')
+    		,A.HASVERTUAL = #hasvertual#,A.PROTOCOL=#PROTOCOL#
+    		,A.CONTROL = #control#,A.CQ_ID=#cq_id#,A.STATUS=#STATUS#,A.ALLOCATED = #allocated#,
+    		A.CPU_CL=#cpu_cl#,A.MEMORY=#mem#,A.STORE=#store#,A.H_UUID=#h_uuid#,A.CONNECT_ID=#HOST_POOL_ID#,
+    		A.MODEL=#MODEL#
+    	WHERE A.EQ_ID = #eq_id#
+    </update>
+	
+	<update id="updateByInterObj" parameterClass="HostInfoObj">
+    	UPDATE TB_CLOUD2_HOST_INFO A
+    	<dynamic prepend="set">
+    		<isNotEmpty prepend="," property="eq_name">
+    			A.EQ_NAME = #eq_name#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="eq_hostname">
+    			EQ_HOSTNAME=#eq_hostname#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="CPU_DESC">
+    			A.CPU_DESC = #CPU_DESC#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="eq_ip">
+    			A.EQ_IP = #eq_ip#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="cpu_fq">
+    			A.cpu_fq = #cpu_fq#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="cpu_cl">
+    			A.cpu_cl = #cpu_cl#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="mem">
+    			A.MEMORY = #mem#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="MODEL">
+    			A.MODEL = #MODEL#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="HOST_PROC">
+    			A.HOST_PROC=#HOST_PROC#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="STATUS">
+    			A.STATUS = #STATUS#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="NIC_NUM">
+    			NIC_NUM=#NIC_NUM#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="maxVcpu">
+    			MAX_VCPU=#maxVcpu#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="usedVcpu">
+    			USED_VCPU=#usedVcpu#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="maxCpu">
+    			MAX_CPU=#maxCpu#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="usedMemMb">
+    			USED_MEM=#usedMemMb#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="usedCpu">
+    			USED_CPU=#usedCpu#
+    		</isNotEmpty>
+    	</dynamic>
+    	<dynamic prepend="WHERE">
+   			<isNotEmpty property="eq_ip" prepend="AND">
+   				A.EQ_IP = #eq_ip# 
+   			</isNotEmpty>
+   			<isNotEmpty property="eq_name" prepend="AND">
+   				A.EQ_NAME = #eq_name# 
+   			</isNotEmpty>
+   			<isNotEmpty property="h_uuid" prepend="AND">
+   				A.H_UUID = #h_uuid# 
+   			</isNotEmpty>
+   			<isNotEmpty property="connectId" prepend="AND">
+   				A.CONNECT_ID = #connectId# 
+   			</isNotEmpty>
+   			<isNotEmpty property="eq_id" prepend="AND">
+   				A.EQ_ID = #eq_id# 
+   			</isNotEmpty>
+    	</dynamic>
+    </update>
+    <!-- update By huojla -->
+    <delete id="deleteByObj" parameterClass="HostInfoObj">
+    	DELETE FROM TB_CLOUD2_HOST_INFO  
+		<dynamic prepend="WHERE">
+			<isNotNull property="eq_id">
+    			<isNotEmpty property="eq_id" prepend="AND">
+    				EQ_ID = #eq_id# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="eq_ip">
+    			<isNotEmpty property="eq_ip" prepend="AND">
+    				EQ_IP = #eq_ip# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="eq_type">
+    		  <isNotEmpty property="eq_type" prepend="AND">
+   				EQ_TYPE = #eq_type# 
+   			  </isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="allocated">
+    		  <isNotEmpty property="allocated" prepend="AND">
+   				ALLOCATED=#allocated#
+   			  </isNotEmpty>
+    		</isNotNull>
+			<isNotNull property="eq_name">
+    			<isNotEmpty property="eq_name" prepend="AND">
+    				EQ_NAME = #eq_name# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="id">
+    			<isGreaterThan property="id" compareValue="0" prepend="and">
+    				ID = #id#
+    			</isGreaterThan>
+    		</isNotNull>
+    		<isNotNull property="h_uuid">
+    			<isNotEmpty property="h_uuid" prepend="AND">
+    				H_UUID = #h_uuid# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="connectId">
+    			<isNotEmpty property="connectId" prepend="AND">
+    				CONNECT_ID = #connectId# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="hasvertual">
+    			<isNotEmpty property="hasvertual" prepend="AND">
+    				HASVERTUAL = #hasvertual# 
+    			</isNotEmpty>
+    		</isNotNull>
+    	</dynamic>
+    </delete>
+    
+    <insert id="insertHostHis" parameterClass="HostHisObj">
+    	INSERT INTO TB_CLOUD2_HOST_HIS(EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,EQ_TEMPERATURE,HASVERTUAL,CQ_ID,OPERATION) 
+		SELECT EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,EQ_TEMPERATURE,HASVERTUAL,CQ_ID,#operation# FROM TB_CLOUD2_HOST_INFO WHERE EQ_ID = #eq_id# 
+    </insert>
+    
+    <sql id="queryHisForListByObjBase">
+    	SELECT <include refid="hostInfoSql"/>,OPERATION,DATE_FORMAT(A.INS_DATE,'%Y-%m-%d %H:%i:%S') AS INS_DATE,B.C_NAME AS CQ_NAME
+    	FROM TB_CLOUD2_HOST_HIS A JOIN TB_CLOUD2_CUBINET_INFO B ON A.CQ_ID = B.C_ID
+    	
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="eq_id">
+    			<isNotEmpty property="eq_id" prepend="AND">
+    				A.EQ_ID = #eq_id#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="eq_ip">
+    			<isNotEmpty property="eq_ip" prepend="AND">
+    				A.EQ_IP = #eq_ip#
+    			</isNotEmpty>
+    		</isNotNull>
+     		<isNotNull property="eq_type">
+    			<isNotEmpty property="eq_type" prepend="AND">
+    				A.EQ_IP = #eq_type#
+    			</isNotEmpty>
+    		</isNotNull>
+     		<isNotNull property="hasvertual">
+    			<isNotEmpty property="hasvertual" prepend="AND">
+    				A.HASVERTUAL = #hasvertual#
+    			</isNotEmpty>
+    		</isNotNull>   		
+    		<isNotNull property="start_date">
+    			<isNotEmpty property="start_date" prepend="AND">
+    				A.INS_DATE &gt; DATE_FORMAT(#start_date#,'%Y-%m-%d %H:%i:%S')
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="end_date">
+    			<isNotEmpty property="end_date" prepend="AND">
+    				A.INS_DATE &lt; DATE_FORMAT(#end_date#,'%Y-%m-%d %H:%i:%S')
+    			</isNotEmpty>
+    		</isNotNull>	
+    	</dynamic>
+    	ORDER BY A.INS_DATE DESC
+    </sql>
+     <sql id="queryTbCloud2HostByObjBase">
+    	 select a.ID,a.HOSTID,a.TYPE,a.HOSTUSERNAME,a.HOSRPWD,a.SPACE,a.STATUS,DATE_FORMAT(UPDATETTIME,'%Y-%m-%d %H:%i:%S') UPDATETTIME,
+         b.EQ_HOSTNAME HOSTNAME,b.EQ_IP IP from TB_CLOUD2_HOST_CONFIG a,TB_CLOUD2_HOST_INFO b
+        where a.HOSTID=b.EQ_ID
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                a.ID =#ID#
+               </isGreaterThan>
+               <isGreaterThan property="TYPE" compareValue="0" prepend="and">
+                a.TYPE =#TYPE#
+               </isGreaterThan>
+               <isGreaterThan property="HOSTID" compareValue="0" prepend="and">
+                a.HOSTID =#HOSTID#
+               </isGreaterThan>
+<!--               <isGreaterThan property="STATUS" compareValue="0" prepend="and"> -->
+<!--                a.STATUS =#STATUS# -->
+<!--               </isGreaterThan> -->
+               <isNotEmpty property="HOSTUSERNAME" prepend="and">
+                a.HOSTUSERNAME like CONCAT('%',#HOSTUSERNAME#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	           </isNotEmpty>
+                order by a.ID desc
+    </sql>
+    <select id="queryHisForListByObj" parameterClass="HostHisObj" resultClass="HostHisObj"> 
+		<include refid="queryHisForListByObjBase" />
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    <select id="queryHisForListByObjForCount" parameterClass="HostHisObj" resultClass="int">
+    	select count(1) from (
+        	<include refid="queryHisForListByObjBase"/>
+    	) virtual_table
+    </select>
+     <select id="queryHostListById" parameterClass="java.lang.String" resultClass="HostInfoObj">
+    	select EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,HASVERTUAL,CQ_ID FROM TB_CLOUD2_HOST_INFO WHERE CQ_ID = #cq_id#
+    	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    </select>
+    <select id="queryForConfigListByObj" parameterClass="TbCloud2HostConfigObj" resultClass="TbCloud2HostConfigObj"> 
+        <include refid="queryTbCloud2HostByObjBase"/>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByConfigObjForCount" parameterClass="TbCloud2HostConfigObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryTbCloud2HostByObjBase"/>
+       ) virtual_table
+    </select>
+    <insert id="insertByConfigObj" parameterClass="TbCloud2HostConfigObj">
+    insert into TB_CLOUD2_HOST_CONFIG(
+    HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,UPDATETTIME,SPACE,STATUS
+     )
+     values(#HOSTID#,#TYPE#,#HOSTUSERNAME#,#HOSRPWD#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#SPACE#,#STATUS#)
+    </insert>
+    <update id="updateByConfigObj" parameterClass="TbCloud2HostConfigObj">
+    update TB_CLOUD2_HOST_CONFIG set HOSTID=#HOSTID#,HOSTUSERNAME=#HOSTUSERNAME#,HOSRPWD=#HOSRPWD#,SPACE=#SPACE#,STATUS=#STATUS# where ID=#ID#
+    </update>
+    <delete id="deleteByConfigObj" parameterClass="TbCloud2HostConfigObj">
+    delete from TB_CLOUD2_HOST_CONFIG where ID=#ID#
+    </delete>
+    
+     <delete id="deleteByDeviceId" parameterClass="HostInfoObj">
+   		 delete from TB_CLOUD2_HOST_INFO where DEVICE_ID=#device_id#
+    </delete>
+    <!-- 查询已经监控的主机列表 -->
+    <select id="queryMonitorHost" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+	SELECT m.EQ_ID,m.EQ_NAME,m.EQ_TYPE,m.EQ_IP,m.EQ_HOSTNAME,m.EQ_TEMPERATURE,m.HASVERTUAL,m.CQ_ID,m.PROTOCOL,m.CONTROL
+	,DATE_FORMAT(m.INS_DATE,'%Y-%m-%d %H:%i:%S') AS INS_DATE
+	from TB_CLOUD2_HOST_INFO m,TB_CLOUD2_HOST_CONFIG n where  m.EQ_ID=n.HOSTID and m.CONTROL = 1
+	<isNotEmpty property="eq_type" prepend="AND">
+		m.EQ_TYPE = #eq_type#
+	</isNotEmpty>
+	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	m.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	</select>
+	
+	<!-- 查询未监控的主机列表 -->
+	<select id="queryNotMonitorHost" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+	SELECT A.EQ_ID,
+       A.EQ_NAME,
+       A.EQ_TYPE,
+       A.EQ_IP,
+       A.EQ_HOSTNAME,
+       A.EQ_TEMPERATURE,
+       A.HASVERTUAL,
+       A.CQ_ID,
+       A.PROTOCOL,
+       A.CONTROL,
+       DATE_FORMAT(A.INS_DATE, '%Y-%m-%d %H:%i:%S') AS INS_DATE
+  FROM TB_CLOUD2_HOST_INFO A 
+  		where A.control = 1
+ 		<isNotEmpty property="eq_type" prepend="AND">
+			A.EQ_TYPE = #eq_type#
+		</isNotEmpty>
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+  minus
+SELECT m.EQ_ID,
+       m.EQ_NAME,
+       m.EQ_TYPE,
+       m.EQ_IP,
+       m.EQ_HOSTNAME,
+       m.EQ_TEMPERATURE,
+       m.HASVERTUAL,
+      m.CQ_ID,
+       m.PROTOCOL,
+       m.CONTROL,DATE_FORMAT(m.INS_DATE,'%Y-%m-%d %H:%i:%S') AS INS_DATE
+	from TB_CLOUD2_HOST_INFO m,TB_CLOUD2_HOST_CONFIG n where  m.eq_id=n.hostid and m.control = 1
+	<isNotEmpty property="eq_type" prepend="AND">
+		m.EQ_TYPE = #eq_type#
+	</isNotEmpty>
+	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	m.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	</select>
+	<select id="queryForListByType" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    	SELECT <include refid="hostInfoSql"/>,DATE_FORMAT(INS_DATE,'%Y-%m-%d %H:%i:%S') AS INS_DATE
+    	FROM TB_CLOUD2_HOST_INFO A
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="eq_type">
+    			<isNotEmpty property="eq_type" prepend="AND">
+    				A.EQ_TYPE  <![CDATA[ <> ]]> #eq_type# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    	</dynamic>
+    	ORDER BY EQ_ID
+    </select>
+   <!-- 查询不同虚拟化的主机数量 -->
+    <select id="queryHostNumByType" parameterClass="HostInfoObj">
+    	select count(t.eq_type) from TB_CLOUD2_HOST_INFO t  where t.eq_type=#eq_type#
+    	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    </select>
+    
+    <!-- 查询主机下虚拟机的个数 -->
+    <select id="countvmNum" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+    	select count(t.id) NUM from TB_CLOUD2_VMHOST_INFO  t where t.eq_id = #hostId# 
+   		<isNotNull property="type">
+   			<isNotEmpty property="type" prepend="AND">
+   				t.vh_type = #type#  
+   			</isNotEmpty>
+   		</isNotNull>
+   		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    </select>
+    <!-- 查询所有主机duangh -->
+    <sql id="allHost">
+    	SELECT  A.id,H_UUID,EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,
+    		EQ_TEMPERATURE,HASVERTUAL,CQ_ID,PROTOCOL,CONTROL,DEVICE_ID,CPU_FQ,IFNULL(CPU_CL,0) AS CPU_CL,
+    		MEMORY mem,MODEL,NIC_NUM,CPU_DESC,HOST_PROC,STATUS,DATE_FORMAT(INS_DATE,'%Y-%m-%d %H:%i:%S') AS INS_DATE,
+    		vm_num,count(e.host_id) as storage_num,A.CONNECT_ID as connectId,ALLOCATED
+    	FROM (select f.*,count(b.host_code) as vm_num from  
+			  TB_CLOUD2_HOST_INFO f 
+			  LEFT JOIN TB_CLOUD2_VMHOST_INFO b on f.h_uuid = b.host_code and f.connect_id = b.connect_id
+              group by f.h_uuid, f.connect_id,f.EQ_ID) A 
+        left join (select c.DEPENDENT_HOST_UUID host_id, c.connect_id,c.domain from TB_XEN_STORAGE_INFO c 
+           union all select d.host_id,d.connect_id,d.domain from TB_YICLOUD_DATASTORE d) e on e.host_Id = a.h_uuid and a.connect_id = e.connect_id
+           and a.domain = e.domain
+    	<dynamic prepend="WHERE"> 
+    		<isNotEmpty prepend="and" property="centerid">
+    			EXISTS (select 1 from tb_host_global_info tt where tt.center_uuid = #centerid# and A.CONNECT_ID = tt.connect_uuid and tt.host_uuid = A.H_uuid)
+    		</isNotEmpty>
+	    	<isNotNull property="HOST_POOL_ID"  prepend="and">
+	    			EXISTS (SELECT 1 FROM TB_HOST_POOL_RELATION B WHERE A.ID = B.HOST_ID AND B.POOL_ID = #HOST_POOL_ID#)
+	    	</isNotNull>
+    		<isNotNull property="eq_id" prepend="and">
+    			A.EQ_ID = #eq_id# 
+    		</isNotNull>
+    		<isNotNull property="eq_name" prepend="and">
+    			A.EQ_NAME like CONCAT('%',#eq_name#,'%')
+    		</isNotNull>
+    		<isNotNull property="eq_ip" prepend="and">
+    			A.EQ_IP like CONCAT('%',#eq_ip#,'%')
+    		</isNotNull>
+    		<isNotNull property="connectId" prepend="and">
+    			A.CONNECT_ID=#connectId#
+    		</isNotNull>
+    		<isNotNull property="h_uuid" prepend="and">
+    			A.H_UUID=#h_uuid#
+    		</isNotNull>
+    		<isNotNull property="hasvertual">
+    			<isNotEmpty property="hasvertual" prepend="AND">
+    				A.HASVERTUAL = #hasvertual#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="eq_type" >
+    			<isNotEqual property="eq_type" prepend="and" compareValue="-1">
+    				A.EQ_TYPE = #eq_type#
+    			</isNotEqual>
+    		</isNotNull>
+    		<isNotNull property="allocated">
+    			<isNotEmpty property="allocated" prepend="and">
+    				A.ALLOCATED = #allocated#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="hostUuids" prepend="and">
+    			A.H_UUID in ($hostUuids$)
+    		</isNotNull>
+    		<isNotNull property="USER_ID">
+	    		<isNotEqual property="USER_ID" compareValue="1" prepend="and"> 
+	    			exists (select * from tb_cloud_entityuser b where A.H_UUID = b.entity_id and b.USERID=#USER_ID#)
+	    		</isNotEqual>
+	    	</isNotNull>
+	    	<isNotNull property="cq_id" prepend="and">
+    			A.CQ_ID = #cq_id# 
+    		</isNotNull>
+    		<isNotNull property="STATUS">
+    			<isNotEmpty property="STATUS">
+    				<isEqual prepend="and" property="STATUS" compareValue="3">
+    					ISNULL(A.STATUS)
+    				</isEqual>
+    				<isNotEqual prepend="and" property="STATUS" compareValue="3">
+    					A.STATUS = #STATUS#
+    				</isNotEqual>
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    	</dynamic>
+    	group by a.h_uuid, a.connect_id,a.EQ_ID
+    </sql>
+    <sql id="allHostOrderBy">
+    	ORDER BY A.INS_DATE desc
+    </sql>
+  
+    <select id="queryAllHost" parameterClass="HostInfoObj" resultClass="HostInfoObj"> 
+        <include refid="allHost"/> 
+        <include refid="allHostOrderBy"/>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     
+     <select id="queryAllHostForCount" parameterClass="HostInfoObj" resultClass="int">
+      select count(ID) from (
+        <include refid="allHost"/>
+       ) virtual_table
+    </select>
+    <!-- 查询主机下存储的个数 -->
+    <select id="countStorageNum" parameterClass="java.util.Map" resultClass="java.util.HashMap">
+    	select sum(NUM) NUM from
+		(select count(distinct(STORE_UUID)) NUM from TB_XEN_STORAGE_INFO s  where s.DEPENDENT_HOST_UUID = #hostId#
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	s.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		union all
+		select count(distinct(STORE_UUID)) NUM from TB_YICLOUD_DATASTORE t where t.host_id = #hostId#) a
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    </select>
+    <!-- 根据主机ip查询主机id -->
+    <select id="queryForIdByIp" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    	SELECT  <include refid="hostInfoSql"/>
+    	FROM TB_CLOUD2_HOST_INFO 
+    	where EQ_IP = #eq_ip# 
+    	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    </select>
+     <sql id="hostNotInPool">
+		select a.id,H_UUID,EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,HASVERTUAL
+		from TB_CLOUD2_HOST_INFO a
+		where not exists (select 1 from tb_host_pool_relation b where a.id = b.host_id and exists (select 1 from `tb_cloud_host_pool` c 
+        where b.pool_id = c.id 
+        and c.pool_type = #POOL_TYPE#))
+		<isNotNull prepend="and" property="eq_name">
+			a.EQ_NAME like CONCAT('%',#eq_name#,'%')
+		</isNotNull>
+		<isNotNull property="eq_ip" prepend="and">
+			a.EQ_IP like CONCAT('%',#eq_ip#,'%')
+		</isNotNull>
+		<isNotNull prepend="and" property="eq_type"> a.EQ_TYPE = #eq_type#</isNotNull>
+		<isNotNull prepend="and" property="hasvertual">
+			a.HASVERTUAL = #hasvertual#
+		</isNotNull>
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		order by a.HASVERTUAL
+	</sql>
+	<select id="hostNotInPool" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+        <include refid="hostNotInPool"/>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+	<select id="hostNotInPoolForCount" parameterClass="HostInfoObj" resultClass="int">
+		select count(a.ID)
+		from TB_CLOUD2_HOST_INFO a
+		where not exists (select 1 from tb_host_pool_relation b where a.id = b.host_id and exists (select 1 from `tb_cloud_host_pool` c 
+        where b.pool_id = c.id 
+        and c.pool_type = #POOL_TYPE#))
+		<isNotNull prepend="and" property="eq_name">
+			a.EQ_NAME like CONCAT('%',#eq_name#,'%')
+		</isNotNull>
+		<isNotNull property="eq_ip" prepend="and">
+			a.EQ_IP like CONCAT('%',#eq_ip#,'%')
+		</isNotNull>
+		<isNotNull prepend="and" property="eq_type"> a.EQ_TYPE = #eq_type#</isNotNull>
+		<isNotNull prepend="and" property="hasvertual">
+			a.HASVERTUAL = #hasvertual#
+		</isNotNull>
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	</select> 
+	<insert id="insertPoolRelation" parameterClass="HostInfoObj">
+		insert into TB_HOST_POOL_RELATION values (#id#,#HOST_POOL_ID#)
+	</insert>
+	<delete id="delPoolRelation" parameterClass="HostInfoObj">
+		delete from TB_HOST_POOL_RELATION where pool_id = #HOST_POOL_ID# and host_id in ('$HOST_IDS$') 
+	</delete>
+	
+	<select id="queryHostListUseIn" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+	 	SELECT 
+	 	<include refid="hostInfoSql"/>
+	 	FROM TB_CLOUD2_HOST_INFO 
+	 	WHERE H_UUID IN
+	 	<iterate close=")" conjunction="," open="(" property="uuidList">
+	 		#uuidList[]#
+	 	</iterate>
+	 	<dynamic>
+	 		<isNotEmpty prepend="and" property="STATUS">
+	 			STATUS = #STATUS#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="eq_type">
+	 			EQ_TYPE = #eq_type#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="connectStatus">
+	 			CONNECT_STATUS = #connectStatus#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="connectId">
+				CONNECT_ID = #connectId#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	 	</dynamic>
+	</select>
+	
+	<select id="querySeriousHostListUseInUnAllo" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+		select
+		<include refid="hostInfoSql"/>
+		from tb_cloud2_host_info 
+		where 
+		EQ_ID in
+		<iterate close=")" conjunction="," open="(" property="uuidList">
+			#uuidList[]#
+		</iterate>
+		and (STATUS not in (1,2) or STATUS is null)
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	</select>
+	
+	<select id="querySeriousHostListUseIn" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+	 	SELECT 
+	 	<include refid="hostInfoSql"/>
+	 	FROM TB_CLOUD2_HOST_INFO 
+	 	WHERE 
+	 	H_UUID IN
+	 	<iterate close=")" conjunction="," open="(" property="uuidList">
+	 		#uuidList[]#
+	 	</iterate>
+	 	and 
+	 	(
+	 		(
+	 			CONNECT_STATUS	
+		 		<![CDATA[
+			 		<> 'connected'
+			 	]]>
+			 	or CONNECT_STATUS is null
+	 		)
+	 		or
+	 		(
+	 			CONNECT_STATUS = 'connected' and STATUS not in (1,2)
+	 		)
+	 		or
+			(
+				CONNECT_STATUS = 'connected' 
+				and STATUS is null
+			)  
+	 	)
+	 	<dynamic>
+	 		<isNotEmpty prepend="and" property="connectId">
+				CONNECT_ID = #connectId#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	 	</dynamic>
+	 	<!-- ( H_UUID IN
+	 	<iterate close=")" conjunction="," open="(" property="uuidList">
+	 		#uuidList[]#
+	 	</iterate>
+	 	and CONNECT_STATUS
+	 	<![CDATA[
+	 		<> 'connected'
+	 	]]>
+	 	) or ( H_UUID IN
+	 	<iterate close=")" conjunction="," open="(" property="uuidList">
+	 		#uuidList[]#
+	 	</iterate>
+	 	and CONNECT_STATUS is null
+	 	) -->
+	</select>
+	
+	<select id="queryHostListUseInByEqid" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+	 	SELECT 
+	 	<include refid="hostInfoSql"/>
+	 	FROM TB_CLOUD2_HOST_INFO 
+	 	WHERE EQ_ID IN
+	 	<iterate close=")" conjunction="," open="(" property="uuidList">
+	 		#uuidList[]#
+	 	</iterate>
+	 	<dynamic>
+	 		<isNotEmpty prepend="and" property="STATUS">
+	 			STATUS = #STATUS#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="eq_type">
+	 			EQ_TYPE = #eq_type#
+	 		</isNotEmpty>
+	 		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	 	</dynamic>
+	</select>
+	
+	<select id="queryForListByObjNot" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    	select 
+    	<include refid="hostInfoSql"/>
+    	from tb_cloud2_host_info
+    	where h_uuid not in
+    	<iterate close=")" conjunction="," open="(" property="uuidList">
+    		#uuidList[]#
+    	</iterate>
+    	<dynamic>
+    		<isNotEmpty prepend="and" property="connectId">
+				CONNECT_ID = #connectId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="h_uuid">
+				h_uuid = #h_uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="HASVERTUAL">
+				HASVERTUAL = #HASVERTUAL#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    	</dynamic>
+    </select>
+	
+	<update id="updateUnitedDataByObj" parameterClass="HostInfoObj">
+    	UPDATE TB_CLOUD2_HOST_INFO A
+    	<dynamic prepend="set">
+    		<isNotNull prepend="," property="eq_name">
+    			A.EQ_NAME = #eq_name#
+    		</isNotNull>
+    		<isNotNull prepend="," property="eq_hostname">
+    			EQ_HOSTNAME=#eq_hostname#
+    		</isNotNull>
+    		<isNotNull prepend="," property="CPU_DESC">
+    			A.CPU_DESC = #CPU_DESC#
+    		</isNotNull>
+    		<isNotNull prepend="," property="eq_ip">
+    			A.EQ_IP = #eq_ip#
+    		</isNotNull>
+    		<isNotNull prepend="," property="cpu_fq">
+    			A.cpu_fq = #cpu_fq#
+    		</isNotNull>
+    		<isNotNull prepend="," property="cpu_cl">
+    			A.cpu_cl = #cpu_cl#
+    		</isNotNull>
+    		<isNotNull prepend="," property="mem">
+    			A.MEMORY = #mem#
+    		</isNotNull>
+    		<isNotNull prepend="," property="MODEL">
+    			A.MODEL = #MODEL#
+    		</isNotNull>
+    		<isNotNull prepend="," property="HOST_PROC">
+    			A.HOST_PROC=#HOST_PROC#
+    		</isNotNull>
+    		<isNotNull prepend="," property="STATUS">
+    			A.STATUS = #STATUS#
+    		</isNotNull>
+    		<isNotNull prepend="," property="NIC_NUM">
+    			NIC_NUM=#NIC_NUM#
+    		</isNotNull>
+    		<isNotNull prepend="," property="maxVcpu">
+    			MAX_VCPU=#maxVcpu#
+    		</isNotNull>
+    		<isNotNull prepend="," property="usedVcpu">
+    			USED_VCPU=#usedVcpu#
+    		</isNotNull>
+    		<isNotNull prepend="," property="maxCpu">
+    			MAX_CPU=#maxCpu#
+    		</isNotNull>
+    		<isNotNull prepend="," property="usedMemMb">
+    			USED_MEM=#usedMemMb#
+    		</isNotNull>
+    		<isNotNull prepend="," property="usedCpu">
+    			USED_CPU=#usedCpu#
+    		</isNotNull>
+    		<isNotNull prepend="," property="allocated">
+    			ALLOCATED=#allocated#
+    		</isNotNull>
+    		<isNotNull prepend="," property="updateDate">
+    			UPDATE_DATE=#updateDate#
+    		</isNotNull>
+    		<isNotNull prepend="," property="connectStatus">
+    			CONNECT_STATUS=#connectStatus#
+    		</isNotNull>
+    	</dynamic>
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="h_uuid">
+    			<isNotEmpty property="h_uuid" prepend="AND">
+    				A.H_UUID = #h_uuid# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="connectId">
+    			<isNotEmpty property="connectId" prepend="AND">
+    				A.CONNECT_ID = #connectId# 
+    			</isNotEmpty>
+    		</isNotNull>
+    	</dynamic>
+    </update>
+    
+    <select id="countResource" parameterClass="HostInfoObj" resultClass="cmsObj">
+    	SELECT
+			SUM(a.CPU_CL)*#modulus# allcpu,
+			sum(a.USED_VCPU) usedcpu,
+			sum(a.MEMORY) allmem,
+			sum(a.USED_MEM) usedmem,
+			sum(a.store) allsr,
+			SUM(b.allocpu) allocpu,
+			SUM(b.allomem) allomem
+		FROM
+			tb_cloud2_host_info a
+		LEFT JOIN (
+			SELECT
+				SUM(VH_MEM) allomem,
+				SUM(VH_CPU) allocpu,
+				HOST_CODE,
+				CONNECT_ID
+			FROM
+				tb_cloud2_vmhost_info
+			GROUP BY
+				HOST_CODE
+		) b ON b.HOST_CODE = a.H_UUID
+		AND b.CONNECT_ID = a.CONNECT_ID
+		where a.HASVERTUAL 
+	    	<![CDATA[
+	    		<> 0
+	    	]]>
+	    AND a.h_uuid in
+    	<iterate close=")" conjunction="," open="(" property="uuidList">
+	 		#uuidList[]#
+	 	</iterate>
+	 	<dynamic>
+	 		<isNotEmpty property="connectId" prepend="AND">
+    				a.CONNECT_ID = #connectId# 
+    		</isNotEmpty>
+    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	 	</dynamic>
+    </select>
+    
+    <select id="countResourceByEqid" parameterClass="HostInfoObj" resultClass="cmsObj">
+    	SELECT
+			SUM(a.CPU_CL)*#modulus# allcpu,
+			sum(a.USED_VCPU) usedcpu,
+			sum(a.MEMORY) allmem,
+			sum(a.USED_MEM) usedmem,
+			sum(a.store) allsr
+		FROM
+			tb_cloud2_host_info a
+		WHERE a.HASVERTUAL 
+	    	<![CDATA[
+	    		<> 0
+	    	]]>
+	    <isNotEmpty property="uuidList">
+	    	AND a.eq_id in
+	    	<iterate close=")" conjunction="," open="(" property="uuidList">
+		 		#uuidList[]#
+		 	</iterate>
+	 	</isNotEmpty>
+	 	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    
+    
+    	<!-- select sum(cpu_cl)*#modulus# allcpu,sum(MEMORY) allmem,sum(used_mem) usedmem,sum(used_vcpu) usedcpu,sum(store) allsr
+    	from tb_cloud2_host_info
+    	where eq_id in
+    	<iterate close=")" conjunction="," open="(" property="uuidList">
+	 		#uuidList[]#
+	 	</iterate> -->
+    </select>
+    
+    <select id="validateNameAndIP" parameterClass="HostInfoObj" resultClass="java.lang.Integer">
+    	select count(*) from tb_cloud2_host_info 
+	    	<dynamic prepend="where">
+	    		<isNotEmpty property="eq_name" prepend="AND">
+    				eq_name = #eq_name# 
+    			</isNotEmpty>
+    			<isNotEmpty property="eq_ip" prepend="AND">
+    				eq_ip = #eq_ip# 
+    			</isNotEmpty>
+	    		<isNotEmpty property="eq_id" prepend="and">
+	    			eq_id != #eq_id#
+	    		</isNotEmpty>
+	    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           		</isNotEmpty>
+	    	</dynamic>
+    </select>
+    
+    <select id="queryHostListByAllocatedSerious" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    		select 
+		    	t.id,t.H_UUID,t.EQ_ID,t.EQ_NAME,t.EQ_TYPE,t.EQ_IP,t.EQ_HOSTNAME,t.EQ_TEMPERATURE,t.HASVERTUAL,t.CQ_ID,t.PROTOCOL,t.CONTROL,
+		    	t.DEVICE_ID,t.CPU_FQ,t.CPU_CL,t.MEMORY mem,t.STORE store,t.MODEL,t.NIC_NUM,t.CPU_DESC,
+	    		t.HOST_PROC,t.STATUS,t.CONNECT_ID, t.MAX_VCPU maxVcpu,t.USED_VCPU usedVcpu,t.ALLOCATED allocated,
+	    		t.CONNECT_STATUS connectStatus,storage_num
+	    	from tb_cloud2_host_info t
+	    	left join 
+	    	(select count(store_uuid) storage_num,HOST_ID,connect_id connect_uuid from tb_yicloud_datastore GROUP BY HOST_ID,connect_id) a
+	    	on t.h_uuid = a.HOST_ID and t.connect_id = a.connect_uuid
+	    	left join tb_host_global_info b
+	    	on t.connect_id = b.connect_uuid and t.h_uuid = b.host_uuid
+	    	<!-- <dynamic>
+	    		<isNotEmpty property="cluid">
+	    			and b.cluster_uuid = #cluid#
+	    		</isNotEmpty>
+	    		<isNotEmpty property="centerid">
+	    			and b.center_uuid = #centerid#
+	    		</isNotEmpty>
+	    		<isNotEmpty property="connectId">
+	    			and b.connect_uuid = #connectId#
+	    		</isNotEmpty>
+	    	</dynamic> -->
+	    	where t.HASVERTUAL
+	    	<![CDATA[
+	    		<> 0
+	    	]]>
+	    	and t.ALLOCATED = #allocated#
+	    	and (
+				(
+					t.CONNECT_STATUS
+					<![CDATA[
+		    			<> 'connected'
+		    		]]>
+		    		or t.CONNECT_STATUS is null 
+				) or
+				(
+					t.CONNECT_STATUS = 'connected' 
+					and t.STATUS not in (1,2)
+				) 
+				or
+				(
+					t.CONNECT_STATUS = 'connected' 
+					and t.STATUS is null
+				)    	
+	    	)
+    		<dynamic>
+	    		<isNotEmpty property="uuidList" prepend="and">
+	    			CONCAT_WS('_', b.cluster_uuid, b.connect_uuid) in
+			    	<iterate close=")" conjunction="," open="(" property="uuidList">
+			    		#uuidList[]#
+			    	</iterate>
+	    		</isNotEmpty>
+	    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	    	</dynamic>
+    
+    <!-- 	select 
+    	<include refid="hostInfoSql"/>,storage_num
+    	from tb_cloud2_host_info t
+    	left join 
+    	(select count(store_uuid) storage_num,HOST_ID,connect_id connect_uuid from tb_yicloud_datastore GROUP BY HOST_ID,connect_id) a
+    	on t.h_uuid = a.HOST_ID and t.connect_id = a.connect_uuid
+    	<dynamic>
+    		<isNotEmpty property="cluid">
+		    	inner join 
+				(select uuid,connect_id connect_uuid from tb_united_tree where parent_id = #cluid#) b
+				on t.h_uuid = b.uuid and t.connect_id = b.connect_uuid
+    		</isNotEmpty>
+    		<isNotEmpty property="centerid">
+		    	inner join 
+		    	(select uuid,connect_id connect_uuid from tb_united_tree where parent_id IN
+					(select id from tb_united_tree where parent_id in
+						(select id from tb_united_tree where uuid = #centerid# and connect_id = #connectId# ))) c
+				on t.h_uuid = c.uuid and t.connect_id = c.connect_uuid
+    		</isNotEmpty>
+    	</dynamic>
+    	where t.HASVERTUAL
+    	<![CDATA[
+    		<> 0
+    	]]>
+    	and t.ALLOCATED = #allocated#
+    	and (
+			(
+				t.CONNECT_STATUS
+				<![CDATA[
+	    			<> 'connected'
+	    		]]>
+	    		or t.CONNECT_STATUS is null 
+			) or
+			(
+				t.CONNECT_STATUS = 'connected' 
+				and t.STATUS not in (1,2)
+			) 
+			or
+			(
+				t.CONNECT_STATUS = 'connected' 
+				and t.STATUS is null
+			)    	
+    	) -->
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    
+    <select id="queryHostListThroughCluster" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    		select 
+		    	t.id,t.H_UUID,t.EQ_ID,t.EQ_NAME,t.EQ_TYPE,t.EQ_IP,t.EQ_HOSTNAME,t.EQ_TEMPERATURE,t.HASVERTUAL,t.CQ_ID,t.PROTOCOL,t.CONTROL,
+		    	t.DEVICE_ID,t.CPU_FQ,t.CPU_CL,t.MEMORY mem,t.STORE store,t.MODEL,t.NIC_NUM,t.CPU_DESC,
+	    		t.HOST_PROC,t.STATUS,t.CONNECT_ID, t.MAX_VCPU maxVcpu,t.USED_VCPU usedVcpu,t.ALLOCATED allocated,
+	    		t.CONNECT_STATUS connectStatus,storage_num
+	    	from  tb_cloud2_host_info t
+	    	left join 
+	    	(select count(store_uuid) storage_num,HOST_ID,connect_id connect_uuid from tb_yicloud_datastore GROUP BY HOST_ID,connect_id) a
+	    	on t.h_uuid = a.HOST_ID and t.connect_id = a.connect_uuid
+	    	left join tb_host_global_info b
+	    	on t.connect_id = b.connect_uuid and t.h_uuid = b.host_uuid 
+    		<dynamic prepend="where">
+	    		<isNotEmpty property="uuidList" prepend="and">
+	    			CONCAT_WS('_', b.cluster_uuid, b.connect_uuid) in
+			    	<iterate close=")" conjunction="," open="(" property="uuidList">
+			    		#uuidList[]#
+			    	</iterate>
+	    		</isNotEmpty>
+	    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           	</isNotEmpty>
+           	<isNotEmpty prepend="and" property="eq_type">
+           		t.EQ_TYPE = #eq_type#
+           	</isNotEmpty>
+           	<isNotEmpty prepend="and" property="STATUS">
+           		t.STATUS = #STATUS#
+           	</isNotEmpty>
+           	<isNotEmpty prepend="and" property="hasvertual">
+           		t.hasvertual = #hasvertual#
+           	</isNotEmpty>
+	    </dynamic>
+    
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    
+    <select id="queryHostListByUnAllocatedSerious" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    	select 
+    	<include refid="hostInfoSql"/>,storage_num
+    	from tb_cloud2_host_info t
+    	left join 
+    	(select count(store_uuid) storage_num,HOST_ID,connect_id connect_uuid from tb_yicloud_datastore GROUP BY HOST_ID,connect_id) a
+    	on t.h_uuid = a.HOST_ID and t.connect_id = a.connect_uuid
+    	<dynamic>
+    		<isNotEmpty property="uuidList">
+    			inner join
+    			(select uuid from tb_united_tree where parent_id in
+    				<iterate open="(" close=")" conjunction="," property="uuidList">
+    					#uuidList[]#
+    				</iterate>
+    			) b
+    			on t.EQ_ID = b.uuid
+    		</isNotEmpty>
+    	</dynamic>
+    	<!-- <dynamic>
+    		<isNotEmpty property="cluid">
+		    	inner join 
+				(select uuid from tb_united_tree where parent_id = #cluid#) b
+				on t.EQ_ID = b.uuid
+    		</isNotEmpty>
+    		<isNotEmpty property="centerid">
+		    	inner join 
+		    	(select uuid from tb_united_tree where parent_id IN
+					(select id from tb_united_tree where parent_id in
+						(select id from tb_united_tree where uuid = #centerid#))) c
+				on t.EQ_ID = c.uuid
+    		</isNotEmpty>
+    	</dynamic> -->
+    	where t.HASVERTUAL
+    	<![CDATA[
+    		<> 0
+    	]]>
+    	and t.ALLOCATED = #allocated# and (t.STATUS not in (1,2) or t.STATUS is null)
+    	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+        </isGreaterThan>
+    </select>
+    
+    <select id="countHostListByAllocatedSerious" parameterClass="HostInfoObj" resultClass="int">
+    	select count(eq_id) from tb_cloud2_host_info t
+    		left join tb_host_global_info b
+	    	on t.connect_id = b.connect_uuid and t.h_uuid = b.host_uuid
+	    	<!-- <dynamic>
+	    		<isNotEmpty property="cluid">
+	    			and b.cluster_uuid = #cluid#
+	    		</isNotEmpty>
+	    		<isNotEmpty property="centerid">
+	    			and b.center_uuid = #centerid#
+	    		</isNotEmpty>
+	    		<isNotEmpty property="connectId">
+	    			and b.connect_uuid = #connectId#
+	    		</isNotEmpty>
+	    	</dynamic> -->
+    	where t.HASVERTUAL
+    	<![CDATA[
+    		<> 0
+    	]]>
+    	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    	and t.ALLOCATED = #allocated#
+    	and (
+			(
+				t.CONNECT_STATUS
+				<![CDATA[
+	    			<> 'connected'
+	    		]]>
+	    		or t.CONNECT_STATUS is null 
+			) 
+			or
+			(
+				t.CONNECT_STATUS = 'connected' 
+				and t.STATUS not in (1,2)
+			)
+			or
+			(
+				t.CONNECT_STATUS = 'connected' 
+				and t.STATUS is null
+			)      	
+    	)
+    	<dynamic>
+	    		<isNotEmpty property="uuidList" prepend="and">
+	    			CONCAT_WS('_', b.cluster_uuid, b.connect_uuid) in
+			    	<iterate close=")" conjunction="," open="(" property="uuidList">
+			    		#uuidList[]#
+			    	</iterate>
+	    		</isNotEmpty>
+	    </dynamic>
+    </select>
+    <select id="countHostListThroughCluster" parameterClass="HostInfoObj" resultClass="int">
+    	select count(eq_id) from tb_cloud2_host_info t
+    		left join tb_host_global_info b
+	    	on t.connect_id = b.connect_uuid and t.h_uuid = b.host_uuid
+	    <dynamic prepend="where">
+	    	<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	t.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	           </isNotEmpty>
+	    		<isNotEmpty property="uuidList" prepend="and">
+	    			CONCAT_WS('_', b.cluster_uuid, b.connect_uuid) in
+			    	<iterate close=")" conjunction="," open="(" property="uuidList">
+			    		#uuidList[]#
+			    	</iterate>
+	    		</isNotEmpty>
+	    	<isNotEmpty prepend="and" property="eq_type">
+           		t.EQ_TYPE = #eq_type#
+           	</isNotEmpty>
+           	<isNotEmpty prepend="and" property="STATUS">
+           		t.STATUS = #STATUS#
+           	</isNotEmpty>
+           	<isNotEmpty prepend="and" property="hasvertual">
+           		t.hasvertual = #hasvertual#
+           	</isNotEmpty>
+	    </dynamic>
+    </select>
+    
+    <select id="countHostListByUnAllocatedSerious" parameterClass="HostInfoObj" resultClass="int">
+    	select count(eq_id) from tb_cloud2_host_info t
+    	<dynamic>
+    		<isNotEmpty property="uuidList">
+    			inner join
+    			(select uuid from tb_united_tree where parent_id in
+    				<iterate open="(" close=")" conjunction="," property="uuidList">
+    					#uuidList[]#
+    				</iterate>
+    			) b
+    			on t.EQ_ID = b.uuid
+    		</isNotEmpty>
+    	</dynamic>
+    	<!-- <dynamic>
+    		<isNotEmpty property="cluid">
+		    	inner join 
+		    	(select uuid from tb_united_tree where parent_id = #cluid#) b
+				on t.EQ_ID = b.uuid
+    		</isNotEmpty>
+    		<isNotEmpty property="centerid">
+		    	inner join 
+		    	(select uuid from tb_united_tree where parent_id IN
+					(select id from tb_united_tree where parent_id in
+						(select id from tb_united_tree where uuid = #centerid#))) c
+				on t.EQ_ID = c.uuid
+    		</isNotEmpty>
+    	</dynamic> -->
+    	where t.HASVERTUAL
+    	<![CDATA[
+    		<> 0
+    	]]>
+    	and t.ALLOCATED = #allocated# and (t.STATUS not in (1,2) or t.STATUS is null)
+    	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    </select>
+    
+    <!-- 同步IBM小型机数据，SX_POWER -->
+	<insert id="insertIbmPowerMachine" parameterClass="HostInfoObj">
+		insert into tb_cloud2_host_info
+		  (id, eq_id,hasvertual, eq_name, sn, memory,cpu_cl,h_uuid, ins_date, update_date)
+		  	select #id#,
+		         #eq_id#,
+		         #hasvertual#,
+		         t.sysname,
+		         t.machineserialnumber,
+		         t.totalmem,
+		         t.totalcpunum,
+		         t.machineserialnumber,
+		         now(),
+		         now()
+		    from SX_POWER t
+		   where t.sysname = #eq_name#
+	</insert>
+	
+	<!-- 同步IBM小型机数据，SX_POWER -->
+	<update id="updateIbmPowerMachine" parameterClass="HostInfoObj">
+		UPDATE tb_cloud2_host_info ac
+		INNER JOIN SX_POWER hc ON ac.eq_name = hc.sysname
+		AND ac.hasvertual = #hasvertual#
+		AND ac.eq_name = #eq_name#
+		SET ac.eq_id = #eq_id#,
+		ac.hasvertual=#hasvertual#,
+		ac.eq_name= hc.sysname,
+		ac.sn= hc.machineserialnumber,
+		ac.h_uuid= hc.machineserialnumber,
+		ac.memory = hc.totalmem,
+		ac.cpu_cl = hc.totalcpunum,
+		ac.update_date = now()
+	</update>
+    
+    	<select id="queryForStoreDeviceList" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+		SELECT DISTINCT
+			t. NAME deviceName,
+			t.id deviceId,
+			a.h_uuid,
+			a.connect_id connectId
+		FROM
+			tb_store_device t
+		INNER JOIN (
+			SELECT DISTINCT
+				m.DEVICE_ID deviceid,
+				n.h_uuid,
+				n.connect_id
+			FROM
+				tb_xen_storage_info m
+			INNER JOIN tb_cloud2_host_info n ON m.DEPENDENT_HOST_UUID = n.h_uuid
+			AND m.CONNECT_ID = n.connect_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="connectId">
+					n.connect_id = #connectId#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="h_uuid">
+					n.h_uuid = #h_uuid#
+				</isNotEmpty>
+			</dynamic>
+			UNION ALL
+				SELECT DISTINCT
+					x.device_id deviceid,
+					y.h_uuid,
+					y.connect_id 
+				FROM
+					tb_yicloud_datastore x
+				INNER JOIN tb_cloud2_host_info y ON x.host_id = y.h_uuid
+				AND x.connect_id = y.connect_id
+				<dynamic prepend="where">
+					<isNotEmpty prepend="and" property="connectId">
+						y.connect_id = #connectId#
+					</isNotEmpty>
+					<isNotEmpty prepend="and" property="h_uuid">
+						y.h_uuid = #h_uuid#
+					</isNotEmpty>
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	y.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+				</dynamic>
+		) a ON t.id = a.deviceid where t.type 
+		<![CDATA[
+			<> 0
+		]]>
+	</select>
+    
+    <select id="countStoreForUnAllo" parameterClass="HostInfoObj" resultClass="double">
+    	select sum(store) from tb_cloud2_host_info where allocated = 0 and hasvertual = #hasvertual#
+    	<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    </select>
+    
+    <select id="queryForDistribute" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+		select sum(store) store from tb_cloud2_host_info
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="is_distributed">
+				is_distributed = #is_distributed#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="allocated">
+				allocated = #allocated#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>   
+    </select>
+    
+    <select id="queryForListForCluster" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    	select 
+    	<include refid="hostInfoSql"/>
+    	from tb_cloud2_host_info where h_uuid in
+    	(
+    		select uuid from tb_united_tree where parent_id = #cluid# and type = 3 
+    	)
+    	and connect_id = #connectId#
+    	<dynamic>
+    		<isNotEmpty prepend="and" property="allocated">
+    			ALLOCATED = #allocated#
+    		</isNotEmpty>
+    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    	</dynamic>
+    </select>   
+    
+	<select id="queryForListByObjByAllocated" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+    	SELECT <include refid="hostInfoSql"/>,DATE_FORMAT(INS_DATE,'%Y-%m-%d %H:%i:%S') AS INS_DATE
+    	FROM TB_CLOUD2_HOST_INFO A
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="allocated">
+    			<isNotEmpty property="allocated" prepend="AND">
+    				A.ALLOCATED = #allocated# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+    	</dynamic>
+    	ORDER BY EQ_ID
+    </select>
+
+	<sql id="hostTpyes">
+		SELECT COUNT(1) as COUNT,t.`EQ_TYPE`, t.`CPU_CL`, t.`MEMORY` as mem,
+		t.`STORE` FROM
+		TB_CLOUD2_HOST_INFO t WHERE t.`ALLOCATED` = '0'
+		<isNotNull property="eq_type" prepend="and">
+			t.eq_type = #eq_type#
+		</isNotNull>
+		<isNotNull property="cpu_cl" prepend="and">
+			t.cpu_cl = #cpu_cl#
+		</isNotNull>
+		<isNotNull property="mem" prepend="and">
+			t.MEMORY = #mem#
+		</isNotNull>
+		<isNotNull property="store" prepend="and">
+			t.store = #store#
+		</isNotNull>
+		GROUP BY t.`eq_type`,t.`cpu_cl`, t.`MEMORY`, t.`STORE`
+	</sql>
+
+	<select id="queryAllHostTypeForCount" parameterClass="HostInfoObj"
+		resultClass="int">
+		select count(1) from (
+		<include refid="hostTpyes" />
+		) virtual_table
+	</select>
+
+	<select id="queryAllHostType" parameterClass="HostInfoObj"
+		resultClass="HostInfoObj">
+		<include refid="hostTpyes" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+		
+	<!-- 查询物理主机，业务中心（视图）用   Add By JamTau  Begin -->	
+	<sql id="hostListForBusi">
+		SELECT 
+			h.id,H_UUID,EQ_ID,EQ_NAME,EQ_TYPE,EQ_IP,EQ_HOSTNAME,
+			EQ_TEMPERATURE,HASVERTUAL,CQ_ID,PROTOCOL,CONTROL,DEVICE_ID,CPU_FQ,IFNULL(CPU_CL,0)
+			AS CPU_CL,STORE,SN,POWER_SUPPLY,MEMORY
+			mem,MODEL,NIC_NUM,CPU_DESC,HOST_PROC,STATUS,DATE_FORMAT(INS_DATE,'%Y-%m-%d
+			%H:%i:%S') AS INS_DATE,ALLOCATED 
+		FROM TB_CLOUD2_HOST_INFO h
+		<dynamic prepend="WHERE">
+			<isNotNull property="eq_id" prepend="and">
+				h.EQ_ID = #eq_id#
+			</isNotNull>
+			<isNotNull property="eq_name" prepend="and">
+				h.EQ_NAME like CONCAT('%',#eq_name#,'%')
+			</isNotNull>
+			<isNotNull property="eq_ip">
+				<isNotEmpty property="eq_ip" prepend="AND">
+					h.EQ_IP = like CONCAT('%',#eq_ip#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="hasvertual">
+				<isNotEmpty property="hasvertual" prepend="AND">
+					h.HASVERTUAL = #hasvertual#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="sn">
+				<isNotEmpty property="sn" prepend="AND">
+					h.SN like CONCAT('%',#sn#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="eq_type">
+				<isNotEqual property="eq_type" prepend="and" compareValue="-1"> 
+					h.EQ_TYPE = #eq_type#
+				</isNotEqual>
+			</isNotNull>
+			<isNotNull property="allocated">
+				<isNotEmpty property="allocated" prepend="and">
+					h.ALLOCATED = #allocated#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="hostUuids" prepend="and">
+				h.H_UUID in ($hostUuids$)
+			</isNotNull>
+			<isNotNull property="STATUS">
+				<isNotEmpty property="STATUS">
+					<isEqual prepend="and" property="STATUS" compareValue="3">
+						ISNULL(h.STATUS)
+					</isEqual>
+					<isNotEqual prepend="and" property="STATUS" compareValue="3">
+						h.STATUS = #STATUS#
+					</isNotEqual>
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id">
+				<isNotEmpty property="parent_id" prepend="AND">
+					h.EQ_ID NOT IN (SELECT connect_id FROM tb_busi_system_tree WHERE type = '5' AND parent_id = #parent_id#)
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<sql id="hostListForBusiOrderBy">
+		ORDER BY h.INS_DATE desc
+	</sql>
+			
+	<select id="queryHostListForBusiManagerCount" parameterClass="HostInfoObj" resultClass="int">
+		select count(ID) from (
+		<include refid="hostListForBusi" />
+		) virtual_table
+	</select>
+		
+	<select id="queryHostListForBusiManager" parameterClass="HostInfoObj" resultClass="HostInfoObj">
+		<include refid="hostListForBusi" />
+		<include refid="hostListForBusiOrderBy" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>  
+	
+	
+	<update id="updateHostStatusByObj" parameterClass="HostInfoObj">
+		UPDATE TB_CLOUD2_HOST_INFO A SET 
+			A.ALLOCATED = #allocated#
+		WHERE A.EQ_ID = #eq_id#
+	</update>	  
+</sqlMap>

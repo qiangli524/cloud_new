@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="hadoop"
+			 extends="global_package">
+		<!-- 统一树 -->
+		<action name="hadoop_*" class="hadoopTreeAction" method="{1}">
+			<result name="list">/hadoop/tree/listTree.jsp</result>
+			<result name="tree" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="tabs">/hadoop/tree/tabs.jsp</result>
+			<result name="addNode">/hadoop/tree/addTreeNode.jsp</result>
+			<result name="querynode" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="expandNode" type="json">
+				<param name="root">resultList</param>
+			</result>
+		</action>
+		
+		<action name="topo_*" class="hadoopTopoAction" method="{1}">
+			<result name="list">/hadoop/topo/listTopo.jsp</result>
+			<result name="newTopo">/hadoop/topo/listNewTopo.html</result>
+			<result name="topo" type="json">
+				<param name="root">obj</param>
+			</result>
+		</action>	
+			
+		<action name="hadooptop_*" class="hadoopKpiTopAction" method="{1}">
+			<result name="gotoppage">/hadoop/topN/topNpage.jsp</result>
+		</action>	
+		
+		<action name="hadoopmonitor_*" class="hadoopMonitorAction" method="{1}">
+			<result name="latestkpivalue">/hadoop/tree/latestKpiValue.jsp</result>
+			<result name="kpihistory">/hadoop/tree/kpihistory.jsp</result>
+			<result name="jvm">/hadoop/tab/listJvmData.jsp</result>
+		</action>
+		
+		<action name="relation_*" class="serviceKpiRelationAction" method="{1}">
+			<result name="list">/hadoop/relation/listServiceAndKpiRelation.jsp</result>
+			<result name="add">/hadoop/relation/addServiceAndKpiRelation.jsp</result>
+			<result name="upd">/hadoop/relation/updServiceAndKpiRelation.jsp</result>
+			<result name="list_kpi_id">/hadoop/relation/list_kpi_id.jsp</result>
+			<result name="import_servicekpi">/hadoop/relation/importServiceKpi.jsp</result>
+		</action>	
+		<action name="hadoopHost_*" class="hadoopHostAction" method="{1}"> 
+ 			<result name="listHostInfo">/hadoop/host/allHostList.jsp</result>
+<!-- 			<result name="list">/sxcloud/cloud/cubinet/listCubinet.jsp</result> -->
+<!--  			<result name="list_hadoop_host">/hadoop/allHostList.jsp</result> -->
+<!-- 			<result name="add">/sxcloud/cloud/cubinet/editCubinet.jsp</result>  -->
+<!-- 			<result name="modify">/sxcloud/cloud/cubinet/editCubinet.jsp</result>  -->
+<!-- 			<result name="save" type="redirect">/cubinet_getCubinetHostList.do</result> -->
+<!-- 			<result name="del" type="redirect">/cubinet_getCubinetHostList.do</result> -->
+		</action>
+	    <action name="hadoopHostServer_*" class="hadoopHostServerAction" method="{1}"> 
+ 			<result name="list_hadoop_host_server">/hadoop/tab/host_server_kpi.jsp</result>
+ 			<result name="list_hadoop_host_server_kpi">/hadoop/tab/list_host_server_kpi.jsp</result>
+ 			<result name="list_hadoop_only_host_server">/hadoop/tab/host_server_kpi.jsp</result>
+ 			<result name="get_kpi_id_chart" >/hadoop/tab/kpi_id_chart.jsp</result>
+ 			<result name="list_hadoop_cluster_host_server">/hadoop/tab/host_server_kpi.jsp</result>
+		</action>
+		
+		<!-- <action name="hadoopUsers_*" class="hadoopUsersAction" method="{1}">
+			<result name="success">/hadoop/users/listHadoopUsers.jsp</result>
+			<result name="list">/hadoop/users/listHadoopUserGroup.jsp</result>
+			<result name="add">/hadoop/users/editHadoopUser.jsp</result>
+			<result name="input">/hadoop/users/editHadoopUserGroup.jsp</result>
+			<result name="users">/hadoop/users/groupUsers.jsp</result>
+		</action> -->
+		<action name="hadoopHostInfo_*" class="hadoopHostInfoAction" method="{1}">
+			<result name="listHadoopHost">/hadoop/host/listHadoopHostInfo.jsp</result>
+			<result name="addHostInfo">/hadoop/host/editHadoopHostInfo.jsp</result>
+		</action>
+			
+		<action name="hadoopstatistics_*" class="hadoopStatisticsAction" method="{1}"> 
+ 			<result name="statisticsRootNode">/hadoop/statistics/statisticsRootNodePage.jsp</result>
+ 			<result name="statisticsClusterNode">/hadoop/statistics/statisticsClusterNodePage.jsp</result>
+ 			<result name="statisticsHbaseNode">/hadoop/statistics/statisticsHbaseNode.jsp</result>
+ 			<result name="statisticsHadoopNode">/hadoop/statistics/statisticsHadoopNode.jsp</result>
+ 			<result name="statisticsMapReduceNode">/hadoop/statistics/statisticsMapReduceNode.jsp</result>
+ 			<result name="statisticsHdfsNode">/hadoop/statistics/statisticsHdfsNode.jsp</result>
+ 			<result name="statisticsExampleNode">/hadoop/tab/serviceExampleInfo.jsp</result>
+ 			<result name="statisticsServiceNode">/hadoop/statistics/statisticsServiceNode.jsp</result>
+		</action>	
+		<action name="hadoopApplication_*" class="hadoopApplicationAction" method="{1}">
+			<result name="list">/hadoop/tab/listApplication.jsp</result>
+		</action>
+		<action name="hadoopJob_*" class="hadoopJobAction" method="{1}">
+			<result name="list">/hadoop/tab/listJob.jsp</result>
+		</action>
+		<action name="hadoopTask_*" class="hadoopTaskAction" method="{1}">
+			<result name="list">/hadoop/tab/listTask.jsp</result>
+		</action>
+		<action name="hadoopService_*" class="hadoopServiceNodeAction" method="{1}">
+			<result name="service_list">/hadoop/tab/listServiceNode.jsp</result>
+		</action>
+		<action name="HadoopKpi_*" class="hadoopKpiAction" method="{1}">
+			<result name="list_all_hadoop_kpis">/hadoop/kpi/listKpi.jsp</result>
+			<result name="add_kpi_jps">/hadoop/kpi/addKpi.jsp</result>
+			<result name="importiKpi">/hadoop/kpi/importKpi.jsp</result>
+		</action>
+		<action name="hadoopJvm_*" class="hadoopJvmAction" method="{1}">
+			<result name="showJvm">/hadoop/jvm/showJvm.jsp</result>
+			<result name="logJvm">/hadoop/jvm/logJvm.jsp</result>
+			<result name="hostInfo">/hadoop/host/listHadoopHostInfo.jsp</result>
+		</action>
+		
+		<action name="hadoopQueue_*" class="hadoopQueueAction" method="{1}">
+			<result name="list">/hadoop/queue/listQueue.jsp</result>
+			<result name="addHadoopQueue">/hadoop/queue/editQueue.jsp</result>
+			<result name="listUsers">/hadoop/queue/listHadoopUsers.jsp</result>
+			<result name="listConfigFiles">/hadoop/queue/listHadoopUsers.jsp</result>
+			<result name="selectParentQueue">/hadoop/queue/selectParentQueue.jsp</result>
+			<result name="addConnectUsers">/hadoop/queue/addHadoopUsers.jsp</result>
+			<result name="config" type="json">
+				<param name="root">configInfoObj</param>
+			</result>
+		</action>
+		
+		<action name="hadoopUserGroup_*" class="hadoopApplyUserGroupAction" method="{1}">
+			<result name="list">/hadoop/applyuser/listUserGroup.jsp</result>
+			<result name="add">/hadoop/applyuser/editUserGroup.jsp</result>
+			<result name="edit">/hadoop/applyuser/editUserGroup.jsp</result>
+			<result name="selectService">/hadoop/applyuser/selectService.jsp</result>
+			<result name="listUserForGroup">/hadoop/applyuser/listUserForGroup.jsp</result>
+			<result name="listUserForAsso">/hadoop/applyuser/listUserForAsso.jsp</result>
+			<result name="addAuthority">/hadoop/applyuser/addAuthority.jsp</result>
+			<result name="viewAuthority">/hadoop/applyuser/viewAuthority.jsp</result>
+			<result name="editAuthority">/hadoop/applyuser/editAuthority.jsp</result>
+		</action>
+		
+		<action name="hadoopUser_*" class="hadoopApplyUserAction" method="{1}">
+			<result name="list">/hadoop/applyuser/listUser.jsp</result>
+			<result name="add">/hadoop/applyuser/editUser.jsp</result>
+			<result name="edit">/hadoop/applyuser/editUser.jsp</result>
+			<result name="addAuthority">/hadoop/applyuser/addAuthority.jsp</result>
+			<result name="viewAuthority">/hadoop/applyuser/viewAuthority.jsp</result>
+			<result name="editAuthority">/hadoop/applyuser/editAuthority.jsp</result>
+		</action>
+	</package>
+</struts>

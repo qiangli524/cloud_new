@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="templettree" extends="global_package">
+		<action name="templettree_*"
+				class="templetTreeAction" method="{1}">
+			<result name="list">/yicloud/templettree/templetCenterTree.jsp</result>
+			<result name="creatMenu">/yicloud/templettree/creatMenu.jsp</result>
+			<result name="listScript">/yicloud/script/listScript.jsp</result>
+			<result name="addScript">/yicloud/script/editScript.jsp</result>
+			<result name="updateScript">/yicloud/script/editScript.jsp</result>
+			<result name="saveScript" type="redirect">templettree_listScript.do</result>
+			<result name="deleteScript" type="redirect">templettree_listScript.do</result>
+			<result name="relationRequest" type="redirect">templettree_listRelationScript.do?templet_id=${templet_id}&amp;templet_name=${templet_name}</result>
+			<result name="listRelationScript">/yicloud/script/listRelationScript.jsp</result>
+			<result name="imageInfo">/yicloud/vmware/imageInfo.jsp</result>
+		</action>
+ </package>
+
+</struts>

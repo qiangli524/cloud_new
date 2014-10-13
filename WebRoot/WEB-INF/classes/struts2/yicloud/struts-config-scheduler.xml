@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="scheduler" extends="global_package">
+		<action name="strategy_*"
+				class="strategyAction" method="{1}">
+			<result name="listStrategy">/yicloud/scheduler/listStrategy.jsp</result>
+			<result name="listAlarmStrategy">/yicloud/scheduler/listAlarmStrategy.jsp</result>
+			<result name="addStrategy">/yicloud/scheduler/addStrategy.jsp</result>
+			<result name="saveStrategy" type="redirect">strategy_listStrategy.do</result>
+			<result name="deleteStrategy" type="redirect">strategy_listStrategy.do</result>
+			<result name="queryCondition">/yicloud/scheduler/chooseCondition.jsp</result>
+			<result name="queryNetWork">/yicloud/scheduler/chooseNetWork.jsp</result>
+			<result name="results" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="queryAllEntity">/yicloud/scheduler/chooseEntity.jsp</result>
+			<result name="getHost">/yicloud/scheduler/chooseHost.jsp</result>
+			<result name="listVm">/yicloud/scheduler/listVm.jsp</result>
+		</action>
+		<action name="trigger_*"
+				class="triggerDefAction" method="{1}">
+			<result name="listTriggerDef">/yicloud/scheduler/listTriggerDef.jsp</result>
+			<result name="addTriggerDef">/yicloud/scheduler/addTriggerDef.jsp</result>
+			<result name="saveTriggerDef" type="redirect">trigger_listTriggerDefinition.do</result>
+			<result name="delTriggerDef" type="redirect">trigger_listTriggerDefinition.do</result>
+		</action>
+		<action name="kpi_*"
+				class="kpiAction" method="{1}">
+			<result name="listKPI">/yicloud/scheduler/listKPI.jsp</result>
+			<result name="addKPI">/yicloud/scheduler/addKPI.jsp</result>
+			<result name="updateKPI">/yicloud/scheduler/addKPI.jsp</result>
+			<result name="saveKPI" type="redirect">kpi_listKPI.do</result>
+			<result name="deleteKPI" type="redirect">kpi_listKPI.do</result>
+		</action>
+		
+ </package>
+
+</struts>

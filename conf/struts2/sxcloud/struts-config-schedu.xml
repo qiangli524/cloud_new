@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="schedu"
+			 extends="global_package">
+		<action name="virserver_*"
+				class="baseVirtualServerAction" method="{1}">
+			<result name="listVirtualServer">/sxcloud/cloudschedu/virtualServerList.jsp</result>
+			<result name="addVirtualServer">/sxcloud/cloudschedu/addVirtualServer.jsp</result>
+			<result name="modVirtualServer">/sxcloud/cloudschedu/modVirtualServer.jsp</result>
+		</action>
+		<action name="realserver_*"
+				class="realServerAction" method="{1}">
+			<result name="realServerList">/sxcloud/cloudschedu/realServerList.jsp</result>
+			<result name="addRealServer">/sxcloud/cloudschedu/addRealServer.jsp</result>
+			<result name="modRealServer">/sxcloud/cloudschedu/modRealServer.jsp</result>
+		</action>
+	</package>
+</struts>

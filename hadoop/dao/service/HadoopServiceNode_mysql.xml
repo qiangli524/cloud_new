@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ServiceNode">
+	<typeAlias alias="ServiceNodeObj" type="domain.service.HadoopServiceNodeObj"/>
+	<typeAlias alias="DataNodeObj" type="domain.service.DataNodeObj"/>
+	<typeAlias alias="NodeManagerObj" type="domain.service.NodeManagerObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForDataNodeListBase">
+		SELECT
+				a.id,
+				a.last_contact,
+				a.admin_state,
+				a.configured_capacity,
+				a.dfs_used,
+				a.non_dfs_used,
+				a.remaining,
+				a.dfs_used_percent,
+				a.remaining_percent,
+				a.blocks,
+				a.block_pool_used,
+				a.blocks_pool_used_percent,
+				a.failed_volumes,
+				a.host_id,
+				a.cluster_id,
+				b.ip host_ip
+		FROM
+			tb_hadoop_datanode a
+		LEFT JOIN tb_hadoop_host_info b ON  a.host_id = b.host_name
+		<dynamic prepend="WHERE">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+					b.id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="host_ip">
+					b.ip LIKE CONCAT('%',#host_ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="admin_state">
+					a.admin_state = #admin_state#
+			</isNotEmpty>
+			<isNotEmpty property="cluster_id">
+					a.cluster_id = #cluster_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<sql id="queryForNodeManagerListBase">
+		SELECT
+				a.id,
+				a.rack,
+				a.node_state,
+				a.node_address,
+				a.visit_address,
+				a.health_status,
+				DATE_FORMAT(a.last_health_update, '%Y-%m-%d %H:%i:%s') last_health_update,
+				a.health_report,
+				a.containers_num,
+				a.used_mem,
+				a.available_mem,
+				a.host_id,
+				a.cluster_id,
+				b.ip host_ip
+		FROM
+			tb_hadoop_nodemanager a
+		LEFT JOIN tb_hadoop_host_info b ON  a.host_id = b.host_name
+		<dynamic prepend="WHERE">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+					b.id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="host_ip">
+					b.ip LIKE CONCAT('%',#host_ip#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="node_address">
+					a.node_address = #node_address#
+			</isNotEmpty>
+			<isNotEmpty property="cluster_id">
+					a.cluster_id = #cluster_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<insert id="insertByObj" parameterClass="ServiceNodeObj">
+		insert into tb_hadoop_service_node(ID,SERVICE_NODE_ID,SERVICE_NODE_NAME,SERVICE_TYPE,HOST_ID)
+		values(#id#,#service_node_id#,#service_node_name#,#service_type#,#host_id#)
+	</insert>
+	
+	
+	
+	<select id="queryForDataNodeList" parameterClass="DataNodeObj" resultClass="DataNodeObj">
+		<include refid ="queryForDataNodeListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	
+	<select id="queryForDataNodeListCount" parameterClass="DataNodeObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForDataNodeListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <select id="queryForNodeManagerList" parameterClass="NodeManagerObj" resultClass="NodeManagerObj">
+	 	<include refid ="queryForNodeManagerListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	 
+	<select id="queryForNodeManagerListCount" parameterClass="NodeManagerObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForNodeManagerListBase" />
+		 ) virtual_table
+	 </select>
+</sqlMap>

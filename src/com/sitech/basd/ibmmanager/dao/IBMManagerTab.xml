@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="IBMManagerTab">
+<typeAlias alias="IBMManagerTreeObj" type="com.sitech.basd.ibmmanager.domain.IBMManagerTreeObj"/>  
+<typeAlias alias="LogicalPartitionObj" type="com.sitech.basd.ibmmanager.domain.LogicalPartitionObj"/>  
+<typeAlias alias="power" type="com.sitech.basd.ibmmanager.domain.PowerObj"/> 
+<typeAlias alias="IBMManagerTabObj" type="com.sitech.basd.ibmmanager.domain.IBMManagerTabObj"/> 
+<typeAlias alias="IBMIndexObj" type="com.sitech.basd.ibmmanager.domain.IBMIndexObj"/> 
+<typeAlias alias="CloudOSIndexObj" type="com.sitech.basd.ibmmanager.domain.CloudOSIndexObj"/> 
+<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+<typeAlias alias="Category" type="com.sitech.basd.fusioncharts.vo.Category"/>
+<typeAlias alias="vmHostInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj"/>
+   <!-- 逻辑分区摘要 -->
+   <select id="queryLparInfo" parameterClass="LogicalPartitionObj" resultClass="LogicalPartitionObj">
+		select t.machineserialnumber,
+		       t.lpar_id,
+		       t.lpar_name,
+		       t.host_name,
+		       t.lpar_env,
+		       t.os_version,
+		       t.curr_proc_mode,
+		       t.desired_proc_units,
+		       t.desired_procs,
+		       t.memory_size,
+		       s.sysname
+		  from SX_LOGICAL_PARTITION t,sx_power s
+		 where s.machineserialnumber = t.machineserialnumber 
+		 	 <isNotEmpty property="machineserialnumber" prepend="and">
+			  	<isNotNull property="machineserialnumber">
+					t.machineserialnumber = #machineserialnumber#
+				</isNotNull>
+			</isNotEmpty>
+			<isNotEmpty property="lpar_id" prepend="and">
+				<isNotNull property="lpar_id">
+					t.lpar_id = #lpar_id#
+				</isNotNull>
+			</isNotEmpty>
+	</select>
+	   <!-- power摘要 -->
+	<select id="queryPowerInfo" parameterClass="power" resultClass="power">
+		select t.hmcid,
+		       t.sysname,
+		       t.machineserialnumber,
+		       t.totalcpunum,
+		       t.totalmem,
+		       t.installed_mem
+		  from SX_POWER t
+		  <dynamic prepend="where">
+		 	 <isNotEmpty property="machineserialnumber" prepend="and">
+			  	<isNotNull property="machineserialnumber">
+					t.machineserialnumber = #machineserialnumber#
+				</isNotNull>
+			</isNotEmpty>
+		  </dynamic>
+	</select>
+	<!-- 虚拟机摘要 -->
+	<select id="queryVMInfo" parameterClass="vmHostInfoObj" resultClass="vmHostInfoObj">
+	      select a.ID,a.VH_UUID,
+		a.VH_ID,a.VH_NAME,a.VH_MEM,a.VH_CPU,a.VH_STORAGE,a.VH_SYSTEM,a.VH_IP,a.VH_NETWORK,a.EQ_ID,a.VH_STAT,a.VH_DESC,a.VH_MIN_CPU,
+		a.VH_MAX_CPU,a.VH_MIN_MEM,a.VH_MAX_MEM,a.VH_LOG,a.VH_USER,a.VH_PASS,a.VH_TYPE,
+		a.VH_CID,a.VH_STATUS,a.VH_UNITID,a.DNS,a.CONNECT_ID,a.HOST_CODE,b.EQ_NAME from TB_CLOUD2_VMHOST_INFO a,tb_cloud2_host_info b
+		where a.eq_id = b.eq_id
+			<isNotNull property="VH_UUID" prepend="and">
+    			a.VH_UUID = #VH_UUID#
+    		</isNotNull>
+	  </select>
+	  <!-- 查询不同type的个数 -->
+	  <select id="queryCountByObj" parameterClass="IBMManagerTreeObj" resultClass="java.lang.Integer">
+	  		select count(*)
+			  from TB_IBM_HMC_TREE t
+			<dynamic prepend="where">
+			 	 <isNotEmpty property="type" prepend="and">
+				  	<isNotNull property="type">
+						t.type = #type#
+					</isNotNull>
+				</isNotEmpty>
+				 <isNotEmpty property="parent_id" prepend="and">
+				  	<isNotNull property="parent_id">
+						t.parent_id = #parent_id#
+					</isNotNull>
+				</isNotEmpty>
+		  </dynamic>
+	  </select>
+	  <!-- Lpar个数 -->
+	  <select id="queryLparCountByOBj" parameterClass="IBMManagerTreeObj" resultClass="java.lang.Integer">
+	  	select count(*)
+		  from TB_IBM_HMC_TREE t
+		 where t.parent_id in
+		       (select id from TB_IBM_HMC_TREE a where a.parent_id = #parent_id#)
+	  </select>
+	  <!-- 主机下 cpu,内存的个数 -->
+	  <select id="queryIBMPowerResource" parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+	  	select t.machine_all_cpu_num ibmCpuCount,
+		       t.machine_shared_cpu_num ibmCpuUsedCount,
+		       t.machine_unused_cpu_num ibmCpuUnUsedCount,
+		       t.installed_sys_mem      ibmMemCount,
+		       (t.installed_sys_mem-t.curr_avail_sys_mem) ibmMemUsedCount,
+		       t.curr_avail_sys_mem ibmMemUnUsedCount
+		  from SX_POWER_CPU_MEM_PERFORMANCE t
+		 where t.machineserialnumber = #uuid#
+		 order by update_time desc
+	  </select>
+	  <!-- HMC 下 CPU，内存个数 -->
+	   <select id="queryIBMHmcResource" parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+		  	select sum(t.machine_all_cpu_num) ibmCpuCount,
+			       sum(t.machine_shared_cpu_num) ibmCpuUsedCount,
+			       sum(t.machine_unused_cpu_num) ibmCpuUnUsedCount,
+			       sum(t.installed_sys_mem) ibmMemCount,
+			       sum(t.installed_sys_mem - t.curr_avail_sys_mem) ibmMemUsedCount,
+			       sum(t.curr_avail_sys_mem) ibmMemUnUsedCount
+			  from SX_POWER_CPU_MEM_PERFORMANCE t
+			 where t.machineserialnumber in
+			       (
+			       select t.machineserialnumber from sx_power t 
+			          <dynamic prepend = "where"> 
+				          <isNotEmpty property="uuid" prepend="and"> 
+				          	<isNotNull property="uuid"> 
+				          		t.hmcid = #uuid# 
+				          	</isNotNull> 
+				          </isNotEmpty> 
+			          </dynamic>
+			        )
+			   and 	   	
+			   		<![CDATA[
+			   		rownum <=
+			   		]]>
+			       (select count(*) from sx_power s
+			          <dynamic prepend = "where"> 
+				          <isNotEmpty property="uuid" prepend="and"> 
+				          	<isNotNull property="uuid"> 
+				          		s.hmcid = #uuid# 
+				          	</isNotNull> 
+				          </isNotEmpty> 
+			          </dynamic>
+			       )
+			 order by t.update_time desc
+	  </select>
+	  <!-- 主机cpu内存总数 -->
+	  <select id="queryHostAllResource"  parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+	  		   select t.memory cloudOSMemCount,t.cpu_cl*8 cloudOSCpuCount
+    				 from tb_cloud2_host_info t
+   					 where t.h_uuid = #uuid#
+	  </select>
+	  <!-- 主机 cpu,内存已用 -->
+	  <select id="queryHostUsedResource" parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+	  		   select sum(t.vh_mem) cloudOSMemUsedCount,sum(t.vh_cpu) cloudOSCpuUsedCount
+   					  from tb_cloud2_vmhost_info t,tb_cloud2_host_info h
+   					 where t.eq_id=h.eq_id and h.h_uuid = #uuid#
+	  </select>
+	  <!-- 集群cpu内存总数 -->
+	   <select id="queryClusterAllResource"  parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+	  		   select sum(c.memory) cloudOSMemCount,sum(c.cpu_cl)*8 cloudOSCpuCount
+              from tb_cloud2_host_info c
+             where c.h_uuid in (select tb.uuid
+                                 from tb_ibm_hmc_tree tb
+                                where tb.parent_id = #id#)
+	  </select>
+	  <!-- 集群cpu 内存已用 -->
+	  <select id="queryClusterUsedResource" parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+		   select sum(t.vh_mem) cloudOSMemUsedCount,sum(t.vh_cpu) cloudOSCpuUsedCount
+			      from tb_cloud2_vmhost_info t,tb_cloud2_host_info h
+			     where t.eq_id=h.eq_id and h.h_uuid in
+	            (select tb.uuid from tb_ibm_hmc_tree tb where tb.parent_id = #id#)
+	  </select>
+	  <!-- x86全部cpu内存总数 -->
+	     <select id="queryAllResource"  parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+			   select sum(c.memory) cloudOSMemCount,sum(c.cpu_cl)*8 cloudOSCpuCount
+			          from tb_cloud2_host_info c
+			    where c.h_uuid in (select tb.uuid from tb_ibm_hmc_tree tb  where tb.parent_id in
+                     	(select tb.id from tb_ibm_hmc_tree tb  where tb.parent_id = #id#))
+	  </select>
+	  <!-- x86 cpu内存已用 -->
+	  <select id="queryUsedResource" parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTabObj">
+		    select sum(t.vh_mem) cloudOSMemUsedCount,sum(t.vh_cpu) cloudOSCpuUsedCount
+			     from tb_cloud2_vmhost_info t,tb_cloud2_host_info h
+			     where t.eq_id=h.eq_id and h.h_uuid in (select tb.uuid from tb_ibm_hmc_tree tb  where tb.parent_id in
+                     (select tb.id from tb_ibm_hmc_tree tb  where tb.parent_id = #id#))
+	  </select>
+	  <!-- Lpar各指标的个数 -->
+	  <select id="queryLparIndexCount" parameterClass="LogicalPartitionObj" resultClass="java.lang.Integer">
+	  		select count(*) from $tableName$ t
+			   <dynamic prepend="where">
+			       <isNotEmpty property="machineserialnumber" prepend="and">
+				         <isNotNull property="machineserialnumber">
+				         	 t.machineserialnumber = #machineserialnumber#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	  </select>
+	 <!-- 光纤卡读速度 -->
+	 <select id="queryFCReadSpeed" parameterClass="IBMIndexObj" resultClass="data">
+	 	select t.fc_card_name label, t.read_speed value
+			  from $tableName$ t
+			  <dynamic prepend="where">
+			       <isNotEmpty property="machine_serial_number" prepend="and">
+				         <isNotNull property="machine_serial_number">
+				         	 t.machine_serial_number = #machine_serial_number#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!-- 光纤卡写速度 -->
+	  <select id="queryFCWriteSpeed" parameterClass="IBMIndexObj" resultClass="data">
+	 	select t.fc_card_name label,t.write_speed value
+			  from $tableName$ t
+			 <dynamic prepend="where">
+			       <isNotEmpty property="machine_serial_number" prepend="and">
+				         <isNotNull property="machine_serial_number">
+				         	 t.machine_serial_number = #machine_serial_number#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!-- 网络性能和网卡 读速度 -->
+	 <select id="querySEAAndNetCardReadSpeed" parameterClass="IBMIndexObj" resultClass="data">
+	 	select t.card_name label, t.read_speed value
+			  from $tableName$ t
+			<dynamic prepend="where">
+			       <isNotEmpty property="machine_serial_number" prepend="and">
+				         <isNotNull property="machine_serial_number">
+				         	 t.machine_serial_number = #machine_serial_number#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!-- 网络性能和网卡 写速度 -->
+	  <select id="querySEAAndNetCardWriteSpeed" parameterClass="IBMIndexObj" resultClass="data">
+	 	select t.card_name label,t.write_speed value
+			  from $tableName$ t
+			 <dynamic prepend="where">
+			       <isNotEmpty property="machine_serial_number" prepend="and">
+				         <isNotNull property="machine_serial_number">
+				         	 t.machine_serial_number = #machine_serial_number#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!-- 逻辑分区磁盘读速度 -->
+	  <select id="queryLparDiskReadSpeed" parameterClass="IBMIndexObj" resultClass="data">
+	 	select t.disk_name label, t.disk_read_speed value
+			  from $tableName$ t
+			<dynamic prepend="where">
+			       <isNotEmpty property="machine_serial_number" prepend="and">
+				         <isNotNull property="machine_serial_number">
+				         	 t.machine_serial_number = #machine_serial_number#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!-- 逻辑分区磁盘写速度 -->
+	  <select id="queryLparDiskWriteSpeed" parameterClass="IBMIndexObj" resultClass="data">
+	 	select t.disk_name label,t.disk_write_speed value
+			  from $tableName$ t
+			<dynamic prepend="where">
+			       <isNotEmpty property="machine_serial_number" prepend="and">
+				         <isNotNull property="machine_serial_number">
+				         	 t.machine_serial_number = #machine_serial_number#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!--  存储和网络监控指标 -->
+	 <select id="queryIOAndNetSpeed" parameterClass="CloudOSIndexObj" resultClass="data">
+	 		select t.kpi_value value
+			  from $tableName$ t
+			<dynamic prepend="where">
+			       <isNotEmpty property="kpi_id" prepend="and">
+				         <isNotNull property="kpi_id">
+				         	 t.kpi_id = #kpi_id#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="eq_id" prepend="and">
+				        <isNotNull property="eq_id">
+				          t.eq_id = #eq_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="hy_id" prepend="and">
+				        <isNotNull property="hy_id">
+				          t.hy_id = #hy_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!-- IBM各个指标 横坐标数据 -->
+	 <select id="queryIBMIndexTimeLable" parameterClass="IBMIndexObj" resultClass="Category">
+	 	 select to_date(t.update_time,'yyyy:mm:dd hh24:mi:ss') label
+  				from $tableName$ t
+ 			<dynamic prepend="where">
+			       <isNotEmpty property="machine_serial_number" prepend="and">
+				         <isNotNull property="machine_serial_number">
+				         	 t.machine_serial_number = #machine_serial_number#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="lpar_id" prepend="and">
+				        <isNotNull property="lpar_id">
+				          t.lpar_id = #lpar_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 <!-- X86各个指标 横坐标数据 -->
+	 <select id="queryCloudOSTimeLable" parameterClass="CloudOSIndexObj" resultClass="Category">
+	 	 	select to_char(t.coll_time,'yyyy-mm-dd hh24:mi:ss') label
+  				from $tableName$ t
+ 			<dynamic prepend="where">
+			       <isNotEmpty property="kpi_id" prepend="and">
+				         <isNotNull property="kpi_id">
+				         	 t.kpi_id = #kpi_id#
+				         </isNotNull>
+			      </isNotEmpty>
+			      <isNotEmpty property="eq_id" prepend="and">
+				        <isNotNull property="eq_id">
+				          t.eq_id = #eq_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			       <isNotEmpty property="hy_id" prepend="and">
+				        <isNotNull property="hy_id">
+				          t.hy_id = #hy_id#
+				        </isNotNull>
+			      </isNotEmpty>
+			  </dynamic>
+	 </select>
+	 
+</sqlMap>

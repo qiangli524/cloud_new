@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="HadoopUserServiceRelation">
+	<typeAlias alias="husrObj" type="domain.users.HadoopUserServiceRelationObj"/>
+	
+	<insert id="insertByObj" parameterClass="husrObj">
+		insert into tb_hadoop_users_service_relation (id,entity_id,service_type,entity_type,status,deal_type)
+		values(#id#,#entity_id#,#service_type#,#entity_type#,#status#,#deal_type#)
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="husrObj">
+		delete from tb_hadoop_users_service_relation
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				entity_id = #entity_id#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				service_type = #service_type#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				entity_type = #entity_type#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				`status` = #status#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="deal_type">
+				deal_type = #deal_type#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="idList">
+				id in 
+				<iterate property="idList" close=")" open="(" conjunction=",">
+					#idList[]#
+				</iterate>
+ 			</isNotEmpty>
+		</dynamic>	
+	</delete>
+	
+	<update id="updateStatus" parameterClass="husrObj">
+		update tb_hadoop_users_service_relation
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="status">
+				`status` = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="deal_type">
+				deal_type = #deal_type#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="entity_id">
+				entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				entity_type = #entity_type#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+</sqlMap>

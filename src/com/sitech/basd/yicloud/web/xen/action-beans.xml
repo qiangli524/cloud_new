@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="xenManAction" class="com.sitech.basd.yicloud.web.xen.action.XenManAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="xenEntityTreeService">
+			<ref bean="xenEntityTreeService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="xenManService">
+			<ref bean="xenManService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="vmwManService">
+			<ref bean="vmwManService" />
+		</property>
+		<property name="kvmManService">
+			<ref bean="kvmManService" />
+		</property>
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="dataStoreService">
+			<ref bean="dataStoreService" />
+		</property>
+		<property name="xenStoreService">
+			<ref bean="xenStoreService" />
+		</property>
+		<property name="ipService">
+			<ref bean="ipService" />
+		</property>
+		<property name="netService">
+			<ref bean="netService" />
+		</property>
+		<property name="temManService">
+			<ref bean="temManService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

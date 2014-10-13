@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ipmi">
+<typeAlias alias="IPMIInfo" type="com.sitech.basd.resource.domain.host.IPMIInfo"/>
+
+	<sql id="queryForListBase">
+		select id,ip ,user,password pwd, version from tb_host_ipmi 
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="id">
+				id = #id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<select id="queryForList" parameterClass="IPMIInfo" resultClass="IPMIInfo"> 
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCount" parameterClass="IPMIInfo" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	<insert id="insertByObj" parameterClass="IPMIInfo">
+		insert into tb_host_ipmi(id,ip,user,password,state,version) values(#id#,#ip#,#user#,#pwd#,#version#)
+	</insert>
+</sqlMap>

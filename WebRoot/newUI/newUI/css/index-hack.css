@@ -1,0 +1,18 @@
+@charset "gb2312";
+/*
+ * Filename: reset.css
+ * Description: index css hack
+ * Version: 1.0.0
+ * Author: kevin.si-tech
+ * UpdateBy: kevin
+*/
+.wrap {_background:url(../images/index-bg.jpg);}
+.top .option {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/index-opt.png',sizingMethod='image');_background:none;}
+.main .pane {_display:inline;}
+.indexTip ul {*float:left;}
+.indexTip li {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/index-tip_01.png',sizingMethod='image');_background:none;}
+.indexTip li.on {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/index-tip_02.png',sizingMethod='image');_background:none;}
+.indexTip .search {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/index-tip_03.png',sizingMethod='image');_background:none;}
+.setSkin {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/index-skin.png',sizingMethod='image');_background:none;}
+.setSkin h2 a:hover {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/btn-close-hover.png',sizingMethod='image');_background:none;}
+

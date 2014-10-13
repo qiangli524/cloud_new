@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="tbCloud2DepFileDao" class="com.sitech.basd.yicloud.dao.deploy.TbCloud2DepFileDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="ipinfoDao" class="com.sitech.basd.yicloud.dao.ipinfo.IpinfoDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="deviceDao" class="com.sitech.basd.yicloud.dao.device.DeviceDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="interfaceDao" class="com.sitech.basd.yicloud.dao.interfaces.InterfaceDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="connectDao" class="com.sitech.basd.yicloud.dao.connect.ConnectDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="vmManagerDao" class="com.sitech.basd.yicloud.dao.vmman.VMManagerDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<!-- 获取MysqlTable信息 -->
+	<bean id="mysqlTableStatusDao" class="com.sitech.basd.yicloud.dao.mytstat.MysqlTableStatusDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="yiDataDictionaryDao" class="com.sitech.basd.yicloud.dao.dictionary.YiDataDictionaryDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbYicloudBusinessAppDao" class="com.sitech.basd.yicloud.dao.business.TbYicloudBusinessAppDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="appDatabaseDao" class="com.sitech.basd.yicloud.dao.database.AppDatabaseDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbYicloudAppStorageDao" class="com.sitech.basd.yicloud.dao.storage.TbYicloudAppStorageDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbYicloudAppIpDao" class="com.sitech.basd.yicloud.dao.ip.TbYicloudAppIpDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="middlewareDao" class="com.sitech.basd.yicloud.dao.middleware.MiddlewareDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="operSystemDao" class="com.sitech.basd.yicloud.dao.opersystem.OperSystemDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="dataStoreDao" class="com.sitech.basd.yicloud.dao.datastore.DataStoreDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="entityTreeDao" class="com.sitech.basd.yicloud.dao.entitytree.EntityTreeDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="kvmManDao" class="com.sitech.basd.yicloud.dao.kvm.KvmManDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="vmHostDaoYi" class="com.sitech.basd.yicloud.dao.vmman.VMHostDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="busiTreeDao" class="com.sitech.basd.yicloud.dao.busitree.BusiTreeDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="switchesDao" class="com.sitech.basd.yicloud.dao.switches.SwitchesDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="clusterDao" class="com.sitech.basd.yicloud.dao.cluster.ClusterDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="portGroupDao" class="com.sitech.basd.yicloud.dao.portgroup.PortGroupDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="virtualSwitchDao" class="com.sitech.basd.yicloud.dao.switches.VirtualSwitchDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="taskEventDao" class="com.sitech.basd.yicloud.dao.taskevent.TaskEventDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="vmAuthorityDao" class="com.sitech.basd.yicloud.dao.vmauthority.VmAuthorityDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="templetTreeDao" class="com.sitech.basd.yicloud.dao.templettree.TempletTreeDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="scriptDao" class="com.sitech.basd.yicloud.dao.script.ScriptDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="connInfoDao" class="com.sitech.basd.yicloud.dao.xenconn.ConnInfoDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="entityRefDao" class="com.sitech.basd.yicloud.dao.entityreference.EntityRefDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="strategyDao" class="com.sitech.basd.yicloud.dao.scheduler.StrategyDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="triggerDefDao" class="com.sitech.basd.yicloud.dao.scheduler.TriggerDefDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="xenEntityTreeDao" class="com.sitech.basd.yicloud.dao.xentree.XenEntityTreeDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="xenClusterDao" class="com.sitech.basd.yicloud.dao.xencluster.XenClusterDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="xenStoreDao" class="com.sitech.basd.yicloud.dao.xenstore.XenStoreDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="kpiDao" class="com.sitech.basd.yicloud.dao.scheduler.KPIDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="nicDao" class="com.sitech.basd.yicloud.dao.nic.NicDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="virtualNicDao" class="com.sitech.basd.yicloud.dao.nic.VirtualNicDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="nicRelationDao" class="com.sitech.basd.yicloud.dao.nic.NicRelationDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="storeDeviceDao" class="com.sitech.basd.yicloud.dao.datastore.StoreDeviceDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+
+</beans>

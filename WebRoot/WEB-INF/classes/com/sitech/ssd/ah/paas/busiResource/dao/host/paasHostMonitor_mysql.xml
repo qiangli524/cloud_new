@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="paasHostMonitor">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="TbCloud2HostInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.resource.TbCloud2HostInfoObj" />
+	<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+
+	<!-- 跟据cpu和内存查询时间轴x 当天 -->
+	<select id="queryPowerDayTimeLabelAndData" parameterClass="java.util.HashMap" resultClass="Data">
+	<![CDATA[
+		SELECT DATE_FORMAT(cll_time, '%H:%i:%S') label, KPI_VALUE value
+			  FROM $tableName$ t
+			 WHERE KPI_ID = #KPI_ID#
+			   AND EXT_EQ_ID = #EXT_EQ_ID#
+			   AND t.CLL_TIME >= DATE_SUB(now(), INTERVAL #TIME_INTER# MINUTE)
+			   AND t.CLL_TIME <= now() ]]>
+			  <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty> 
+			 ORDER BY t.CLL_TIME
+	</select>
+	
+	<!-- 跟据kpi查询最大值和平均值 -->
+	<select id="queryMaxAndAvg" parameterClass="java.util.HashMap" resultClass="Data">
+	<![CDATA[
+		SELECT ROUND(AVG(KPI_VALUE),1) label,MAX(CONVERT(KPI_VALUE,DECIMAL)) label2
+			  FROM $tableName$ t
+			 WHERE KPI_ID = #KPI_ID#
+			   AND EXT_EQ_ID = #EXT_EQ_ID#
+			   AND t.CLL_TIME >= DATE_SUB(now(), INTERVAL #TIME_INTER# MINUTE)
+			   AND t.CLL_TIME <= now()]]>
+			   <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty> 
+			 ORDER BY t.CLL_TIME
+	</select>
+	
+	<!-- 跟据cpu和内存查询时间轴x 本月和上月-->
+   <select id="queryPowerDayTimeLabelAndDataByMonth" parameterClass="java.util.HashMap" resultClass="Data">
+  	 <![CDATA[
+      SELECT DATE_FORMAT(cll_time, '%d %H:%i:%S') AS label, KPI_VALUE VALUE
+		  FROM $tableName$ t
+		 WHERE KPI_ID = #KPI_ID#
+		   AND EXT_EQ_ID = #EXT_EQ_ID# ]]>
+		    <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty> 
+		 ORDER BY t.CLL_TIME
+	</select>	
+
+	<!-- 跟据cpu和内存查询时间轴x 自定义查询 -->
+	<select id="queryPowerDayTimeLabelAndDataBetween" parameterClass="java.util.HashMap" resultClass="Data">
+	<![CDATA[
+		SELECT DATE_FORMAT(cll_time,  '%m-%d %H:%i:%S') label, KPI_VALUE value
+			  FROM $tableName$ t
+			 WHERE KPI_ID = #KPI_ID#
+			   AND EXT_EQ_ID = #EXT_EQ_ID#]]>
+			   AND t.CLL_TIME between #START_TIME# and #END_TIME#
+			  <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty> 
+			 ORDER BY t.CLL_TIME
+	</select>
+
+	<!-- 跟据文件系统当天 -->
+	<select id="queryFileSystemDayTimeLabelAndDataByDate" parameterClass="java.util.HashMap" resultClass="Data">
+	<![CDATA[
+			SELECT DATE_FORMAT(cll_time, '%H:%i:%S') label, KPI_VALUE value
+			  	FROM $tableName$ t
+			WHERE  KPI_ID = #KPI_ID#
+			   AND EQ_ID = #EQ_ID#
+			   AND t.CLL_TIME >= DATE_SUB(now(), INTERVAL #TIME_INTER# MINUTE)
+			   AND t.CLL_TIME <= now()]]>
+			   <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty> 
+			 ORDER BY t.CLL_TIME
+	</select>
+	
+	<!-- 跟据文件系统本月和上月 -->
+	<select id="queryFileSystemDayTimeLabelAndDataByMonth" parameterClass="java.util.HashMap" resultClass="Data">
+	<![CDATA[
+		SELECT DATE_FORMAT(cll_time, '%d %H:%i:%S') AS label, KPI_VALUE VALUE
+			  FROM $tableName$ t
+			  WHERE KPI_ID = #KPI_ID#
+			 	AND EQ_ID = #EQ_ID#]]> 
+			  <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty> 
+			  ORDER BY t.EQ_ID,t.KPI_ID,t.CLL_TIME asc 
+	</select>
+
+	<!-- 跟据文件系统自定义查询 -->
+	<select id="queryFileSystemDayTimeLabelAndData" parameterClass="java.util.HashMap" resultClass="Data">
+	<![CDATA[
+		SELECT DATE_FORMAT(cll_time,  '%m-%d %H:%i:%S') label, KPI_VALUE value
+			  FROM $tableName$ t
+			 WHERE  KPI_ID = #KPI_ID#
+			   AND EQ_ID = #EQ_ID#
+			   AND t.CLL_TIME between #START_TIME# and #END_TIME#]]>
+			   <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty>
+			 ORDER BY t.EQ_ID,t.KPI_ID,t.CLL_TIME asc 
+	
+	</select>
+	<!-- 文件系统路径 -->
+	<select id="queryFileSystemUrl" parameterClass="java.util.HashMap" resultClass="Data">
+		<![CDATA[
+			SELECT DISTINCT t.EQ_ID label FROM tb_cloud2_agent_coll t
+				 WHERE  KPI_ID  in ($KPI_ID$)
+					 AND EXT_EQ_ID = #EXT_EQ_ID#]]>
+			  <isNotEmpty property="EQ_TYPE" prepend="and">
+			     eq_type = #EQ_TYPE#
+			  </isNotEmpty>
+	</select>
+</sqlMap>

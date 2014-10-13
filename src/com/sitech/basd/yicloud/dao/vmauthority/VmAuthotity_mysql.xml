@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="VmAuthority">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="VmAuthority" type="com.sitech.basd.yicloud.domain.vmauthority.VmAuthorityObj"/>
+    <typeAlias alias="relationObj" type="com.sitech.basd.cloud3.domain.departproject.RelationObj"/>
+    <sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	  <sql id="queryByObjBase">
+        SELECT
+				e.ENTITY_NAME,
+				e.ENTITY_TYPE,
+				v.VH_IP,
+				v.VH_NAME,
+				v.CONNECT_ID,
+				v.VH_CPU,
+				v.VH_MEM,
+				v.VH_STORAGE,
+				v.VH_SYSTEM,
+				v.VH_UUID,
+				c.total_cpu,
+				c.total_mem,
+				c.total_storage
+			FROM
+				tb_cloud_entityuser e
+				LEFT JOIN tb_cloud2_vmhost_info v 
+				ON e.CONNECT_ID = v.CONNECT_ID
+			AND e.ENTITY_ID = v.VH_UUID
+			LEFT JOIN (
+				SELECT
+					USERID,
+					SUM(b.VH_CPU) total_cpu,
+					SUM(b.VH_MEM) total_mem,
+					SUM(b.VH_STORAGE) total_storage
+			FROM
+				tb_cloud_entityuser a,
+				tb_cloud2_vmhost_info b
+			WHERE
+				a.CONNECT_ID = b.CONNECT_ID
+				AND a.ENTITY_ID = b.VH_UUID
+				GROUP BY  USERID
+				) c ON e.USERID = c.USERID
+				<dynamic prepend="where">
+					<isNotEmpty prepend="and" property="USERID">
+						e.USERID = #USERID#
+					</isNotEmpty>
+					<isNotEmpty prepend="and" property="ENTITY_TYPE">
+						e.ENTITY_TYPE = #ENTITY_TYPE#
+					</isNotEmpty>
+					<isNotEmpty property="ENTITY_NAME" prepend="and">
+						e.ENTITY_NAME like CONCAT('%',#ENTITY_NAME#,'%')
+					</isNotEmpty>
+					<isNotEmpty property="entityIdList" prepend="and">
+						e.ENTITY_ID in
+						<iterate close=")" conjunction="," open="(" property="entityIdList">
+							#entityIdList[]#
+						</iterate>
+					</isNotEmpty>
+				</dynamic>
+     </sql>
+	  <insert id="insertByObj" parameterClass="VmAuthority">
+	  	<selectKey resultClass="int" keyProperty="ID" type="post">
+       		SELECT @@IDENTITY AS ID
+		</selectKey>
+	  	insert into TB_CLOUD_ENTITYUSER(
+	  		ENTITY_NAME,TYPE,USERID,OPERAUTHORITY,ENTITY_ID,ENTITY_TYPE,INS_DATE,CONNECT_ID)
+		values(
+		    #ENTITY_NAME#,#TYPE#,#USERID#,#OPERAUTHORITY#,#ENTITY_ID#,#ENTITY_TYPE#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#CONNECT_ID#)
+	  </insert>
+	   <select id="queryForList" parameterClass="VmAuthority" resultClass="VmAuthority">
+	  		select ID,ENTITY_NAME,TYPE,USERID,OPERAUTHORITY,ENTITY_ID,ENTITY_TYPE from TB_CLOUD_ENTITYUSER
+	  		<dynamic prepend="where">
+	  			<isNotNull prepend="and" property="ENTITY_NAME">
+	  				ENTITY_NAME = #ENTITY_NAME#
+	  			</isNotNull>
+	  			<isNotNull property="TYPE" prepend="and">
+	  				TYPE = #TYPE#
+	  			</isNotNull>
+	  			<isNotEqual prepend="and" compareValue="0" property="USERID">
+	  				USERID = #USERID#
+	  			</isNotEqual>
+	  			<isNotNull prepend="and" property="ENTITY_ID">
+	  				ENTITY_ID = #ENTITY_ID#
+	  			</isNotNull>
+	  			<isNotNull prepend="and" property="ENTITY_TYPE">
+	  				ENTITY_TYPE = #ENTITY_TYPE#
+	  			</isNotNull>
+	  			<isNotNull prepend="and" property="CONNECT_ID">
+	  				CONNECT_ID = #CONNECT_ID#
+	  			</isNotNull>
+	  		</dynamic>
+	  </select>
+	  <delete id="deleteByObj" parameterClass="VmAuthority">
+	  	delete from TB_CLOUD_ENTITYUSER  
+	  	<dynamic prepend="where">
+	  		<isNotNull property="USERID" >
+	  			<isNotEqual property="USERID" prepend="and" compareValue="0">
+	  				USERID = #USERID#
+	  			</isNotEqual>
+	  		</isNotNull>
+	  		<isNotNull property="CONNECT_ID" prepend="and">
+	  			CONNECT_ID = #CONNECT_ID#
+	  		</isNotNull>
+	  		<isNotNull property="ENTITY_ID" prepend="and">
+	  			ENTITY_ID = #ENTITY_ID#
+	  		</isNotNull>
+	  		<isNotNull property="TYPE" prepend="and">
+	  			TYPE = #TYPE#
+	  		</isNotNull>
+	  	</dynamic>
+	  </delete>
+	  <update id="updateByObj" parameterClass="VmAuthority">
+	  	update TB_CLOUD_ENTITYUSER set OPERAUTHORITY = #OPERAUTHORITY# where ENTITY_ID=#ENTITY_ID# 
+	  	and USERID = #USERID#
+	  	<isNotNull property="ENTITY_TYPE">
+	  		<isNotEmpty property="ENTITY_TYPE" prepend="and">
+	  			ENTITY_TYPE=#ENTITY_TYPE#
+	  		</isNotEmpty>
+	  	</isNotNull>
+	  	<isNotNull property="CONNECT_ID">
+	  		<isNotEmpty property="CONNECT_ID" prepend="and">
+	  			CONNECT_ID = #CONNECT_ID#
+	  		</isNotEmpty>
+	  	</isNotNull>
+	  </update>
+	  <!-- 根据用户查询该用户所对应的虚拟机资源信息 -->
+	  <select id="queryResourceByAccount" parameterClass="VmAuthority" resultClass="java.util.HashMap">
+	  		<include refid="queryByObjBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	   <select id="queryResourceByAccountForCount" parameterClass="VmAuthority"  resultClass="int">
+	      select count(ENTITY_NAME) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	    <select id="queryAllCountResource" parameterClass="VmAuthority"  resultClass="relationObj">
+	     select SUM(r.cpu_count) CPU_ALL_COUNT,
+	     		SUM(r.memory_size) MEM_ALL_MB,
+	     		SUM(r.storage_size) STORAGE_ALL_MB,
+			    SUM(r.ip_count) IP_ALL_COUNT,
+			    SUM((select count(c.project_id) from tb_project_vm_relation c where r.id = c.project_id)) VM_ALL_COUNT,
+			    a.ACCOUNT PROJECT_LEADER
+		from tb_project_info r left join tb_sys_userinfo a on r.project_leader = a.account
+		WHERE a.id = $USERID$
+	  </select>
+	  <select id="queryUsedCountResource" parameterClass="VmAuthority"  resultClass="relationObj">
+	    SELECT
+			SUM(a.VH_CPU) CPU_USED_COUNT,
+			SUM(a.VH_MEM) MEM_USED_MB,
+			SUM(a.VH_STORAGE) STORAGE_USED_MB,
+			COUNT(a.VH_IP) IP_USED_COUNT
+		FROM
+			tb_cloud2_vmhost_info a,
+			tb_project_vm_relation b,
+			tb_project_info c,
+			tb_sys_userinfo d
+		WHERE
+			a.CONNECT_ID = b.connect_id
+			AND a.VH_UUID = b.vm_uuid
+			and c.id = b.project_id
+			AND c.project_leader = d.ACCOUNT
+			and d.id = $USERID$
+	  </select>
+	   <sql id="queryAllVMListBase">
+       			SELECT  
+       				d.id projectId,
+					c.id VH_ID,
+					d.project_name PROJECT_NAME,
+					c.VH_NAME VH_NAME,
+					c.VH_TYPE VH_TYPE,
+					c.VH_IP VH_IP,
+					c.VH_CPU VH_CPU,
+					c.VH_MEM VH_MEM,
+					c.VH_STORAGE VH_STORAGE,
+					c.VH_SYSTEM VH_SYSTEM
+				FROM
+					tb_project_vm_relation b,
+					tb_cloud2_vmhost_info c,
+					tb_project_info d
+				WHERE
+					d.id = b.project_id
+					AND b.vm_uuid = c.VH_UUID
+					AND b.connect_id = c.CONNECT_ID
+					AND b.project_id IN (SELECT a.id FROM tb_project_info a WHERE a.project_leader = #PROJECT_LEADER#)
+					<isNotEmpty property="PROJECT_NAME" prepend="and">
+						d.project_name like CONCAT('%',#PROJECT_NAME#,'%')
+					</isNotEmpty>
+					<isNotEmpty property="VH_NAME" prepend="and">
+                		c.VH_NAME like CONCAT('%',#VH_NAME#,'%')
+	               </isNotEmpty>
+	               <isNotEmpty property="VH_IP" prepend="and">
+	               	 	c.VH_IP like CONCAT('%',#VH_IP#,'%')
+	               </isNotEmpty>
+	                <isNotEmpty property="VH_TYPE" prepend="and">
+	               	 	c.VH_TYPE = #VH_TYPE#
+	               </isNotEmpty>
+					ORDER BY d.project_name
+       </sql>
+	   <!-- 根据用户查询该用户所对应的虚拟机资源信息 -->
+	  <select id="queryAllVMListByAccount" parameterClass="relationObj" resultClass="relationObj">
+	  		<include refid="queryAllVMListBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	   <select id="queryAllVMListByAccountCount" parameterClass="relationObj"  resultClass="int">
+	      select count(projectId) from (
+	        <include refid="queryAllVMListBase"/>
+	       ) virtual_table
+	  </select>
+	  
+</sqlMap>

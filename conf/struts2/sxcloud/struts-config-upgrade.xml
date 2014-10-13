@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+<!--	<package name="alarm"-->
+<!--			 extends="default">-->
+<!--		<action name="alarm_*"-->
+<!--				class="upgradeAlarmAction" method="{1}">-->
+<!--			<result name="list">/sxcloud/upgrade/upgradeAlarmList.jsp</result>-->
+<!--		</action>-->
+<!--	</package>-->
+	<package name="example"
+			 extends="global_package">
+		<action name="example_*"
+				class="upgradeExampleResumeAction" method="{1}">
+			<result name="list">/sxcloud/upgrade/upgradeExampleList.jsp</result>
+			<result name="add">/sxcloud/upgrade/addUpgradeExample.jsp</result>
+			<result name="save_add" type="redirect">example_upgradeExampleList.do</result>
+			<result name="modify" >/sxcloud/upgrade/modUpgradeExample.jsp</result>
+			<result name="save_mod" type="redirect">example_upgradeExampleList.do</result>
+			<result name="del" type="redirect">example_upgradeExampleList.do</result>
+		</action>
+	</package>
+	<package name="resume"
+			 extends="default">
+		<action name="resume_*"
+				class="upgradeExampleResumeAction" method="{1}">
+			<result name="list">/sxcloud/upgrade/upgradeExampleResumeList.jsp</result>
+		</action>
+	</package>
+	<package name="strategy"
+			 extends="default">
+		<action name="strategy_*"
+				class="upgradeStrategyAction" method="{1}">
+			<result name="list">/sxcloud/upgrade/upgradeStrategyList.jsp</result>
+			<result name="add">/sxcloud/upgrade/addUpgradeStrategy.jsp</result>
+			<result name="save_add" type="redirect">strategy_upgradeStrategyList.do</result>
+			<result name="modify">/sxcloud/upgrade/modUpgradeStrategy.jsp</result>
+			<result name="save_mod" type="redirect">strategy_upgradeStrategyList.do</result>
+			<result name="del" type="redirect">strategy_upgradeStrategyList.do</result>
+		</action>
+	</package>
+	
+</struts>

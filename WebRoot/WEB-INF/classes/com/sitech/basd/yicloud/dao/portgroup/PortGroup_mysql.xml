@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="portgroup">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="PortGroup"
+		type="com.sitech.basd.yicloud.domain.portgroup.PortGroup" />
+	<typeAlias alias="VirtualSwitch"
+		type="com.sitech.basd.yicloud.domain.switches.VirtualSwitch" />
+	<typeAlias alias="NicRelationObj"
+		type="com.sitech.basd.yicloud.domain.nic.NicRelationObj" /> 
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<insert id="insertByObj" parameterClass="PortGroup">
+		insert into TB_CLOUD_PORTGROUP(
+			NAME,VLANID,VSWITCHID,TYPE,PGUUID
+		)
+		values(#name#,#vlanId#,#vswitchId#,#type#,#pguuid#)
+	</insert>
+	
+	<sql id="queryPGListBase">
+		select ID,NAME,VLANID,TYPE,VSWITCHID from TB_CLOUD_PORTGROUP  where VSWITCHID = #vswitchId#
+	</sql>
+	<select id="queryPGList" parameterClass="PortGroup" resultClass="PortGroup">
+		<include refid="queryPGListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryPGCount" parameterClass="PortGroup" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryPGListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <update id="updateByObj" parameterClass="PortGroup">
+		update TB_CLOUD_PORTGROUP set NAME=#name#,VLANID=#vlanId#,TYPE=#type#,VSWITCHID=#vswitchId# where ID = #id#
+	</update>
+	<delete id="deleteByObj" parameterClass="PortGroup">
+		delete from TB_CLOUD_PORTGROUP where ID = #id#
+	</delete>
+	<select id="queryPortGroupById" parameterClass="PortGroup" resultClass="PortGroup">
+		select ID,NAME,VLANID,TYPE,VSWITCHID,PGUUID from TB_CLOUD_PORTGROUP
+		<dynamic prepend="where">
+			<isNotEqual property="id" compareValue="0" prepend="and">
+				ID=#id#
+			</isNotEqual>
+			<isNotNull property="pguuid" prepend="and">
+				PGUUID = #pguuid#
+			</isNotNull>
+		</dynamic>
+	 </select>
+	 <select id="queryHostPortGroup" parameterClass="VirtualSwitch" resultClass="NicRelationObj">
+	 	select a.id,a.type,a.to_uuid toUuid,a.from_uuid fromUuid from TB_CLOUD2_NIC_RELATION a,TB_CLOUD2_NIC_RELATION b
+		where a.type='PORTGROUP_VSS' and a.to_uuid=b.from_uuid
+				and b.type = 'VSS_HOST'
+ 		<isNotNull prepend="and" property="hostName">
+ 			b.to_uuid = #hostName#
+ 		</isNotNull> 
+	 </select>
+	 
+	 <insert id="createNetWork" parameterClass="java.util.HashMap">
+	 <selectKey resultClass="Integer" keyProperty="id" >
+	  		select ID_VIRTUAL_SWITCH.nextval as id from dual
+	 </selectKey>
+	 	insert into TB_CLOUD_VSWITCH (ID,NAME,NUMPORTS,NUMPORTSAVAILABLE,HOSTNAME) 
+	 	values(#id#,#name#,0,0,#host_name#)
+	 </insert>
+	 
+	 <delete id="deleteVirtualSwitch" parameterClass="VirtualSwitch">
+	 	delete from TB_CLOUD_VSWITCH where ID = #id#
+	 </delete>
+	 <delete id="deleteByVswitchid" parameterClass="VirtualSwitch">
+	 	delete from TB_CLOUD_PORTGROUP where VSWITCHID = #id#
+	 </delete>
+</sqlMap>

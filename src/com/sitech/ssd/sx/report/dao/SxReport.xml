@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="SxReport">
+	<typeAlias alias="ReportFilter" type="com.sitech.ssd.sx.report.domain.ReportFilter"/>
+	<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<typeAlias alias="SearchObj" type="com.sitech.ssd.sx.report.domain.SearchObj"/>
+	<typeAlias alias="KpiObj" type="com.sitech.ssd.sx.report.domain.KpiObj"/>
+	<typeAlias alias="HostObject" type="com.sitech.ssd.sx.report.domain.HostObj"/>
+	<typeAlias alias="TbIbmLparDayCollVO" type="monitor.IBMMonitorBase" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                         limit #FIRSTROWNUM#,#PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<select id="timePeriod" parameterClass="ReportFilter" resultClass="data">
+		select KPI_VALUE `value`,DATE_FORMAT(coll_time,'%Y-%m-%d %H:%i:%s') label from tb_ibm_lpar_day_coll 
+			<dynamic prepend="where">
+				<isNotNull prepend="and" property="id">
+					id = #id#
+				</isNotNull>
+				<isNotNull prepend="and" property="kpi">
+					kpi = #kpi#
+				</isNotNull>
+				<isNotNull prepend="and" property="starttime">
+					COLL_TIME <![CDATA[ > ]]> #starttime#
+				</isNotNull>
+				<isNotNull prepend="and" property="endtime">
+					COLL_TIME <![CDATA[ < ]]> #endtime#
+				</isNotNull>
+			</dynamic>
+	</select>
+	
+	
+	<select id="queryPowerList" parameterClass="SearchObj" resultClass="HostObject">
+		select machineserialnumber AS id,SYSNAME as name from sx_power t
+	</select>
+	
+	<select id="queryLparList" parameterClass="SearchObj" resultClass="HostObject">
+		select t.machineserialnumber||'_'||t.lpar_id AS id,lpar_name as name from sx_logical_partition t
+	</select>
+	
+	<select id="queryCardList" parameterClass="SearchObj" resultClass="HostObject">
+		<isEqual property="type" compareValue="power" prepend="">            	
+			<isEqual property="kpi" compareValue="3" prepend="">            	
+					select distinct t.fc_card_name as name from sx_power_fc_speed t where t.machine_serial_number=#powerId#
+	    	</isEqual>
+	    	<isEqual property="kpi" compareValue="4" prepend="">            	
+					select distinct t.card_name as name from sx_power_sea_speed t where t.machine_serial_number=#powerId#					
+	    	</isEqual>
+	    </isEqual>
+	    <isEqual property="type" compareValue="lpar" prepend="">            	
+			<isEqual property="kpi" compareValue="3" prepend="">            						
+					select distinct t.fc_card_name as name from Sx_Lpar_Fc_Speed t where t.machine_serial_number=#powerId# and t.lpar_id=#lparId#										
+	    	</isEqual>
+	    	<isEqual property="kpi" compareValue="4" prepend="">            	
+					select distinct t.card_name as name from sx_lpar_netcard_performance t where t.machine_serial_number=#powerId# and t.lpar_id=#lparId#																
+	    	</isEqual>
+	    	<isEqual property="kpi" compareValue="5" prepend="">            	
+					select distinct t.disk_name as name from SX_LPAR_DISK_SPEED t where t.machine_serial_number=#powerId# and t.lpar_id=#lparId#										
+	    	</isEqual>
+	    </isEqual>
+	</select>
+	
+	<select id="querySametimeReportData" parameterClass="SearchObj" resultClass="data">
+		<isEqual property="type" compareValue="power" prepend="">        
+			<isEqual property="kpi" compareValue="1" prepend="">    
+				<![CDATA[
+				select t.update_time as label,(t.machine_used_cpu_percent/t.machine_all_cpu_num)*100 as value from sx_power_cpu_mem_performance t 
+				where t.machineserialnumber=#powerId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>
+			</isEqual>
+			<isEqual property="kpi" compareValue="2" prepend="">    
+				<![CDATA[
+				select t.update_time as label,((t.installed_sys_mem-t.curr_avail_sys_mem)/t.installed_sys_mem)*100 as value from sx_power_cpu_mem_performance t 
+				where t.machineserialnumber=#powerId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="3" prepend="">    
+				select t.update_time as label, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.package_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from sx_power_fc_speed t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.fc_card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="4" prepend="">    
+				select t.update_time as label, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.package_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from SX_POWER_SEA_SPEED  t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>					
+			</isEqual>
+		</isEqual>
+		<isEqual property="type" compareValue="lpar" prepend="">        
+			<isEqual property="kpi" compareValue="1" prepend="">    
+				<![CDATA[
+				select t.update_time as label,t.cpu_used_percent  as value from SX_LPAR_CPU_PERFORMANCE t
+				where t.machineserialnumber=#powerId#
+				and t.lpar_id=#lparId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>
+			</isEqual>
+			<isEqual property="kpi" compareValue="2" prepend="">    
+				<![CDATA[
+				select t.update_time as label,(t.mem_used_size/t.mem_used_size)*100  as value from SX_LPAR_MEM_PERFORMANCE t
+				where t.machineserialnumber=#powerId#
+				and t.lpar_id=#lparId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="3" prepend="">    
+				select t.update_time as label, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.package_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from SX_LPAR_FC_SPEED  t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.lpar_id=#lparId#
+				and t.fc_card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="4" prepend="">    
+				select t.update_time as label, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.pacakge_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from SX_LPAR_NETCARD_PERFORMANCE   t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.lpar_id=#lparId#
+				and t.card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>					
+			</isEqual>
+			<isEqual property="kpi" compareValue="5" prepend="">    
+				select t.update_time as label, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.disk_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.disk_write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.disk_io_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.disk_io_write_speed as value
+				</isEqual>						
+				from SX_LPAR_DISK_SPEED   t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.lpar_id=#lparId#
+				and t.disk_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>					
+			</isEqual>
+		</isEqual>		
+	</select>
+	
+	
+	<select id="queryManytimeReportData" parameterClass="SearchObj" resultClass="KpiObj">
+		<isEqual property="type" compareValue="power" prepend="">        
+			<isEqual property="kpi" compareValue="1" prepend="">    
+				<![CDATA[
+				select t.update_time as time,(t.machine_used_cpu_percent/t.machine_all_cpu_num)*100 as value from sx_power_cpu_mem_performance t 
+				where t.machineserialnumber=#powerId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>
+			</isEqual>
+			<isEqual property="kpi" compareValue="2" prepend="">    
+				<![CDATA[
+				select t.update_time as time,((t.installed_sys_mem-t.curr_avail_sys_mem)/t.installed_sys_mem)*100 as value from sx_power_cpu_mem_performance t 
+				where t.machineserialnumber=#powerId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="3" prepend="">    
+				select t.update_time as time, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.package_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from sx_power_fc_speed t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.fc_card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="4" prepend="">    
+				select t.update_time as time, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.package_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from SX_POWER_SEA_SPEED  t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>					
+			</isEqual>
+		</isEqual>
+		<isEqual property="type" compareValue="lpar" prepend="">        
+			<isEqual property="kpi" compareValue="1" prepend="">    
+				<![CDATA[
+				select t.update_time as time,t.cpu_used_percent  as value from SX_LPAR_CPU_PERFORMANCE t
+				where t.machineserialnumber=#powerId#
+				and t.lpar_id=#lparId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>
+			</isEqual>
+			<isEqual property="kpi" compareValue="2" prepend="">    
+				<![CDATA[
+				select t.update_time as time,(t.mem_used_size/t.mem_used_size)*100  as value from SX_LPAR_MEM_PERFORMANCE t
+				where t.machineserialnumber=#powerId#
+				and t.lpar_id=#lparId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="3" prepend="">    
+				select t.update_time as time, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.package_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from SX_LPAR_FC_SPEED  t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.lpar_id=#lparId#
+				and t.fc_card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>			
+			</isEqual>
+			<isEqual property="kpi" compareValue="4" prepend="">    
+				select t.update_time as time, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.pacakge_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.package_write_speed as value
+				</isEqual>						
+				from SX_LPAR_NETCARD_PERFORMANCE   t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.lpar_id=#lparId#
+				and t.card_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>					
+			</isEqual>
+			<isEqual property="kpi" compareValue="5" prepend="">    
+				select t.update_time as time, 
+				<isEqual property="cardKpi" compareValue="1" prepend="">    
+					t.disk_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="2" prepend="">  				
+					t.disk_write_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="3" prepend="">  				
+					t.disk_io_read_speed as value
+				</isEqual>
+				<isEqual property="cardKpi" compareValue="4" prepend="">  				
+					t.disk_io_write_speed as value
+				</isEqual>						
+				from SX_LPAR_DISK_SPEED   t 
+				<![CDATA[
+				where t.machine_serial_number=#powerId#
+				and t.lpar_id=#lparId#
+				and t.disk_name=#cardId#
+				and t.update_time>=#startTime# 
+				and t.update_time<=#endTime# 
+				]]>					
+			</isEqual>
+		</isEqual>		
+	</select>
+	
+</sqlMap>

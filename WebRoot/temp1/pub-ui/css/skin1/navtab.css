@@ -1,0 +1,442 @@
+/*
+ * @Filename: tabs.css
+ * @Description: panel style
+ * @Version: 1.0.0
+ * @Author: wangyq
+ * @Update: wangyq
+ * @skin:{
+		"ued-tab":"#fff",
+        "ued-tab-1":"#ededed",
+        "ued-tab-2":"#a5daf7",
+        "ued-tab-3":"#ffc387"
+    }@skin
+*/
+
+/*默认皮肤*/
+.ued-navtab .nav-tabs {
+    *zoom: 1;
+    margin:0;
+    width: 500%;
+    position: relative;
+}
+.ued-navtab .navtab-title{
+    position: relative;
+    z-index: 3;
+    height:28px;
+	width:100%;
+    overflow: hidden;
+}
+.ued-navtab .navtab-title a.leftArrow,.ued-navtab .navtab-title a.rightArrow{
+    position: absolute;
+    display: none;
+    height: 26px;
+    width: 12px;
+    text-indent: -9999px;
+    z-index: 99;
+}
+.ued-navtab .navtab-title a.leftArrow{
+    left: 0;
+    top: 0;
+    background:#f2f2f2 url(images/left&right_Arrow.png)  no-repeat 0 0;
+    border: 1px solid #d1d1d1;
+}
+.ued-navtab .navtab-title a.rightArrow{
+    right: 0;
+    top: 0;
+    background:#f2f2f2 url("images/left&right_Arrow.png")  no-repeat -12px 0;
+    border: 1px solid #d1d1d1;
+}
+.ued-navtab .nav-tabs:before, .ued-navtab .nav-tabs:after {
+    display:block;
+    line-height: 0;
+    content: "";
+    clear: both;
+}
+.ued-navtab .nav-tabs li {
+    float: left;
+    list-style: none;
+    margin:0 5px 0 0 ;
+    position: relative;
+}
+.ued-navtab .nav-tabs li a {
+    display: inline-block;
+    padding: 0 25px 0 10px;
+    margin:0;
+    height:26px;
+    line-height:26px;
+    border: 1px solid #d1d1d1;
+    background:#ececec url("images/panel-bg.jpg") 0 0 repeat-x;
+    color:#CCCCCC;
+    text-decoration:none;
+}
+.ued-navtab .nav-tabs .active a, .ued-navtab .nav-tabs .active a:hover {
+    color: #333;
+    cursor: default;
+    background: #ffffff;
+    border: 1px solid #d1d1d1;
+    border-bottom:1px solid #fff;
+}
+.ued-navtab .nav-tabs li a.close{
+    position: absolute;
+    right:7px;
+    top:10px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    text-indent: -9999px;
+    display: block;
+    cursor: pointer;
+    width:7px;
+    height:7px;
+    background:url("images/pt-clo.gif") 0 0 no-repeat;
+}
+.ued-navtab .nav-tabs li a.close:hover{
+    border: none;
+    cursor: pointer;
+    background:url("images/pt-clo.gif") 0 -7px no-repeat;
+}
+.ued-navtab .navtab-content  {
+    position: relative;
+	overflow:hidden;
+    margin-top:-1px;
+    z-index: 2;
+    border-radius:0 0 3px 3px;
+    border:1px solid #d1d1d1;
+}
+.ued-navtab .navtab-content iframe {
+    display: none;
+}
+.ued-navtab .navtab-content .mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: #000 url("images/loadingAnimation.gif") no-repeat center;
+    filter:alpha(opacity=50);
+    -moz-opacity:0.5;
+    opacity: 0.5;
+}
+
+
+/*标签皮肤1*/
+.ued-navtab-1 .nav-tabs {
+    *zoom: 1;
+    margin:0;
+    width: 500%;
+    position: relative;
+	border:1px solid #d1d1d1
+}
+.ued-navtab-1 .navtab-title{
+	background:url("images/panel-bg.jpg") repeat-x scroll 0 0 #ECECEC;
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+	border-right:1px solid #d1d1d1
+}
+.ued-navtab-1 .navtab-title a.leftArrow,.ued-navtab-1 .navtab-title a.rightArrow{
+    position: absolute;
+    display: none;
+    height: 28px;
+    width: 12px;
+    text-indent: -9999px;
+    z-index: 99;
+}
+.ued-navtab-1 .navtab-title a.leftArrow{
+    left: 0;
+    top: 0;
+    background:#f2f2f2 url("images/left&right_Arrow.png") 0 -2px no-repeat ;
+    border: 1px solid #d1d1d1;
+}
+.ued-navtab-1 .navtab-title a.rightArrow{
+    right: 0;
+    top: 0;
+    background:#f2f2f2 url("images/left&right_Arrow.png") -12px -2px no-repeat ;
+    border: 1px solid #d1d1d1;
+	border-right:none;
+}
+.ued-navtab-1 .nav-tabs:before, .ued-navtab-1 .nav-tabs:after {
+    display:block;
+    line-height: 0;
+    content: "";
+    clear: both;
+}
+.ued-navtab-1 .nav-tabs li {
+    float: left;
+    list-style: none;
+    margin:0 0 -1px 0 ;
+    position: relative;
+}
+.ued-navtab-1 .nav-tabs li a {
+    display: inline-block;
+    padding: 0 25px 0 10px;
+    margin:0;
+    height:28px;
+    line-height:28px;
+    color:#CCCCCC;
+	text-decoration:none;
+	border-right: 1px solid #d1d1d1;
+}
+.ued-navtab-1 .nav-tabs .active a, .ued-navtab-1 .nav-tabs .active a:hover {
+    color: #333;
+    cursor: default;
+    background: #ffffff;
+    border-bottom:1px solid #fff;
+}
+.ued-navtab-1 .nav-tabs li a.close{
+    position: absolute;
+    right:7px;
+    top:10px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    text-indent: -9999px;
+    cursor: pointer;
+    width:7px;
+    height:7px;
+    background:url("images/pt-clo.gif") 0 0 no-repeat;
+}
+.ued-navtab-1 .nav-tabs li.active a.close{
+	display:block;
+}
+.ued-navtab-1 .nav-tabs li a.close:hover{
+    border: none;
+    cursor: pointer;
+    background:url("images/pt-clo.gif") 0 -7px no-repeat;
+}
+.ued-navtab-1 .navtab-content  {
+    position: relative;
+	overflow:hidden;
+    margin-top:-1px;
+    z-index: 2;
+    border-radius:0 0 3px 3px;
+    border:1px solid #d1d1d1;
+}
+.ued-navtab-1 .navtab-content iframe {
+    display: none;
+}
+.ued-navtab-1 .navtab-content .mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: #000 url("images/loadingAnimation.gif") no-repeat center;
+    filter:alpha(opacity=50);
+    -moz-opacity:0.5;
+    opacity: 0.5;
+}
+
+
+/*标签皮肤2*/
+.ued-navtab-2 .nav-tabs {
+    *zoom: 1;
+    margin:0;
+    width: 500%;
+    position: relative;
+	border:1px solid #d1d1d1
+}
+.ued-navtab-2 .navtab-title{
+	background:url("images/panel-bg.jpg") repeat-x scroll 0 -34px #D3E9F5;
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+	border-right:1px solid #d1d1d1
+}
+.ued-navtab-2 .navtab-title a.leftArrow,.ued-navtab-2 .navtab-title a.rightArrow{
+    position: absolute;
+    display: none;
+    height: 28px;
+    width: 12px;
+    text-indent: -9999px;
+    z-index: 99;
+}
+.ued-navtab-2 .navtab-title a.leftArrow{
+    left: 0;
+    top: 0;
+    background:#f2f2f2 url("images/left&right_Arrow.png") 0 -36px no-repeat ;
+    border: 1px solid #d1d1d1;
+}
+.ued-navtab-2 .navtab-title a.rightArrow{
+    right: 0;
+    top: 0;
+    background:#f2f2f2 url("images/left&right_Arrow.png") -12px -36px no-repeat ;
+    border: 1px solid #d1d1d1;
+	border-right:none;
+}
+.ued-navtab-2 .nav-tabs:before, .ued-navtab-2 .nav-tabs:after {
+    display:block;
+    line-height: 0;
+    content: "";
+    clear: both;
+}
+.ued-navtab-2 .nav-tabs li {
+    float: left;
+    list-style: none;
+    margin:0 0 -1px 0 ;
+    position: relative;
+}
+.ued-navtab-2 .nav-tabs li a {
+    display: inline-block;
+    padding: 0 25px 0 10px;
+    margin:0;
+    height:28px;
+    line-height:28px;
+    color:#CCCCCC;
+	text-decoration:none;
+	border-right: 1px solid #d1d1d1;
+}
+.ued-navtab-2 .nav-tabs .active a, .ued-navtab-2 .nav-tabs .active a:hover {
+    color: #0066ff;
+    cursor: default;
+    background: #ffffff;
+    border-bottom:1px solid #fff;
+}
+.ued-navtab-2 .nav-tabs li a.close{
+    position: absolute;
+    right:7px;
+    top:10px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    text-indent: -9999px;
+    cursor: pointer;
+    width:7px;
+    height:7px;
+    background:url("images/pt-clo.gif") 0 0 no-repeat;
+}
+.ued-navtab-2 .nav-tabs li.active a.close{
+	display:block;
+}
+.ued-navtab-2 .nav-tabs li a.close:hover{
+    border: none;
+    cursor: pointer;
+    background:url("images/pt-clo.gif") 0 -7px no-repeat;
+}
+.ued-navtab-2 .navtab-content  {
+    position: relative;
+    margin-top:-1px;
+	overflow:hidden;
+    z-index: 2;
+    border-radius:0 0 3px 3px;
+    border:1px solid #d1d1d1;
+}
+.ued-navtab-2 .navtab-content iframe {
+    display: none;
+}
+.ued-navtab-2 .navtab-content .mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: #000 url("images/loadingAnimation.gif") no-repeat center;
+    filter:alpha(opacity=50);
+    -moz-opacity:0.5;
+    opacity: 0.5;
+}
+
+
+/*标签皮肤3*/
+.ued-navtab-3 .nav-tabs {
+    *zoom: 1;
+    margin:0;
+    width: 500%;
+    position: relative;
+	border:1px solid #d1d1d1
+}
+.ued-navtab-3 .navtab-title{
+	background:url("images/panel-bg.jpg") repeat-x scroll 0 -68px #FFDFA9;
+    position: relative;
+    z-index: 3;
+    overflow: hidden;
+	border-right:1px solid #d1d1d1
+}
+.ued-navtab-3 .navtab-title a.leftArrow,.ued-navtab-3 .navtab-title a.rightArrow{
+    position: absolute;
+    display: none;
+    height: 28px;
+    width: 12px;
+    text-indent: -9999px;
+    z-index: 99;
+}
+.ued-navtab-3 .navtab-title a.leftArrow{
+    left: 0;
+    top: 0;
+    background:#f2f2f2 url("images/left&right_Arrow.png") 0 -66px no-repeat ;
+    border: 1px solid #d1d1d1;
+}
+.ued-navtab-3 .navtab-title a.rightArrow{
+    right: 0;
+    top: 0;
+    background:#f2f2f2 url("images/left&right_Arrow.png") -12px -66px no-repeat ;
+    border: 1px solid #d1d1d1;
+	border-right:none;
+}
+.ued-navtab-3 .nav-tabs:before, .ued-navtab-3 .nav-tabs:after {
+    display:block;
+    line-height: 0;
+    content: "";
+    clear: both;
+}
+.ued-navtab-3 .nav-tabs li {
+    float: left;
+    list-style: none;
+    margin:0 0 -1px 0 ;
+    position: relative;
+}
+.ued-navtab-3 .nav-tabs li a {
+    display: inline-block;
+    padding: 0 25px 0 10px;
+    margin:0;
+    height:28px;
+    line-height:28px;
+    color:#CCCCCC;
+	text-decoration:none;
+	border-right: 1px solid #d1d1d1;
+}
+.ued-navtab-3 .nav-tabs .active a, .ued-navtab-3 .nav-tabs .active a:hover {
+    color: #cc6600;
+    cursor: default;
+    background: #ffffff;
+    border-bottom:1px solid #fff;
+}
+.ued-navtab-3 .nav-tabs li a.close{
+    position: absolute;
+    right:7px;
+    top:10px;
+    margin: 0;
+    padding: 0;
+    border: none;
+    text-indent: -9999px;
+    cursor: pointer;
+    width:7px;
+    height:7px;
+    background:url("images/pt-clo.gif") 0 0 no-repeat;
+}
+.ued-navtab-3 .nav-tabs li.active a.close{
+	display:block;
+}
+.ued-navtab-3 .nav-tabs li a.close:hover{
+    border: none;
+    cursor: pointer;
+    background:url("images/pt-clo.gif") 0 -7px no-repeat;
+}
+.ued-navtab-3 .navtab-content  {
+    position: relative;
+	overflow:hidden;
+    margin-top:-1px;
+    z-index: 2;
+    border-radius:0 0 3px 3px;
+    border:1px solid #d1d1d1;
+}
+.ued-navtab-3 .navtab-content iframe {
+    display: none;
+}
+.ued-navtab-3 .navtab-content .mask {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: #000 url("images/loadingAnimation.gif") no-repeat center;
+    filter:alpha(opacity=50);
+    -moz-opacity:0.5;
+    opacity: 0.5;
+}

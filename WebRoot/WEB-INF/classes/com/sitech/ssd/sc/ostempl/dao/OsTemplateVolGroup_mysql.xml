@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplateVolGroup">
+
+	<typeAlias alias="_OsTemplateVolGroup" type="com.sitech.ssd.sc.ostempl.domain.OsTemplateVolGroup" />
+
+	<sql id="partTableColumns">
+		template_id,vg_name,vg_pvno,vg_pesize,vg_desc
+	</sql>
+	
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplateVolGroup" parameterClass="_OsTemplateVolGroup">
+		insert into tb_os_template_volgroup(
+		<include refid="partTableColumns" />
+		)
+		values(#template_id#,#vg_name#,#vg_pvno#,#vg_pesize#,#vg_desc#)
+	</insert>
+	
+	<insert id="copyOsTemplateVolGroup" parameterClass="_OsTemplateVolGroup">
+		insert into tb_os_template_volgroup(<include refid="partTableColumns" />)
+		select (SELECT id FROM tb_os_template WHERE templ_name = #id#) <include refid="partTableColumns" />
+		from tb_os_template_volgroup where template_id = #template_id#
+	</insert>	
+
+	<delete id="deleteOsTemplateVolGroup" parameterClass="_OsTemplateVolGroup">
+		DELETE FROM tb_os_template_volgroup
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplateVolGroup" parameterClass="_OsTemplateVolGroup">
+		UPDATE tb_os_template_volgroup 
+		SET template_id = #template_id#,
+		    vg_name = #vg_name#,
+		    vg_pvno = #vg_pvno#,
+		    vg_pesize = #vg_pesize#,
+		    vg_desc = #vg_desc#
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<select id="selectOsTemplateVolGroupList" parameterClass="_OsTemplateVolGroup"
+		resultClass="_OsTemplateVolGroup">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_volgroup 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="vg_name" prepend="and">
+				vg_name = #vg_name# 
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="selectOsTemplateVolGroup" parameterClass="_OsTemplateVolGroup"
+		resultClass="_OsTemplateVolGroup">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_volgroup
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="vg_name" prepend="and">
+				vg_name = #vg_name# 
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

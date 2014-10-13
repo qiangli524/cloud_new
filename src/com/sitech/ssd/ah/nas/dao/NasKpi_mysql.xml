@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="nasKpi">
+	<typeAlias alias="NasKpiObj" type="com.sitech.ssd.ah.nas.domain.NasKpiObj" />
+	
+	<select id="queryAllkpiByObj" parameterClass="NasKpiObj" resultClass="NasKpiObj">
+		SELECT
+			a.ID,
+			a.KPINAME,
+			a.KPIVALUE,
+			a.NAS_DEVICE_ID
+		FROM
+			tb_cloud2_hwnas_kpi AS a
+		<dynamic prepend="where">
+			<isNotNull property="kpiname" prepend="and">
+					<isNotEmpty property="kpiname">
+						a.KPINAME = #kpiname#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="nas_device_id" prepend="and">
+					<isNotEmpty property="nas_device_id">
+						a.NAS_DEVICE_ID = #nas_device_id#
+					</isNotEmpty>
+			</isNotNull>
+		</dynamic>	
+	</select>
+	
+	<insert id="insertKpiByObj" parameterClass="NasKpiObj">
+		insert into tb_cloud2_hwnas_kpi(KPINAME,KPIVALUE,NAS_DEVICE_ID) 
+		VALUES (#kpiname#,#kpivalue#,#nas_device_id#)
+	</insert>
+	
+	<update id="updateKpiByObj" parameterClass="NasKpiObj">
+		update tb_cloud2_hwnas_kpi
+		set KPIVALUE = #kpivalue#
+		where KPINAME = #kpiname#
+	</update>
+    
+</sqlMap>

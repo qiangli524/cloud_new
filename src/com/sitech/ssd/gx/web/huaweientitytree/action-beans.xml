@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="huaweiEntityTreeAction" class="com.sitech.ssd.gx.web.huaweientitytree.action.HuaweiEntityTreeAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="huaweiEntityTreeService">
+			<ref bean="huaweiEntityTreeService" />
+		</property>
+		<property name="syncHuaweiData">
+			<ref bean="syncHuaweiData" />
+		</property>
+		<property name="huaweiClusterService">
+			<ref bean="huaweiClusterService" />
+		</property>
+		<property name="huaweiHostService">
+			<ref bean="huaweiHostService" />
+		</property>
+		<property name="huaweiVMHostService">
+			<ref bean="huaweiVMHostService" />
+		</property>
+	</bean>
+	
+</beans>
+
+
+
+
+
+	
+
+
+

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="VMManager">
+	<typeAlias alias="VMManagerObj"
+		type="com.sitech.basd.yicloud.domain.vmman.VMManagerObj" />
+	<typeAlias alias="TbYicloudDeviceHealthObj"
+		type="com.sitech.basd.yicloud.domain.vmman.TbYicloudDeviceHealthObj" />
+	  <sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select m.ID, m.NAME_ZH, m.NAME_EN, m.CODE, m.IP,m.TYPE,m.SUB_TYPE,m.VH_HOST, m.BRAND, m.MODEL,
+		m.CPU, m.MEMORY, m.STORAGE, m.INTERFACE, m.AUXILIARY, m.REMARK
+		from TB_YICLOUD_DEVICE m where 1=1
+		]]>
+		<isGreaterThan property="ID" compareValue="0" prepend="and">
+			m.ID = #ID#
+		</isGreaterThan>
+		<isNotEmpty property="NAME_ZH" prepend="and">
+			m.NAME_ZH like CONCAT('%',#NAME_ZH#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="NAME_EN" prepend="and">
+			m.NAME_EN =#NAME_EN#
+		</isNotEmpty>
+		<isNotEmpty property="CODE" prepend="and">
+			m.CODE like CONCAT('%',#CODE#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="IP" prepend="and">
+			m.IP like CONCAT('%',#IP#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="TYPE" prepend="and">
+			m.TYPE = #TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="SUB_TYPE" prepend="and">
+			m.SUB_TYPE = #SUB_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="VH_HOST" prepend="and">
+			m.VH_HOST = #VH_HOST#
+		</isNotEmpty>
+		<isNotEmpty property="BRAND" prepend="and">
+			m.BRAND = #BRAND#
+		</isNotEmpty>
+		<isNotEmpty property="MODEL" prepend="and">
+			m.MODEL like CONCAT('%',#MODEL#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="MEMORY" prepend="and">
+			m.MEMORY like CONCAT('%',#MEMORY#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="STORAGE" prepend="and">
+			m.STORAGE like CONCAT('%',#STORAGE#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="INTERFACE" prepend="and">
+			m.INTERFACE like CONCAT('%',#INTERFACE#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="AUXILIARY" prepend="and">
+			m.AUXILIARY like CONCAT('%',#AUXILIARY#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="REMARK" prepend="and">
+			m.REMARK like CONCAT('%',#REMARK#,'%')
+		</isNotEmpty> 
+	</sql>
+
+	<select id="queryForListByObj" parameterClass="VMManagerObj"
+		resultClass="VMManagerObj"> 
+		<include refid="queryByObjBase" />
+		order by m.ID asc 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="VMManagerObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 添加设备主机 -->
+	<insert id="insertByObj" parameterClass="VMManagerObj">
+		insert into
+		TB_YICLOUD_DEVICE(NAME_ZH,NAME_EN,CODE,IP,TYPE,SUB_TYPE,VH_HOST,BRAND,MODEL,CPU,MEMORY,STORAGE,INTERFACE,AUXILIARY,REMARK)
+		values(#NAME_ZH#,#NAME_EN#,#CODE#,#IP#,#TYPE#,#SUB_TYPE#,#VH_HOST#,#BRAND#,#MODEL#,#CPU#,#MEMORY#,#STORAGE#,#INTERFACE#,#AUXILIARY#,#REMARK#)
+	</insert>
+	<!-- 修改设备主机 -->
+	<update id="updateByObj" parameterClass="VMManagerObj">
+		update TB_YICLOUD_DEVICE set
+		ID=#ID#,NAME_ZH=#NAME_ZH#,NAME_EN=#NAME_EN#,CODE=#CODE#,IP=#IP#,TYPE=#TYPE#,SUB_TYPE=#SUB_TYPE#,VH_HOST=#VH_HOST#,BRAND=#BRAND#,MODEL=#MODEL#,CPU=#CPU#,MEMORY=#MEMORY#,STORAGE=#STORAGE#,INTERFACE=#INTERFACE#,AUXILIARY=#AUXILIARY#,REMARK=#REMARK#
+		where ID=#ID#
+	</update>
+	<!-- 根据ID删除设备主机 -->
+	<delete id="deleteByObj" parameterClass="VMManagerObj">
+		delete from TB_YICLOUD_DEVICE where ID=#ID#
+	</delete>
+	<delete id="deleteByName_En" parameterClass="VMManagerObj">
+		delete from TB_YICLOUD_DEVICE where NAME_EN=#NAME_EN#
+	</delete>
+	<select id="queryForBindDeviceList" parameterClass="VMManagerObj"
+		resultClass="VMManagerObj">
+		select NAME_ZH,ID from TB_YICLOUD_DEVICE
+	</select>
+	<select id="queryHealthStateList" parameterClass="TbYicloudDeviceHealthObj"
+		resultClass="TbYicloudDeviceHealthObj">
+		select DEVICE_ID,IP_ISBLOCKED,PORT_ISBLOCKED,CPU,MEM,IO,
+		STORAGE,APP_HASDOWN,MIDDLE_HASDOWN,APP_DOWN_NAMES,MIDDLE_DOWN_NAMES
+		from TB_YICLOUD_DEVICE_HEALTH where DEVICE_ID=#DEVICE_ID#
+	</select>
+</sqlMap>

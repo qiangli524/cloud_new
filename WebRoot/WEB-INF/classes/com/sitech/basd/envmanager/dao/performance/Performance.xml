@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Performance">
+  <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="PerformanceObj" type="com.sitech.basd.envmanager.domain.performance.PerformanceObj"/>
+    <typeAlias alias="AddressObj" type="com.sitech.basd.envmanager.domain.performance.AddressObj"/>
+  	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>  
+	<update id="updateAddressInfo">
+		update env_ip_change_info set IP_OLD=#IP_OLD#,IP_NEW=#IP_NEW#,MAC_OLD=#MAC_OLD#,MAC_NEW=#MAC_NEW#
+		where device_id=#device_id#
+	</update>
+	<insert id="insertAddressInfo">
+		insert into env_ip_change_info(device_id,IP_OLD,IP_NEW,MAC_OLD,MAC_NEW)
+		values(#device_id#,#IP_OLD#,#IP_NEW#,#MAC_OLD#,#MAC_NEW#) 
+	</insert>
+	<sql id="queryAddressInfo">
+		select e.LD_ID,e.MECH_ROOM,e.CAPITAL_TYPE,e.MECH_ID,e.CAPITAL_ID,e.MECH_TYPE,e.MECH_CONF,
+		e.SYS_SYSTEM,e.SYS_HOSTNAME,e.SYS_VM,e.IP_PHYSICS,e.IP_VIRTUAL,e.IP_ILO,
+		e.PWD_SYSTEM,e.PWD_CONSOLE,e.STORE,e.USE_DOMAN,e.USE_RES,e.USE_DEPART,e.USE_DESCRIP,
+		e.MANAG_PERSON,e.MANAG_RECORD,e.MANAG_REPAIR,e.MANAG_USE,e.MANAG_USABLE,e.MANAG_DESCRIP
+		,i.DEVICE_ID ,i.IP_OLD ,i.MAC_OLD ,i.IP_NEW ,i.MAC_NEW from
+		ENV_LEDGER e ,env_ip_change_info i where e.ld_id=i.device_id
+		 	<isNotEmpty property="IP_OLD" prepend="and">
+               IP_OLD =#IP_OLD#
+            </isNotEmpty>
+            <isNotEmpty property="MAC_OLD" prepend="and">
+               MAC_OLD =#MAC_OLD#
+            </isNotEmpty>
+            <isNotEmpty property="IP_NEW" prepend="and">
+               IP_NEW =#IP_NEW#
+            </isNotEmpty>
+            <isNotEmpty property="MAC_NEW" prepend="and">
+               MAC_NEW =#MAC_NEW#
+            </isNotEmpty>
+	</sql>
+	<select id="queryAddressInfo" parameterClass="AddressObj"
+		resultClass="AddressObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryAddressInfo" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryAddressInfoCount" parameterClass="AddressObj"
+		resultClass="int">
+		select count(device_id) from (
+		<include refid="queryAddressInfo" />
+		) virtual_table
+	</select>
+	<sql id="queryPerformanceObj"> 
+		select e.cf_id,e.cf_ip,e.mem_used,e.mem_free,e.cpu_idle,e.stor_free,e.stor_all,to_char(e.che_time,'yyyy-mm-dd hh24:mi:ss') che_time from env_mechine e
+		<dynamic prepend="where">
+		<isNotNull property="CF_IP">
+		 <isNotEmpty property="CF_IP" prepend="and">
+               e.cf_ip =#CF_IP#
+            </isNotEmpty>
+          </isNotNull>  
+          <isNotNull property="MEM_USED">
+            <isNotEmpty property="MEM_USED" prepend="and">
+               e.mem_used =#MEM_USED#
+            </isNotEmpty>
+            </isNotNull>
+            <isNotNull property="MEM_FREE">
+            <isNotEmpty property="MEM_FREE" prepend="and">
+               e.mem_free =#MEM_FREE#
+            </isNotEmpty>
+            </isNotNull>
+            <isNotNull property="CPU_IDLE">
+            <isNotEmpty property="CPU_IDLE" prepend="and">
+               e.cpu_idle =#CPU_IDLE#
+            </isNotEmpty>
+            </isNotNull>
+		</dynamic>
+	</sql>
+	<select id="queryPerformanceObj" parameterClass="PerformanceObj"
+		resultClass="PerformanceObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryPerformanceObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryPerformanceObjCount" parameterClass="PerformanceObj"
+		resultClass="int">
+		select count(CF_IP) from (
+		<include refid="queryPerformanceObj" />
+		) virtual_table
+	</select>
+
+
+</sqlMap>

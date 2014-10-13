@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Ledger">
+  <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="LedgerObj" type="com.sitech.basd.envmanager.domain.ledger.LedgerObj"/>
+  	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<delete id="deleteLedgerObj" parameterClass="LedgerObj">
+		delete ENV_LEDGER  where LD_ID = #LD_ID#
+	</delete>
+	<update id="updateLedgerObj" parameterClass="LedgerObj">
+		update ENV_LEDGER set MECH_ROOM=#MECH_ROOM#,CAPITAL_TYPE=#CAPITAL_TYPE#,MECH_ID=#MECH_ID#,CAPITAL_ID=#CAPITAL_ID#,MECH_TYPE=#MECH_TYPE#,
+		MECH_CONF=#MECH_CONF#,SYS_SYSTEM=#SYS_SYSTEM#,SYS_HOSTNAME=#SYS_HOSTNAME#,SYS_VM=#SYS_VM#,IP_PHYSICS=#IP_PHYSICS#,IP_VIRTUAL=#IP_VIRTUAL#,IP_ILO=#IP_ILO#,
+		PWD_SYSTEM=#PWD_SYSTEM#,PWD_CONSOLE=#PWD_CONSOLE#,STORE=#STORE#,USE_DOMAN=#USE_DOMAN#,USE_RES=#USE_RES#,USE_DEPART=#USE_DEPART#,USE_DESCRIP=#USE_DESCRIP#,MANAG_PERSON=#MANAG_PERSON#
+		,MANAG_RECORD=#MANAG_RECORD#,MANAG_REPAIR=#MANAG_REPAIR#,MANAG_USE=#MANAG_USE#,MANAG_USABLE=#MANAG_USABLE#,MANAG_DESCRIP=#MANAG_DESCRIP#
+		where LD_ID = #LD_ID#
+	</update>
+	<select id="queryLedgerOne" parameterClass="LedgerObj" resultClass="LedgerObj">
+	select LD_ID ,MECH_ROOM,CAPITAL_TYPE,MECH_ID,CAPITAL_ID,MECH_TYPE,MECH_CONF,SYS_SYSTEM,SYS_HOSTNAME,SYS_VM,IP_PHYSICS,IP_VIRTUAL,IP_ILO,
+		PWD_SYSTEM,PWD_CONSOLE,STORE,USE_DOMAN,USE_RES,USE_DEPART,USE_DESCRIP, MANAG_PERSON,MANAG_RECORD,MANAG_REPAIR,MANAG_USE,MANAG_USABLE,MANAG_DESCRIP
+		from ENV_LEDGER
+		where LD_ID = #LD_ID#
+	</select>
+	<insert id="insertLedgerObj" parameterClass="LedgerObj">
+		insert into ENV_LEDGER 
+			(LD_ID,MECH_ROOM,CAPITAL_TYPE,MECH_ID,CAPITAL_ID,MECH_TYPE,MECH_CONF,SYS_SYSTEM,SYS_HOSTNAME,SYS_VM,IP_PHYSICS,IP_VIRTUAL,IP_ILO,
+			PWD_SYSTEM,PWD_CONSOLE,STORE,USE_DOMAN,USE_RES,USE_DEPART,USE_DESCRIP, MANAG_PERSON,MANAG_RECORD,MANAG_REPAIR,MANAG_USE,MANAG_USABLE,MANAG_DESCRIP)
+		values
+			(#LD_ID#,#MECH_ROOM#,#CAPITAL_TYPE#,#MECH_ID#,#CAPITAL_ID#,#MECH_TYPE#,#MECH_CONF#,#SYS_SYSTEM#,#SYS_HOSTNAME#,#SYS_VM#,#IP_PHYSICS#,#IP_VIRTUAL#,#IP_ILO#,
+			#PWD_SYSTEM#,#PWD_CONSOLE#,#STORE#,#USE_DOMAN#,#USE_RES#,#USE_DEPART#,#USE_DESCRIP#,#MANAG_PERSON#,#MANAG_RECORD#,#MANAG_REPAIR#,#MANAG_USE#,#MANAG_USABLE#,#MANAG_DESCRIP#)
+	</insert>
+	<sql id="queryLedgerObj">   
+		select e.LD_ID ,e.MECH_ROOM,e.CAPITAL_TYPE,e.MECH_ID,e.CAPITAL_ID,e.MECH_TYPE,e.MECH_CONF,e.SYS_SYSTEM,e.SYS_HOSTNAME,e.SYS_VM,e.IP_PHYSICS,e.IP_VIRTUAL,e.IP_ILO,
+		e.PWD_SYSTEM,e.PWD_CONSOLE,e.STORE,e.USE_DOMAN,e.USE_RES,e.USE_DEPART,e.USE_DESCRIP, e.MANAG_PERSON,e.MANAG_RECORD,e.MANAG_REPAIR,e.MANAG_USE,e.MANAG_USABLE,e.MANAG_DESCRIP
+		from ENV_LEDGER e,TB_YICLOUD_DEVICE t
+		<dynamic prepend="where">
+			   e.LD_ID=t.DEVICE_ID
+		<isNotNull property="MECH_ROOM">
+		 <isNotEmpty property="MECH_ROOM" prepend="and">
+               MECH_ROOM like '%'||#MECH_ROOM#||'%'
+            </isNotEmpty>
+         </isNotNull> 
+         <isNotNull property="CAPITAL_TYPE">
+		 <isNotEmpty property="CAPITAL_TYPE" prepend="and">
+               CAPITAL_TYPE like '%'||#CAPITAL_TYPE#||'%'
+            </isNotEmpty>
+          </isNotNull> 
+           <isNotNull property="MECH_ID">
+		 <isNotEmpty property="MECH_ID" prepend="and">
+               MECH_ID like '%'||#MECH_ID#||'%'
+            </isNotEmpty>
+          </isNotNull> 
+           <isNotNull property="CAPITAL_ID">
+		 <isNotEmpty property="CAPITAL_ID" prepend="and">
+               CAPITAL_ID like '%'||#CAPITAL_ID#||'%'
+            </isNotEmpty>
+          </isNotNull> 
+        </dynamic> 
+	</sql>
+	<select id="queryLedgerObj" parameterClass="LedgerObj"
+		resultClass="LedgerObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryLedgerObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryLedgerObjCount" parameterClass="LedgerObj"
+		resultClass="int">
+		select count(CAPITAL_ID) from (
+		<include refid="queryLedgerObj" />
+		) virtual_table
+	</select>
+</sqlMap>

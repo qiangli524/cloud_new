@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="workflow" extends="global_package">
+		<action name="workflow_*" class="workFlowAction" method="{1}">
+			<!-- 我发起的工单 -->
+			<result name="my">/workflow/myWorkFlow.jsp</result>
+			<!-- 资源申请 -->
+			<result name="resourceApply">/workflow/resourceApply.jsp</result>
+			<!-- 待选流程列表界面 -->
+			<result name="allFlow">/workflow/allFlow.jsp</result>
+			<!-- 待办工单 -->
+			<result name="todo">/workflow/todo.jsp</result>
+			
+			<!-- 原来登录后的界面 -->
+			<result name="main">/sxcloud/mainFrame.jsp</result>
+			<result name="leader" type="redirect">http://10.208.100.96:8380/cloudflex/mainView.html</result>
+			<result name="success">/sxcloud/mainFrame.jsp</result>
+			<result name="loginout">/sxcloud/index.jsp</result>
+			<result name="failure" type="redirect">login_login.do</result>
+		</action>
+	</package>
+</struts>

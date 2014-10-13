@@ -1,0 +1,300 @@
+body {
+	font-size: 12px;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+img {
+	border: none;
+}
+
+.panel-datacenter {
+	width: 800px;
+	border-right: 1px dashed #ccc;
+	padding: 4px 20px;
+}
+
+h2 {
+	margin: 0;
+	padding: 0;
+}
+
+h2.hadoopcenter {
+	background: url(Datacenter1.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+
+h2.hostex {
+	background: url(hostexample.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+
+h2.importkpi {
+	background: url(importkpi.png) no-repeat;
+	height: 34px;
+	border-bottom: 1px dashed #ccc;
+}
+
+
+.mgt-10 {
+	margin-top: 10px;
+}
+
+.font-14 td {
+	font-size: 14px;
+	line-height: 32px;
+}
+
+td.orange-20 {
+	font-size: 20px;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+td.orange-16 {
+	font-size: 15px;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+a.orange-16 {
+	font-size: 15px;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.orange:link {
+	font-size: 20px;
+	text-decoration: underline;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.orange:visited {
+	font-size: 20px;
+	text-decoration: underline;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.orange:hover {
+	font-size: 20px;
+	text-decoration: none;
+	color: #F60;
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+.blue:link {
+	text-decoration: none;
+	color: #68a8ff;
+}
+
+.blue:visited {
+	text-decoration: none;
+	color: #68a8ff;
+}
+
+.blue:hover {
+	text-decoration: underline;
+	color: #68a8ff;
+}
+
+.font-gray {
+	color: #999;
+	font-size: 14px;
+	padding-left: 8px;
+}
+
+.box {
+	display: none;
+}
+
+.on {
+	display: block;
+}
+
+.clr {
+	clear: both;
+	height: 0;
+	font-size: 0;
+}
+
+.percentage {
+	vertical-align: middle;
+	display: inline-block;
+	background: url(percentage-bg.gif) no-repeat;
+	width: 160px;
+	height: 14px;
+	margin-top: 4px;
+}
+
+.percentage b {
+	display: block;
+	height: 14px;
+	background: url(percentage-bg2.gif) no-repeat;
+}
+
+.percentage b.red {
+	background: url(percentage-bg3.gif) no-repeat;
+}
+
+.percentage b.ora {
+	background: url(percentage-bg4.gif) no-repeat;
+}
+
+.percentage2 {
+	vertical-align: middle;
+	position: relative;
+	display: inline-block;
+	background: url(zhutu-bg.gif) no-repeat;
+	width: 74px;
+	height: 93px;
+	margin-top: 4px;
+}
+
+.percentage2-red {
+	vertical-align: middle;
+	position: relative;
+	display: inline-block;
+	background: url(zhutu-bg3.gif) no-repeat;
+	width: 74px;
+	height: 93px;
+	margin-top: 4px;
+}
+
+.percentage2 b,.percentage2-red b {
+	display: block;
+	height: 93px;
+	background: url(zhutu-bg2.gif) no-repeat;
+}
+
+.cancle {
+	background: url(cancel.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	float:left;
+	margin-right: 2px;
+}
+
+.stop {
+	background: url(stop.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.blue {
+	background: url(blue.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.running {
+	background: url(running.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.cpu {
+	background: url(cpu.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.job {
+	background: url(net.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.memory {
+	background: url(mem.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.store {
+	background: url(storage.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-right: 2px;
+}
+
+.xen {
+	background: url(xen.jpg) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.vmware {
+	background: url(vmware.gif) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.jijia {
+	background: url(jijia.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.x86 {
+	background: url(x86.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.alert {
+	background: url(3alert.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.zhuji {
+	background: url(zhuji.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.cluster {
+	background: url(cluster.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}
+
+.example {
+	background: url(vm.png) no-repeat;
+	height: 16px;
+	width: 16px;
+	margin-top: 10px;
+	margin-right: 2px;
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="vmauthority" extends="global_package">
+		<action name="vmauth_*"
+				class="vmAuthorityAction" method="{1}">
+			<result name="list">/yicloud/vmware/listUserInfo.jsp</result>
+			<result name="operAuthority">/yicloud/vmware/authoritySelect.jsp</result>
+			<result name="editUserVirAuthority">/yicloud/vmware/editUserVirAuthority.jsp</result>
+			<result name="listItsmUser">/yicloud/itsmauthotity/listItsmUserInfo.jsp</result>
+			<result name="editItsmUserVirAuthority">/yicloud/itsmauthotity/editItsmUserVirAuthority.jsp</result>
+			<result name="select_page">/yicloud/itsmauthotity/authoritySelect.jsp</result>
+			<result name="itsmOperAuthority">/yicloud/itsmauthotity/authoritySelect.jsp</result>
+		</action>
+ </package>
+
+</struts>

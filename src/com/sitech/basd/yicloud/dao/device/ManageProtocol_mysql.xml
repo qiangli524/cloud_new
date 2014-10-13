@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ManageProtocol">
+	<typeAlias alias="ManageProtocolObj"
+		type="com.sitech.basd.yicloud.domain.device.ManageProtocolObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+			select
+				 id,
+				 isOpen,
+				 version,
+				 ip,
+				 port,
+				 username,
+				 password,
+				 entity_id
+			from tb_manage_protocol
+		]]>
+		<dynamic prepend="where">
+			<isNotEmpty property="entity_id" prepend="and">
+				entity_id = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="ManageProtocolObj"
+		resultClass="ManageProtocolObj"> 
+		<include refid="queryByObjBase" /> 
+		order by id 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="ManageProtocolObj"
+		resultClass="int">
+		select count(id) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 添加设备主机 -->
+	<insert id="insertByObj" parameterClass="ManageProtocolObj">
+	insert into
+		tb_manage_protocol(
+					id,
+				 isOpen,
+				 version,
+				 ip,
+				 port,
+				 username,
+				 password,
+				 entity_id
+		)
+		values(
+				#id#,
+				 #isOpen#,
+				 #version#,
+				 #ip#,
+				 #port#,
+				 #username#,
+				 #password#,
+				 #entity_id#
+		)
+	</insert>
+	<update id="updateByObj" parameterClass="ManageProtocolObj">
+		update 
+		tb_manage_protocol
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="isOpen">
+				isOpen=#isOpen#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="version">
+				version=#version#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="ip">
+				ip=#ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="port">
+				port=#port#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="username">
+				username=#username#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="password">
+				password=#password#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="entity_id">
+				entity_id=#entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<delete id="deleteByObj" parameterClass="ManageProtocolObj">
+		delete  from tb_manage_protocol where entity_id = #entity_id#
+	</delete>
+	
+</sqlMap>

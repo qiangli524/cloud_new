@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BolProgramComposite">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="BolProgramCompositeVO" type="com.sitech.basd.bol.domain.program.BolProgramCompositeVO"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    
+	<sql id="baseCloumns">
+		APPLICATION_COMPRISE_ID id,APPLICATION_ID programId,LIB_ID libId,ifnull(STATE,0) status,DATE_FORMAT(STATE_DATE,'%Y-%m-%d %H:%i:%S') lastupdate
+	</sql>
+  
+  	<sql id="queryForListByObjBase">
+  		select a.APPLICATION_NAME programName,
+	             b.LIB_NAME libName,
+	             c.APPLICATION_COMPRISE_ID id,
+	             c.APPLICATION_ID programId,
+	             c.LIB_ID libId,
+	             NVL(c.STATE, 0) status,
+	             c.STATE_DATE lastupdate
+	        from (select APPLICATION_ID, APPLICATION_NAME from APPLICATION) a,
+	             (select LIB_ID, LIB_NAME from CAPABILITY_LIB) b,
+	              APPLICATION_COMPRISE c
+	       where a.APPLICATION_ID = c.APPLICATION_ID
+	         AND b.LIB_ID = c.LIB_ID
+  			<isGreaterThan property="id" prepend="and" compareValue="0">
+	         	c.APPLICATION_COMPRISE_ID = #id#
+	         </isGreaterThan>
+  			<isNotEqual property="status" prepend="and" compareValue="-1">
+  				c.STATE = #status#
+  			</isNotEqual>
+ 	</sql>
+ 	
+ 	<select id="queryID" resultClass="java.lang.Integer">
+		select max(APPLICATION_COMPRISE_ID) from APPLICATION_COMPRISE
+	</select>
+  
+	<select id="queryForListByObj" parameterClass="BolProgramCompositeVO" resultClass="BolProgramCompositeVO">
+		<include refid="queryForListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	  
+  <select id="queryForListByObjCount" parameterClass="BolProgramCompositeVO" resultClass="int">
+		select count(id) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	  </select>
+	
+	<insert id="insertByObj" parameterClass="BolProgramCompositeVO">
+		insert into
+		APPLICATION_COMPRISE(APPLICATION_COMPRISE_ID,APPLICATION_ID,LIB_ID,STATE,STATE_DATE)
+		values(#id#,#programId#,#libId#,#status#,sysdate())
+	</insert> 
+	<update id="updateByObj" parameterClass="BolProgramCompositeVO">
+		update APPLICATION_COMPRISE set APPLICATION_ID = #programId#,LIB_ID=#libId#,STATE=#status#,STATE_DATE=sysdate()  where APPLICATION_COMPRISE_ID = #id#
+	</update> 
+    <delete id="deleteByObj" parameterClass="BolProgramCompositeVO">
+    	delete from APPLICATION_COMPRISE where APPLICATION_COMPRISE_ID = #id#
+    </delete>
+	 
+</sqlMap>

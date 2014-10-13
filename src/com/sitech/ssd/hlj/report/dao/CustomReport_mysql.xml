@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="CustomReport">
+	<typeAlias alias="CustomReport" type="com.sitech.ssd.hlj.report.domain.CustomReportObj" />
+	<typeAlias alias="UnitedTreeObj" type="com.sitech.basd.resource.domain.united.UnitedTreeObj" />
+	<typeAlias alias="BusiManagerTree" type="com.sitech.basd.busimanager.domain.busitree.BusiManagerTree" />
+	<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data" />
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<!-- 虚拟机查询条件 -->
+	<sql id="sqlVhWhere">
+			from tb_cloud2_vmhost_info v 
+			left join tb_busi_system_tree t1 on v.VH_UUID = t1.entity_id 			
+			left join tb_busi_system_tree t2 on t1.parent_id=t2.id
+			left join tb_busi_system_tree t3 on t2.parent_id=t3.id
+			left join tb_united_tree u on v.VH_uuid=u.uuid  and u.connect_id=v.CONNECT_ID
+		<dynamic prepend="where">
+		    <isNotEmpty property="dataCenterId">
+	           	<isNotEqual property="dataCenterId" compareValue="-1" prepend="AND">            	
+					u.parent_id in (select y.id from tb_united_tree y where y.parent_id in(select x.id from tb_united_tree x where x.parent_id = #dataCenterId#))
+	           	</isNotEqual>
+            </isNotEmpty>
+             <isNotEmpty property="clusterId">
+	           	<isNotEqual property="clusterId" compareValue="-1" prepend="AND">            	
+					u.parent_id in (select y.id from tb_united_tree y where y.parent_id = #clusterId#)
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="businessId">
+	           	<isNotEqual property="businessId" compareValue="-1" prepend="AND">            	
+					 t3.id = #businessId#
+	           	</isNotEqual>
+            </isNotEmpty>
+            <isNotEmpty property="subBusinessId">
+	           	<isNotEqual property="subBusinessId" compareValue="-1" prepend="AND">            	
+					t2.id = #subBusinessId#
+	           	</isNotEqual>
+            </isNotEmpty>	
+			<isNotEmpty property="vhName" prepend="and">	
+				v.VH_NAME like concat('%',#vhName#,'%')
+			</isNotEmpty>	
+			<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+				t1.domain = #domain#
+	       	</isNotEqual>
+		</dynamic>	
+	</sql>
+	
+	<!-- 主机查询条件 -->
+	<sql id="sqlHostWhere">
+			from tb_cloud2_host_info v 
+			left join tb_united_tree u on v.H_uuid=u.uuid  
+			where 1=1
+			<!-- v.hasvertual!=0 -->
+		    <isNotEmpty property="dataCenterId">
+	           	<isNotEqual property="dataCenterId" compareValue="-1" prepend="AND">            	
+					u.parent_id in (select x.id from tb_united_tree x where x.parent_id = #dataCenterId#)
+	           	</isNotEqual>
+            </isNotEmpty>
+             <isNotEmpty property="clusterId">
+	           	<isNotEqual property="clusterId" compareValue="-1" prepend="AND">            	
+					u.parent_id = #clusterId#
+	           	</isNotEqual>
+            </isNotEmpty>
+			<isNotEmpty property="vhName" prepend="and">	
+				v.EQ_NAME like concat('%',#vhName#,'%')
+			</isNotEmpty>	
+			<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+				u.domain = #domain#
+	       	</isNotEqual>
+	</sql>
+	
+	<!-- 虚拟机数量 -->
+	<select id="queryVhCount" parameterClass="CustomReport"   resultClass="int">
+		<![CDATA[
+			select count(1)
+		]]>
+		<include refid="sqlVhWhere" />
+	</select>
+	
+	<!-- 虚拟机列表 -->
+	<select id="queryVhList" parameterClass="CustomReport"   resultClass="CustomReport">
+		<![CDATA[
+			select v.VH_NAME as name, concat(v.CONNECT_ID,'_',v.VH_UUID) as uuid ,v.VH_IP as ip,t2.`name` as subBusi
+		]]>
+		<include refid="sqlVhWhere" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	
+	<!-- 主机数量 -->
+	<select id="queryHostCount" parameterClass="CustomReport"   resultClass="int">
+		<![CDATA[
+			select count(1)
+		]]>
+		<include refid="sqlHostWhere" />
+	</select>
+	
+	<!-- 主机列表 -->
+	<select id="queryHostList" parameterClass="CustomReport"   resultClass="CustomReport">
+		<![CDATA[
+			select v.EQ_NAME as name, concat(v.CONNECT_ID,'_',v.H_UUID) as uuid ,v.EQ_IP ip
+		]]>
+		<include refid="sqlHostWhere" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+        	<include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	
+	
+	 <!-- 查询集群 -->
+	<select id="queryCluster"  parameterClass="CustomReport" resultClass="UnitedTreeObj"> 
+    	select id,name,parent_id,uuid 
+    	from tb_united_tree 
+    	where vtype in (1,2,8) 
+    	and type = 2  
+    	and parent_id = #dataCenterId#
+    	<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			domain = #domain#
+	    </isNotEqual>
+    </select>
+    
+    <!-- 查询数据中心 -->
+	<select id="queryDataCenter"  parameterClass="CustomReport" resultClass="UnitedTreeObj"> 
+    	select id,name,parent_id,uuid 
+    	from tb_united_tree 
+    	where vtype in (1,2,8) 
+    	and type = 1  
+    	<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			domain = #domain#
+	    </isNotEqual>
+    </select>
+    
+     <!-- 查询业务系统 -->
+	<select id="queryBusinessList"  parameterClass="CustomReport" resultClass="BusiManagerTree"> 
+    	select b.id,b.name from tb_busi_system_tree b 
+    	where b.type = 1 
+    	and b.id in (
+			select DISTINCT t.parent_id from tb_busi_system_tree t where t.type = 2 and t.id in (
+				select DISTINCT s.parent_id from tb_busi_system_tree s where s.type=3
+			)
+		)
+		<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			b.domain = #domain#
+	    </isNotEqual>
+    </select>
+    
+     <!-- 查询子业务系统 -->
+	<select id="querySubBusinessList"  parameterClass="CustomReport" resultClass="BusiManagerTree"> 
+    	select id,name 
+    	from tb_busi_system_tree 
+    	where type = 2 
+    	and parent_id=#businessId#
+    	<isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			domain = #domain#
+	    </isNotEqual>
+    </select>
+    
+     <!-- 判断表是否存在 -->
+	<select id="isExistTable"  parameterClass="java.lang.String" resultClass="int"> 
+		select count(1) from INFORMATION_SCHEMA.TABLES where TABLE_NAME=#tableName#
+    </select>
+    
+     <!-- 主机-根据数据中心和集群查询指标top5 -->
+	<select id="queryHostTop5"  parameterClass="CustomReport" resultClass="java.lang.String"> 
+		select concat(v.CONNECT_ID,'_',v.H_UUID) as uuid
+		from tb_cloud2_host_info v 
+		left join tb_united_tree u on v.H_uuid=u.uuid
+		left join $tableName$ c on c.EQ_ID = concat(v.CONNECT_ID,'_',v.H_UUID)
+		where 1=1
+		and c.KPI_ID=#kpiId#
+		 <isNotEmpty property="clusterId">
+           	<isNotEqual property="clusterId" compareValue="-1" prepend="AND">            	
+				 u.parent_id =#clusterId#
+           	</isNotEqual>
+        </isNotEmpty>
+		<isNotEmpty property="dataCenterId">
+	        <isNotEqual property="dataCenterId" compareValue="-1" prepend="AND">            	
+				 u.parent_id in (select x.id from tb_united_tree x where x.parent_id = #dataCenterId#)
+	        </isNotEqual>
+        </isNotEmpty>		
+        <isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			u.domain = #domain#
+	    </isNotEqual>
+		and c.COLL_TIME <![CDATA[ >= ]]>#startDate#
+		and c.COLL_TIME <![CDATA[ <= ]]>#endDate#
+		group by v.H_uuid
+		order by AVG(c.kpi_value) desc
+		LIMIT 0,5
+    </select>
+    
+     <!-- 主机-查询时间段 -->
+	<select id="queryHostCategorys"  parameterClass="CustomReport" resultClass="java.lang.String"> 
+		select 
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00') as time 
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00') as time 
+		</isEqual>
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') as time 
+		</isEqual>
+		from  $tableName$  t 
+		where 1=1 
+		<isNotEmpty property="resIdsList" prepend="and">
+			    t.EQ_ID in 
+			    <iterate close=")" conjunction="," open="(" property="resIdsList">
+						#resIdsList[]#
+				</iterate>
+		</isNotEmpty>
+		and t.COLL_TIME <![CDATA[ >= ]]>#startDate#
+		and t.COLL_TIME <![CDATA[ <= ]]>#endDate#
+		and t.KPI_ID=#kpiId#
+		group by 
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00')
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00')
+		</isEqual>		
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') 
+		</isEqual>	
+    </select>
+    
+     <!-- 主机-查询值 -->
+	<select id="queryHostValue"  parameterClass="CustomReport" resultClass="Data"> 
+		select ROUND(avg(t.KPI_VALUE),2) as VALUE,
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00') as label 
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00') as label 
+		</isEqual>		
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') as label 
+		</isEqual>
+		from $tableName$ t 
+		where t.EQ_ID = #resourceIds#
+		and t.COLL_TIME <![CDATA[ >= ]]>#startDate#
+		and t.COLL_TIME <![CDATA[ <= ]]>#endDate#
+		and t.KPI_ID=#kpiId#
+		group by 
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00')
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00') 
+		</isEqual>	
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') 
+		</isEqual>		
+    </select>
+    
+     <!-- 主机-查询名称 -->
+	<select id="queryHostName"  parameterClass="CustomReport" resultClass="java.lang.String"> 
+		 select  t.EQ_NAME from tb_cloud2_host_info t where t.CONNECT_ID=#connectId# and t.H_UUID=#uuid#
+    </select>
+   
+   
+    <!-- 虚拟机-根据数据中心和集群查询指标top5 -->
+	<select id="queryHyTop5"  parameterClass="CustomReport" resultClass="java.lang.String"> 
+		select concat(v.CONNECT_ID,'_',v.VH_UUID) as uuid
+		from tb_cloud2_vmhost_info v 
+		left join tb_busi_system_tree t1 on v.VH_UUID = t1.entity_id
+		left join tb_busi_system_tree t2 on t1.parent_id=t2.id
+		left join tb_busi_system_tree t3 on t2.parent_id=t3.id
+		left join tb_united_tree u on v.VH_uuid=u.uuid  and u.connect_id=v.CONNECT_ID
+		left join $tableName$ c on c.HY_ID = concat(v.CONNECT_ID,'_',v.VH_UUID)
+		where 1=1
+		and c.KPI_ID=#kpiId#
+		 <isNotEmpty property="clusterId">
+           	<isNotEqual property="clusterId" compareValue="-1" prepend="AND">            	
+				 u.parent_id in (select x.id from tb_united_tree x where x.parent_id = #clusterId#)
+           	</isNotEqual>
+        </isNotEmpty>
+		<isNotEmpty property="dataCenterId">
+	        <isNotEqual property="dataCenterId" compareValue="-1" prepend="AND">            	
+				 u.parent_id in (select y.id from tb_united_tree y where y.parent_id in(select x.id from tb_united_tree x where x.parent_id = #dataCenterId#))
+	        </isNotEqual>
+        </isNotEmpty>	
+        <isNotEmpty property="businessId">
+	        <isNotEqual property="businessId" compareValue="-1" prepend="AND">            	
+				 t3.id=#businessId#
+	        </isNotEqual>
+        </isNotEmpty>
+        <isNotEmpty property="subBusinessId">
+	        <isNotEqual property="subBusinessId" compareValue="-1" prepend="AND">            	
+				 t2.id=#subBusinessId#
+	        </isNotEqual>
+        </isNotEmpty>	
+         <isNotEqual property="domain" compareValue="domain.type.all" prepend="AND">            	
+			t1.domain = #domain#
+	     </isNotEqual>
+		and c.COLL_TIME <![CDATA[ >= ]]>#startDate#
+		and c.COLL_TIME <![CDATA[ <= ]]>#endDate#
+		group by v.VH_UUID
+		order by AVG(c.kpi_value) desc
+		LIMIT 0,5
+    </select>
+    
+     <!-- 虚拟机-查询时间段 -->
+	<select id="queryHyCategorys"  parameterClass="CustomReport" resultClass="java.lang.String"> 
+		select 
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00') as time 
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00') as time 
+		</isEqual>
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') as time 
+		</isEqual>
+		from  $tableName$  t 
+		where 1=1 
+		<isNotEmpty property="resIdsList" prepend="and">
+			    t.HY_ID in 
+			    <iterate close=")" conjunction="," open="(" property="resIdsList">
+						#resIdsList[]#
+				</iterate>
+		</isNotEmpty>
+		and t.COLL_TIME <![CDATA[ >= ]]>#startDate#
+		and t.COLL_TIME <![CDATA[ <= ]]>#endDate#
+		and t.KPI_ID=#kpiId#
+		group by 
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00')
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00')
+		</isEqual>		
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') 
+		</isEqual>	
+    </select>
+    
+     <!-- 虚拟机-查询值 -->
+	<select id="queryHyValue"  parameterClass="CustomReport" resultClass="Data"> 
+		select ROUND(avg(t.KPI_VALUE),2) as VALUE,
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00') as label 
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00') as label 
+		</isEqual>		
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') as label 
+		</isEqual>
+		from $tableName$ t 
+		where t.HY_ID = #resourceIds#
+		and t.COLL_TIME <![CDATA[ >= ]]>#startDate#
+		and t.COLL_TIME <![CDATA[ <= ]]>#endDate#
+		and t.KPI_ID=#kpiId#
+		group by 
+		<isEqual property="dateType" compareValue="1" prepend="">     
+		concat(left(COLL_TIME,16),':00')
+		</isEqual>
+		<isEqual property="dateType" compareValue="2" prepend="">     
+		concat(left(COLL_TIME,13),':00:00') 
+		</isEqual>	
+		<isEqual property="dateType" compareValue="3" prepend="">     
+		concat(left(COLL_TIME,11),'00:00:00') 
+		</isEqual>		
+    </select>
+    
+     <!-- 虚拟机-查询名称 -->
+	<select id="queryHyName"  parameterClass="CustomReport" resultClass="java.lang.String"> 
+		 select  t.VH_NAME from tb_cloud2_vmhost_info t where t.CONNECT_ID=#connectId# and t.VH_UUID=#uuid#
+    </select>
+   
+</sqlMap>

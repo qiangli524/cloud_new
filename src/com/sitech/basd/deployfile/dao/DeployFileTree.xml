@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DeployFileTree">
+<typeAlias alias="DeployFileTreeObj" type="com.sitech.basd.deployfile.domain.DeployFileTreeObj"/>  
+	<!-- 查询树节点 -->
+	<select id="queryForTree" parameterClass="DeployFileTreeObj" resultClass="DeployFileTreeObj">	
+		SELECT
+			t.id,
+			t.name,
+			t.url file_url,
+			t.parent_id,
+			t.state,
+			t.type,
+			t.order_id
+		FROM
+		tb_deploy_file_tree t
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					t.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="name">
+				<isNotEmpty property="name" prepend="and">
+					t.name like '%'||#name#||'%'
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="file_url">
+				<isNotEmpty property="file_url" prepend="and">
+					t.url =  #file_url#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="state" prepend="and">
+				<isNotEmpty property="state">
+					t.state = #state#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				<isNotEmpty property="type">
+					t.type = #type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="order_id" prepend="and">
+				<isNotEmpty property="order_id">
+					t.order_id = #order_id#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		order by t.type,upper(t.name)
+	</select>
+</sqlMap>

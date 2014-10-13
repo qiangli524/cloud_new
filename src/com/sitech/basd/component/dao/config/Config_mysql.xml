@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Config">
+	<typeAlias alias="ConfigInfoObj"
+		type="com.sitech.basd.component.domain.config.ConfigInfoObj" />
+	<typeAlias alias="ConfigGroupObj"
+		type="com.sitech.basd.component.domain.config.ConfigGroupObj" />
+	<typeAlias alias="ConfigRelationObj"
+		type="com.sitech.basd.component.domain.config.ConfigRelationObj" />
+		 
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForListBase">
+		select a.ID,a.USER_ID,a.NAME,a.TYPE,a.CATEGORY,a.DESCRIPTION,a.PATH,a.UPLOAD_USER,
+		a.MOD_USER,DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%i:%s') insert_time,
+		DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') update_time,b.IP,b.USERNAME,b.PASSWORD,h.HOSTPORT port
+		from TB_CONFIG_INFO a left join TB_USER_MANAGE b on a.USER_ID = b.ID
+		left join tb_busi_host h on b.IP=h.IP
+		<dynamic prepend="where">
+			<isNotNull property="name" prepend="and">
+				a.NAME like CONCAT('%',#name#,'%')
+			</isNotNull>
+			<isNotNull property="type">
+				<isNotEqual prepend="and" property="type" compareValue="-1">
+					a.TYPE=#type#
+				</isNotEqual>
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				a.ID= #id#
+			</isNotNull>
+			<isNotEmpty property="tactics" prepend="and">
+				a.tactics = #tactics#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	<sql id="queryForGroupListBase">
+		select a.ID, a.NAME, a.DESCRIPTION ,COUNT(c.group_Id) as num from TB_CONFIG_GROUP a 
+		left join tb_config_relation c on a.id =c.group_id
+		<dynamic prepend="where">
+			<isNotNull property="name" prepend="and">
+				NAME like CONCAT('%',#name#,'%')
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				ID =#id#
+			</isNotNull>
+		</dynamic>
+		group by a.id
+	</sql>
+	<!-- 查询基准应用下所有部署实例的脚本列表 -->
+	<sql id="queryConfigAppBase">
+		select distinct a.ID,
+				a.USER_ID,
+				a.NAME,
+				a.TYPE,
+				a.CATEGORY,
+				a.DESCRIPTION,
+				a.PATH,
+				a.UPLOAD_USER,
+				a.MOD_USER,
+				DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%i:%s') insert_time,
+				DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') update_time,
+				c.ip,
+				c.username,
+				c.password
+		FROM
+			TB_CONFIG_INFO a,
+			TB_EXAMPLE_RELATION b,
+			TB_USER_MANAGE c,
+			TB_BUSI_SYS_TREE d
+		WHERE
+			a.ID = b.ENTITY_ID
+		AND a.USER_ID = c.ID
+		AND d.PARENT_ID = #example_id#
+		<isNotNull property="encodeExampleStr" prepend="and">
+			b.example_id in ($encodeExampleStr$) 
+		</isNotNull>		
+	</sql>
+	<sql id="queryConfigAppBaseOderBy">
+		order by a.type 
+	</sql>
+	<!-- 查询配置文件信息列表 -->
+	<select id="queryForList" parameterClass="ConfigInfoObj" resultClass="ConfigInfoObj">
+		 
+		<include refid="queryForListBase" /> 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 查询配置文件组列表 -->
+	<select id="queryForGroupList" parameterClass="ConfigGroupObj" resultClass="ConfigGroupObj">
+		 
+		<include refid="queryForGroupListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 统计配置文件数目 -->
+	<select id="queryForCount" parameterClass="ConfigInfoObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 统计配置组数目 -->
+	<select id="queryForGroupCount" parameterClass="ConfigGroupObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForGroupListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <!-- 增加一条配置文件记录 -->
+	 <insert id="insertConfig" parameterClass="ConfigInfoObj">
+	 	insert into TB_CONFIG_INFO(ID,USER_ID,NAME,TYPE,CATEGORY,DESCRIPTION,
+	 	PATH,UPLOAD_USER,MOD_USER,INSERT_TIME,UPDATE_TIME,tactics) 
+	 	values(#id#,#user_id#,#name#,#type#,#category#,#description#,
+	 	#path#,#upload_user#,#mod_user#,now(),now(),#tactics#) 
+	 </insert>
+	 <!-- 增加一条配置组记录 -->
+	 <insert id="insertConfigGroup" parameterClass="ConfigGroupObj">
+	 	insert into TB_CONFIG_GROUP(ID,NAME,DESCRIPTION) 
+	 	values(#id#,#name#,#description#)
+	 </insert>
+	 
+	 <!-- 更新一条配置文件信息 -->
+	 <update id="updateConfig" parameterClass="ConfigInfoObj">
+	 	update TB_CONFIG_INFO set NAME=#name#,TYPE=#type#,CATEGORY=#category#,DESCRIPTION=#description#,
+	 	PATH=#path#,MOD_USER=#mod_user#,UPDATE_TIME= now() where ID = #id#
+	 </update>
+	 <!-- 更新一条配置组信息 -->
+	 <update id="updateConfigGroup" parameterClass="ConfigGroupObj">
+	 	update TB_CONFIG_GROUP set NAME=#name#,DESCRIPTION=#description# where ID=#id#
+	 </update>
+	 
+	 <!-- 删除一条配置文件记录 -->
+	 <delete id="deleteConfig" parameterClass="ConfigInfoObj">
+	 	delete from TB_CONFIG_INFO where ID = #id#
+	 </delete>
+	 <!-- 删除配置文件与配置文件组的关系 -->
+	 <delete id="deleteConfigRelation" parameterClass="ConfigInfoObj">
+	 	delete from TB_CONFIG_RELATION 
+	 	<dynamic prepend="where">
+	 		<isNotEmpty property="id">
+	 			<isNotNull property="id">
+	 				CONFIG_ID = #id#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 	</dynamic>
+	 </delete>
+	 <!-- 删除一个组 -->
+	 <delete id="deleteConfigGroup" parameterClass="ConfigGroupObj">
+	 	delete from TB_CONFIG_GROUP where ID = #id#
+	 </delete>
+	 
+	 <!-- 查询组已选的成员列表 -->
+	 <select id="querySelectedList" parameterClass="ConfigRelationObj" resultClass="ConfigInfoObj">
+	 	select a.ID,a.NAME,a.path,a.type,a.category,a.description,c.ip,c.username,c.password from TB_CONFIG_INFO a
+	 	, tb_user_manage c where a.user_id = c.id and a.ID 
+   		 in (select b.CONFIG_ID from TB_CONFIG_RELATION b where b.GROUP_ID=#group_id#)
+	 </select>
+	 <!-- 查询备选成员 -->
+	 <select id="queryRemainList" parameterClass="ConfigRelationObj" resultClass="ConfigInfoObj">
+	 	select a.ID,a.NAME,a.path,a.type,a.category,a.description,c.ip,c.username,c.password from TB_CONFIG_INFO a
+	 	, tb_user_manage c where a.user_id = c.id and a.ID not in (select b.CONFIG_ID from TB_CONFIG_RELATION b where b.GROUP_ID=#group_id#)
+	 </select>
+	 <!-- 删除所有在当前组的成员 -->
+	 <delete id="deleteGroupMember" parameterClass="ConfigRelationObj">
+	 	delete from TB_CONFIG_RELATION where GROUP_ID = #group_id#
+	 </delete>
+	 <!-- 增加组成员 -->
+	 <insert id="insertGroupMember" parameterClass="ConfigRelationObj">
+	 	insert into TB_CONFIG_RELATION (GROUP_ID,CONFIG_ID) values(#group_id#,#config_id#)
+	 </insert>
+	 
+	 <!-- 查询部署实例的对应的配置文件 -->
+	 <select id="queryForDeployList" parameterClass="ConfigInfoObj" resultClass="ConfigInfoObj">
+	 	select a.id,a.name,a.type,a.category,a.description,a.path,a.PATH,a.UPLOAD_USER,
+		a.MOD_USER,DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%i:%s') insert_time,
+		DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') update_time,c.ip,c.username,c.password
+		 from TB_CONFIG_INFO a, TB_EXAMPLE_RELATION b,TB_USER_MANAGE c 
+		  where a.ID = b.ENTITY_ID and a.USER_ID=c.ID
+	 	<isNotNull property="example_id" prepend="and">
+	 		b.EXAMPLE_ID=#example_id#
+	 	</isNotNull>
+	 </select>
+	 
+	   <!-- 查询基准应用下部署实例所有的脚本 -->
+	 <select id="queryForAppConfig" parameterClass="ConfigInfoObj" resultClass="ConfigInfoObj">
+	 	<include refid="queryConfigAppBase" />
+		<include refid="queryConfigAppBaseOderBy" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	 
+	<select id="queryForAppCount" parameterClass="ConfigInfoObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryConfigAppBase" />
+		 ) virtual_table
+	 </select>
+	 <!-- 查询Hadoop中的配置文件 -->
+	 <sql id="queryHadoopConfigInfoListBase">
+	 	select a.id,a.name,a.type,a.category,a.description,a.path,a.UPLOAD_USER,
+		a.MOD_USER,DATE_FORMAT(a.insert_time, '%Y-%m-%d %H:%i:%s') insert_time,
+		DATE_FORMAT(a.update_time, '%Y-%m-%d %H:%i:%s') update_time,c.ip,c.username,c.password
+		 from TB_CONFIG_INFO a, TB_EXAMPLE_RELATION b,TB_USER_MANAGE c 
+		  where a.ID = b.ENTITY_ID and a.USER_ID=c.ID
+	 	<isNotNull property="example_id" prepend="and">
+	 		b.EXAMPLE_ID=#example_id#
+	 	</isNotNull>
+	 	<isNotEmpty prepend="and" property="name">
+			<isNotNull property="name">
+				a.name like CONCAT('%',#name#,'%') 
+			</isNotNull>
+	 	</isNotEmpty>
+	 	<isNotEmpty prepend="and" property="type">
+			<isNotNull property="type">
+				a.type = #type#
+			</isNotNull>
+	 	</isNotEmpty>
+	 	<isNotEmpty prepend="and" property="description">
+			<isNotNull property="description">
+				a.description like CONCAT('%',#description#,'%') 
+			</isNotNull>
+	 	</isNotEmpty>
+	 	<isNotEmpty prepend="and" property="exampleIdList">
+	 		b.EXAMPLE_ID in
+	 		<iterate property="exampleIdList" close=")" conjunction="," open="(">
+	 			#exampleIdList[]#
+	 		</iterate>
+	 	</isNotEmpty>
+	 </sql>
+	  <select id="queryHadoopConfigInfoListCount" parameterClass="ConfigInfoObj" resultClass="int">
+	 	select count(*)
+		 from (<include refid="queryHadoopConfigInfoListBase" />
+			) virtual_table
+	 </select>
+	 <select id="queryHadoopConfigInfoList" parameterClass="ConfigInfoObj" resultClass="ConfigInfoObj">
+		<include refid="queryHadoopConfigInfoListBase" /> 
+	    <isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+</sqlMap>

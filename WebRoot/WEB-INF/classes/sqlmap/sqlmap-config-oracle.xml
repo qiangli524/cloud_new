@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings useStatementNamespaces="true" cacheModelsEnabled="true"
+		enhancementEnabled="true" lazyLoadingEnabled="true"
+		errorTracingEnabled="false" maxRequests="32" maxSessions="10"
+		maxTransactions="5" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysUserinfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbCloud2SecurityConfig.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysFunctions.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysGroupfunc.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysGrpmember.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysLoginLog.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysOperationLog.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysUsergroup.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysUserShortcut.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/ipinfo/IpInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/device/DeviceInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/interfaces/InterfaceInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/connect/ConnectInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/dictionary/YiDataDictionary.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/business/TbYicloudBusinessApp.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/storage/TbYicloudAppStorage.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/ip/TbYicloudAppIp.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbSysApp.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHost.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHostConfig.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHostConfigHis.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHostHis.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/TbBusiDeployExample.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/templet/Templet.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/engine/WorkflowEngine.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/appworkflow/AppDeployWF_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/deploy/TbCloud2DepFile.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/cubinetmanage/TbCubinet.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/resource/HostInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/leader/LeaderViewBusiness.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbBusiAppPort.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/TbBusiDeployAlarm.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/vmman/VMManager.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/vmhost/VMHostInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/image/TbImageInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/net/TbIp.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/net/TbNet.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/defend/DefendInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/eventmanage/EventManageInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/ExampleResume.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/resworkflow/ResourceWorkflow.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/templet/TempletInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/virtual/TbVirtual.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/monitor/Monitor.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/globalconfig/TbGlobalConfig.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/virtual/TbVirtualPool.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/virtual/TbCloud2VirtualConfig.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/TbBusiDeployTimeConfig.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/appmessage/AppMessageInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/reporthost/TbHost.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/reportvirtual/TbHy.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/reportapp/TbAppColl.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/feedback/PublishFeedBack.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/fileManager/FileManager.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/mytstat/MysqlTableStatus.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/cloudschedu/RealServer.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/cloudschedu/VirtualServer.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbBusiSoftwareInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbBusiSoftwareInfoHis.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/loadBalancing/Farms.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/loadBalancing/FarmsServer.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/loadBalancing/L4_policyDao.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/middleware/MiddlewareInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/opersystem/OperSystemInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeAlarm.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeExample.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeExampleResume.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeStrategy.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/vmman/VMHostInfo.xml" />
+		<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/configfile/DeployConfigFile.xml"/>
+	
+	<sqlMap resource="com/sitech/basd/yicloud/dao/busitree/BusiTree.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/cluster/ClusterInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/database/AppDatabase.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/datastore/DataStoreDao.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/entityreference/EntityReference.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/entitytree/EntityTree.xml" />
+	
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/alarm/TbCloud2MonitorAlarm.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/appmessage/TbCloudAppInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/bizsystem/BizSystemInfo.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/project/TbProject.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/roommanage/TbRoom.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/temconfig/TempletConfig.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/templet/TempletType.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/vusermanage/VuserManage.xml" />
+	
+	<sqlMap resource="com/sitech/basd/yicloud/dao/xentree/XenEntityTree.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/xenconn/ConnInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/xencluster/XenClusterInfo.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/vmauthority/VmAuthotity.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/templettree/TempletTree.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/taskevent/TaskEvent.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/switches/VirtualSwitch.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/switches/Switches.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/script/Script.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/scheduler/Strategy.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/scheduler/TriggerDef.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/portgroup/PortGroup.xml" />
+	
+	<sqlMap resource="com/sitech/basd/yicloud/dao/kvm/KvmManDao.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/scheduler/KPI.xml" />
+	    <!-- 主机池 -->
+    <sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/resource/HostPool.xml" />
+    
+    
+    <!-- 首页 -->
+    <sqlMap resource="com/sitech/basd/cloud3/dao/newui/NewUIFunc.xml" />
+    <!-- 物理网卡和虚拟网卡的关系 -->
+     <sqlMap resource="com/sitech/basd/yicloud/dao/nic/Nic.xml"/>
+     <sqlMap resource="com/sitech/basd/yicloud/dao/nic/VirtualNic.xml"/>
+     <sqlMap resource="com/sitech/basd/yicloud/dao/nic/NicRelation.xml"/>
+     <!-- dhcp -->
+     <sqlMap resource="com/sitech/basd/component/dao/dhcp/Dhcp.xml" />
+      <!-- 机房 -->
+     <sqlMap resource="com/sitech/basd/cloud3/dao/machineroom/Room.xml" />
+     <sqlMap resource="com/sitech/basd/cloud3/dao/machineroom/Area.xml" />
+     <!-- sysapp -->
+     <sqlMap resource="com/sitech/basd/cloud3/dao/sysapp/SysApp.xml" />
+     <!-- sysappconfig -->
+     <sqlMap resource="com/sitech/basd/cloud3/dao/sysappconfig/SysAppConfig.xml" />
+     
+     <!-- component -->
+     <sqlMap resource="com/sitech/basd/component/dao/config/Config.xml" />
+     <sqlMap resource="com/sitech/basd/component/dao/log/Log.xml" />
+     <sqlMap resource="com/sitech/basd/component/dao/process/Process.xml" />
+     <sqlMap resource="com/sitech/basd/component/dao/script/Script.xml" />
+     <sqlMap resource="com/sitech/basd/component/dao/user/User.xml" />
+     <sqlMap resource="com/sitech/basd/component/tree/dao/order/Order.xml" />
+     <sqlMap resource="com/sitech/basd/component/tree/dao/relation/ExampleRelation.xml" />
+     <sqlMap resource="com/sitech/basd/component/tree/dao/rule/RuleValidate.xml" />
+     <sqlMap resource="com/sitech/basd/component/tree/dao/tactics/Tactics.xml" />
+     <sqlMap resource="com/sitech/basd/component/tree/dao/task/Task.xml" />
+     <sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/workorder/WorkOrder.xml" />
+      
+     <!-- resource -->
+     <sqlMap resource="com/sitech/basd/resource/dao/mframe/MFrame.xml"/>
+     <sqlMap resource="com/sitech/basd/resource/dao/switchBoard/switch.xml"/>
+     <sqlMap resource="com/sitech/basd/resource/dao/switchBoard/switchPerformance.xml"/>
+     <sqlMap resource="com/sitech/basd/resource/dao/switchBoard/vlan.xml"/>
+     <sqlMap resource="com/sitech/basd/resource/dao/switchBoard/interface.xml"/>
+     
+     
+     <!-- dbmanager -->
+     <sqlMap resource="com/sitech/basd/dbmanager/dao/dbexample/dbexample.xml"/>
+     <sqlMap resource="com/sitech/basd/dbmanager/dao/dbexampleuser/dbexampleuser.xml"/>
+     <sqlMap resource="com/sitech/basd/dbmanager/dao/dbtablespace/dbtablespace.xml"/>
+     
+     <!-- globaltask -->
+   	 <sqlMap resource="com/sitech/basd/yicloud/dao/globaltask/GlobalTask.xml"/>
+     
+      <!-- 应用部署树 -->
+     <sqlMap resource="com/sitech/basd/yicloud/dao/busisystree/TbBusiSysTreeLimit.xml" />
+     <sqlMap resource="com/sitech/basd/yicloud/dao/busisystree/TbBusiSysTree.xml" />
+     <!-- 首页 resource.jsp-->
+     <sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/showresource/ShowResource.xml" />
+  
+    
+     <sqlMap resource="com/sitech/basd/yicloud/dao/xenstore/XenStoreDao.xml" />
+<!--  部署日志 -->
+    <sqlMap resource="com/sitech/basd/component/dao/deploylog/TbBusiDeployLog.xml" />
+    <!-- 拓扑展示 -->
+    <sqlMap resource="com/sitech/basd/yicloud/dao/graph/TbTopoMxgraph.xml" />
+    <!-- 文件版本管理 -->
+    <sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/deployfileversion/FileVersion.xml" />
+    <!-- 部门项目管理 -->
+    <sqlMap resource="com/sitech/basd/cloud3/dao/departproject/DepartProject.xml" />
+    
+    <!-- topN (resource包下)-->
+    <sqlMap resource="com/sitech/basd/resource/dao/global/HostGlobal_mysql.xml" />
+    <sqlMap resource="com/sitech/basd/resource/dao/global/VmGlobal_mysql.xml" />
+    <sqlMap resource="com/sitech/basd/resource/dao/global/AlarmGlobal_mysql.xml" />
+    <!-- 统一树（resource包下）-->
+    <sqlMap resource="com/sitech/basd/resource/dao/united/UnitedTree_mysql.xml" />
+    <sqlMap resource="com/sitech/basd/resource/dao/united/ResourceStatistics.xml" />
+       <!-- 模板列表，用于管理模板 -->
+     <sqlMap resource="com/sitech/basd/resource/dao/template/TemMan.xml" />
+     <!-- 建立模板和虚拟机的关系 -->
+      <sqlMap resource="com/sitech/basd/resource/dao/template/TemVmRelation_mysql.xml" />
+    <!-- 导出语句配置 -->
+    <sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/exportconfig/ExportConfig.xml" />
+    
+    <!-- 短信订阅 -->
+    <sqlMap resource="com/sitech/basd/cloud3/dao/message/Alarm_user.xml"/>
+    <sqlMap resource="com/sitech/basd/cloud3/dao/message/Push_5_0000.xml"/>
+    <sqlMap resource="com/sitech/basd/cloud3/dao/message/Alarm_subscribe.xml"/>
+    
+    <!-- 告警阀值配置 -->
+    <sqlMap resource="com/sitech/basd/alarm/dao/AlarmThreshold.xml" />
+    
+     <!-- 存储设备 -->
+    <sqlMap resource="com/sitech/basd/yicloud/dao/datastore/StoreDevice.xml" />
+    
+    <!-- 业务系统 -->
+     <sqlMap resource="com/sitech/basd/yicloud/dao/busisystem/BusiSystem.xml"/>
+    
+    <!-- 资源历史记录 -->
+    <sqlMap resource="com/sitech/basd/resource/dao/resourcehisrecord/resourcehisrecord.xml"/>
+    
+<!--     <sqlMap resource="com/sitech/basd/cloud3/dao/departproject/DepartHisInfo.xml"/> -->
+<!--     <sqlMap resource="com/sitech/basd/cloud3/dao/departproject/DepartInfo.xml"/> -->
+    
+     <!-- IBM数据采集 -->
+    <sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/ibmcoll/IBMColl.xml"/>
+	
+       <!-- IBM -->
+      <sqlMap resource="com/sitech/basd/ibmmanager/dao/IBMManagerTree.xml"/>
+      <sqlMap resource="com/sitech/basd/ibmmanager/dao/IBMManagerTab.xml"/>
+      <sqlMap resource="com/sitech/basd/ibmmanager/dao/IBMDataCompare.xml"/>
+      <sqlMap resource="com/sitech/basd/ibmmanager/dao/CloudOSDataCompare.xml"/>
+      
+       <!-- 定时任务-->
+      <sqlMap resource="com/sitech/basd/scheduler/dao/task/Task.xml"/>
+       <!-- 资源日历 -->
+<!--        <sqlMap resource="com/sitech/basd/resource/dao/calendar/Calendar.xml"/> -->
+       <!-- 山西手动工单-->
+      <sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/sxworkorder/WorkOrder.xml" />
+      
+     <!-- huawei -->
+     <sqlMap resource="com/sitech/ssd/gx/dao/huaweivm/HuaweiVMHostInfo.xml"/>
+     <sqlMap resource="com/sitech/ssd/gx/dao/entitytree/HuaweiEntityTree.xml"/>
+     <sqlMap resource="com/sitech/ssd/gx/dao/huaweihost/HuaweiHost.xml"/>
+      
+      <!-- 部署文件树 -->
+      <sqlMap resource="com/sitech/basd/deployfile/dao/DeployFileTree.xml"/>
+      
+      <!-- 资源视图 -->
+      <sqlMap resource="com/sitech/basd/bol/dao/bolresource/BolResource.xml"/>
+      <sqlMap resource="com/sitech/basd/bol/dao/boltask/BolTask.xml"/>
+      <sqlMap resource="com/sitech/basd/bol/dao/boltree/BolTree.xml"/>
+      <sqlMap resource="com/sitech/basd/bol/dao/cluster/BolCluster.xml"/>
+      <sqlMap resource="com/sitech/basd/bol/dao/host/BolHost.xml"/>
+      <sqlMap resource="com/sitech/basd/bol/dao/node/BolNode.xml"/>
+      
+      <!-- 智能部署Excel -->
+      <sqlMap resource="com/sitech/basd/component/dao/excel/AppExcel.xml"/>
+       <!-- 首页展示 -->
+     <sqlMap resource="com/sitech/basd/resource/dao/united/ResourceOutline.xml"/>
+     
+     <!-- BOL -->
+     <sqlMap resource="com/sitech/basd/bol/dao/nodetask/NodeTask.xml"/>
+     <sqlMap resource="com/sitech/basd/bol/dao/process/BolProcess.xml"/>
+     <sqlMap resource="com/sitech/basd/bol/dao/program/BolProgram.xml"/>
+     <sqlMap resource="com/sitech/basd/bol/dao/program/BolProgramComposite.xml"/>
+     <sqlMap resource="com/sitech/basd/bol/dao/program/BolProgramLib.xml"/>
+     <sqlMap resource="com/sitech/basd/bol/dao/nodestatus/BolNodeStatus.xml"/>
+     <!-- 导出功能 -->
+     <sqlMap resource="com/sitech/basd/util/data/DataOperation.xml"/>
+     <!-- 山西报表 -->
+     <sqlMap resource="com/sitech/ssd/sx/report/dao/SxReport.xml"/>
+     
+     <sqlMap resource="com/sitech/basd/yicloud/dao/device/diskgroup/diskgroup.xml"/>
+     <sqlMap resource="com/sitech/basd/yicloud/dao/device/lun/lun.xml"/>
+</sqlMapConfig>

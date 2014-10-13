@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="reporthost"
+			 extends="global_package">
+		<action name="reporthost_*"
+				class="reportHostAction" method="{1}">
+			<result name="hostCurrent">/sxcloud/cloud/reporthost/currentReportView.jsp</result>
+			<result name="hostMonth">/sxcloud/cloud/reporthost/monthReportView.jsp</result>
+			<result name="listHostReport">/sxcloud/cloud/reporthost/listHostReport.jsp</result>
+			<result name="hostWeek">/sxcloud/cloud/reporthost/weekReportView.jsp</result>
+			<result name="getHostListReport">/sxcloud/cloud/reporthost/hostListReport.jsp</result>
+		</action>
+	</package>
+</struts>

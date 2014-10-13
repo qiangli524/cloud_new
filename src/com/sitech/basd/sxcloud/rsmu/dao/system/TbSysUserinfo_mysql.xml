@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysUserinfo">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbSysUserinfoObj" type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysUserinfoObj"/>
+    <sql id="tableColumnsNoKey">      
+    a.ACCOUNT,a.PASSWORD,a.NAME,a.MOBILE,a.EMAIL,a.STATUS,a.CREATEUSER,a.CREATETIME,a.DATAAUTHORITY,a.domain
+    </sql>
+    <sql id="tableColumns">
+        a.ID,
+        <include refid="tableColumnsNoKey"/>
+        
+    </sql> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    <sql id="queryByObjBase">
+        select distinct
+        <include refid="tableColumns"/>
+        ,b.group_name,b.groupid groupId 
+        from
+        TB_SYS_USERINFO a left join 
+        (SELECT DISTINCT g.GROUPNAME group_name,m.USERID user_id,m.groupid from tb_sys_usergroup g LEFT JOIN tb_sys_grpmember m on g.id=m.GROUPID)b 
+        on a.id=b.user_id
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan> 
+               <isNotEmpty property="ACCOUNT" prepend="and">
+                ACCOUNT =#ACCOUNT#
+               </isNotEmpty>
+               <isNotEmpty property="PASSWORD" prepend="and">
+                PASSWORD =#PASSWORD#
+               </isNotEmpty>
+                <isNotEmpty property="NAME" prepend="and">
+                NAME =#NAME#																																																																																																																																																																																																																																																																
+               </isNotEmpty>
+               <isNotEmpty property="domain">
+               	   <isNotEqual compareValue="null" property="domain">
+		               <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	 a.domain =#domain#	
+		               </isNotEqual>
+	               </isNotEqual>
+               </isNotEmpty>
+        </dynamic> 
+    </sql>
+    <sql id="queryLikeByObjBase">
+        select
+        ID, ACCOUNT,PASSWORD,NAME,MOBILE,EMAIL,STATUS,CREATEUSER,DATAAUTHORITY
+        from
+        TB_SYS_USERINFO
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan> 
+               <isNotEmpty property="ACCOUNT" prepend="and">
+                ACCOUNT like CONCAT('%',#ACCOUNT#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="MOBILE" prepend="and">
+                MOBILE =#MOBILE#
+               </isNotEmpty>
+               <isNotEmpty property="EMAIL" prepend="and">
+                EMAIL =#EMAIL#
+               </isNotEmpty>
+               <isNotEmpty property="PASSWORD" prepend="and">
+                PASSWORD =#PASSWORD#
+               </isNotEmpty>
+                <isNotEmpty property="NAME" prepend="and">
+                NAME like CONCAT('%',#NAME#,'%')																																																																																																																																																																																																																																																													
+               </isNotEmpty>
+               <isNotEmpty property="domain">
+               	   <isNotEqual compareValue="null" property="domain">
+		               <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	 domain =#domain#	
+		               </isNotEqual>
+	               </isNotEqual>
+               </isNotEmpty>
+        </dynamic>
+    </sql>
+     <select id="queryForListByObj" parameterClass="TbSysUserinfoObj" resultClass="TbSysUserinfoObj">
+        <include refid="queryByObjBase"/>
+         order by ID desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryLikeForListByObj" parameterClass="TbSysUserinfoObj" resultClass="TbSysUserinfoObj">
+        <include refid="queryLikeByObjBase"/>
+         order by ID desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByObjForCount" parameterClass="TbSysUserinfoObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <select id="queryLikeByObjForCount" parameterClass="TbSysUserinfoObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryLikeByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbSysUserinfoObj">
+    delete from TB_SYS_USERINFO where ID=#ID#
+    </delete>
+    <update id="updateByObj" parameterClass="TbSysUserinfoObj">
+    update TB_SYS_USERINFO set PASSWORD=#PASSWORD#,NAME=#NAME#,MOBILE=#MOBILE#,EMAIL=#EMAIL#,STATUS=#STATUS#, DATAAUTHORITY=#DATAAUTHORITY#
+    <dynamic prepend=",">
+    	<isNotNull property="domain">
+    		domain=#domain#
+    	</isNotNull>
+    </dynamic>
+     where ID=#ID#
+    </update>
+    <update id="updateForDATAAUTHORITYByObj" parameterClass="TbSysUserinfoObj">
+    update TB_SYS_USERINFO set DATAAUTHORITY=#DATAAUTHORITY# where ID=#ID#
+    </update>
+    <insert id="insertByObj" parameterClass="TbSysUserinfoObj">
+    insert into TB_SYS_USERINFO(
+     ACCOUNT,PASSWORD,NAME,MOBILE,EMAIL,STATUS,CREATEUSER,DATAAUTHORITY,domain
+     )
+     values(#ACCOUNT#,#PASSWORD#,#NAME#,#MOBILE#,#EMAIL#,#STATUS#,#CREATEUSER#,#DATAAUTHORITY#,#domain#)
+    
+    </insert>
+    
+                           
+    <select id="queryLeaderOrNotByUid" parameterClass="int" resultClass="java.lang.String">
+    	select distinct B.LEADER
+		from TB_SYS_GRPMEMBER A join TB_SYS_USERGROUP B on A.GROUPID = B.ID
+		where A.USERID = #value# and B.LEADER = 1
+    </select>
+    
+    <!-- lipp -->
+    
+    <sql id="mybaseCloumns">
+    	ID,ACCOUNT,PASSWORD,`NAME`,MOBILE,EMAIL,STATUS,DATE_FORMAT(CREATETIME,'%Y-%m-%d %H:%i:%s') CREATETIME,CREATEUSER,DATAAUTHORITY
+    </sql>
+    
+    <select id="queryForUserByObj" parameterClass="TbSysUserinfoObj" resultClass="TbSysUserinfoObj">
+    	select 
+    	<include refid="mybaseCloumns"/>
+    	from tb_sys_userinfo
+    	<dynamic prepend="where">
+    		<isGreaterThan compareValue="0" property="ID" prepend="and">
+    			ID = #ID#
+    		</isGreaterThan>
+    		<isNotEmpty prepend="and" property="ACCOUNT">
+    			ACCOUNT = #ACCOUNT#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="PASSWORD">
+    			PASSWORD = #PASSWORD#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="NAME">
+    			NAME = #NAME#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="MOBILE">
+    			MOBILE = #MOBILE#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="EMAIL">
+    			EMAIL = #EMAIL#
+    		</isNotEmpty>
+    		<isGreaterThan compareValue="0" prepend="and" property="STATUS">
+    			STATUS = #STATUS#
+    		</isGreaterThan>
+    		<isNotEmpty prepend="and" property="CREATETIME">
+    		 	CREATETIME = STR_TO_DATE(#CREATETIME#,'%Y-%m-%d %H:%i:%s')
+    		</isNotEmpty>
+    		<isGreaterThan compareValue="0" prepend="and" property="CREATEUSER">
+    		 	CREATEUSER = #CREATEUSER#
+    		</isGreaterThan>
+    		<isNotEmpty prepend="and" property="DATAAUTHORITY">
+    			DATAAUTHORITY = #DATAAUTHORITY#
+    		</isNotEmpty>
+    		<isNotEmpty property="domain">
+               	   <isNotEqual compareValue="null" property="domain">
+		               <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	 domain =#domain#	
+		               </isNotEqual>
+	               </isNotEqual>
+               </isNotEmpty>
+    	</dynamic>
+    </select>
+    
+</sqlMap>

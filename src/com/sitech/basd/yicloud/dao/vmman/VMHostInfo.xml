@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="VMHostInfoYi">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="VMHostObjYi" type="com.sitech.basd.yicloud.domain.vmman.VMHostObj"/>
+	  <!-- 查询虚拟机序列号 -->
+	  <select id="queryVhostIdSequence" resultClass="int">
+		select ID_CLOUD2_VMHOST_INFO.nextval  from dual 
+	  </select>
+	  <insert id="insertByVMhostObj" parameterClass="VMHostObjYi">
+	  	insert into TB_CLOUD2_VMHOST_INFO(
+		VH_ID,VH_NAME,VH_MEM,VH_CPU,VH_STORAGE,VH_SYSTEM,VH_IP,VH_NETWORK,EQ_ID,VH_STAT,VH_DESC,VH_MIN_CPU,
+		VH_MAX_CPU,VH_MIN_MEM,VH_MAX_MEM,VH_LOG,VH_USER,VH_PASS,VH_TYPE)
+		values(
+		#VH_ID#,#VH_NAME#,#VH_MEM#,#VH_CPU#,#VH_STORAGE#,#VH_SYSTEM#,#VH_IP#,#VH_NETWORK#,#EQ_ID#,#VH_STAT#,#VH_DESC#
+		,#VH_MIN_CPU#,#VH_MAX_CPU#,#VH_MIN_MEM#,#VH_MAX_MEM#
+		,#VH_LOG#,#VH_USER#,#VH_PASS#,#VH_TYPE#)
+	  </insert>
+	  
+	  <sql id="queryVMHost">
+	   select  VH_ID,
+			   VH_NAME,
+			   VH_MEM,
+			   VH_CPU,
+			   VH_STORAGE,
+			   VH_SYSTEM,
+			   VH_IP,
+			   VH_NETWORK,
+			   EQ_ID,
+			   VH_STAT,
+			   VH_DESC,
+			   VH_MIN_CPU,
+			   VH_MAX_CPU,
+			   VH_MIN_MEM,
+			   VH_MAX_MEM,
+			   VH_LOG,
+			   VH_USER,
+			   VH_PASS,
+			   VH_TYPE,
+			   VH_STATUS from TB_CLOUD2_VMHOST_INFO A
+			  <dynamic prepend="where">
+	               <isNotEmpty property="VH_STATUS" prepend="and">
+	                	A.VH_STATUS = #VH_STATUS#
+	               </isNotEmpty>
+		       </dynamic>
+	  </sql>
+	  
+	  <sql id="updateVMHostStatus">
+	     update TB_CLOUD2_VMHOST_INFO A set VH_STATUS = '1',VH_CID=#VH_CID#
+	     <dynamic prepend="where">
+	        <isNotEmpty property="VH_ID" prepend="and">
+	             A.VH_ID=#VH_ID#
+	        </isNotEmpty>
+	     </dynamic>
+	  </sql>
+	  
+	  
+	  <select id="queryVMHostInfo" parameterClass="VMHostObjYi" resultClass="VMHostObjYi">
+	     <include refid="queryVMHost"/>
+	  </select>
+	  
+	  <update id="updateVMHostStatusInfo">
+	    <include refid="updateVMHostStatus"/>
+	  </update>
+	  
+	  <select id="queryHostListByObj" resultClass="java.util.HashMap">
+		select VH_ID,VH_TYPE,VH_NAME from TB_CLOUD2_VMHOST_INFO 
+	  </select>
+</sqlMap>

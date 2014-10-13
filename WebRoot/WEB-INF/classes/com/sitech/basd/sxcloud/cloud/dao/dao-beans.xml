@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="templetDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.templet.TempletDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="hostInfoDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.resource.HostInfoDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbCubinetDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.cubinetmanage.TbCubinetDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysOperationLogDao"
+		class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysOperationLogDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+		<bean id="leaderViewBusinessDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.leader.LeaderViewBusinessDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="defendDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.defend.DefendDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+		<bean id="vmHostDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.vmhost.VMHostDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbIpDao" class="com.sitech.basd.sxcloud.cloud.dao.net.TbIpDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbImageInfoDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.image.TbImageInfoDaoImpl"
+		singleton="true" parent="baseDaoBean" />
+	<bean id="tbGlobalConfigDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.globalconfig.TbGlobalConfigDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbNetDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.net.TbNetDaoImpl" singleton="true"
+		parent="baseDaoBean" />
+	<bean id="tbCloud2MonitorAlarmDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.alarm.TbCloud2MonitorAlarmDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbVirtualDao" class="com.sitech.basd.sxcloud.cloud.dao.virtual.TbVirtualDaoImpl" 
+		singleton="true" parent="baseDaoBean"/>
+	<bean id="eventManageDao" class="com.sitech.basd.sxcloud.cloud.dao.eventmanage.EventManageDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="monitorDao" class="com.sitech.basd.sxcloud.cloud.dao.monitor.MonitorDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbVirtualPoolDao"	class="com.sitech.basd.sxcloud.cloud.dao.virtual.TbVirtualPoolDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbCloud2VirtualConfigDao"
+		class="com.sitech.basd.sxcloud.cloud.dao.virtual.TbCloud2VirtualConfigDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="appMessageDao" class="com.sitech.basd.sxcloud.cloud.dao.appmessage.AppMessageDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbHostDao" class="com.sitech.basd.sxcloud.cloud.dao.reporthost.TbHostDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbHyDao" class="com.sitech.basd.sxcloud.cloud.dao.reportvirtual.TbHyDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbAppCollDao" class="com.sitech.basd.sxcloud.cloud.dao.reportapp.TbAppCollDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="publishFeedBackDao" class="com.sitech.basd.sxcloud.cloud.dao.feedback.PublishFeedBackDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="fileManagerDao" class="com.sitech.basd.sxcloud.cloud.dao.fileManager.FileManagerDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="farmsDao" class="com.sitech.basd.sxcloud.cloud.dao.loadBalancing.FarmsDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="farmsServerDao" class="com.sitech.basd.sxcloud.cloud.dao.loadBalancing.FarmsServerDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="l4policyDao" class="com.sitech.basd.sxcloud.cloud.dao.loadBalancing.L4_policyDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbCloudAppInfoDao" class="com.sitech.basd.sxcloud.cloud.dao.appmessage.TbCloudAppInfoDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="bizSystemDao" class="com.sitech.basd.sxcloud.cloud.dao.bizsystem.BizSystemDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="templetConfigDao" class="com.sitech.basd.sxcloud.cloud.dao.temconfig.TempletConfigDaoImpl"
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbProjectDao" class="com.sitech.basd.sxcloud.cloud.dao.project.TbProjectDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="vuserManageDao" class="com.sitech.basd.sxcloud.cloud.dao.vusermanage.VuserManageDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<!-- 展示资源趋势图 -->
+	<bean id="showResourceDao" class="com.sitech.basd.sxcloud.cloud.dao.showresource.ShowResourceDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<!-- 主机池 xmq -->
+	<bean id="hostPoolDao" class="com.sitech.basd.sxcloud.cloud.dao.resource.HostPoolDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	
+	<!-- 导出配置 -->
+	<bean id="exportConfigDao" class="com.sitech.basd.sxcloud.cloud.dao.exportconfig.ExportConfigDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	
+	<!-- IBM数据采集 -->
+	<bean id="ibmCollDao" class="com.sitech.basd.sxcloud.cloud.dao.ibmcoll.IBMCollDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+</beans>
+

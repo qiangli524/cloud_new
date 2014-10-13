@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasHostInfo">
+	<typeAlias alias="PaasHostInfoObj" type="com.sitech.ssd.ah.paas.domain.host.PaasHostInfoObj" />
+	<typeAlias alias="GreenPlumHostInfoObj" type="com.sitech.ssd.ah.paas.domain.host.GreenPlumHostInfoObj"/>
+
+	<sql id="baseCloumns">
+		id,host_name,host_type,service_type,os,mem_size,local_disk_size,ip,cpu_num,cluster_id,label_name
+	</sql>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForHostListBase">
+	SELECT <include refid="baseCloumns"/>
+		FROM tb_paas_host_info 
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="host_name" prepend="and">
+					HOST_NAME = #host_name#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+					id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+					IP LIKE CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<!-- 查询所有主机 -->
+	<select id="queryForHostList" parameterClass="PaasHostInfoObj" resultClass="PaasHostInfoObj">
+		<include refid ="queryForHostListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForHostListCount" parameterClass="PaasHostInfoObj" resultClass="int">
+		select count(id)  from (
+		<include refid="queryForHostListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	<insert id="insertByObj" parameterClass="PaasHostInfoObj">
+		insert into tb_paas_host_info(id,host_name,host_type,service_type,os,mem_size,local_disk_size,ip,cpu_num,label_name)
+			values(#id#,#host_name#,#host_type#,#service_type#,#os#,#mem_size#,#local_disk_size#,#ip#,#cpu_num#,#label_name#)
+	</insert>
+	
+	<select id="queryByObj" parameterClass="PaasHostInfoObj" resultClass="PaasHostInfoObj">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_paas_host_info
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<update id="updateByObj" parameterClass="PaasHostInfoObj">
+		update tb_paas_host_info set 
+		host_name=#host_name#,host_type=#host_type#,service_type=#service_type#,os=#os#,
+		mem_size=#mem_size#,local_disk_size=#local_disk_size#,
+		ip=#ip#,cpu_num=#cpu_num#
+	  	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="PaasHostInfoObj">
+		delete from tb_paas_host_info 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+    <sql id="queryPhysicsHostListBase">
+    	SELECT id,h_uuid,eq_id,eq_name,eq_type,eq_ip,eq_hostname,
+    		eq_temperature,hasvertual,cq_id,protocol,control,device_id,cpu_fq,IFNULL(cpu_cl,0) AS cpu_cl,
+    		memory,model,nic_num,cpu_desc,host_proc,status,DATE_FORMAT(ins_date,'%Y-%m-%d %H:%i:%S') AS ins_date,connect_id,allocated,storage_num,sn
+    	FROM (	
+    		select  a.*,count(e.host_id) as storage_num from 
+			  tb_cloud2_host_info a
+       		  left join (select c.dependent_host_uuid host_id, c.connect_id from tb_xen_storage_info c 
+              union all select d.host_id,d.connect_id from tb_yicloud_datastore d) e on e.host_id = a.h_uuid and a.connect_id = e.connect_id
+    	<dynamic prepend="WHERE"> 
+    		<isNotEmpty property="eq_id" prepend="and">
+    			A.EQ_ID = #eq_id# 
+    		</isNotEmpty>
+    		<isNotEmpty property="eq_name" prepend="and">
+    			A.EQ_NAME like CONCAT('%',#eq_name#,'%')
+    		</isNotEmpty>
+    		<isNotEmpty property="eq_ip" prepend="and">
+    			A.EQ_IP like CONCAT('%',#eq_ip#,'%')
+    		</isNotEmpty>
+   			<isNotEmpty property="hasvertual" prepend="AND">
+   				A.HASVERTUAL = #hasvertual#
+   			</isNotEmpty>
+   			<isNotEmpty property="allocated" prepend="and">
+   				A.ALLOCATED = #allocated#
+   			</isNotEmpty>
+   			<isNotEmpty property="status">
+   				<isEqual prepend="and" property="status" compareValue="3">
+   					ISNULL(A.STATUS)
+   				</isEqual>
+   				<isNotEqual prepend="and" property="status" compareValue="3">
+   					A.STATUS = #status#
+   				</isNotEqual>
+   			</isNotEmpty>
+    	</dynamic>
+    	group by a.h_uuid, a.connect_id,a.EQ_ID
+    	) b where b.H_UUID is NULL OR b.H_UUID = '' and  b.eq_id not in (
+    		SELECT t.entity_id from $tableName$ t 
+	    		<dynamic prepend="where">
+	    			<isNotEmpty prepend="and" property="id">
+	    				t.parent_id = #id# 
+	    			</isNotEmpty>
+	    		</dynamic>
+    	)
+    </sql>
+  
+    <select id="queryPhysicsHostList" parameterClass="GreenPlumHostInfoObj" resultClass="GreenPlumHostInfoObj"> 
+        <include refid="queryPhysicsHostListBase"/> 
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     
+     <select id="queryPhysicsHostListCount" parameterClass="GreenPlumHostInfoObj" resultClass="int">
+      select count(*) from (
+        <include refid="queryPhysicsHostListBase"/>
+       ) virtual_table
+    </select>
+</sqlMap>

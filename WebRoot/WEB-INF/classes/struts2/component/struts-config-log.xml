@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="hostLog" extends="global_package">
+ <!-- 全局异常配置 
+ 		<global-results>
+ 			<result name="exception">/yicloud/vmware/exception.jsp</result>
+ 		</global-results>
+ 		<global-exception-mappings>
+ 			<exception-mapping result="exception" exception="java.lang.Exception"></exception-mapping>
+ 		</global-exception-mappings> -->
+		<action name="hostLog_*" 
+		        class="logAction" method="{1}">
+		   <result name="list">/component/log/listLog.jsp</result>
+		   <result name="add">/component/log/editLog.jsp</result>
+		   <result name="del" type="redirect">hostLog_listLog.do</result>
+		   <result name="save" type="redirect">hostLog_listLog.do</result>
+		   <result name="modify">/component/log/editLog.jsp</result>
+		   <result name="logMenu">/component/log/getLogMenu.jsp</result>
+		   <result name="logInfo">/component/log/getLogInfo.jsp</result>
+		</action>
+		<action name="logDeploy_*" class="logDeployAction" method="{1}">
+			<result name="list">/component/tree/log/listLogDeploy.jsp</result>
+			<result name="add">/component/tree/log/editLogDeploy.jsp</result>
+			<result name="modify">/component/tree/log/editLogDeploy.jsp</result>
+		</action>
+		<action name="operationLog_*" class="operationLogAction" method="{1}">
+			<result name="list">/component/tree/log/listOperationLog.jsp</result>
+		</action>
+ </package>
+
+</struts>

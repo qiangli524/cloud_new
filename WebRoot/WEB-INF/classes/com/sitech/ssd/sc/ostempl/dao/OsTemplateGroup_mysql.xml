@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplateGroup">
+
+	<typeAlias alias="_OsTemplateGroup" type="com.sitech.ssd.sc.ostempl.domain.OsTemplateGroup" />
+
+	<sql id="partTableColumns">
+		template_id,group_id,group_name,group_desc
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplateGroup" parameterClass="_OsTemplateGroup">
+		insert into tb_os_template_group(
+		<include refid="partTableColumns" />
+		)
+		values(#template_id#,#group_id#,#group_name#,#group_desc#)
+	</insert>
+	
+	<insert id="copyOsTemplateGroup" parameterClass="_OsTemplateGroup">
+		insert into tb_os_template_group(<include refid="partTableColumns" />)
+		select (SELECT id FROM tb_os_template WHERE templ_name = #id#) <include refid="partTableColumns" />
+		from tb_os_template_group where template_id = #template_id#
+	</insert>	
+
+	<delete id="deleteOsTemplateGroup" parameterClass="_OsTemplateGroup">
+		DELETE FROM tb_os_template_group
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplateGroup" parameterClass="_OsTemplateGroup">
+		UPDATE tb_os_template_group 
+		SET template_id = #template_id#,
+		    group_id = #group_id#,
+		    group_name = #group_name#,
+		    group_desc = #group_desc#
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<select id="selectOsTemplateGroupList" parameterClass="_OsTemplateGroup"
+		resultClass="_OsTemplateGroup">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_group 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id# 
+			</isNotEmpty>
+			<isNotEmpty property="group_name" prepend="and">
+				group_name = #group_name# 
+			</isNotEmpty>
+			<isNotEmpty property="group_desc" prepend="and">
+				group_desc LIKE CONCAT('%',#group_desc#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="selectOsTemplateGroup" parameterClass="_OsTemplateGroup"
+		resultClass="_OsTemplateGroup">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_group
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id# 
+			</isNotEmpty>
+			<isNotEmpty property="group_name" prepend="and">
+				group_name = #group_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

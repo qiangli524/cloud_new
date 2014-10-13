@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="leaderViewBusinessAction"
+		class="com.sitech.basd.sxcloud.cloud.web.leader.action.LeaderViewBusinessAction"
+		singleton="false" >
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="leaderViewBusinessService">
+			<ref bean="leaderViewBusinessService"/>
+		</property>
+	</bean>
+</beans>
+

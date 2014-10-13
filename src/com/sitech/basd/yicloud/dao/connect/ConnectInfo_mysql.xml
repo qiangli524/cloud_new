@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ConnectInfo">
+	<typeAlias alias="ConnectObj"
+		type="com.sitech.basd.yicloud.domain.connect.ConnectObj" />
+	<typeAlias alias="DictionaryObj"
+		type="com.sitech.basd.yicloud.domain.dictionary.DictionaryObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select ic.ID,
+      		   ic.INTERFACE_A,
+       		   CONCAT(dz.NAME_ZH,'-',diz.CODE) INTERFACE_A_NAME,
+      		   ic.INTERFACE_Z,
+               CONCAT(dz.NAME_ZH,'-',diz.CODE) INTERFACE_Z_NAME,
+               ic.STATUS,
+               dd.NAME STATUSNAME
+          from TB_YICLOUD_INTERFACE_CONNECT ic,
+               YI_DATA_DICTIONARY           dd,
+               TB_YICLOUD_DEVICE_INTERFACE  dia,
+       		   TB_YICLOUD_DEVICE            da,
+               TB_YICLOUD_DEVICE_INTERFACE  diz,
+               TB_YICLOUD_DEVICE            dz
+         where ic.status = dd.code
+           and dd.group_name = 'InterfaceConnect_status'
+           and ic.interface_a = dia.id
+           and ic.interface_z = diz.id
+           and dia.device_id = da.id
+           and diz.device_id = dz.id
+        ]]>
+
+		<isNotEqual property="ID" compareValue="0" prepend="and">
+			ic.ID = #ID#
+		</isNotEqual>
+
+		<isNotEqual property="INTERFACE_A" compareValue="0"
+			prepend="and">
+			ic.INTERFACE_A = #INTERFACE_A#
+		</isNotEqual>
+
+		<isNotEqual property="INTERFACE_Z" compareValue="0"
+			prepend="and">
+			ic.INTERFACE_Z = #INTERFACE_Z#
+		</isNotEqual>
+
+		<isNotEmpty property="STATUS" prepend="and">
+			ic.STATUS = #STATUS#
+		</isNotEmpty>  
+	</sql>
+
+	<select id="queryForListByObj" parameterClass="ConnectObj"
+		resultClass="ConnectObj"> 
+		<include refid="queryByObjBase" />
+		order by ic.id
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="ConnectObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 查询A，Z端外围接口下拉框的值 -->
+	<select id="queryForListByInterface" parameterClass="ConnectObj"
+		resultClass="ConnectObj">
+		<![CDATA[
+		select di.id, 
+		       CONCAT(yd.NAME_ZH,'-',di.CODE) INTERFACE_A_NAME
+          from TB_YICLOUD_DEVICE_INTERFACE  di,
+               TB_YICLOUD_DEVICE            yd
+         where yd.id = di.device_id
+         order by di.id
+		 ]]>
+	</select>
+	<!-- 查询连通状态下拉框的值 -->
+	<select id="queryForListByConStatus" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<![CDATA[
+		select ID,CODE,NAME FROM YI_DATA_DICTIONARY yd 
+		where yd.GROUP_NAME = 'InterfaceConnect_status'
+		 ]]>
+	</select>
+	<!-- 添加接口连通 -->
+	<insert id="insertByObj" parameterClass="ConnectObj">
+		insert into
+		TB_YICLOUD_INTERFACE_CONNECT(INTERFACE_A,INTERFACE_Z,STATUS)
+		values(#INTERFACE_A#,#INTERFACE_Z#,#STATUS#)
+	</insert>
+	<!-- 修改接口连通 -->
+	<update id="updateByObj" parameterClass="ConnectObj">
+		update TB_YICLOUD_INTERFACE_CONNECT set
+		ID=#ID#,INTERFACE_A=#INTERFACE_A#,INTERFACE_Z=#INTERFACE_Z#,STATUS=#STATUS#
+		where ID=#ID#
+	</update>
+	<!-- 根据ID删除接口连通-->
+	<delete id="deleteByObj" parameterClass="ConnectObj">
+		delete from TB_YICLOUD_INTERFACE_CONNECT where ID=#ID#
+	</delete>
+</sqlMap>

@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BossBusiMonitor">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="BossBusiMonitorObj" type="com.sitech.ssd.ah.boss.domain.monitor.BossBusiMonitorObj" />
+	<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<typeAlias alias="bossCfgObj" type="com.sitech.ssd.ah.busiMonitor.domain.MonitorCfgObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="MonitorObjBaseCloumns">
+		r.CLUSTER_NAME,
+		r.POOL_NAME,
+		r.IN_COUNT,
+		r.OUT_COUNT
+	</sql>
+	<sql id="poolBaseCloumnsForPort">
+		SELECT
+				CLUSTER_NAME,
+				c.nodename,
+				POOL_NAME,
+				TIME_SEQ,
+				ONLINE_FLAG,
+				max(r.BUSI_KPI) BUSI_KPI,
+				CONCAT(SUBSTR(TIME_SEQ, 1, 4),"-",SUBSTR(TIME_SEQ, 5, 2),
+				"-",SUBSTR(TIME_SEQ, 7, 2)," ",
+					SUBSTR(TIME_SEQ, 9, 2)
+				) COLL_TMIE,
+				ROUND(SUM(r.IN_COUNT), 1) IN_COUNT,
+				ROUND(SUM(r.OUT_COUNT), 1) OUT_COUNT,
+				ROUND(SUM(r.NO_MASTER_COUNT), 1) NO_MASTER_COUNT,
+				ROUND(SUM(r.ERROR_COUNT), 1) ERROR_COUNT
+			FROM
+				tb_boss_busi_coll_info_last r
+			LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="ONLINE_FLAG">
+					r.ONLINE_FLAG = #ONLINE_FLAG#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+					   r.TIME_SEQ between #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				r.TIME_SEQ,
+				r.ONLINE_FLAG
+			ORDER BY
+				r.TIME_SEQ ASC
+	</sql>
+	<sql id="procBaseCloumnsForPort">
+		SELECT
+				CLUSTER_NAME,
+				POOL_NAME,
+				c.nodename,
+				PROGRESS_NODE,
+				ONLINE_FLAG,
+				max(r.BUSI_KPI) BUSI_KPI,
+				CONCAT(SUBSTR(TIME_SEQ, 1, 4),"-",SUBSTR(TIME_SEQ, 5, 2),
+				"-",SUBSTR(TIME_SEQ, 7, 2)," ",
+					SUBSTR(TIME_SEQ, 9, 2)
+				) COLL_TMIE,
+				ROUND(MAX(r.IN_COUNT), 1) IN_COUNT,
+				ROUND(MAX(r.OUT_COUNT), 1) OUT_COUNT,
+				ROUND(MAX(r.NO_MASTER_COUNT), 1) NO_MASTER_COUNT,
+				ROUND(MAX(r.ERROR_COUNT), 1) ERROR_COUNT
+			FROM
+				tb_boss_busi_coll_info_last r
+				LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="PROGRESS_NODE">
+					r.PROGRESS_NODE = #PROGRESS_NODE#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="ONLINE_FLAG">
+					r.ONLINE_FLAG = #ONLINE_FLAG#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="TIME_SEQ">
+					r.TIME_SEQ = #TIME_SEQ#
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				r.TIME_SEQ,
+				r.PROGRESS_NODE,
+				r.ONLINE_FLAG
+	</sql>
+	<sql id="hosiPoolBaseCloumnsForPort">
+		SELECT
+				CLUSTER_NAME,
+				POOL_NAME,
+				c.nodename,
+				ONLINE_FLAG,
+				SUBSTR(r.TIME_SEQ, 1, 8) TIME_SEQ,
+				MAX(r.BUSI_KPI) BUSI_KPI,
+				CONCAT(SUBSTR(TIME_SEQ, 1, 4),"-",SUBSTR(TIME_SEQ, 5, 2),
+				"-",SUBSTR(TIME_SEQ, 7, 2)
+				) COLL_TMIE,
+				ROUND(SUM(r.IN_COUNT), 1) IN_COUNT,
+				ROUND(SUM(r.OUT_COUNT), 1) OUT_COUNT,
+				ROUND(SUM(r.NO_MASTER_COUNT), 1) NO_MASTER_COUNT,
+				ROUND(SUM(r.ERROR_COUNT), 1) ERROR_COUNT
+			FROM
+			tb_boss_busi_coll_info r
+			LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="ONLINE_FLAG">
+					r.ONLINE_FLAG = #ONLINE_FLAG#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						SUBSTR(r.TIME_SEQ, 1, 8) BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				r.ONLINE_FLAG,
+				SUBSTR(r.TIME_SEQ, 1, 8)
+			ORDER BY
+				r.TIME_SEQ ASC
+	</sql>
+	<sql id="poolBaseCloumnsForPortDesc">
+		SELECT
+				CLUSTER_NAME,
+				c.nodename,
+				POOL_NAME,
+				ONLINE_FLAG,
+				TIME_SEQ,
+				max(r.BUSI_KPI) BUSI_KPI,
+				CONCAT(SUBSTR(TIME_SEQ, 1, 4),"-",SUBSTR(TIME_SEQ, 5, 2),
+				"-",SUBSTR(TIME_SEQ, 7, 2)," ",
+					SUBSTR(TIME_SEQ, 9, 2)
+				) COLL_TMIE,
+				ROUND(SUM(r.IN_COUNT), 1) IN_COUNT,
+				ROUND(SUM(r.OUT_COUNT), 1) OUT_COUNT,
+				ROUND(SUM(r.NO_MASTER_COUNT), 1) NO_MASTER_COUNT,
+				ROUND(SUM(r.ERROR_COUNT), 1) ERROR_COUNT
+			FROM
+				tb_boss_busi_coll_info r
+			LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="ONLINE_FLAG">
+					r.ONLINE_FLAG = #ONLINE_FLAG#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="TIME_SEQ">
+					r.TIME_SEQ like CONCAT(#TIME_SEQ#,'%')
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				r.TIME_SEQ,
+				r.ONLINE_FLAG
+			ORDER BY
+				r.TIME_SEQ ASC
+	</sql>
+	<sql id="baseCloumnsForErrorLog">
+		SELECT
+				c.nodename,
+				CLUSTER_NAME,
+				POOL_NAME,
+				TIME_SEQ,
+				max(r.BUSI_KPI) BUSI_KPI,
+				CONCAT(
+					SUBSTR(TIME_SEQ, 1, 4),
+					"-",
+					SUBSTR(TIME_SEQ, 5, 2),
+					"-",
+					SUBSTR(TIME_SEQ, 7, 2)) COLL_TMIE , 
+				ROUND(SUM(r.IN_COUNT), 1) IN_COUNT
+			FROM
+				tb_boss_busi_coll_info r
+			LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						r.TIME_SEQ BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				r.TIME_SEQ
+			ORDER BY
+				r.TIME_SEQ ASC
+	</sql>
+	<sql id="baseCloumnsForErrorLogDesc">
+		SELECT
+				BUSI_NO,
+				BUSI_NO_DESC,
+				c.nodename,
+				CLUSTER_NAME,
+				POOL_NAME,
+				TIME_SEQ,
+				PROGRESS_NODE,
+				BUSI_KPI,
+				CONCAT(
+					SUBSTR(TIME_SEQ, 1, 4),
+					"-",
+					SUBSTR(TIME_SEQ, 5, 2),
+					"-",
+					SUBSTR(TIME_SEQ, 7, 2)) COLL_TMIE , 
+				ROUND(r.IN_COUNT,1) IN_COUNT
+			FROM
+				tb_boss_busi_coll_info r
+			LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="TIME_SEQ">
+					r.TIME_SEQ like CONCAT(#TIME_SEQ#,'%')
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			ORDER BY
+				r.TIME_SEQ ASC
+	</sql>
+	<!-- 查询在线与离线量 -->
+	<select id="queryNctRatio" parameterClass="BossBusiMonitorObj" resultClass="java.util.HashMap">
+		SELECT 
+			online_flag,sum(in_count) sumIncount from tb_boss_busi_coll_info_last r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="TIME_SEQ">
+					r.time_seq like  CONCAT(#TIME_SEQ#,'%')
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+		 GROUP BY r.online_flag
+	</select>
+	<!-- 查询历史在线与离线量 -->
+	<select id="queryHosiNctRatio" parameterClass="BossBusiMonitorObj" resultClass="java.util.HashMap">
+		SELECT 
+			online_flag,sum(in_count) sumIncount from tb_boss_busi_coll_info r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						SUBSTR(r.TIME_SEQ, 1, 8) BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+		 GROUP BY r.online_flag
+	</select>
+	<!--按小时统计-->
+		<!--当前： 池子端口数据列表统计个数 -->
+		<select id="queryListForPortForCount" parameterClass="BossBusiMonitorObj" resultClass="int">
+			select count(*) from (<include refid="poolBaseCloumnsForPort"/>) f
+		</select>
+		<!--当前： 池子端口数据列表 -->
+		<select id="queryListForPort" parameterClass="BossBusiMonitorObj" resultClass="BossBusiMonitorObj">
+			<include refid="poolBaseCloumnsForPort"/>
+			<include refid="paginationEnd"/>
+		</select>
+		<!-- 当前：统计 某一池子下进程个数-->
+		<select id="queryListForPortProcessForCount" parameterClass="BossBusiMonitorObj" resultClass="int">
+			SELECT COUNT(*) FROM (<include refid="procBaseCloumnsForPort"/>)N
+		</select>
+		<!--当前： 某一池子下进程详细 列表-->
+		<select id="queryListForPortProcess" parameterClass="BossBusiMonitorObj" resultClass="BossBusiMonitorObj">
+			<include refid="procBaseCloumnsForPort"/>
+			<include refid="paginationEnd"/>
+		</select>
+		<!-- 当前：池子的数据图像数据 -->
+		<select id="queryDataChartForPort" parameterClass="BossBusiMonitorObj" resultClass="data">
+			SELECT
+				SUBSTR(TIME_SEQ,9) value,
+				max(r.BUSI_KPI) BUSI_KPI,
+				ROUND(SUM(r.IN_COUNT), 1) label,
+				ROUND(SUM(r.OUT_COUNT), 1) label2,
+				ROUND(SUM(r.NO_MASTER_COUNT),1) label3,
+				ROUND(SUM(r.ERROR_COUNT),1) label4
+			FROM
+				tb_boss_busi_coll_info_last r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="ONLINE_FLAG">
+					r.ONLINE_FLAG = #ONLINE_FLAG#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+					   r.TIME_SEQ between #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				r.TIME_SEQ
+			ORDER BY
+				r.TIME_SEQ ASC
+				limit 0,#num# 
+		</select>
+		<!-- 历史：池子端口数据统计个数 -->
+		<select id="queryHosiListForPortForCount" parameterClass="BossBusiMonitorObj" resultClass="int">
+			SELECT COUNT(*) FROM (<include refid="hosiPoolBaseCloumnsForPort"/>) F
+		</select>
+		<!-- 历史：每天的池子端口数据列表 -->
+		<select id="queryHosiListForPort" parameterClass="BossBusiMonitorObj" resultClass="BossBusiMonitorObj">
+			<include refid="hosiPoolBaseCloumnsForPort"/>
+			<include refid="paginationEnd"/>
+		</select>
+		<!--  历史: 某天某池子下每小时详细 列表(统计个数) -->
+		<select id="queryHosiListForPortDescForCount" parameterClass="BossBusiMonitorObj" resultClass="int">
+			SELECT COUNT(*) FROM (<include refid="poolBaseCloumnsForPortDesc"/>)N
+		</select>
+		<!-- 历史: 某天某池子下每小时详细 列表 -->
+		<select id="queryHosiListForPortDesc" parameterClass="BossBusiMonitorObj" resultClass="BossBusiMonitorObj" >
+			<include refid="poolBaseCloumnsForPortDesc"/>
+			<include refid="paginationEnd"/>
+		</select>
+		<!-- 历史：每天的池子数据量折线图 -->
+		<select id="queryHosiDataChartForPort" parameterClass="BossBusiMonitorObj" resultClass="data">
+			SELECT
+				CLUSTER_NAME,
+				POOL_NAME,
+				c.nodename,
+				max(r.BUSI_KPI) BUSI_KPI,
+				SUBSTR(r.TIME_SEQ, 1, 8) value,
+				ROUND(SUM(r.IN_COUNT), 1) label,
+				ROUND(SUM(r.OUT_COUNT), 1) label2,
+				ROUND(SUM(r.NO_MASTER_COUNT), 1) label3,
+				ROUND(SUM(r.ERROR_COUNT), 1) label4
+			FROM
+			tb_boss_busi_coll_info r
+			LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="ONLINE_FLAG">
+					r.ONLINE_FLAG = #ONLINE_FLAG#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						SUBSTR(r.TIME_SEQ, 1, 8) BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				SUBSTR(r.TIME_SEQ, 1, 8)
+			ORDER BY
+				r.TIME_SEQ ASC
+				limit 0,#num# 
+		</select>
+	<!-- 按天统计 -->
+	 <!-- 错误日志 -->
+		<select id="queryListForLogForCount" parameterClass="BossBusiMonitorObj" resultClass="int">
+			select count(*) from (<include refid="baseCloumnsForErrorLog"/>)v
+		</select>
+		<select id="queryListForLog" parameterClass="BossBusiMonitorObj" resultClass="BossBusiMonitorObj">
+			<include refid="baseCloumnsForErrorLog"/>
+			<include refid="paginationEnd"/>
+		</select>
+		<!-- 返回日志折线数据 -->
+		<select id="queryDataChartForLog" parameterClass="BossBusiMonitorObj" resultClass="data">
+			SELECT
+				SUBSTR(r.TIME_SEQ, 1, 8) value, 
+				ROUND(SUM(r.IN_COUNT), 1) label
+			FROM
+				tb_boss_busi_coll_info r
+			LEFT JOIN tb_boss_config c ON r.CLUSTER_NAME = c.nodeId
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="CLUSTER_NAME">
+					r.CLUSTER_NAME = #CLUSTER_NAME#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="POOL_NAME">
+					r.POOL_NAME = #POOL_NAME#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						r.TIME_SEQ BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			GROUP BY
+				r.CLUSTER_NAME,
+				r.POOL_NAME,
+				r.TIME_SEQ
+			ORDER BY
+				r.TIME_SEQ ASC
+		</select>
+		<select id="queryForErrorLogDescForCount"  parameterClass="BossBusiMonitorObj" resultClass="int">  
+			select count(*) from (<include refid="baseCloumnsForErrorLogDesc"/>) f
+		</select>
+		<select id="queryForErrorLogDesc" parameterClass="BossBusiMonitorObj" resultClass="BossBusiMonitorObj">
+			<include refid="baseCloumnsForErrorLogDesc"/>
+			<include refid="paginationEnd"/>
+		</select>
+	<!-- 目录积压数据查询 -->
+		<!-- 统计待监控目录数量 -->
+		<select id="queryListForMonitorDirForCount" parameterClass="bossCfgObj" resultClass="int">
+			SELECT COUNT(*) FROM (SELECT
+				k.HOST_IP hostIp,
+				KPI_ID kpiId,
+				KPI_CFG_VALUE kpiCfgValue,
+				IFNULL(r.IN_COUNT,0) inCount,
+				ALARM_FLAG
+			FROM
+				tb_boss_busi_kpi_ref_info k
+				left join tb_boss_busi_coll_info_last r on k.HOST_IP = r.HOST_IP
+				and CONCAT(
+					k.EXT_EQ_ID,
+					"_",
+					k.KPI_CFG_VALUE
+				) = r.EQ_ID
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="kpiId">
+					k.KPI_ID = #kpiId#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="hostIp">
+					k.HOST_IP like  CONCAT('%',#hostIp#,'%')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="alarm_flag">
+					r.ALARM_FLAG = #alarm_flag#
+				</isNotEmpty>
+				<isEmpty prepend="and" property="status">
+					k.STATUS ='1'
+				</isEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						r.COLL_TMIE BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+			</dynamic>
+			GROUP BY
+				k.HOST_IP,
+				k.KPI_CFG_VALUE
+			ORDER BY
+				r.ALARM_FLAG desc,k.HOST_IP)f
+		</select>
+		<!-- 待监控目录列表 -->
+		<select id="queryListForMonitorDir" parameterClass="bossCfgObj" resultClass="bossCfgObj">
+			SELECT
+				k.HOST_IP hostIp,
+				K.EXT_EQ_ID extEqId,
+				KPI_ID kpiId,
+				KPI_CFG_VALUE kpiCfgValue,
+				IFNULL(r.IN_COUNT,0) inCount,
+				ALARM_FLAG
+			FROM
+				tb_boss_busi_kpi_ref_info k
+				left join tb_boss_busi_coll_info_last r on k.HOST_IP = r.HOST_IP
+				and CONCAT(
+						k.EXT_EQ_ID,
+						"_",
+						k.KPI_CFG_VALUE
+					) = r.EQ_ID
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="kpiId">
+					k.KPI_ID = #kpiId#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="hostIp">
+					k.HOST_IP like  CONCAT('%',#hostIp#,'%')
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="alarm_flag">
+					r.ALARM_FLAG = #alarm_flag#
+				</isNotEmpty>
+				<isEmpty prepend="and" property="status">
+					k.STATUS ='1'
+				</isEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						r.COLL_TMIE BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+			</dynamic>
+			GROUP BY
+				k.HOST_IP,
+				k.KPI_CFG_VALUE
+			ORDER BY
+				r.ALARM_FLAG desc,k.HOST_IP
+			<include refid="paginationEnd"/>
+		</select>
+		<!-- 统计某个目录的历史数据 个数-->
+		<select id="queryListForMonitorDirDescForCount" parameterClass="BossBusiMonitorObj" resultClass="int">
+			select count(1) from (
+				SELECT  r.HOST_IP,
+					r.BUSI_KPI,
+					r.COLL_TMIE,
+					r.IN_COUNT,
+					r.EXT_EQ_ID
+			FROM tb_boss_busi_coll_info r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="HOST_IP">
+					r.HOST_IP = #HOST_IP#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="EQ_ID">
+					r.EQ_ID = #EQ_ID#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						r.COLL_TMIE BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>)d
+		</select>
+		<!-- 查询某个目录的历史数据 列表-->
+		<select id="queryListForMonitorDirDesc" parameterClass="BossBusiMonitorObj" resultClass="BossBusiMonitorObj">
+			SELECT  r.HOST_IP,
+					r.BUSI_KPI,
+					DATE_FORMAT(r.COLL_TMIE,'%Y-%m-%d %H:%i:%S') COLL_TMIE,
+					r.IN_COUNT,
+					r.EQ_ID,
+					r.EXT_EQ_ID,
+					r.ALARM_FLAG,
+					r.ALARM_DESC
+			FROM tb_boss_busi_coll_info r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="HOST_IP">
+					r.HOST_IP = #HOST_IP#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="EQ_ID">
+					r.EQ_ID = #EQ_ID#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						r.COLL_TMIE BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			order by r.COLL_TMIE desc
+			<include refid="paginationEnd"/>
+		</select>
+		<!-- 返回目录历史数据走势图数据 -->
+		<select id="queryChartJSONForDirDesc" parameterClass="BossBusiMonitorObj" resultClass="data">
+			SELECT
+				r.IN_COUNT label,
+				DATE_FORMAT(r.COLL_TMIE,'%m/%d %H:%i') value
+			FROM tb_boss_busi_coll_info r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="BUSI_KPI">
+					r.BUSI_KPI = #BUSI_KPI#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="HOST_IP">
+					r.HOST_IP = #HOST_IP#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="EQ_ID">
+					r.EQ_ID = #EQ_ID#
+				</isNotEmpty>
+				<isNotEmpty property="START_TIME">
+					<isNotEmpty property="END_TIME" prepend="and">
+						r.COLL_TMIE BETWEEN #START_TIME# and #END_TIME#
+					</isNotEmpty>
+				</isNotEmpty>
+				<isEmpty prepend="and" property="ERROR_INFO">
+					r.ERROR_INFO is NULL
+				</isEmpty>
+			</dynamic>
+			order by r.COLL_TMIE asc
+			limit 0,#num#
+		</select>
+</sqlMap>

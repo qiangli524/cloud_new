@@ -1,0 +1,55 @@
+/*
+ * @Filename: pagination.css
+ * @Description: pagination style
+ * @Version: 1.0.0
+ * @Author: dujj
+ * @Update: dujj
+*/
+
+.ued-pagination-1 {
+    color:#999;
+	font-size:12px;
+}
+.ued-pagination-1 span {
+    padding: 0 2px;
+    color:#666;
+}
+.ued-pagination-1 a {
+	display:inline-block;
+	padding:0 6px;
+	height:20px;
+	line-height:20px;
+	border:1px solid #deddde;
+	background:#fff;
+	color:#999;
+}
+.ued-pagination-1 a:hover {
+	text-decoration:underline;
+	color: #666;
+	background:#f5f5f5;
+}
+.ued-pagination-1 a.focus {
+	font-weight:bold;
+	background:#279fe9;
+	border:1px solid #279fe9;
+	color:#fff;
+}
+.ued-pagination-1 a.focus:hover {
+	text-decoration: underline;
+	cursor:default;
+}
+.ued-pagination-1 a.disabled {
+	color:#CCC;
+	cursor:default;
+	background:#f9f9f9;
+	border:1px solid #e8e8ea;
+}
+.ued-pagination-1 a.disabled:hover {
+	text-decoration:none;
+}
+.ued-pagination-1 select{
+	height: 22px;
+	line-height: 22px;
+	padding: 0;
+	margin-bottom: 2px;
+}

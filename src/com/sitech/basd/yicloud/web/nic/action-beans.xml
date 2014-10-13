@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="nicAction" class="com.sitech.basd.yicloud.web.nic.action.NicAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="nicRelationService">
+			<ref bean="nicRelationService" />
+		</property>
+		<property name="nicService">
+			<ref bean="nicService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+	</bean>
+
+</beans>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="busisystree" extends="global_package">
+		<action name="busisys_*"
+				class="tbBusiSysTreeAction" method="{1}">
+			<result name="list">/yicloud/busisystree/tbBusiSysTree.jsp</result>
+			<result name="busitabs">/yicloud/busisystree/busitabs.jsp</result>
+			<result name="deployUserList">/yicloud/busisystree/deployListUserInfo.jsp</result>
+			<result name="limit">/yicloud/busisystree/tbBusiSysLimitTree.jsp</result>
+			<result name="treetabs">/yicloud/busisystree/busitabs.jsp</result>
+			
+			<result name="validateDelete" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+		<action name="busiareainfo_*" class="tbBusiAreaInfoAction" method="{1}">
+			<result name="listbusihost">/yicloud/busisystree/listBusiHost.jsp</result>
+			<result name="listProcess">/yicloud/busisystree/listProcess.jsp</result>
+			<result name="listOrder">/yicloud/busisystree/listOrder.jsp</result>
+			<result name="listTask">/yicloud/busisystree/listTask.jsp</result>
+			<result name="show">/yicloud/busisystree/showBusiArea.jsp</result>
+		</action>
+ </package>
+
+</struts>

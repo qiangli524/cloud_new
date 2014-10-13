@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd"> 
+<sqlMap namespace="L4policyService"> 
+	<typeAlias alias="l4PolicyObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.loadBalancing.L4PolicyObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		virtualIP,l4Protocol,l4Port,sourceIPFrom,sourceIPTo,l4PolicyName,l7PolicyName,
+		farmName,application,backendEncryptionPort,bytesOfRequestToRead,redundancyStatus,POSTClassificationInput
+		,HTTPNormalization,l7PersistentSwitchingMode,policyDefinedBy,segmentName,explicitFarmName,actionType,action
+		,SSLPolicy,compressionPolicy,cachingPolicy,clientAuthenticationPolicy,httpPolicy
+	</sql>
+	<sql id="tableColumns">
+		id,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryForListByObjBase">
+		select
+		<include refid="tableColumns" />
+		from TB_CLOUD2_RDWR_L4POLICIES
+		<dynamic prepend="WHERE">
+		    <isGreaterThan property="id" compareValue="0" prepend="and">
+				id =#id#
+			</isGreaterThan>
+			<isNotEmpty property="virtualIP" prepend="and">
+				virtualIP like '%'||#virtualIP#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="farmName" prepend="and">
+				farmName like '%'||#farmName#||'%'
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="l4PolicyObj"
+		resultClass="l4PolicyObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="l4PolicyObj"
+		resultClass="int">
+		select count(1) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	</select>
+	<delete id="deleteByObj" parameterClass="l4PolicyObj">
+		delete from TB_CLOUD2_RDWR_L4POLICIES where id=#id#
+	</delete>
+	<insert id="insertByObj" parameterClass="l4PolicyObj">
+		
+		insert into
+		TB_CLOUD2_RDWR_L4POLICIES(id,virtualIP,l4Protocol,l4Port,sourceIPFrom,sourceIPTo,l4PolicyName,l7PolicyName,
+		farmName,application,backendEncryptionPort,bytesOfRequestToRead,redundancyStatus,POSTClassificationInput
+		,HTTPNormalization,l7PersistentSwitchingMode,policyDefinedBy,segmentName,explicitFarmName,actionType,action
+		,SSLPolicy,compressionPolicy,cachingPolicy,clientAuthenticationPolicy,httpPolicy)
+		values
+		(ID_CLOUD2_RDWR_L4POLICIES.NEXTVAL,#virtualIP#,#l4Protocol#,#l4Port#,#sourceIPFrom#,#sourceIPTo#,#l4PolicyName#,#l7PolicyName#,
+		#farmName#,#application#,#backendEncryptionPort#,#bytesOfRequestToRead#,#redundancyStatus#,#POSTClassificationInput#
+		,#HTTPNormalization#,#l7PersistentSwitchingMode#,#policyDefinedBy#,#segmentName#,#explicitFarmName#,#actionType#,#action#
+		,#SSLPolicy#,#compressionPolicy#,#cachingPolicy#,#clientAuthenticationPolicy#,#httpPolicy#)
+	</insert>
+
+	<update id="updateByObj" parameterClass="l4PolicyObj">
+	    update TB_CLOUD2_RDWR_L4POLICIES set virtualIP=#virtualIP#,l4Protocol=#l4Protocol#,l4Port=#l4Port#,sourceIPFrom=#sourceIPFrom#,sourceIPTo=#sourceIPTo#,l4PolicyName=#l4PolicyName#,l7PolicyName=#l7PolicyName#,
+		farmName=#farmName#,application=#application#,backendEncryptionPort=#backendEncryptionPort#,bytesOfRequestToRead=#bytesOfRequestToRead#,redundancyStatus=#redundancyStatus#,POSTClassificationInput=#POSTClassificationInput#
+		,HTTPNormalization=#HTTPNormalization#,l7PersistentSwitchingMode=#l7PersistentSwitchingMode#,policyDefinedBy=#policyDefinedBy#,segmentName=#segmentName#,explicitFarmName=#explicitFarmName#,actionType=#actionType#,action=#action#
+		,SSLPolicy=#SSLPolicy#,compressionPolicy=#compressionPolicy#,cachingPolicy=#cachingPolicy#,clientAuthenticationPolicy=#clientAuthenticationPolicy#,httpPolicy=#httpPolicy# where id=#id#
+	</update>
+</sqlMap>

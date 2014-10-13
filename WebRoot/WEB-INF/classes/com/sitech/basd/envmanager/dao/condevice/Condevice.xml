@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Condevice">
+	<typeAlias alias="CondeviceObj"
+		type="com.sitech.basd.envmanager.domain.condevice.CondeviceObj" />
+	<typeAlias alias="DictionaryObj"
+		type="com.sitech.basd.yicloud.domain.dictionary.DictionaryObj" />
+	<typeAlias alias="VirtualObj"
+		type="com.sitech.basd.envmanager.domain.condevice.VirtualObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryManageObj">
+	 select m.DEVICE_ID,m.DEVICE_NAME,m.DEVICE_NAME_EN,m.DEVICE_CODE,
+			m.DEVICE_DESC,m.STATUSE,m.DEVICE_TYPE,n.TYPE_NAME as TYPE_NAME,e.LD_ID ,e.MECH_ROOM,e.CAPITAL_TYPE,e.MECH_ID,e.CAPITAL_ID,e.MECH_TYPE,e.MECH_CONF,e.SYS_SYSTEM,e.SYS_HOSTNAME,e.SYS_VM,e.IP_PHYSICS,e.IP_VIRTUAL,e.IP_ILO,
+			e.PWD_SYSTEM,e.PWD_CONSOLE,e.STORE,e.USE_DOMAN,e.USE_RES,e.USE_DEPART,e.USE_DESCRIP, e.MANAG_PERSON,e.MANAG_RECORD,e.MANAG_REPAIR,e.MANAG_USE,e.MANAG_USABLE,e.MANAG_DESCRIP
+		    from TB_YICLOUD_DEVICE m, TB_YICLOUD_DEVICE_TYPE n,ENV_LEDGER e
+		    where m.DEVICE_TYPE=n.TYPE_ID and n.type_name='主机'and e.LD_ID=m.DEVICE_ID 
+			<isNotEmpty property="DEVICE_NAME" prepend="and">
+			DEVICE_NAME like '%'||#DEVICE_NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="IP_PHYSICS" prepend="and">
+			IP_PHYSICS = #IP_PHYSICS#
+			</isNotEmpty>
+			<isNotEmpty property="USE_DOMAN" prepend="and">
+			USE_DOMAN = #USE_DOMAN#
+			</isNotEmpty>
+			<isNotEmpty property="USE_RES" prepend="and">
+			USE_RES = #USE_RES#
+			</isNotEmpty>
+	</sql>
+	<select id="queryManageObj" parameterClass="CondeviceObj"
+		resultClass="CondeviceObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryManageObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryManageCount" parameterClass="CondeviceObj"
+		resultClass="int">
+		select count(DEVICE_ID) from (
+		<include refid="queryManageObj" />
+		) virtual_table
+	</select>
+	<sql id="queryCondeviceForList">
+		<![CDATA[
+			select m.DEVICE_ID,m.DEVICE_NAME,m.DEVICE_NAME_EN,m.DEVICE_CODE,
+			m.DEVICE_DESC,m.STATUSE,m.DEVICE_TYPE,n.TYPE_NAME as TYPE_NAME ,
+			e.LD_ID ,e.MECH_ROOM,e.CAPITAL_TYPE,e.MECH_ID,e.CAPITAL_ID,e.MECH_TYPE,e.MECH_CONF,e.SYS_SYSTEM,e.SYS_HOSTNAME,e.SYS_VM,e.IP_PHYSICS,e.IP_VIRTUAL,e.IP_ILO,
+			e.PWD_SYSTEM,e.PWD_CONSOLE,e.STORE,e.USE_DOMAN,e.USE_RES,e.USE_DEPART,e.USE_DESCRIP, e.MANAG_PERSON,e.MANAG_RECORD,e.MANAG_REPAIR,e.MANAG_USE,e.MANAG_USABLE,e.MANAG_DESCRIP
+			from TB_YICLOUD_DEVICE m, TB_YICLOUD_DEVICE_TYPE n,ENV_LEDGER e
+			where m.DEVICE_TYPE=n.TYPE_ID and e.LD_ID=m.DEVICE_ID 
+		]]>
+		<isNotEqual property="DEVICE_ID" compareValue="0" prepend="and">
+			DEVICE_ID = #DEVICE_ID#
+		</isNotEqual>
+
+		<isNotEmpty property="DEVICE_NAME" prepend="and">
+			DEVICE_NAME like '%'||#DEVICE_NAME#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="DEVICE_NAME_EN" prepend="and">
+			DEVICE_NAME_EN like '%'||#DEVICE_NAME_EN#||'%'
+		</isNotEmpty>
+		<isNotEmpty property="DEVICE_TYPE" prepend="and">
+			DEVICE_TYPE = #DEVICE_TYPE#
+		</isNotEmpty>
+		<isNotEmpty property="USE_DOMAN" prepend="and">
+			USE_DOMAN = #USE_DOMAN#
+		</isNotEmpty>
+		<isNotEmpty property="IP_PHYSICS" prepend="and">
+			IP_PHYSICS = #IP_PHYSICS#
+		</isNotEmpty>
+		<isNotEmpty property="USE_RES" prepend="and">
+			USE_RES = #USE_RES#
+		</isNotEmpty>
+		order by DEVICE_ID
+
+	</sql>
+
+	<select id="queryCondeviceObj" parameterClass="CondeviceObj"
+		resultClass="CondeviceObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryCondeviceForList" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryCondeviceCount" parameterClass="CondeviceObj"
+		resultClass="int">
+		select count(DEVICE_ID) from (
+		<include refid="queryCondeviceForList" />
+		) virtual_table
+	</select>
+	<!-- 添加设备主机 -->
+	<insert id="insertCondeviceObj" parameterClass="CondeviceObj">
+	insert into
+		TB_YICLOUD_DEVICE(DEVICE_ID,DEVICE_NAME,DEVICE_NAME_EN,DEVICE_CODE,DEVICE_TYPE,DEVICE_DESC,STATUSE)
+		values(#DEVICE_ID#,#DEVICE_NAME#,#DEVICE_NAME_EN#,#DEVICE_CODE#,#DEVICE_TYPE#,#DEVICE_DESC#,#STATUSE#)
+	</insert>
+	<!-- 修改设备主机 -->
+	<update id="updateCondeviceObjOne" parameterClass="CondeviceObj">
+		update TB_YiCloud_Device set
+		DEVICE_ID=#DEVICE_ID#,DEVICE_NAME=#DEVICE_NAME#,DEVICE_NAME_EN=#DEVICE_NAME_EN#,DEVICE_CODE=#DEVICE_CODE#,DEVICE_TYPE=#DEVICE_TYPE#,DEVICE_DESC=#DEVICE_DESC#,STATUSE=#STATUSE#
+		where DEVICE_ID=#DEVICE_ID#
+	</update>
+	<!-- 根据ID删除设备主机 -->
+	<delete id="deleteCondeviceObjOne" parameterClass="CondeviceObj">
+		delete from TB_YiCloud_Device where DEVICE_ID=#DEVICE_ID#
+	</delete>
+	<select id="queryCondeviceObjOne" parameterClass="CondeviceObj" resultClass="CondeviceObj">
+		select m.DEVICE_ID,m.DEVICE_NAME,m.DEVICE_NAME_EN,m.DEVICE_CODE,
+			m.DEVICE_DESC,m.STATUSE,m.DEVICE_TYPE,n.TYPE_NAME as TYPE_NAME
+			from TB_YICLOUD_DEVICE m, TB_YICLOUD_DEVICE_TYPE n
+			where m.DEVICE_TYPE=n.TYPE_ID and m.DEVICE_ID = #DEVICE_ID#
+	</select>
+	<select id="getIdCondevice" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		select ID_YICLOUD_DEVICE.NEXTVAL AS DEVICE_ID from dual
+	</select>
+	<!-- 用于数据导出 -->
+	<select id="queryForExportList" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select e.domain,e.source,e.class,e.hosttype,e.hostnum,e.description,e.system,e.hostname,
+       		e.ip,e.product,e.deveprod,e.sid,e.tablespace,e.filesysnam,e.fileappnum,e.cpuused,
+       		e.mem,e.fileuserd,e.fileuseper,e.sid1,e.tabspaused,e.tabspauseper,e.sga,e.cpuleft,
+      	 	e.memleft,e.storage
+        from  TB_YICLOUD_DEVICE m, ENV_CONFIGURE e
+      where m.DEVICE_TYPE=1 and e.device_id=m.DEVICE_ID 
+      <isNotNull property="DOMAIN" prepend="and">
+      	e.domain like '%'||#DOMAIN#||'%'
+      </isNotNull>
+	</select>
+	<select  id="queryVirtualObj" parameterClass="VirtualObj" resultClass="VirtualObj">
+		select IP_ID, VIRTUAL_IP ,DEPART ,DEVICE_ID from env_ip_virtual
+		where DEVICE_ID = #device_id#
+	</select>
+	<insert id="insertVirtualObj" parameterClass="VirtualObj">
+		<selectKey  resultClass="int"  keyProperty="ip_id">
+	 		select ID_VIRTUALIP.NEXTVAL AS ip_id from dual
+	 	</selectKey>
+		insert into env_ip_virtual(IP_ID, VIRTUAL_IP ,DEPART ,DEVICE_ID)
+		values(#ip_id#, #VIRTUAL_IP# ,#DEPART# ,#device_id#)
+	</insert>
+	<delete id="deleteVirtualObj" parameterClass="VirtualObj">
+		delete from env_ip_virtual where IP_ID=#ip_id#
+	</delete>
+</sqlMap>

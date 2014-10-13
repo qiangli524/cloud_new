@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="charts"
+			 extends="global_package">
+ 		<!-- 虚拟机性能监控cpu，内存，磁盘，网络		-->
+		<action name="charts_*"
+				class="chartsAction" method="{1}">
+			<result name="moniter_vm">/cloud3/charts/jsp/vm_monitor_resource_charts.jsp</result>
+			<result name="moniter_host">/cloud3/charts/jsp/host_monitor_resource_charts.jsp</result>
+			<result name="moniter_tab_vm">/cloud3/charts/jsp/vm_monitor_resource_tabs.jsp</result>
+			<result name="moniter_tab_host">/cloud3/charts/jsp/host_monitor_resource_tabs.jsp</result>
+		</action>
+		
+		<!-- 首页展示资源监控信息 -->
+		<action name="homePage_*" class="homePageResource" method="{1}">
+			<result name="success">/cloud3/charts/jsp/total-resource-charts.jsp</result>
+		</action>
+		<!-- 虚拟机监控数据展示 -->
+		<action name="hyMonitor_*" class="hyMonitorDataAction" method="{1}">
+			<result name="tabs">/cloud3/charts/jsp/vm_monitor_resource_tabs.jsp</result>
+			<result name="hyMonitor">/cloud3/charts/jsp/hyMonitorDataShow.jsp</result>
+			<result name="hyMonitor_f">/cloud3/charts/fusionchart/showView_vm.jsp</result>
+			<result name="hyMonitorDNData_fusion">/cloud3/charts/fusionchart/showView_vmIOAndNet.jsp</result>
+			<!-- 虚拟机性能-摘要信息 -->
+			<result name="showhyMonitorPage">/cloud3/charts/jsp/showhyMonitorPage.jsp</result>
+			
+			<result name="queryChartFileSystemDayDataView">/cloud3/charts/fusionchart/queryChartFileSystemDayDataView.jsp</result>
+			
+			
+			<result name="cmData" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="dnData" type="json">
+			</result>
+		</action>
+		<!-- 主机监控数据展示 -->
+		<action name="hostMonitor_*" class="hostMonitorDataAction" method="{1}">
+			<result name="tabs">/cloud3/charts/jsp/host_monitor_resource_tabs.jsp</result>
+ 			<result name="hostMonitor">/cloud3/charts/jsp/hostMonitorDataShow.jsp</result>
+			<result name="hostMonitor_f">/cloud3/charts/fusionchart/showView_host.jsp</result>
+			<result name="hostMonitorDNData_fusion">/cloud3/charts/fusionchart/showView_hostIOandNet.jsp</result>
+			<result name="cmData" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="data_defined">/cloud3/charts/fusionchart/hostMonitorDetail.jsp</result>
+			<result name="dnData" type="json"></result>
+			<result name="showHostMonitorPage">/cloud3/charts/jsp/showHostMonitorPage.jsp</result>
+			
+			<result name="queryChartFileSystemDayDataView">/cloud3/charts/jsp/queryHostChartFileSystemDayDataView.jsp</result>
+			
+			
+			
+		</action>
+	</package>
+</struts>

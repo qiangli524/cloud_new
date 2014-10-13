@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="NodeTask">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="BolNodeTaskVO" type="com.sitech.basd.bol.domain.nodetask.BolNodeTaskVO"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    
+	<sql id="baseCloumns">
+			TASK_ID taskId,TASK_DESC taskDesc,ifnull(TASK_STATE,0) taskState,TASK_TIME taskTime,LAST_TIME lastTime,TASK_RESULT taskResult,ifnull(TASK_RECEIVER,0) taskReceiver,ifnull(TASK_TYPE,0) taskType,TASK_ADDMESS taskAddMess,TASK_TRACK taskTrack
+		</sql>
+	  
+	  	<sql id="queryForListByObjBase">
+	  		select <include refid="baseCloumns" /> from BOL_NODE_TASK
+	  		<dynamic prepend="where">
+	  			<isNotNull property="taskId" prepend="and">
+	  				TASK_ID = #taskId#
+	  			</isNotNull>
+	  			<isGreaterThan property="taskState" prepend="and" compareValue="0">
+	  				TASK_STATE = #taskState#
+	  			</isGreaterThan>
+	  			<isGreaterThan property="taskType" prepend="and" compareValue="0">
+	  				TASK_TYPE = #taskType#
+	  			</isGreaterThan>
+	  		</dynamic>
+	  		order by task_id desc
+	 	</sql>
+	  
+		<select id="queryForListByObj" parameterClass="BolNodeTaskVO" resultClass="BolNodeTaskVO">
+			<include refid="queryForListByObjBase" />
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationEnd" />
+			</isGreaterThan>
+		</select>
+	  
+	  <select id="queryForListByObjCount" parameterClass="BolNodeTaskVO" resultClass="int">
+		select count(taskId) from (
+		<include refid="queryForListByObjBase" />
+		) virtual_table
+	  </select>
+	 
+	<insert id="insertByObj" parameterClass="BolNodeTaskVO">
+		insert into
+		BOL_NODE_TASK(TASK_ID,TASK_DESC,TASK_STATE,TASK_TIME,LAST_TIME,TASK_RESULT,TASK_RECEIVER,TASK_TYPE,TASK_TRACK)
+		values(#taskId#,#taskDesc#,#taskState#,#taskTime#,#lastTime#,#taskResult#,#taskReceiver#,#taskType#,#taskTrack#)
+	</insert> 
+	 
+	<update id="updateByObj" parameterClass="BolNodeTaskVO">
+		update BOL_NODE_TASK set TASK_STATE = #taskState#,TASK_ADDMESS=#taskAddMess#,TASK_TRACK=#taskTrack#  where TASK_ID = #taskId#
+	</update> 
+	 
+    <delete id="deleteByObj" parameterClass="BolNodeTaskVO">
+    	delete from BOL_NODE_TASK where TASK_ID = #taskId#
+    </delete>   
+	 
+</sqlMap>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="OperSystem">
+	<typeAlias alias="OperSystemObj"
+		type="com.sitech.basd.yicloud.domain.opersystem.OperSystemObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select m.ID,
+               m.NAME,
+               m.VERSION,
+               m.REMARK,
+               m.TYPE,
+               m.PARTH,
+               m.OPERTYPE,
+               DATE_FORMAT(m.UPDATETIME,'%Y-%m-%d %H:%i:%S') UPDATETIME
+          from TB_YICLOUD_OPERSYSTEM m
+        ]]>
+			<dynamic prepend="where">
+				<isNotEqual property="ID" compareValue="0" prepend="and" >
+					m.ID=#ID#
+				</isNotEqual>
+				<isNotEmpty property="NAME" prepend="and">
+					m.NAME like CONCAT('%',#NAME#,'%')
+				</isNotEmpty>
+				<isNotEmpty property="TYPE" prepend="and">
+					m.TYPE = #TYPE#
+				</isNotEmpty>
+				<isNotEmpty property="OPERTYPE" prepend="and">
+					m.OPERTYPE = #OPERTYPE#
+				</isNotEmpty>
+			</dynamic> 
+	</sql>
+	
+
+	<select id="queryForListByObj" parameterClass="OperSystemObj"
+		resultClass="OperSystemObj"> 
+		<include refid="queryByObjBase" />
+		order by m.ID
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="OperSystemObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	  <insert id="insertByObj" parameterClass="OperSystemObj">
+	  	<selectKey resultClass="int" keyProperty="ID" type="post">
+        SELECT @@IDENTITY AS ID  
+       </selectKey> 
+		insert into TB_YICLOUD_OPERSYSTEM(
+		NAME,VERSION,REMARK,TYPE,PARTH,OPERTYPE,UPDATETIME
+		)
+		values(#NAME#,#VERSION#,#REMARK#,#TYPE#,#PARTH#,#OPERTYPE#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
+	  </insert>
+	  <update id="updateByObj" parameterClass="OperSystemObj">
+		update TB_YICLOUD_OPERSYSTEM set NAME=#NAME#,VERSION=#VERSION#,REMARK=#REMARK#,TYPE=#TYPE#,PARTH=#PARTH#,OPERTYPE=#OPERTYPE#,UPDATETIME=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')
+		where ID=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="OperSystemObj">
+		delete from TB_YICLOUD_OPERSYSTEM where ID=#ID#
+	  </delete>
+</sqlMap>

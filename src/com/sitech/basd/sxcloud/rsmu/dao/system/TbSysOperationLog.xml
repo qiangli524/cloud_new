@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysOperationLog">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbSysOperationLogObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysOperationLogObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		LOGINID,USERID,FUNCID,OPERTYPE,MESSAGE,RESULT,REMARK,OPERTIME
+    </sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<insert id="insertByObj" parameterClass="TbSysOperationLogObj">
+	<selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_SYS_OPERATIONLOG.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+		insert into
+		TB_SYS_OPERATIONLOG (
+		ID,LOGINID,USERID,FUNCID,OPERTYPE,MESSAGE,RESULT,REMARK,OPERTIME
+		)
+		values
+		(
+		#ID#,
+		#LOGINID#,
+		#USERID#,
+		#FUNCID#,
+		#OPERTYPE#,
+		#MESSAGE#,
+		#RESULT#,
+		#REMARK#,
+		sysdate
+		)
+	</insert>
+	<sql id="queryForListByObjBase">
+		SELECT
+		T1.ID,T2.ACCOUNT,T2.NAME,T3.FUNCID AS
+		FUNCID_STR,T3.FUNNAME,T1.OPERTYPE,T1.MESSAGE,T1.RESULT,T1.REMARK, to_char(OPERTIME,'yyyy-mm-dd hh24:mi:ss') OPERTIME
+		FROM
+		TB_SYS_OPERATIONLOG T1,TB_SYS_USERINFO
+		T2,TB_SYS_FUNCTIONS T3 WHERE
+		T1.USERID=T2.ID AND T1.FUNCID=T3.ID
+		<!--AND  DATE_FORMAT(OPERTIME,'%Y') > 2012 -->
+		<isNotEmpty property="ACCOUNT" prepend="AND">
+			T2.ACCOUNT like '%'||#ACCOUNT#||'%'
+        </isNotEmpty>
+         <isNotEmpty property="NAME" prepend="AND">
+			T2.NAME like '%'||#NAME#||'%'
+        </isNotEmpty>
+		<isNotEmpty property="resoursePoolObject" prepend="AND">
+			T1.MESSAGE like '%'||#resoursePoolObject#||'%'
+        </isNotEmpty>
+		<isNotEmpty property="start_opertime" prepend="AND">
+			<isNotEmpty property="end_opertime">
+				T1.OPERTIME BETWEEN
+				to_date(#start_opertime#,'yyyy-MM-dd hh24:mi:ss') AND to_date(#end_opertime#,'yyyy-MM-dd hh24:mi:ss')
+               </isNotEmpty>
+			</isNotEmpty>
+		  ORDER BY OPERTIME DESC
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbSysOperationLogObj"
+		resultClass="TbSysOperationLogObj">
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationStart" />
+			</isGreaterThan>
+		<include refid="queryForListByObjBase" />
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	 <select id="queryForListByObjForCount" parameterClass="TbSysOperationLogObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryForListByObjBase"/>
+       ) virtual_table
+    </select>
+    
+    <sql id="queryOperationLogListBase">
+		select * from (
+			<include refid="queryFirst"/>
+  		)virtual_table where 1=1 
+  			<isNotEmpty property="count" prepend="AND">
+				<![CDATA[ rownum <= #count# ]]>
+			</isNotEmpty>
+	</sql>
+	<sql id="queryFirst">
+		SELECT T1.ID,T3.ACCOUNT,T3.NAME,T2.FUNCID AS FUNCID_STR,T2.FUNNAME,T1.OPERTYPE,T1.MESSAGE,T1.RESULT,T1.REMARK,to_char(OPERTIME, 'yyyy-mm-dd hh24:mi:ss') OPERTIME
+ 	 		FROM TB_SYS_OPERATIONLOG T1,TB_SYS_FUNCTIONS T2,TB_SYS_USERINFO T3
+ 	 		WHERE T1.USERID=T3.ID AND T1.FUNCID=T2.ID
+				<isNotEmpty property="resoursePoolObject" prepend="AND">
+					T1.MESSAGE like '%'||#resoursePoolObject#||'%'
+				</isNotEmpty>
+				<isNotEmpty property="end_opertime" prepend="AND">
+					<![CDATA[ OPERTIME <= to_date(#end_opertime#,'yyyy-mm-dd hh24:mi:ss') ]]>
+		        </isNotEmpty> 
+				<isNotEmpty property="count" prepend="AND">
+					<![CDATA[  rownum<=#count# ]]>
+		        </isNotEmpty> 
+  			ORDER BY OPERTIME DESC
+	</sql>
+	 <select id="queryOperationLogListForCount" parameterClass="TbSysOperationLogObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryOperationLogListBase"/>
+       ) virtual_table
+    </select>
+    <select id="queryOperationLogList" parameterClass="TbSysOperationLogObj"
+		resultClass="TbSysOperationLogObj">
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationStart" />
+			</isGreaterThan>
+		<include refid="queryOperationLogListBase" />
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+</sqlMap>

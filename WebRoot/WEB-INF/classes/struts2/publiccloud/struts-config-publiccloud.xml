@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="publiccloud" extends="json-default">
+
+     <!-- 订购关系接口管理-->
+     <action name="orderRelation_*" class="orderRelationAction" method="{1}">
+         <result name="list">/publicCloud/pub-page/orderRelation/orderRelationList.jsp</result>
+          <result name="orderDetail">/publicCloud/pub-page/orderRelation/orderDetail.jsp</result>
+         <result  name="success" type="json"/>
+     </action>
+ 
+ 	<!-- 控制台首页-->
+ 	<action name="console" class="outlineAction"  method="outlinePage">
+ 		<result name="outline">/publicCloud/pub-page/outline.jsp</result>
+ 	</action>
+ 	
+ 	<!-- 虚拟机相关 -->
+ 	<action name="vm_*" class="virtualMachineAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/vm/listVm.jsp</result>
+ 		<result name="detail">/publicCloud/pub-page/vm/vmDetails.jsp</result>
+ 		<result name="vlan_list">/publicCloud/pub-page/vm/listVlan.jsp</result>
+ 		<result name="joinNetwork">/publicCloud/pub-page/vlan/joinNetwork.jsp</result>
+ 	</action>
+ 	<!-- 虚拟机性能监控 -->
+ 	<action name="vmmonitor_*" class="vmMonitorAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/monitor/listVmMonitor.jsp</result>
+ 		<result name="detail">/publicCloud/pub-page/monitor/details.jsp</result>
+ 	</action>
+ 	<!-- 快照 -->
+ 	<action name="snapshot_*" class="snapShotAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/snapshot/listSnapShot.jsp</result>
+ 		<result name="snapshot">/publicCloud/pub-page/snapshot/createSnapShot.jsp</result>
+ 	</action>
+ 	<!-- 映像-->
+ 	<action name="images_*" class="imagesAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/image/listImage.jsp</result>
+ 		<result name="image">/publicCloud/pub-page/image/createImage.jsp</result>
+ 		<result name="rename">/publicCloud/pub-page/image/renameImage.jsp</result>
+ 		<result name="upload">/publicCloud/pub-page/image/uploadImage.jsp</result>
+ 	</action>
+ 	<!-- 负载均衡器 -->
+ 	<action name="balance_*" class="balanceAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/balance/listBalance.jsp</result>
+ 		<result name="apply">/publicCloud/pub-page/balance/applyBalance.jsp</result>
+        <result name="edit">/publicCloud/pub-page/balance/editBalance.jsp</result>
+ 	</action>
+ 	<!-- 负载均衡器  实例-->
+ 	<action name="server_*" class="serverAction"  method="{1}">
+ 		<result name="create">/publicCloud/pub-page/balance/createServer.jsp</result>
+ 	</action>
+ 	<!-- 负载均衡器监听器-->
+ 	<action name="loadBalanceListener_*" class="loadBalanceListenerAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/balance/listLoadBalanceListener.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/balance/addLoadBalanceListener.jsp</result>
+ 		<result name="edit">/publicCloud/pub-page/balance/editLoadBalanceListener.jsp</result>
+ 		<result name="config">/publicCloud/pub-page/balance/listServer.jsp</result>
+ 	</action>
+ 	
+ 	
+ 	<!-- 防火墙 -->
+ 	<action name="firewall_*" class="firewallAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/firewall/listFirewall.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/firewall/addFirewall.jsp</result>
+ 		<result name="edit">/publicCloud/pub-page/firewall/editFirewall.jsp</result>
+ 		<result name="rule">/publicCloud/pub-page/firewall/listRule.jsp</result>
+ 	</action>
+ 	 	<!-- 防火墙 规则-->
+ 	<action name="rules_*" class="rulesAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/firewall/listRules.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/firewall/addRule.jsp</result>
+ 		<result name="edit">/publicCloud/pub-page/firewall/editRule.jsp</result>
+ 	</action>
+ 	
+ 	<!-- 自定义告警-->
+ 	<action name="vmalarm_*" class="vmAlarmAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/alarm/listAlarm.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/alarm/addAlarm.jsp</result>
+ 		<result name="edit">/publicCloud/pub-page/alarm/editAlarm.jsp</result>
+ 		<result name="detail">/publicCloud/pub-page/alarm/detailAlarm.jsp</result>
+ 	</action>
+ 	<!-- 告警联系人-->
+ 	<action name="subscriber_*" class="subscriberAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/alarm/listSubscriber.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/alarm/addSubscriber.jsp</result>
+ 		<result name="edit">/publicCloud/pub-page/alarm/editSubscriber.jsp</result>
+ 	</action>
+ 	<!-- 告警联系人组-->
+ 	<action name="subscriberGroup_*" class="subscriberGroupAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/alarm/listSubscriberGroup.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/alarm/addSubscriberGroup.jsp</result>
+ 		<result name="edit">/publicCloud/pub-page/alarm/editSubscriberGroup.jsp</result>
+ 	</action>
+ 	
+ 	<!-- 磁盘-->
+ 	<action name="disk_*" class="virtualDiskAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/disk/listDisk.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/disk/addDisk.jsp</result>
+ 	</action>
+ 	<!-- 公网ip -->
+ 	<action name="publicip_*" class="publicIPAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/publicIp/listPublicIp.jsp</result>
+ 		<result name="listForMaintance">/publicCloud/pub-page/publicIp/listPublicIpForMaintance.jsp</result>
+ 		<result name="applypage">/publicCloud/pub-page/publicIp/applyIp.jsp</result>
+ 		<result name="listVM">/publicCloud/pub-page/publicIp/listVm.jsp</result>
+ 		<result name="update">/publicCloud/pub-page/publicIp/updateIP.jsp</result>
+ 		<result name="updateMaintance">/publicCloud/pub-page/publicIp/updateIPMaintance.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/publicIp/updateIPMaintance.jsp</result>
+ 	</action>
+ 	<!-- 物理Vlan-->
+ 	<action name="physicalVlan_*" class="physicalVlanAction"  method="{1}">
+ 		<!-- 运维门户-->
+ 		<result name="list">/resource/united/physicalVlan/listPhysicalVlan.jsp</result>
+ 		<result name="add">/resource/united/physicalVlan/addPhysicalVlan.jsp</result>
+ 		<result name="edit">/resource/united/physicalVlan/editPhysicalVlan.jsp</result>
+ 		
+ 		
+ 		<!-- 用户控制台-->
+ 		<result name="list_for_customer">/publicCloud/pub-page/vlan/listPhysicalVlan.jsp</result>
+ 		<result name="apply">/publicCloud/pub-page/vlan/applyPhysicalVlan.jsp</result>
+ 		<result name="rename">/publicCloud/pub-page/vlan/renameVlan.jsp</result>
+ 		<result name="router_list">/publicCloud/pub-page/vlan/connectRouter.jsp</result>
+ 		
+ 	</action>
+ 	<!-- 路由器 -->
+ 	<action name="router_*" class="routerAction"  method="{1}">
+ 		<result name="list">/publicCloud/pub-page/router/listRouter.jsp</result>
+ 		<result name="add">/publicCloud/pub-page/router/applyRouter.jsp</result>
+ 	</action>
+ 	
+ 		<!-- 用户日志-->
+	<action name="sysUserLog_*" class="sysUserLogAction" method="{1}">
+		<result name="list">/publicCloud/pub-page/userLog/userloglist.jsp</result>
+		<result name="showvm" type="redirect">showvm_listvm2.do</result>
+		<result name="redirectList" type="redirect">quartzScheduler_schedulerTaskList.do</result>
+		<result name="redirectSetjob" type="redirect">quartzScheduler_setjob.do</result>
+		<result name="setjob">/scheduler/setJob.jsp</result>
+		<result name="redirect" type="redirect">quartzScheduler_schedulerTaskList.do</result>
+	</action>
+ 	
+ 	<!-- 北京电信 工单管理 -->
+ 	<action name="workorder_*" class="cloudWorkOrderAction" method="{1}">
+ 			<!-- 客户工单提交页面 -->
+			<result name="apply">/jsp/bpm/workorder/customer_apply.jsp</result>
+ 	
+			<!-- 客户工单列表——未完成页面 -->
+			<result name="customer">/jsp/bpm/workorder/customer_my.jsp?statusType=${statusType}</result>	
+			<!-- 客户评价页面 -->
+			<result name="evaluate">/jsp/bpm/workorder/customer_evaluate.jsp</result>
+			<!-- 客户评价确定 -->
+			<result name="confirm">/jsp/bpm/workorder/customer_confirm.jsp</result>	
+			<!-- 客户评价反馈 -->
+			<result name="feedback">/jsp/bpm/workorder/customer_feedback.jsp</result>	
+			<!-- 客户工单详情-->
+			<result name="customerView">/jsp/bpm/workorder/customer_view.jsp</result>	
+			
+			<!-- 客服代填工单页面 -->
+			<result name="helpapply">/jsp/bpm/workorder/service_apply.jsp</result>
+			<!-- 客服工单页面 -未处理页面 -->
+			<result name="service" >/jsp/bpm/workorder/service_my.jsp</result>
+			<!-- 客服处理-->
+			<result name="serviceCheck" >/jsp/bpm/workorder/service_check.jsp</result>
+			<!-- 客服验证 -->
+			<result name="serviceVerify" >/jsp/bpm/workorder/service_verify.jsp</result>
+			
+			
+			<!-- 运维工单页面 -未处理页面 -->
+			<result name="mechanic" >/jsp/bpm/workorder/mechanic_my.jsp</result>
+			<!-- 运维工单页面 -->
+			<result name="mechanicCheck" >/jsp/bpm/workorder/mechanic_check.jsp</result>
+			<!-- 客户工单详情-->
+			<result name="view">/jsp/bpm/workorder/view.jsp</result>
+			
+			
+			<!-- 代填工单 查询用户信息 -->
+			<result name="customer_list">/jsp/bpm/workorder/customer_list.jsp</result>
+		</action>
+		
+		<!-- 北京电信 运维工单管理 -->
+ 		<action name="maintenanceWorkorder_*" class="maintenanceWorkOrderAction" method="{1}">
+			<!-- 运维工单页面 -未处理页面 -->
+			<result name="maintenance">/jsp/bpm/maintenance_workorder/maintenance_my.jsp</result>
+			<!-- 运维工单页面 -->
+			<result name="maintenanceCheck">/jsp/bpm/maintenance_workorder/maintenance_check.jsp</result>
+			<!-- 运维工单详情-->
+			<result name="view">/jsp/bpm/maintenance_workorder/view.jsp</result>
+		</action>
+ 	
+ </package>
+</struts>

@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="FileVersion">
+
+	<typeAlias alias="FileVersionObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.deployfileversion.DeployFileVersionObj" />
+
+	<sql id="paginationEnd">
+		<![CDATA[
+                 	limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		id,name,appid,no,status,location,describtion,created_user,used_time,created_time
+	</sql>
+	<select id="queryFileVersionOne" parameterClass="FileVersionObj"
+		resultClass="FileVersionObj">
+		select
+		r.id,r.name,r.appid,r.no,r.status,r.location,r.describtion,r.created_user,
+		DATE_FORMAT(r.used_time,'%Y-%m-%d %H:%i:%S')
+		used_time,DATE_FORMAT(r.created_time,'%Y-%m-%d %H:%i:%S')
+		created_time from tb_deploy_version r where r.id=#ID#
+	</select>
+	<delete id="deleteFileVersionObj" parameterClass="FileVersionObj">
+		delete from tb_deploy_version where ID in ('$STRIDS$')
+	</delete>
+	<update id="updateFileVersionObj" parameterClass="FileVersionObj">
+		update tb_deploy_version set describtion=#DESCRIBTION# where
+		id=#ID#
+	</update>
+	<insert id="insertFileVersionObj" parameterClass="FileVersionObj">
+		insert into tb_deploy_version
+		(id,name,appid,no,status,location,describtion,created_time,created_user,MD5CHECKSTR,SOFTID)
+		values
+		(#ID#,#NAME#,#APPID#,#NO#,'0',#LOCATION#,#DESCRIBTION#,DATE_FORMAT(now(),'%Y-%m-%d
+		%H:%i:%S'),#CREATED_USER#,#MD5CHECKSTR#,#SOFTID#)
+	</insert>
+	<select id="querySoftCatchFiles" parameterClass="FileVersionObj"
+		resultClass="java.lang.String">
+		select t.CATCHFILES from TB_BUSI_SOFTWAREINFO t where t.ID =
+		#SOFTID#
+	</select>
+	<insert id="insertSoftWareFileInfo"
+		parameterClass="FileVersionObj">
+		insert into TB_BUSI_SOFTWAREFILEINFO
+		(APPID,VERSIONID,FILEPATH,FILESIZE,FILEUPDATETIME) values
+		(#APPID# ,#ID#,#FILEPATH#,#FILESIZE#,#FILEUPDATETIME#)
+	</insert>
+	<sql id="queryFileVersionList">
+		select
+		r.id,r.name,r.appid,r.no,r.status,r.location,r.describtion,r.created_user,
+		DATE_FORMAT(r.used_time,'%Y-%m-%d %H:%i:%S')
+		used_time,DATE_FORMAT(r.created_time,'%Y-%m-%d %H:%i:%S')
+		created_time, b.appname from tb_deploy_version r left join
+		tb_sys_app b on r.appid = b.id
+		<dynamic prepend="where">
+			<isNotEmpty property="NAME" prepend="and">
+				r.name like CONCAT('%',#NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="DESCRIBTION" prepend="and">
+				r.describtion like CONCAT('%',#DESCRIBTION#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				r.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEqual property="APPID" compareValue="0"
+				prepend="and">
+				r.APPID = #APPID#
+			</isNotEqual>
+			<isNotEmpty property="SYSID" prepend="and">
+				EXISTS (SELECT 1 FROM TB_SYS_APP b where r.appid = b.id
+				and b.sys_id = #SYSID#)
+			</isNotEmpty>
+		</dynamic>
+		order by DATE_FORMAT(r.created_time,'%Y-%m-%d %H:%i:%S') desc
+	</sql>
+	<select id="queryFileVersionList" parameterClass="FileVersionObj"
+		resultClass="FileVersionObj">
+		<include refid="queryFileVersionList" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryFileVersionCount" parameterClass="FileVersionObj"
+		resultClass="int">
+		select count(id) from tb_deploy_version r
+		<dynamic prepend="where">
+			<isNotEmpty property="NAME" prepend="and">
+				r.name like CONCAT('%',#NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="DESCRIBTION" prepend="and">
+				r.describtion like CONCAT('%',#DESCRIBTION#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				r.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEqual property="APPID" compareValue="0"
+				prepend="and">
+				r.APPID = #APPID#
+			</isNotEqual>
+			<isNotEmpty property="SYSID" prepend="and">
+				EXISTS (SELECT 1 FROM TB_SYS_APP b where r.appid = b.id
+				and b.sys_id = #SYSID#)
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="getMaxVersionNoByAppid" parameterClass="FileVersionObj"
+		resultClass="double">
+		select max(no)+0.1 from tb_deploy_version where appid=#APPID#
+	</select>
+
+	<!-- 版本历史相关语句 -->
+	<insert id="insertFileVersionHis" parameterClass="FileVersionObj">
+		insert into tb_deploy_version_his SELECT a.*,
+		#DELETE_BY#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') from
+		tb_deploy_version a where a.ID in ('$STRIDS$')
+	</insert>
+	<sql id="queryFileVersionHisList">
+		select
+		r.id,r.name,r.appid,r.no,r.status,r.location,r.describtion,r.created_user,
+		DATE_FORMAT(r.used_time,'%Y-%m-%d %H:%i:%S')
+		used_time,DATE_FORMAT(r.created_time,'%Y-%m-%d %H:%i:%S')
+		created_time, r.delete_by,DATE_FORMAT(r.delete_time,'%Y-%m-%d
+		%H:%i:%S') delete_time,b.appname from tb_deploy_version_his r
+		left join tb_sys_app b on r.appid = b.id
+		<dynamic prepend="where">
+			<isNotEmpty property="NAME" prepend="and">
+				r.name like CONCAT('%',#NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="DESCRIBTION" prepend="and">
+				r.describtion like CONCAT('%',#DESCRIBTION#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				r.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEqual property="APPID" compareValue="0"
+				prepend="and">
+				r.APPID = #APPID#
+			</isNotEqual>
+			<isNotEmpty property="SYSID" prepend="and">
+				EXISTS (SELECT 1 FROM TB_SYS_APP b where r.appid = b.id
+				and b.sys_id = #SYSID#)
+			</isNotEmpty>
+		</dynamic>
+		order by DATE_FORMAT(r.delete_time,'%Y-%m-%d %H:%i:%S') desc
+	</sql>
+
+	<select id="queryFileVersionHisList" parameterClass="FileVersionObj"
+		resultClass="FileVersionObj">
+		<include refid="queryFileVersionHisList" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryFileVersionHisCount"
+		parameterClass="FileVersionObj" resultClass="int">
+		select count(id) from tb_deploy_version_his r
+		<dynamic prepend="where">
+			<isNotEmpty property="NAME" prepend="and">
+				r.name like CONCAT('%',#NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="DESCRIBTION" prepend="and">
+				r.describtion like CONCAT('%',#DESCRIBTION#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="STATUS" prepend="and">
+				r.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty property="SYSID" prepend="and">
+				EXISTS (SELECT 1 FROM TB_SYS_APP b where r.appid = b.id
+				and b.sys_id = #SYSID#)
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

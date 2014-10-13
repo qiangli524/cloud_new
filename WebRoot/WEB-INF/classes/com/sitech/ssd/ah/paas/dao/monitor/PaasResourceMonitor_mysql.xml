@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasResourceMonitor">
+<typeAlias alias="PaasResourceMonitorObj" type="com.sitech.ssd.ah.paas.domain.monitor.PaasResourceMonitorObj"/>
+	
+	<select id="queryForList" parameterClass="PaasResourceMonitorObj" resultClass="PaasResourceMonitorObj">
+		select 
+			a.entity_id id,a.kpi_name kpiName,a.kpi_value_last kpiValue,ifnull(a.kpi_type,-1) kpiType,date_format(a.insert_time, '%Y-%m-%d %H:%i:%S') insertTime,b.desc_kpi kpiDec 
+		from 
+			tb_paas_resource_statistical a
+		LEFT JOIN tb_paas_kpi_monitor b on a.kpi_name= b.name_kpi
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				a.entity_id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryForSlabList" parameterClass="PaasResourceMonitorObj" resultClass="PaasResourceMonitorObj">
+		SELECT
+			CONCAT('SLAB', '：', a.slab_num) kpiName,
+			CONCAT(a.entity_id, ':slabs:', a.slab_num) kpiValue
+		FROM
+			tb_paas_memcache_slab a
+		left join tb_paas_entity b ON a.entity_id = CONCAT(b.host_address,':',b.host_port) 
+		left join tb_paas_resource_tree c ON c.entity_id = b.entity_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="kpiValue">
+				<isNotNull property="kpiValue">
+					c.entity_id = #kpiValue#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic> 
+		group by kpiName
+	</select>
+</sqlMap>

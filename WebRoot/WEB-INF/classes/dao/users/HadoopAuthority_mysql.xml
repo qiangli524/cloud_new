@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="HadoopAuthority">
+	<typeAlias alias="authorityObj" type="domain.users.HadoopAuthorityObj"/>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="baseCloumns">
+		a.id,a.entity_id,a.service_type,a.path,a.authority
+	</sql>
+	
+	<sql id="baseQuerySql">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_hadoop_authority a
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				a.id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				a.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				a.service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="path">
+				a.path like CONCAT('%',#path#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="authority">
+				a.authority = #authority#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entityIdList">
+				a.entity_id in
+				<iterate close=")" conjunction="," open="(" property="entityIdList">
+					#entityIdList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<insert id="insertByObj" parameterClass="authorityObj">
+		insert into tb_hadoop_authority (id,entity_id,service_type,path,authority)
+		values (#id#,#entity_id#,#service_type#,#path#,#authority#)
+	</insert>
+	
+	<select id="queryForListByObj" parameterClass="authorityObj" resultClass="authorityObj">
+		<include refid="baseQuerySql"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCount" parameterClass="authorityObj" resultClass="int">
+		select count(a.id) from (
+			<include refid="baseQuerySql"/>
+		) a
+	</select>
+	
+	<update id="updateByObj" parameterClass="authorityObj">
+		update tb_hadoop_authority 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="entity_id">
+				entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="service_type">
+				service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="path">
+				path = #path#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="authority">
+				authority = #authority#
+			</isNotEmpty>
+		</dynamic>
+		where id = #id#
+	</update>
+	
+</sqlMap>

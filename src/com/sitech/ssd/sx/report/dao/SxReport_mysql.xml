@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="SxReport">
+	<typeAlias alias="ReportFilter" type="com.sitech.ssd.sx.report.domain.ReportFilter"/>
+	<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<typeAlias alias="TbIbmLparDayCollVO" type="monitor.IBMMonitorBase" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                         limit #FIRSTROWNUM#,#PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<select id="timePeriod" parameterClass="ReportFilter" resultClass="data">
+		select KPI_VALUE `value`,DATE_FORMAT(coll_time,'%Y-%m-%d %H:%i:%s') label from tb_ibm_lpar_day_coll 
+			<dynamic prepend="where">
+				<isNotNull prepend="and" property="id">
+					id = #id#
+				</isNotNull>
+				<isNotNull prepend="and" property="kpi">
+					kpi = #kpi#
+				</isNotNull>
+				<isNotNull prepend="and" property="starttime">
+					COLL_TIME <![CDATA[ > ]]> #starttime#
+				</isNotNull>
+				<isNotNull prepend="and" property="endtime">
+					COLL_TIME <![CDATA[ < ]]> #endtime#
+				</isNotNull>
+			</dynamic>
+	</select>
+	
+	<!-- 插入采集数据 -->
+	<insert id="insertLparDayColl" parameterClass="TbIbmLparDayCollVO">
+		INSERT INTO TB_IBM_LPAR_DAY_COLL(
+		ID,KPI,KPI_VALUE,COLL_TIME)
+		VALUES(#id#,#kpi#,#kpiValue#,#collTime#)
+	</insert>
+</sqlMap>

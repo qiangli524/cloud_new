@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="UnitedTree">
+<typeAlias alias="UnitedTreeObj" type="com.sitech.basd.resource.domain.united.UnitedTreeObj"/>
+<typeAlias alias="ResourceObj" type="com.sitech.basd.resource.domain.united.ResourceStatisticsObj"/>
+	<!-- 查询统一树 -->
+	<select id="queryForUnitedTree" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">	
+		SELECT DISTINCT
+			t.id,
+			t.name,
+			t.parent_id,
+			t.vtype,
+			t.type,
+			t.uuid,
+			t.connect_id
+		FROM	tb_united_tree t
+		LEFT JOIN tb_cloud2_vmhost_info a ON t.uuid = a.VH_UUID AND t.connect_id = a.CONNECT_ID
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					t.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="vtype" prepend="and">
+				t.vtype = #vtype#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				t.type = #type#
+			</isNotNull>
+			<isNotNull property="uuid" prepend="and">
+				<isNotEmpty property="uuid">
+					t.uuid = #uuid#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="connect_id" prepend="and">
+				t.connect_id = #connect_id#
+			</isNotNull>
+			<isNotEmpty property="name" prepend="and">
+				<isNotNull property="name">
+					t.name like CONCAT('%',#name#,'%')
+				</isNotNull>
+			</isNotEmpty>
+			<isNotNull property="flag" >
+				<isNotEmpty property="flag" prepend="and">
+					t.type in ('1', '2', '3')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="ip" prepend="and">
+				<isNotEmpty property="ip">
+					a.VH_IP LIKE  CONCAT('%',#ip#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		</dynamic>
+		order by t.name
+	</select>
+	
+	<!-- 插入一条记录 -->
+	<insert id="insertByObj" parameterClass="UnitedTreeObj">
+		insert into tb_united_tree (id,name,parent_id,type,vtype,uuid,connect_id,domain)
+		values(#id#,#name#,#parent_id#,#type#,#vtype#,#uuid#,#connect_id#,#domain#)
+	</insert>
+	<!-- 更新一条记录 -->
+	<update id="updateByObj" parameterClass="UnitedTreeObj">
+		update tb_united_tree
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="parent_id">
+				parent_id=#parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="name">
+				name=#name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="vtype">
+				vtype=#vtype#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid=#uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="connect_id">
+				connect_id=#connect_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="UnitedTreeObj">
+		delete from tb_united_tree
+		<dynamic prepend="where">
+			<isNotNull property="id" prepend="and">
+				id=#id#
+			</isNotNull>
+			<isNotNull property="uuid" prepend="and">
+				uuid=#uuid#
+			</isNotNull>
+			<isNotNull prepend="and" property="connect_id">
+				connect_id=#connect_id#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	
+	<!-- 根据connectcode与entityCode删除记录 -->
+	<delete id="deleteByUuidAndConnectId" parameterClass="UnitedTreeObj">
+		delete from tb_united_tree where uuid=#uuid# and connect_id=#connect_id#
+	</delete>
+	
+	<!-- 获取所有唯一实体列表（用于数据比对） -->
+	<select id="getAllUniqueEntity" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		select CONCAT(t.uuid,'@',t.connect_id,
+			'@',
+			CASE
+		WHEN t.type = 1 THEN 'DataCenter'
+		WHEN t.type = 2 THEN 'Cluster'
+		WHEN t.type = 3 THEN 'Host'
+		WHEN t.type = 4 THEN 'VM'
+		END
+		) unique_mark from tb_united_tree t where t.vtype=#vtype#
+		<isNotEmpty property="domain">
+            <isNotEqual compareValue="null" property="domain">
+		          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		             t.domain =#domain#	
+		          </isNotEqual>
+	        </isNotEqual>
+       </isNotEmpty>
+	</select>
+	<!-- 获取统一树的首页摘要 -->
+	<resultMap class="java.util.HashMap" id="indexAbstract">
+		<result property="count" column="count"/>
+		<result property="type" column="type"/>
+		<result property="vtype" column="vtype"/>
+	</resultMap>
+	<select id="getIndexAbstract" resultMap="indexAbstract">
+		select COUNT(id) count,type,vtype FROM tb_united_tree 
+		<isNotEmpty property="domain">
+            <isNotEqual compareValue="null" property="domain">
+		          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		             domain =#domain#	
+		          </isNotEqual>
+	        </isNotEqual>
+       </isNotEmpty>
+		 GROUP BY type,vtype
+	</select>
+	<!-- 查询首页摘要信息 -->
+	<select id="getAbstract" parameterClass="ResourceObj" resultClass="ResourceObj">
+		select * from tb_resource_statistics 
+		<dynamic prepend="where">
+			<isNotNull property="key" prepend="and">
+				`key`in ($key$)
+			</isNotNull>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+     		</isNotEmpty>	
+		</dynamic>
+	</select>
+	
+	<select id="queryForTreeListUseIn" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">
+		select * from tb_united_tree where parent_id in
+		<iterate close=")" conjunction="," open="(" property="pidlist">
+			#pidlist[]#
+		</iterate>
+		<dynamic>
+			<isNotEmpty prepend="and" property="vtype">
+				vtype = #vtype#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+     		</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<!--  验证名字是否重复 -->
+	<!-- //////2013年11月5日 liudan 增加connect_id查询字段查询同一个资源池下的名称是否重复 -->
+	<select id="queryName" parameterClass="UnitedTreeObj" resultClass="java.lang.Integer">
+		select count(*) from tb_united_tree 
+		<dynamic prepend="where">
+			<isNotNull property="name" prepend="and">
+				name = #name#
+			</isNotNull>
+			<isNotNull property="vtype" prepend="and">
+				vtype = #vtype#
+			</isNotNull>
+			<isNotNull property="connect_id" prepend="and">
+				connect_id = #connect_id#
+			</isNotNull>
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+		</dynamic> 
+	</select>
+	
+	<!-- 查询权限树 -->
+	<select id="queryForAuthTree" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">
+		SELECT
+			t.id,
+			t.`name`,
+			t.parent_id,
+			t.uuid,
+			t.vtype,
+			t.type,
+			t.connect_id,
+			ifnull(u.OPERAUTHORITY,'4') oper
+		FROM
+			tb_united_tree t
+		LEFT JOIN tb_cloud_entityuser u ON ifnull(t.uuid,-1)=ifnull(u.ENTITY_ID,-1) 
+			AND ifnull(t.connect_id,-1)=ifnull(u.CONNECT_ID,-1)
+			AND t.name = u.ENTITY_NAME
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					t.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" >
+				<isNotEmpty property="parent_id" prepend="and">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="vtype" prepend="and">
+				t.vtype = #vtype#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				t.type = #type#
+			</isNotNull>
+			<isNotNull property="uuid" prepend="and">
+				t.uuid = #uuid#
+			</isNotNull>
+			<isNotNull property="connect_id" prepend="and">
+				t.connect_id = #connect_id#
+			</isNotNull>
+			<isNotNull property="user_id">
+				<isNotEqual property="user_id" prepend="and" compareValue="1">
+					u.USERID = #user_id#
+				</isNotEqual>
+			</isNotNull>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+     		</isNotEmpty>
+		</dynamic>
+		order by t.name
+	</select>
+	
+	<!-- 查询虚拟机要展开的节点集合，虚拟机所在的主机在集群下 -->
+	<select id="getExpandNodesForVMInHostAndCluster" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',h.id,',',cl.id,',',dc.id)
+		FROM
+			tb_united_tree v,
+			tb_united_tree h,
+			tb_united_tree cl,
+			tb_united_tree dc
+		WHERE
+			v.parent_id = h.id
+			AND h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND v.connect_id = h.connect_id
+			AND h.connect_id = cl.connect_id
+			AND v.name = #name#
+			AND v.type = #type#
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             v.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	
+	<!-- 查询虚拟机要展开的节点集合，虚拟机所在的主机在集群下 并且存在地域结点-->
+	<select id="getExpandNodesHasLocation" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',h.id,',',cl.id,',',dc.id,',',la.id)
+		FROM
+			tb_united_tree v,
+			tb_united_tree h,
+			tb_united_tree cl,
+			tb_united_tree dc,
+			tb_united_tree la
+		WHERE
+			v.parent_id = h.id
+			AND h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND dc.parent_id = la.id
+			AND v.connect_id = h.connect_id
+			AND h.connect_id = cl.connect_id
+			AND v.name = #name#
+			AND v.type = #type#
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             v.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	
+	<!-- 查询虚拟机要展开的节点集合 ，虚拟机所在的主机在数据中心下-->
+	<select id="getExpandNodesForVMInHostAndDc" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',h.id,',',dc.id)
+		FROM
+			tb_united_tree v,
+			tb_united_tree h,
+			tb_united_tree dc
+		WHERE
+			v.parent_id = h.id
+			and h.parent_id = dc.id
+			AND v.connect_id = h.connect_id
+			AND v.name = #name#
+			AND v.type = #type#
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             v.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	<!-- 查询虚拟机要展开的节点集合 -->
+	<select id="getExpandNodesForVMInCLuster" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',cl.id,',',dc.id)
+		FROM
+			tb_united_tree v,
+			tb_united_tree cl,
+			tb_united_tree dc
+		WHERE
+			v.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND v.connect_id = cl.connect_id
+			AND v.name = #name#
+			AND v.type = #type#
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			            v.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	<!-- 查询主机要展开的节点集合,适用于主机在集群下 -->
+	<select id="getExpandNodesForHostInCluster" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(h.id,',',cl.id,',',dc.id)
+		FROM
+			tb_united_tree h,
+			tb_united_tree cl,
+			tb_united_tree dc
+		WHERE
+			h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND h.connect_id = cl.connect_id
+			AND h.name = #name#
+			AND h.type = #type#
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             h.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	<!-- 查询主机要展开的节点集合,适用于主机在集群下且存在地域结点 -->
+	<select id="getExpandNodesForHostHasLocation" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(h.id,',',cl.id,',',dc.id,',',lo.id)
+		FROM
+			tb_united_tree h,
+			tb_united_tree cl,
+			tb_united_tree dc,
+			tb_united_tree lo
+		WHERE
+			h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND dc.parent_id = lo.id
+			AND h.connect_id = cl.connect_id
+			AND h.name = #name#
+			AND h.type = #type#
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             h.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	<!-- 查询主机要展开的节点集合,适用于主机在数据中心下 -->
+	<select id="getExpandNodesForHostInDc" parameterClass="UnitedTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(h.id,',',dc.id)
+		FROM
+			tb_united_tree h,
+			tb_united_tree dc
+		WHERE
+			h.parent_id = dc.id
+			AND h.name = #name#
+			AND h.type = #type#
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             h.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	<!-- 更新一条记录 -->
+	<update id="updateOperateByObj" parameterClass="UnitedTreeObj">
+		update tb_united_tree set name=#name#,parent_id=#parent_id#
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid=#uuid#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<select id="queryNetDomain" resultClass="UnitedTreeObj">
+		select a.name name,a.id id from tb_united_tree a where a.vtype='5' and a.type = '6'
+		<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             a.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+	</select>
+	<select id="querySubNet" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">
+		select id,name from  tb_united_tree
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="parent_id">
+				parent_id=#parent_id#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- 只通过id来更新一条记录 taoxue -->
+	<update id="updateObjById" parameterClass="UnitedTreeObj">
+		update tb_united_tree
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="parent_id">
+				parent_id=#parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="name">
+				name=#name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="vtype">
+				vtype=#vtype#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="uuid">
+				uuid=#uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="connect_id">
+				connect_id=#connect_id#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id=#id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<select id="queryForListForWorkOrder" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">
+		SELECT
+			a.id,
+			a.`name`,
+			a.uuid,
+			a.connect_id,
+			a.vtype,
+			b.`name` parent_uuid
+		FROM
+			tb_united_tree a
+		LEFT JOIN tb_united_tree b ON a.parent_id = b.id
+		<dynamic prepend="where">
+		    <isNotEmpty prepend="and" property="connect_id">
+				a.connect_id = #connect_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="type">
+				a.type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="vtype">
+				a.vtype = #vtype#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				a.name like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+     </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForCenterTreeList" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">
+		select * from tb_united_tree where vtype in (1,2,3,4,7) 
+		<dynamic>
+			<isNotEmpty prepend="and" property="parent_id">
+				parent_id = #parent_id# 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="type">
+				type = #type# 
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+   			 </isNotEmpty>
+		</dynamic>	
+	</select>
+	
+	<select id="queryForListUnionParent" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">
+		select a.id,a.uuid,a.name,a.parent_id,b.name parent_name from tb_united_tree a inner join tb_united_tree b on a.parent_id = b.id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="type">
+				a.type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="vtype">
+				a.vtype = #vtype#
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+	            <isNotEqual compareValue="null" property="domain">
+			          <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			             a.domain =#domain#	
+			          </isNotEqual>
+		        </isNotEqual>
+	       </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForListByObj" parameterClass="UnitedTreeObj" resultClass="UnitedTreeObj">
+		select id,name,parent_id,vtype,type,uuid,connect_id from tb_united_tree
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="parent_id">
+				parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="type">
+				type = #type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="vtype">
+				vtype = #vtype#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="connect_id">
+				connect_id = #connect_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				name like CONCAT('%',#name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="pidlist">
+				parent_id in
+				<iterate close=")" conjunction="," open="(" property="pidlist">
+					#pidlist[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uniqueIdList">
+				id in
+				<iterate close=")" conjunction="," open="(" property="uniqueIdList">
+					#uniqueIdList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="conn_uuidList">
+				concat_ws('_',connect_id,uuid) in
+				<iterate close=")" conjunction="," open="(" property="conn_uuidList">
+					#conn_uuidList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+     		</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

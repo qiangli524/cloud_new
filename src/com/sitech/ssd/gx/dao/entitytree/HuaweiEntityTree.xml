@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="huaweiEntityTree">
+	<typeAlias alias="huaweiEntityTreeObj" type="com.sitech.ssd.gx.domain.huaweientitytree.HuaweiEntityTreeObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<sql id="huaweiEntityTreeColumns">
+    	ID,NAME,TYPE,RARENT_ID,ENTITY_ID,CODE,DC_CODE,CLUSER_CODE,HOST_CODE
+    </sql>
+    
+    <insert id="insertTreeNode" parameterClass="huaweiEntityTreeObj">
+	 	INSERT INTO TB_HUAWEI_ENTITY_TREE(
+		ID,NAME,TYPE,RARENT_ID,ENTITY_ID,CODE,DC_CODE,CLUSER_CODE,HOST_CODE) 
+		VALUES(#id#,#name#,#type#,#parent_id#,#entity_id#,#code#,#dc_code#,#cluser_code#,#host_code#)
+    </insert>
+   
+    <select id="queryForTree" parameterClass="huaweiEntityTreeObj" resultClass="huaweiEntityTreeObj">
+    	SELECT <include refid="huaweiEntityTreeColumns"/>
+    	FROM TB_HUAWEI_ENTITY_TREE 
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="code">
+    			<isNotEmpty property="code" prepend="AND">
+    				CODE = #code# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="id">
+    			<isNotEmpty property="id" prepend="AND">
+    				ID = #id# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isGreaterThan property="type" prepend="AND" compareValue="0">
+    			TYPE=#type#
+    		</isGreaterThan>
+    		<isNotNull property="parent_id">
+    			<isNotEmpty property="parent_id" prepend="AND">
+    				RARENT_ID = #parent_id#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="entity_id">
+    			<isNotEmpty property="entity_id" prepend="AND">
+    				ENTITY_ID = #entity_id#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="dc_code">
+    			<isNotEmpty property="dc_code" prepend="AND">
+    				DC_CODE = #dc_code#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="cluser_code">
+    			<isNotEmpty property="cluser_code" prepend="AND">
+    				CLUSER_CODE = #cluser_code#
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="host_code">
+    			<isNotEmpty property="host_code" prepend="AND">
+    				HOST_CODE = #host_code#
+    			</isNotEmpty>
+    		</isNotNull>
+    	</dynamic>
+    </select>
+    
+    <select id="queryTreeNode" parameterClass="huaweiEntityTreeObj" resultClass="huaweiEntityTreeObj">
+		SELECT <include refid="huaweiEntityTreeColumns"/>
+    	FROM TB_HUAWEI_ENTITY_TREE 
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="code">
+    			<isNotEmpty property="code" prepend="AND">
+    				CODE = #code# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="id">
+    			<isNotEmpty property="id" prepend="AND">
+    				ID = #id# 
+    			</isNotEmpty>
+    		</isNotNull>
+    	</dynamic>
+	</select>
+	<!-- 同步数据时删除原数据 -->
+	<delete id="deleteHuaweiEntityTree">
+		delete from TB_HUAWEI_ENTITY_TREE
+	</delete>
+	<delete id="deleteHuaweihostInfo">
+		delete from TB_HUAWEI_HOST_INFO
+	</delete>
+	<delete id="deleteHuaweiVMInfo">
+		delete from TB_HUAWEI_VM_INFO
+	</delete>
+</sqlMap>

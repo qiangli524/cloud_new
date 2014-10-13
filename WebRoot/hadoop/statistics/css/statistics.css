@@ -1,0 +1,624 @@
+.mainbox {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 367px;
+	border-radius: 3px 3px 0px 0px;
+	/* border:1px solid #CCCCCC; */
+	color: #000000;	
+}
+.mainboxhbase {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 363px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxservice {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 300px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxhadoop-hbase {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 318px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+
+.mainbox .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxhbase .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxservice .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxhadoop-hbase .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+
+.mainbox .item{
+	width:47%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxhbase .item{
+	width:47%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxhadoop-hbase .item{
+	width:47%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxservice .item{
+	width:97%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+
+.ml5{
+	margin-left:5px;
+}
+
+.mainbox .item .top{
+	border-bottom: 1px solid #cde2bd;
+	padding-bottom: 5px;
+}
+.mainboxhbase .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxhadoop-hbase .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxservice .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+
+.mainbox .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxhbase .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxhadoop-hbase .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxservice .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+
+.mainbox .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxhbase .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxhadoop-hbase .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxservice .item .right{
+	float: left;
+	line-height: 23px;
+}
+
+.mainbox .item .value{
+	color: #249EFF;
+}
+.mainboxhbase .item .value{
+	color: #249EFF;
+}
+.mainboxhadoop-hbase .item .value{
+	color: #249EFF;
+}
+.mainboxservice .item .value{
+	color: #249EFF;
+}
+
+.mainbox .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+.mainboxhbase .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+.mainboxhadoop-hbase .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+.mainboxservice .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.testimg {
+	margin-top:15px;
+	background: url(1.jpg) no-repeat;
+}
+
+.mainboxcluster {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 341px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxcluster .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxcluster .item{
+	width:97%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxcluster .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxcluster .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxcluster .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxcluster .item .value{
+	color: #249EFF;
+}
+.mainboxcluster .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.mainboxcluster .itemhdfs{
+	width:47%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxcluster .itemhdfs .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxcluster .itemhdfs .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxcluster .itemhdfs .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxcluster .itemhdfs .value{
+	color: #249EFF;
+}
+.mainboxcluster .itemhdfs .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.mainboxclusterhbase {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 271px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxclusterhbase .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxclusterhbase .item{
+	width:97%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxclusterhbase .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxclusterhbase .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxclusterhbase .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxclusterhbase .item .value{
+	color: #249EFF;
+}
+.mainboxclusterhbase .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+
+.mainboxclusterother {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 158px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxclusterother .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxclusterother .item{
+	width:97%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxclusterother .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxclusterother .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxclusterother .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxclusterother .item .value{
+	color: #249EFF;
+}
+.mainboxclusterother .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.mainboxmapandhdfs {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 518px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxmapandhdfs .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxmapandhdfs .item{
+	width:47%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxmapandhdfs .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxmapandhdfs .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxmapandhdfs .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxmapandhdfs .item .value{
+	color: #249EFF;
+}
+.mainboxmapandhdfs .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.mainboxroot {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 158px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxroot .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxroot .item{
+	width:97%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxroot .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxroot .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxroot .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxroot .item .value{
+	color: #249EFF;
+}
+.mainboxroot .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.mainboxservice-datanode {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 185px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxservice-datanode .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxservice-datanode .item{
+	width:97%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxservice-datanode .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxservice-datanode .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxservice-datanode .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxservice-datanode .item .value{
+	color: #249EFF;
+}
+.mainboxservice-datanode .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.mainboxservice-other {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 160px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainboxservice-other .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainboxservice-other .item{
+	width:97%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainboxservice-other .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}
+.mainboxservice-other .item .left{
+	float: left;
+	width:55px;
+	height:50px;
+}
+.mainboxservice-other .item .right{
+	float: left;
+	line-height: 23px;
+}
+.mainboxservice-other .item .value{
+	color: #249EFF;
+}
+.mainboxservice-other .item .right .bt{
+	width: 40px;
+	height: 19px;
+	line-height: 19px;
+	border:1px solid #CCCCCC;
+	background-color: white;
+	cursor: pointer;
+	font-size: 4px;
+}
+
+.mainbox-kpi {
+	margin-top: 2px;
+	padding: 0px;
+	width: 100%;
+	height: 340px;
+	border-radius: 3px 3px 0px 0px;
+	border:1px solid #CCCCCC;
+	color: #000000;	
+}
+.mainbox-kpi .title {
+	height: 40px;
+	background-color:#F8F8F8;
+	text-align: left;
+	line-height: 20px;
+	padding-left:5px;
+	font-size: 12px;
+	border-bottom:1px solid #CCCCCC;
+}
+.mainbox-kpi .item{
+	width:99.6%;
+	float: left;
+	padding: 7px 10px 0px 10px;
+	font-size: 12px;
+}
+.mainbox-kpi .item .top{
+	border-bottom: 2px solid #249EFF;
+	padding-bottom: 5px;
+}

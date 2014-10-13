@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="paas"
+			 extends="global_package">
+		<!-- paas资源树 -->
+		<action name="paasTree_*" class="paasTreeAction" method="{1}">
+			<result name="tabs">/ah/paas/tree/tabs.jsp</result>
+			<result name="list">/ah/paas/tree/listPaasTree.jsp</result>
+			<result name="tree" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="results" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="querynode" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="expandNode" type="json">
+				<param name="root">resultList</param>
+			</result>
+			
+			<result name="bmtList">/ah/paas/tree/listBmt.jsp</result>
+			<!-- Caas -->
+			<result name="addCache">/ah/paas/tree/caas/addCache.jsp</result>
+			<result name="addCacheBusiness">/ah/paas/tree/caas/addCacheBusiness.jsp</result>
+			<result name="addCacheExample">/ah/paas/tree/caas/addCacheExample.jsp</result>
+			<result name="addCacheHost">/ah/paas/tree/caas/addCacheHost.jsp</result>
+			
+			<!-- Daas -->
+			<result name="addDBType">/ah/paas/tree/daas/addDBType.jsp</result>
+			<result name="addDBBusiness">/ah/paas/tree/daas/addDBBusiness.jsp</result>
+			<result name="addDB">/ah/paas/tree/daas/addDatebase.jsp</result>
+			<result name="addDBEntity">/ah/paas/tree/daas/addDBEntity.jsp</result>
+			<result name="addServerHost">/ah/paas/tree/daas/addGPHosts.jsp</result>
+			<result name="listDBEntity">/ah/paas/tree/daas/listDBEntity.jsp</result>
+			<result name="listGpHost">/ah/paas/tree/daas/listGpHost.jsp</result>
+			<!-- Maas -->
+			<result name="addMiddlewareType">/ah/paas/tree/maas/addMiddlewareType.jsp</result>
+			<result name="addMiddlewareBusiness">/ah/paas/tree/maas/addMiddlewareBusiness.jsp</result>
+			<result name="addMiddleware">/ah/paas/tree/maas/addMiddleware.jsp</result>
+			<result name="addMiddlewareEntity">/ah/paas/tree/maas/addMiddlewareEntity.jsp</result>
+			<result name="listMiddlewareEntity">/ah/paas/tree/maas/listMiddlewareEntity.jsp</result>
+		</action>
+		<action name="memcacheTab_*" class="memcacheTabAction" method="{1}">
+			<result name="caasStatistics">/ah/paas/tab/caas/memcache/caasStatistics.jsp</result>
+			<result name="memcacheExamples">/ah/paas/tab/caas/memcache/memcacheExamplesStatistics.jsp</result>
+			<result name="memcacheResourcePool">/ah/paas/tab/caas/memcache/memcachePoolStatistics.jsp</result>
+			<result name="showHost">/ah/paas/tab/caas/memcache/hostStatistics.jsp</result>
+		</action>
+		<action name="oracleTab_*" class="oracleTabAction" method="{1}">
+			<result name="showPaas">/ah/paas/tab/paasStatistics.jsp</result>
+			<result name="showDBType">/ah/paas/tab/daas/oracle/dbTypeStatistics.jsp</result>
+			<result name="showDBBusiness">/ah/paas/tab/daas/oracle/businessStatistics.jsp</result>
+			<result name="entityAbstract">/ah/paas/tab/daas/oracle/entityAbstract.jsp</result>
+			<result name="queryDBList">/ah/paas/tab/daas/oracle/dbStatistics.jsp</result>
+			<result name="queryDBInstanceList">/ah/paas/tab/daas/oracle/instanceStatistics.jsp</result>
+			<result name="queryDBServerList">/ah/paas/tab/daas/oracle/serverStatistics.jsp</result>
+			<result name="entityStatistics">/ah/paas/tab/daas/oracle/entityStatistics.jsp</result>
+			<result name="db_chart">/ah/paas/tab/daas/oracle/db_chart.jsp</result>
+			<result name="instance_chart">/ah/paas/tab/daas/oracle/instance_chart.jsp</result>
+			<result name="server_chart">/ah/paas/tab/daas/oracle/server_chart.jsp</result>
+			<result name="showDaas">/ah/paas/tab/daas/daasStatistics.jsp</result>
+			<result name="tab" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="mysqlTab_*" class="mysqlTabAction" method="{1}">
+			<result name="mysqlEntityStatistics">/ah/paas/tab/daas/mysql/mysqlEntityStatistics.jsp</result>
+			<result name="entityStatistics">/ah/paas/tab/daas/mysql/entityStatistics.jsp</result>
+			<result name="showDBBusiness">/ah/paas/tab/daas/mysql/businessStatistics.jsp</result>
+			<result name="showDBType">/ah/paas/tab/daas/mysql/dbTypeStatistics.jsp</result>
+			<result name="entityStatistics">/ah/paas/tab/daas/mysql/entityStatistics.jsp</result>
+			<result name="mysql_chart">/ah/paas/tab/daas/mysql/mysql_chart.jsp</result>
+			<result name="tab" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="greenPlumTab_*" class="greenPlumTabAction" method="{1}">
+			<result name="showGreenPlumHost">/ah/paas/tab/daas/gp/gpHostStatistics.jsp</result>
+			<result name="gpHostsList">/ah/paas/tab/daas/gp/gpHostsList.jsp</result>
+		</action>
+		<action name="weblogicTab_*" class="weblogicTabAction" method="{1}">
+			<result name="showMiddlewareType">/ah/paas/tab/maas/weblogic/maasTypeStatistics.jsp</result>
+			<result name="showMiddlewareBusiness">/ah/paas/tab/maas/weblogic/businessStatistics.jsp</result>
+			<result name="queryDataSourceList">/ah/paas/tab/maas/weblogic/dataSourceStatistics.jsp</result>
+			<result name="queryServerList">/ah/paas/tab/maas/weblogic/serverStatistics.jsp</result>
+			<result name="entityStatistics">/ah/paas/tab/maas/weblogic/entityStatistics.jsp</result>
+			<result name="dataSource_chart">/ah/paas/tab/maas/weblogic/dataSource_chart.jsp</result>
+			<result name="server_chart">/ah/paas/tab/maas/weblogic/server_chart.jsp</result>
+			<result name="showMaas">/ah/paas/tab/maas/maasStatistics.jsp</result>
+			<result name="tab" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="tomcatTab_*" class="tomcatTabAction" method="{1}">
+			<result name="showMiddlewareType">/ah/paas/tab/maas/tomcat/maasTypeStatistics.jsp</result>
+			<result name="showMiddlewareBusiness">/ah/paas/tab/maas/tomcat/businessStatistics.jsp</result>
+			<result name="queryDataSourceList">/ah/paas/tab/maas/tomcat/dataSourceStatistics.jsp</result>
+			<result name="queryServerList">/ah/paas/tab/maas/tomcat/serverStatistics.jsp</result>
+			<result name="entityStatistics">/ah/paas/tab/maas/tomcat/entityStatistics.jsp</result>
+			<result name="dataSource_chart">/ah/paas/tab/maas/tomcat/dataSource_chart.jsp</result>
+			<result name="server_chart">/ah/paas/tab/maas/tomcat/server_chart.jsp</result>
+			<result name="tab" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		<action name="paasAlarm_*" class="paasAlarmAction" method="{1}">
+			<result name="listPaasAlarm">/ah/paas/alarm/listPaasAlarm.jsp</result>
+		</action> 
+		<action name="paasHostInfo_*" class="paasHostInfoAction" method="{1}">
+			<result name="list">/ah/paas/host/listPaasHostInfo.jsp</result>
+			<result name="edit">/ah/paas/host/editPaasHostInfo.jsp</result>
+		</action>
+		<!-- 性能监控 -->
+		<action name="paasStatisticsMonitor_*" class="paasStatisticsMonitorAction" method="{1}">
+			<result name="go">/ah/paas/monitor/StatisticsMonitorPage.jsp</result>
+		</action>
+		<action name="paasDataMonitor_*" class="paasDataMonitorAction" method="{1}">
+			<result name="go">/ah/paas/monitor/PaasDataMonitorPage.jsp</result>
+		</action>
+		<action name="paasHitMonitor_*" class="paasHitMonitorAction" method="{1}">
+			<result name="go">/ah/paas/monitor/PaasHitMonitorPage.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="virtualAction" class="com.sitech.basd.sxcloud.cloud.web.virtual.action.VirtualAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="virtualService">
+			<ref bean="virtualService" />
+		</property>
+		<property name="tbProjectService">
+			<ref bean="tbProjectService" />
+		</property> 
+		<property name="netService">
+			<ref bean="netService" />
+		</property> 
+		<property name="virtualPoolService">
+			<ref bean="virtualPoolService" />
+		</property> 
+	</bean>
+	
+	
+	<bean id="virtualConfigAction" class="com.sitech.basd.sxcloud.cloud.web.virtual.action.TbCloud2VirtualConfigAction"
+		singleton="false"><!--每个request请求产生新实例[样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="virtualService">
+			<ref bean="virtualService" />
+		</property>
+		<property name="tbCloud2VirtualConfigService">
+			<ref bean="tbCloud2VirtualConfigService" />
+		</property> 
+	</bean>
+	
+	<bean id="virtualPoolAction" class="com.sitech.basd.sxcloud.cloud.web.virtual.action.VirtualPoolAction"
+		singleton="false"><!--每个request请求产生新实例[样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="virtualPoolService">
+			<ref bean="virtualPoolService" />
+		</property>
+		<property name="tbCloud2VirtualConfigService">
+			<ref bean="tbCloud2VirtualConfigService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

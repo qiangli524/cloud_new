@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BusiTree">
+	<typeAlias alias="BusiTreeObj"
+		type="com.sitech.basd.yicloud.domain.busitree.BusiTreeObj" /> 
+	<sql id="paginationEnd">
+		<![CDATA[
+        	  limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+	<select id="queryForTree" parameterClass="BusiTreeObj" resultClass="BusiTreeObj">
+		select id,name,type,parent_id parentId,busi_id busiId from TB_CLOUD_BUSI_TREE
+		<dynamic prepend="where">
+			<isNotEqual property="parentId" compareValue="0" prepend="and" >
+				parent_id=#parentId#
+			</isNotEqual>
+			<isNotEmpty property="type" prepend="and">
+				TYPE=#type#
+			</isNotEmpty>
+			<isNotEqual property="id" compareValue="0" prepend="and" >
+				id=#id#
+			</isNotEqual>
+			<isNotEmpty property="BUSI_ID" prepend="and" >
+				BUSI_ID=#BUSI_ID#
+			</isNotEmpty>
+		</dynamic>
+		order by type asc
+	</select>
+	<insert id="insertByobj" parameterClass="BusiTreeObj">
+		<selectKey resultClass="int" keyProperty="ID" type="post">
+        SELECT @@IDENTITY AS ID  
+		</selectKey>
+		insert into TB_CLOUD_BUSI_TREE(name,type,parent_id,busi_id)
+		values(#name#,#type#,#parentId#,#busiId#)
+	</insert>
+</sqlMap>

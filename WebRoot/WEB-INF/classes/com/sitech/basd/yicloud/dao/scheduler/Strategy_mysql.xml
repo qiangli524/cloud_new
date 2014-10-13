@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="strategy">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="StrategyObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.StrategyObj" />
+	<typeAlias alias="TriggerRelationObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.TriggerRelationObj" />
+	<typeAlias alias="KPIWeightObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.KPIWeightObj" />
+	<typeAlias alias="StaskObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.StaskObj" /> 
+	<sql id="paginationEnd">
+		<![CDATA[
+               limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryListBase"> 
+	select a.strategy_id, a.strategy_name, a.strategy_desc,  a.type, a.migtype,
+	a.strateay_level, a.entity_id, CONCAT(case when a.strateay_level = '0' then 'vcenter' 
+	when a.strateay_level = '1' then '数据中心'
+	when a.strateay_level = '2' then '集群'
+	when a.strateay_level = '3' then '主机'
+	when a.strateay_level = '4' then '虚拟机'
+	end, ':', a.entity_name ) as entity_name, a.enable, a.effect_date,
+	a.EXCUTE, a.excute_type, DATE_FORMAT(a.ins_date, '%Y-%m-%d %H:%i:%S') ins_date,
+	a.CREATER, a.temp_id, c.tigger_level, c.kpi_id, c.`interval`, c.tigger_n, c.operator,c.trigger_m,
+	c.threshold,c.MIN,c.max,d.cpu,d.mem,d.storage,d.vh_num,d.host_id,a.connect_id,a.network_id netWork_id,
+	n.`NAME` netWork_name,v.VH_ID monitor_id,v.VH_NAME monitor_name
+	from TB_SCHEDULER_STRATEGY a LEFT JOIN tb_cloud2_vmhost_info v ON a.monitor_id = v.VH_ID 
+	LEFT JOIN TB_CLOUD2_NET_INFO n ON a.NETWORK_ID = n.NET_ID,
+	TB_SCHEDULER_TRIGGER_RELATION b, TB_SCHEDULER_TRIGGER_DEF c, TB_SCHEDULER_STRATEGY_EXPAND d
+	where a.strategy_id = b.scheduler_id and c.trigger_id = b.trigger_id and a.strategy_id = d.strategy_id 
+    <isNotNull prepend="and" property="strategy_id">
+	 		a.strategy_id = #strategy_id#
+	</isNotNull>
+    <isNotNull prepend="and" property="strategy_name">
+	 		a.strategy_name like CONCAT('%',#strategy_name#,'%')
+	</isNotNull>
+	<isNotNull prepend="and" property="enable">
+			a.enable = #enable#
+	</isNotNull>   
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	n.user_domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty> 
+	</sql>
+	<select id="queryList" parameterClass="StrategyObj" resultClass="StrategyObj"> 
+		<include refid="queryListBase" /> 
+		ORDER BY INS_DATE DESC,strategy_name
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForCount" parameterClass="StrategyObj" resultClass="int">
+		select count(strategy_id)  from (
+		<include refid="queryListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <insert id="insertByObj" parameterClass="StrategyObj">
+	 	insert into TB_SCHEDULER_STRATEGY(
+	 		STRATEGY_ID,STRATEGY_NAME,STRATEGY_DESC,TYPE,STRATEAY_LEVEL,ENTITY_ID,ENABLE,EFFECT_DATE,EXCUTE,EXCUTE_TYPE,
+	 		STATUS,TEMP_ID,INS_DATE,CREATER,ENTITY_NAME,MIGTYPE,CONNECT_ID,NETWORK_ID,monitor_id
+	 	)values(
+	 		#strategy_id#,#strategy_name#,#strategy_desc#,#type#,#strateay_level#,#entity_id#,#enable#,#effect_date#,#excute#,#excute_type#,0,
+	 		#temp_id#,now(), #creater#,#entity_name#, #migtype#,#connect_id#,#netWork_id#,#monitor_id#
+	 	)
+	 </insert>
+	 <delete id="deleteByObj" parameterClass="StrategyObj">
+	 	delete from TB_SCHEDULER_STRATEGY where strategy_id = #strategy_id#
+	 </delete>
+	 <insert id="insertTriggerRelation" parameterClass="TriggerRelationObj">
+	 	insert into TB_SCHEDULER_TRIGGER_RELATION(
+	 		SCHEDULER_ID,TRIGGER_ID,KPI_ID,ENTITY_ID,INS_DATE
+	 	)values(
+	 		#scheduler_id#,#trigger_id#,#kpi_id#,#entity_id#,sysdate()
+	 	)
+	 </insert>
+	 <delete id="deleteRelation" parameterClass="TriggerRelationObj">
+	 	delete from TB_SCHEDULER_TRIGGER_RELATION where scheduler_id = #scheduler_id#
+	 </delete>
+	 <select id="querykpis" parameterClass="KPIWeightObj" resultClass="KPIWeightObj">
+	 	select kpi_id,kpi_weight,kpi_desc,kpi_type from TB_KPI_WEIGHT where 1=1
+	 	<isNotNull prepend="and" property="kpi_id">
+	 		kpi_id = #kpi_id#
+	 	</isNotNull>
+	 	<isNotNull prepend="and" property="kpi_type">
+	 		kpi_type = #kpi_type#
+	 	</isNotNull>
+	 </select>
+	 <update id="updateByObj" parameterClass="StrategyObj">
+	 	update TB_SCHEDULER_STRATEGY 
+	 	<dynamic prepend="set">
+	 		<isNotEmpty prepend="," property="strategy_name">
+	 			<isNotNull property="strategy_name">
+	 				STRATEGY_NAME=#strategy_name#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="strategy_desc">
+	 			<isNotNull property="strategy_desc">
+	 				STRATEGY_DESC=#strategy_desc#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="type">
+	 			<isNotNull property="type">
+	 				TYPE=#type#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="strateay_level">
+	 			<isNotNull property="strateay_level">
+	 				STRATEAY_LEVEL=#strateay_level#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="entity_id">
+	 			<isNotNull property="entity_id">
+	 				ENTITY_ID=#entity_id#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="enable">
+	 			<isNotNull property="enable">
+	 				ENABLE=#enable#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="effect_date">
+	 			<isNotNull property="effect_date">
+	 				EFFECT_DATE=#effect_date#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="excute">
+	 			<isNotNull property="excute">
+	 				EXCUTE=#excute#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="excute_type">
+	 			<isNotNull property="excute_type">
+	 				EXCUTE_TYPE=#excute_type#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="temp_id">
+	 			<isNotNull property="temp_id">
+	 				TEMP_ID=#temp_id#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="entity_name">
+	 			<isNotNull property="entity_name">
+	 				ENTITY_NAME=#entity_name#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="migtype">
+	 			<isNotNull property="migtype">
+	 				MIGTYPE = #migtype#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="connect_id">
+	 			<isNotNull property="connect_id">
+	 				CONNECT_ID = #connect_id#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="netWork_id">
+	 			<isNotNull property="netWork_id">
+	 				NETWORK_ID=#netWork_id#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="monitor_id">
+	 				monitor_id=#monitor_id#
+	 		</isNotEmpty>
+	 	</dynamic>
+	 	,STATUS=0
+	 	where STRATEGY_ID=#strategy_id#
+	 </update>
+	 <update id="updateTriggerRelation" parameterClass="TriggerRelationObj">
+	 	update TB_SCHEDULER_TRIGGER_RELATION set
+	 		TRIGGER_ID=#trigger_id#,KPI_ID=#kpi_id#,ENTITY_ID=#entity_id#
+	 	where SCHEDULER_ID=#scheduler_id# 
+	 </update>
+	 
+	 <select id="strategykpi" parameterClass="TriggerRelationObj" resultClass="TriggerRelationObj">
+	 	select scheduler_id,kpi_id from TB_SCHEDULER_TRIGGER_RELATION where scheduler_id = #scheduler_id#
+	 </select>
+	 
+	 <insert id="insertTaskObj" parameterClass="StaskObj">
+	  	insert into TB_SCHEDULER_STRATEGY_TASK(
+	 		TASK_ID,STRATEGY_ID,TYPE ,VH_ID,HOST_ID,STATUS,INS_DATE         
+	 	)values(
+	 		#TASK_ID#,#STRATEGY_ID#,#TYPE#,#VH_ID#,#HOST_ID#,#STATUS#,now()
+	 	)
+	  </insert>
+	  
+	  <insert id="insertStrategyExpand" parameterClass="StrategyObj">
+	  	insert into TB_SCHEDULER_STRATEGY_EXPAND(
+	 		STRATEGY_ID,CPU,MEM ,STORAGE,VH_NUM,HOST_ID         
+	 	)values(
+	 		#strategy_id#,#cpu#,#mem#,#storage#,#vh_num#,#host_id#
+	 	)
+	  </insert> 
+	  
+	  <delete id="deleteStrategyExpand" parameterClass="StrategyObj">
+	  	delete from TB_SCHEDULER_STRATEGY_EXPAND where STRATEGY_ID = #strategy_id#
+	  </delete> 
+	  
+	  <update id="updateStrategyExpand" parameterClass="StrategyObj">
+	 	update TB_SCHEDULER_STRATEGY_EXPAND set
+	 		CPU=#cpu#,MEM=#mem#,STORAGE=#storage#,VH_NUM=#vh_num#,HOST_ID=#host_id#
+	 	where STRATEGY_ID = #strategy_id#
+	 </update>
+</sqlMap>

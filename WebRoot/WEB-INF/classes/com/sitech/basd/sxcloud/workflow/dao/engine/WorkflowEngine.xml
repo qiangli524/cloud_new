@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+ 
+<sqlMap namespace="workflowEngine">
+<typeAlias alias="ProcessInfoObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.ProcessInfoObj" />
+<typeAlias alias="DisposeManObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.DisposeManObj" />
+<typeAlias alias="FlowTaskObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.FlowTaskObj" />
+<typeAlias alias="FlowRuleObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.FlowRuleObj" />
+<typeAlias alias="FlowNodeDescObj" type="com.sitech.basd.sxcloud.workflow.domain.engine.FlowNodeDescObj" />
+    <update id="updateFlowTask" parameterClass="FlowTaskObj">
+    update TB_ASLM_FLOW_TASK set DISPOSE_TIME = sysdate,TASK_STATUS=#TASK_STATUS#,TASK_REMARK=#TASK_REMARK#,TASK_OPERATE=#TASK_OPERATE# where TASK_ID = #TASK_ID#
+    </update>
+    <update id="updateFlowTaskHungStatus" parameterClass="FlowTaskObj">
+     update TB_ASLM_FLOW_TASK m set m.TASK_OPERATE = #TASK_OPERATE#
+     where exists (select 1 from TB_ASLM_FLOW_TASK n where m.PROCESS_ID=n.PROCESS_ID
+     and m.PROCESS_SERIALNUMBER=n.PROCESS_SERIALNUMBER and n.TASK_ID =#TASK_ID#)
+    </update>
+    <insert id="insertFlowTask" parameterClass="FlowTaskObj">
+       <selectKey resultClass="int" keyProperty="TASK_ID" >
+        	SELECT ID_ASLM_FLOW_TASK.NEXTVAL AS TASK_ID FROM DUAL
+       </selectKey>  
+           insert into TB_ASLM_FLOW_TASK(TASK_ID,PROCESS_ID,NODE_ID,PROCESS_SERIALNUMBER,PER_TASK_ID,
+           DISPOSE_MAN,TASK_STATUS,RECEIVE_TIME,DISPOSE_TIME,TASK_OPERATE,TASK_REMARK)
+           values(#TASK_ID#,#PROCESS_ID#,#NODE_ID#,#PROCESS_SERIALNUMBER#,#PER_TASK_ID#,#DISPOSE_MAN#,
+           #TASK_STATUS#,sysdate,sysdate,#TASK_OPERATE#,#TASK_REMARK#)
+    </insert>
+    
+    <select id="getCacheFlowTaskId" parameterClass="FlowTaskObj" resultClass="java.lang.String">
+           select TASK_ID from TB_ASLM_FLOW_TASK  where PROCESS_ID = #PROCESS_ID# and 
+           TASK_STATUS =0 and PROCESS_SERIALNUMBER = #PROCESS_SERIALNUMBER# 
+    </select>
+    
+    <select id="queryFlowTask" parameterClass="FlowTaskObj" resultClass="FlowTaskObj">
+           select TASK_ID,PROCESS_ID,NODE_ID,PROCESS_SERIALNUMBER,PER_TASK_ID,DISPOSE_MAN,TASK_STATUS,TASK_OPERATE
+            from TB_ASLM_FLOW_TASK where 1 = 1
+            <isGreaterThan property="TASK_ID" compareValue="0" prepend="and">
+            TASK_ID = #TASK_ID#
+            </isGreaterThan>
+            <isGreaterThan property="PER_TASK_ID" compareValue="0"  prepend="and">
+            PER_TASK_ID = #PER_TASK_ID#
+            </isGreaterThan>
+    </select>
+    <select id="getNextNodeAlreadyDoTask" parameterClass="FlowTaskObj" resultClass="FlowTaskObj">
+           select TASK_ID,PROCESS_ID,NODE_ID,PROCESS_SERIALNUMBER,PER_TASK_ID,DISPOSE_MAN,TASK_STATUS 
+           from TB_ASLM_FLOW_TASK where PER_TASK_ID = #PER_TASK_ID# and TASK_STATUS=1
+    </select>
+    
+    <select id="getProcessNodeDispose" parameterClass="DisposeManObj" resultClass="DisposeManObj">
+           select PROCESS_ID applicationType,CURR_NODEID currNodeId,NEXT_NODEID nextNodeId,
+           NODE_WORKGROUP_NAME groupName,DISPOSE_MAN userId,TASK_OPERATE oprate from TB_ASLM_FLOW_NODE_WORKGROUP 
+           where PROCESS_ID=#applicationType# and CURR_NODEID=#currNodeId# 
+           <isGreaterThan property="oprate" compareValue="0" prepend="and">
+            TASK_OPERATE = #oprate#
+           </isGreaterThan>
+           <isGreaterThan property="nextNodeId" compareValue="0" prepend="and">
+            NEXT_NODEID = #nextNodeId#
+           </isGreaterThan>
+    </select>
+    
+    <select id="getDraftList" parameterClass="ProcessInfoObj" resultClass="ProcessInfoObj">
+           select TASK_ID taskId,PROCESS_ID applicationType,PROCESS_SERIALNUMBER applicationId,DISPOSE_MAN userId,
+           NODE_ID processNode,TASK_STATUS processNodeStatus,  to_char(RECEIVE_TIME,'YYYY-MM-DD HH24:MI:SS') receiveTime,
+           to_char(DISPOSE_TIME,'YYYY-MM-DD HH24:MI:SS') disposeTime ,TASK_OPERATE operate from TB_ASLM_FLOW_TASK  
+           where PROCESS_ID =#applicationType#  and DISPOSE_MAN =#userId# and TASK_STATUS=0 
+           order by TASK_ID desc
+    </select>
+    
+    <select id="getToDoList" parameterClass="ProcessInfoObj" resultClass="ProcessInfoObj">
+           select TASK_ID taskId,PROCESS_ID applicationType,PROCESS_SERIALNUMBER applicationId,DISPOSE_MAN userId,
+           NODE_ID processNode,TASK_STATUS processNodeStatus,  to_char(RECEIVE_TIME,'YYYY-MM-DD HH24:MI:SS') receiveTime,
+           to_char(DISPOSE_TIME,'YYYY-MM-DD HH24:MI:SS') disposeTime ,TASK_OPERATE operate from TB_ASLM_FLOW_TASK  
+           where PROCESS_ID =#applicationType#  and DISPOSE_MAN =#userId# and TASK_STATUS=1 and TASK_OPERATE=1
+           order by TASK_ID desc
+    </select>
+    
+    <select id="getAllList" parameterClass="ProcessInfoObj" resultClass="ProcessInfoObj">
+           select TASK_ID taskId,PROCESS_ID applicationType,PROCESS_SERIALNUMBER applicationId,DISPOSE_MAN userId,
+           NODE_ID processNode,TASK_STATUS processNodeStatus,  to_char(RECEIVE_TIME,'YYYY-MM-DD HH24:MI:SS') receiveTime,
+           to_char(DISPOSE_TIME,'YYYY-MM-DD HH24:MI:SS') disposeTime ,TASK_OPERATE operate from TB_ASLM_FLOW_TASK   
+           where PROCESS_ID =#applicationType#  and DISPOSE_MAN =#userId# and TASK_OPERATE=1 and NODE_ID=#processNode#
+           order by TASK_ID desc
+    </select>
+    
+    <select id="getAlreadyDo" parameterClass="ProcessInfoObj" resultClass="ProcessInfoObj">
+           select TASK_ID taskId,PROCESS_ID applicationType,PROCESS_SERIALNUMBER applicationId,DISPOSE_MAN userId,
+           NODE_ID processNode,TASK_STATUS processNodeStatus, to_char(RECEIVE_TIME,'YYYY-MM-DD HH24:MI:SS') receiveTime,
+           to_char(DISPOSE_TIME,'YYYY-MM-DD HH24:MI:SS') disposeTime,TASK_OPERATE operate  from TB_ASLM_FLOW_TASK  
+           where PROCESS_ID =#applicationType#  and DISPOSE_MAN =#userId# and TASK_STATUS=2 
+           and TASK_ID in (select  max(TASK_ID) from TB_ASLM_FLOW_TASK 
+           where PROCESS_ID =#applicationType#  and DISPOSE_MAN =#userId# group by PROCESS_SERIALNUMBER)
+           order by TASK_ID desc
+    </select>
+    
+  	<select id="getPlayedBack" parameterClass="ProcessInfoObj" resultClass="ProcessInfoObj">
+          select TASK_ID taskId,PROCESS_ID applicationType,PROCESS_SERIALNUMBER applicationId,DISPOSE_MAN userId,
+          NODE_ID processNode,TASK_STATUS processNodeStatus, to_char(RECEIVE_TIME,'YYYY-MM-DD HH24:MI:SS') receiveTime,
+          to_char(DISPOSE_TIME,'YYYY-MM-DD HH24:MI:SS') disposeTime,TASK_OPERATE operate from TB_ASLM_FLOW_TASK  
+          where PROCESS_ID =#applicationType#  and DISPOSE_MAN =#userId# and TASK_STATUS=1 and TASK_OPERATE=4
+          order by TASK_ID desc
+    </select> 
+    
+    <select id="getHungList" parameterClass="ProcessInfoObj" resultClass="ProcessInfoObj">
+          select TASK_ID taskId,PROCESS_ID applicationType,PROCESS_SERIALNUMBER applicationId,DISPOSE_MAN userId,
+          NODE_ID processNode,TASK_STATUS processNodeStatus, to_char(RECEIVE_TIME,'YYYY-MM-DD HH24:MI:SS') receiveTime,
+          to_char(DISPOSE_TIME,'YYYY-MM-DD HH24:MI:SS') disposeTime,TASK_OPERATE operate from TB_ASLM_FLOW_TASK  
+          where PROCESS_ID =#applicationType#  and DISPOSE_MAN =#userId# and TASK_STATUS=1 and TASK_OPERATE=2
+          order by TASK_ID desc
+    </select> 
+    
+    <select id="getProcessStartNodeId" parameterClass="int" resultClass="int">
+          select NODE_ID from TB_ASLM_FLOW_NODE where  PROCESS_ID=$value$ and NODE_TYPE = 1
+    </select>
+    
+    <select id="getProcessFlowRule" parameterClass="FlowRuleObj" resultClass="FlowRuleObj">
+          select NEXT_NODEID from TB_ASLM_FLOW_RULE where  PROCESS_ID=#PROCESS_ID# and CURR_NODEID = #CURR_NODEID#
+    </select>
+    
+    <delete id="deleteNewFlowTask" parameterClass="FlowTaskObj">
+          delete from TB_ASLM_FLOW_TASK  where PROCESS_SERIALNUMBER = #PROCESS_SERIALNUMBER# and NODE_ID=#NODE_ID# 
+          and TASK_STATUS=0 and PROCESS_ID = #PROCESS_ID#
+    </delete>
+    <delete id="deleteNextNodeFlowTask" parameterClass="FlowTaskObj">
+          delete from TB_ASLM_FLOW_TASK  where PER_TASK_ID = #PER_TASK_ID# and TASK_STATUS=1
+    </delete>
+    
+    <select id="getProcessTaskTrack" parameterClass="FlowTaskObj" resultClass="FlowTaskObj">
+          select m.TASK_ID,m.PROCESS_ID,m.NODE_ID,m.PROCESS_SERIALNUMBER,m.PER_TASK_ID,m.DISPOSE_MAN,m.TASK_STATUS,
+		to_char(m.RECEIVE_TIME,'YYYY-MM-DD HH24:MI:SS') RECEIVE_TIME,
+		to_char(m.DISPOSE_TIME,'YYYY-MM-DD HH24:MI:SS') DISPOSE_TIME,
+		m.TASK_OPERATE,m.TASK_REMARK,n.NODE_NAME,n.NODE_REMARK from TB_ASLM_FLOW_TASK m,TB_ASLM_FLOW_NODE n
+        where m.PROCESS_ID=n.PROCESS_ID and m.NODE_ID=n.NODE_ID and m.PROCESS_ID=#PROCESS_ID# 
+        and m.PROCESS_SERIALNUMBER = #PROCESS_SERIALNUMBER# and m.TASK_STATUS = 2
+        order by m.TASK_ID asc
+    </select>
+    <select id="getProcessNodeHisDisposeMan" parameterClass="FlowTaskObj" resultClass="DisposeManObj">
+          select distinct DISPOSE_MAN userId from TB_ASLM_FLOW_TASK where  PROCESS_ID=#PROCESS_ID# 
+          and PROCESS_SERIALNUMBER = #PROCESS_SERIALNUMBER# and NODE_ID =#NODE_ID#
+    </select>
+     <select id="getStartProcessDisposeMan" parameterClass="DisposeManObj" resultClass="DisposeManObj">
+           select PROCESS_ID applicationType,CURR_NODEID currNodeId,NEXT_NODEID nextNodeId,
+           NODE_WORKGROUP_NAME groupName,DISPOSE_MAN userId,NEXT_NODEID nextNodeId,TASK_OPERATE oprate 
+           from TB_ASLM_FLOW_NODE_WORKGROUP 
+           where PROCESS_ID=#applicationType# and DISPOSE_MAN=#userId# and CURR_NODEID = 0
+    </select>
+     <select id="getFlowNodeDesc" parameterClass="FlowNodeDescObj" resultClass="FlowNodeDescObj">
+          select NODE_ID,PROCESS_ID,NODE_NAME,NODE_DESC,NODE_TYPE,NODE_REMARK 
+          from TB_ASLM_FLOW_NODE where NODE_ID=#NODE_ID# and PROCESS_ID =#PROCESS_ID#
+    </select>
+    <select id="queryProcessToDoDisposeMan" parameterClass="FlowTaskObj" resultClass="FlowTaskObj">
+           select TASK_ID,PROCESS_ID,NODE_ID,PROCESS_SERIALNUMBER,PER_TASK_ID,DISPOSE_MAN,TASK_STATUS,TASK_OPERATE
+            from TB_ASLM_FLOW_TASK where PROCESS_ID = #PROCESS_ID# and PROCESS_SERIALNUMBER = #PROCESS_SERIALNUMBER# and TASK_STATUS = 1
+    </select>
+     <select id="queryWorkflowInfo" parameterClass="FlowTaskObj" resultClass="FlowTaskObj">
+           select TASK_ID from TB_ASLM_FLOW_TASK  where PROCESS_ID = #PROCESS_ID# and 
+           PROCESS_SERIALNUMBER = #PROCESS_SERIALNUMBER# and NODE_ID = 4 
+    </select>
+</sqlMap>

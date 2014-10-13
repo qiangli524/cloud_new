@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopJob">
+	<typeAlias alias="HadoopJobObj" type="domain.mapreduce.job.HadoopJobObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryJobListByObjBase">
+	SELECT
+		t.id,
+		t.`name`,
+		t.`user`,
+		t.state,
+		DATE_FORMAT(t.startTime, '%Y-%m-%d %H:%i:%s') startTime,
+		DATE_FORMAT(t.finishTime, '%Y-%m-%d %H:%i:%s') finishTime,
+		DATE_FORMAT(t.elapsedTime, '%Y-%m-%d %H:%i:%s') elapsedTime,
+		t.mapsTotal,
+		t.mapsCompleted,
+		t.reducesTotal,
+		t.reducesCompleted,
+		t.diagnostics,
+		t.uberized,
+		t.mapsPending,
+		t.mapsRunning,
+		t.reducesPending,
+		t.reducesRunning,
+		t.newReduceAttempts,
+		t.runningReduceAttempts,
+		t.failedReduceAttempts,
+		t.killedReduceAttempts,
+		t.successfulReduceAttempts,
+		t.newMapAttempts,
+		t.runningMapAttempts,
+		t.failedMapAttempts,
+		t.killedMapAttempts,
+		t.successfulMapAttempts,
+		t.application_id,
+		t.job_id
+	FROM
+		tb_hadoop_job t
+	LEFT JOIN tb_hadoop_cluster_info b ON  t.cluster_id = b.id
+	<dynamic prepend="WHERE">
+		<isNotNull property="id" prepend="and">
+			<isNotEmpty property="id">
+				b.id = #id#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="application_id" prepend="and">
+			<isNotEmpty property="application_id">
+				t.application_id = #application_id#
+			</isNotEmpty>
+		</isNotNull>
+	</dynamic>
+	ORDER BY t.name
+	</sql>
+	<select id="queryJobListByObjCount" parameterClass="HadoopJobObj" resultClass="int">
+		select count(*)  from (
+		<include refid="queryJobListByObjBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 查询作业管理列表 -->
+	<select id="queryJobListByObj" parameterClass="HadoopJobObj" resultClass="HadoopJobObj">
+		<include refid ="queryJobListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+</sqlMap>

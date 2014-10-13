@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TemMan">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TemManObj" type="com.sitech.basd.resource.domain.template.TemManObj"/>    
+    
+  
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+    <sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+	 <sql id="queryByObjBase">
+		SELECT
+			t.ID,
+			t.NAME,
+			t.TYPE,
+			t.ISPUBLIC,
+			t.REMARK,
+			t.POSITION,
+			t.SYSTEM,
+			t.CPU,
+			t.MEM,
+			t.STORE,
+			t.TEMPLATE_CODE templateCode,
+			t.CONNECT_ID connectId,
+			t.ISPHYSICAl isPhysical,
+			t.USERNAME,
+			t.PASSWORD,
+			t.USABLE,
+			t.user_id,
+			t.ALIAS alias,
+			t.domain,
+		 	t.nic_count,
+		    d.NAME dataCenterName
+		FROM
+	        TB_TEM_MANAGE t LEFT JOIN tb_united_tree d
+	        on t.CONNECT_ID=d.connect_id and d.vtype=1 and d.type=1
+	 	<dynamic prepend="where">
+	 		<isNotNull property="id"  prepend="and" >
+				t.ID=#id#
+			</isNotNull> 
+			<isNotEmpty property="name" prepend="and">
+				t.NAME like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="alias" prepend="and">
+				t.ALIAS like CONCAT('%',#alias#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+					t.TYPE=#type#
+			</isNotEmpty>
+			<isNotNull property="account" prepend="and">
+				t.ACCOUNT = #account#
+			</isNotNull>
+			<isNotNull property="connectId" prepend="and">
+				t.CONNECT_ID = #connectId#
+			</isNotNull>
+			<isNotNull property="templateCode" prepend="and">
+				t.TEMPLATE_CODE = #templateCode#
+			</isNotNull>
+			<isNotNull property="user_id" prepend="and">
+				<isNotEmpty property="user_id">
+					t.user_id = #user_id#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotEmpty property="connectCodeList" prepend="and">
+				t.CONNECT_ID in
+				<iterate close=")" conjunction="," open="(" property="connectCodeList">
+					#connectCodeList[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotNull property="domain" prepend="and">
+				t.DOMAIN = #domain#
+			</isNotNull>
+		</dynamic> 
+		order by TYPE,NAME
+	 </sql>
+	 
+	 <!-- 查询镜像列表 -->
+	 <select id="queryForList" parameterClass="TemManObj" resultClass="TemManObj">
+        <include refid="queryByObjBase"/> 
+        	<isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	 </select>
+	  <select id="queryByObjForCount" parameterClass="TemManObj" resultClass="int">
+	       select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <!-- 更新 -->
+	  <update id="updateByObj" parameterClass="TemManObj">
+	  	update TB_TEM_MANAGE 
+	  	set 
+	  		ID = #id#
+	  		<isNotEmpty prepend="," property="alias">     
+			         ALIAS=#alias#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="isPublic">     
+			         ISPUBLIC=#isPublic#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="remark">     
+			         REMARK=#remark#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="position">     
+			         POSITION=#position#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="position">     
+			         USERNAME=#position#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="username">     
+			         PASSWORD=#username#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="usable">     
+			         USABLE=#usable#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="user_id">     
+			         user_id=#user_id#      
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="domain">     
+			         domain=#domain#      
+			</isNotEmpty> 
+			<isNotEmpty prepend="," property="nic_count">     
+			         nic_count=#nic_count#      
+			</isNotEmpty> 
+	  	where ID = #id#
+	  </update>
+	  
+	  <insert id="insertByObj" parameterClass="TemManObj">
+	  	insert into TB_TEM_MANAGE (ID,NAME,TYPE,ISPUBLIC,REMARK,POSITION,SYSTEM,CPU,MEM,STORE,CONNECT_ID,HOST_CODE,
+	  	TEMPLATE_CODE,USERNAME,PASSWORD,ISPHYSICAL,user_id,ALIAS,domain,nic_count) 
+	  	values (#id#,#name#,#type#,#isPublic#,#remark#,#position#,#system#,#cpu#,#mem#,#store#,#connectId#,#hostCode#,
+	  	#templateCode#,#username#,#password#,#isPhysical#,#user_id#,#alias#,#domain#,#nic_count#)
+	  </insert>
+	  <delete id="deleteByObj" parameterClass="TemManObj">
+	  	delete from TB_TEM_MANAGE
+	  	<dynamic prepend="where">
+	 		<isNotNull property="id"  prepend="and" >
+				ID= #id#
+			</isNotNull>
+			<isNotNull property="connectId"  prepend="and" >
+				CONNECT_ID= #connectId#
+			</isNotNull>
+		</dynamic> 
+	  </delete>
+	  <!-- 根据模板及连接Code删除信息 -->
+	  <delete id="deleteByHostCodeAndTemplateCode" parameterClass="TemManObj">
+	  	delete from TB_TEM_MANAGE where CONNECT_ID= #connectId# AND TEMPLATE_CODE=#templateCode#
+	  </delete>
+	  <!-- 根据模板及连接Code更新信息 -->
+	  <update id="updateByHostCodeAndTemplateCode" parameterClass="TemManObj">
+	  	update TB_TEM_MANAGE set CPU=#cpu#,MEM=#mem#,STORE=#store#,HOST_CODE=#hostCode#,NAME=#name#,nic_count=#nic_count#
+	  	where ID = #id#
+	  </update>
+	  	<!-- 获取所有唯一实体列表（用于数据比对） -->
+		<select id="getAllTemplateEntity" parameterClass="TemManObj" resultClass="java.lang.String">
+			SELECT
+			CONCAT(
+				t.TEMPLATE_CODE,
+				'@',
+				t.connect_id,
+				'@',
+				'Template'
+			) unique_mark
+		FROM
+			TB_TEM_MANAGE t
+		WHERE
+			t.type = #type#
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</select>
+		
+		<select id="queryTemListById" parameterClass="TemManObj" resultClass="TemManObj">
+			select ID,NAME,ALIAS,TYPE,ISPUBLIC,REMARK,POSITION,SYSTEM,CPU,MEM, STORE,TEMPLATE_CODE templateCode,
+			CONNECT_ID connectId,ISPHYSICAl isPhysical,USERNAME,PASSWORD,nic_count from TB_TEM_MANAGE a
+			<dynamic prepend="where">
+		 		<isNotNull property="id" >
+					exists (select * from TB_TEM_MANAGE b where b.id = #id# and a.type = b.type)
+				</isNotNull>
+				<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	a.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+          	 </isNotEmpty>
+			</dynamic> 
+		</select>
+		
+		<select id="queryTemSystemList" resultClass="java.lang.String">
+			select distinct(system) from TB_TEM_MANAGE
+		</select>
+		
+		<select id="queryTemBySystem" parameterClass="java.lang.String" resultClass="TemManObj">
+			select ID,NAME,ALIAS,TYPE,ISPUBLIC,REMARK,POSITION,SYSTEM,CPU,MEM, STORE,TEMPLATE_CODE templateCode,
+			CONNECT_ID connectId,ISPHYSICAl isPhysical,USERNAME,PASSWORD,nic_count,soft_name from TB_TEM_MANAGE 
+			where system=#system#
+		</select>
+</sqlMap>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="UpgradeAlarm">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="UpgradeAlarmObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.upgrade.UpgradeAlarmObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		APPID,HOSTID,to_char(INSERTTIME,'yyyy-mm-dd hh24:mi:ss') as
+		INSERTTIME,COMMAND,RESULT,ALARM_LEVEL
+	</sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryByObjBase">
+		select
+		<include refid="tableColumns" />
+		from tb_busi_upgrade_alarm
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="start_time" prepend="AND">
+				<isNotEmpty property="end_time">
+					INSERTTIME BETWEEN
+					to_date(#start_time#,'YYYY-MM-DD')AND
+					to_date(#end_time#,'YYYY-MM-DD')
+				</isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY INSERTTIME DESC
+	</sql>
+	<select id="queryForListByObj" parameterClass="UpgradeAlarmObj"
+		resultClass="UpgradeAlarmObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="UpgradeAlarmObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+
+</sqlMap>

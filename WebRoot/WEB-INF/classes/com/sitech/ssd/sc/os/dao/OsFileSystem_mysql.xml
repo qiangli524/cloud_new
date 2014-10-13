@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsFileSystem">
+	<typeAlias alias="osFileSystem" type="com.sitech.ssd.sc.os.domain.OsFileSystemModel"/>
+	 
+	<insert id="insertOsFileSystem" parameterClass="osFileSystem">
+		INSERT INTO tb_os_file_system(os_host_id,order_num,filesys_name,filesys_type,filesys_size,volume_group,logical_volume,filesys_desc) 
+		VALUES(#os_host_id#,#order_num#,#filesys_name#,#filesys_type#,#filesys_size#,#volume_group#,#logical_volume#,#filesys_desc#)
+	</insert>
+	
+	<insert id="copyOsTemplateFileSystem" parameterClass="osFileSystem">
+		INSERT INTO tb_os_file_system(os_host_id,filesys_name,filesys_type,filesys_size,flag,volume_group,logical_volume,filesys_desc)
+		SELECT #os_host_id# os_host_id,filesystem_name,filesystem_type,filesystem_size,'1' flag,volume_group,logical_volume,filesystem_desc
+		FROM tb_os_template_file_system WHERE template_id  = #id#
+	</insert>
+	  
+	<delete id="deleteOsFileSystem" parameterClass="osFileSystem">
+		DELETE FROM tb_os_file_system
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="flag" prepend="and">
+				flag = #flag#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsFileSystem" parameterClass="osFileSystem">
+		UPDATE tb_os_file_system
+		SET os_host_id = #os_host_id#,order_num = #order_num#,
+			filesys_name = #filesys_name#,filesys_type = #filesys_type#,
+			filesys_size = #filesys_size#,volume_group = #volume_group#,
+			logical_volume = #logical_volume#,filesys_desc = #filesys_desc#
+		WHERE id = #id#
+	</update>
+	
+	<select id="selectOsFileSystem" parameterClass="osFileSystem" resultClass="osFileSystem">
+		SELECT * FROM tb_os_file_system WHERE id = #id#
+	</select>
+	
+	<select id="selectOsFileSystemList" parameterClass="osFileSystem" resultClass="osFileSystem">
+		SELECT * FROM tb_os_file_system
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="filesys_name" prepend="and">
+				filesys_name = #filesys_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="selectHomeDirList" parameterClass="osFileSystem" resultClass="osFileSystem">
+		SELECT * 
+		 FROM tb_os_file_system
+		WHERE os_host_id = #os_host_id#
+		  AND id NOT IN( SELECT home_dir FROM tb_os_user WHERE os_host_id = #os_host_id# )
+	</select>
+	
+	<sql id="templ_unionColumns">
+		filesystem_name filesys_name,filesystem_type filesys_type,filesystem_size filesys_size,
+		filesystem_desc filesys_desc,volume_group,logical_volume
+	</sql>
+	<sql id="unionColumns">
+		filesys_name,filesys_type,filesys_size,filesys_desc,volume_group,logical_volume
+	</sql>
+	<select id="unionOsFileSystemList" parameterClass="osFileSystem" resultClass="osFileSystem">
+	SELECT <include refid="templ_unionColumns" />,'1' flag 
+	  FROM tb_os_template_file_system WHERE template_id = #id#
+	UNION
+	SELECT <include refid="unionColumns" />,flag 
+	  FROM tb_os_file_system WHERE os_host_id = #os_host_id#	
+	</select>
+	
+</sqlMap>

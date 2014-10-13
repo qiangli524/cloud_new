@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="diskInfo">
+
+	<typeAlias alias="diskInfoObj" type="com.sitech.basd.yicloud.domain.device.disk.DiskInfoObj" />
+	
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="baseCloumns">
+		a.disk_number,a.disk_id,a.disk_name,a.disk_type,a.diskgroup_id,a.disk_size
+	</sql>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="disk_number">
+				a.disk_number = #disk_number#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_name">
+				a.disk_name like CONCAT('%',#disk_name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_id">
+				a.disk_id = #disk_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_type">
+				a.disk_type = #disk_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="diskgroup_id">
+				a.diskgroup_id = #diskgroup_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="diskInfoObj" resultClass="diskInfoObj">
+		select
+		<include refid="baseCloumns"/>,b.name diskgroup_name
+		from tb_disk_info a
+		left join tb_disk_group b
+		on a.diskgroup_id = b.uuid
+		<include refid="whereClause"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCountByObj" parameterClass="diskInfoObj" resultClass="int">
+		select count(*)
+		from tb_disk_info a
+		left join tb_disk_group b
+		on a.diskgroup_id = b.uuid
+		<include refid="whereClause"/>
+	</select>
+	
+	<select id="queryForListByGroupIsNull" parameterClass="diskInfoObj" resultClass="diskInfoObj">
+		select
+		<include refid="baseCloumns"/>,b.name diskgroup_name
+		from tb_disk_info a
+		left join tb_disk_group b
+		on a.diskgroup_id = b.uuid
+		<dynamic prepend="where">	
+			a.diskgroup_id IS NULL or a.diskgroup_id = ''
+			and a.disk_type = '2'
+			<isNotEmpty prepend="and" property="disk_number">
+				a.disk_number = #disk_number#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_name">
+				a.disk_name like CONCAT('%',#disk_name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_id">
+				a.disk_id = #disk_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_type">
+				a.disk_type = #disk_type#
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForListByGroupIsNullCount" parameterClass="diskInfoObj" resultClass="int">
+		select count(*)
+		from tb_disk_info a
+		left join tb_disk_group b
+		on a.diskgroup_id = b.uuid
+		<dynamic prepend="where">	
+			a.diskgroup_id IS NULL or a.diskgroup_id = ''
+			and a.disk_type = '2'
+			<isNotEmpty prepend="and" property="disk_number">
+				a.disk_number = #disk_number#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_name">
+				a.disk_name like CONCAT('%',#disk_name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_id">
+				a.disk_id = #disk_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="disk_type">
+				a.disk_type = #disk_type#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<insert id="insertByObj" parameterClass="diskInfoObj">
+		insert into tb_disk_info (
+			disk_number,disk_id,disk_name,disk_type,diskgroup_id,disk_size
+		) values(
+			#disk_number#,#disk_id#,#disk_name#,#disk_type#,#diskgroup_id#,#disk_size#
+		)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="diskInfoObj">
+		update tb_disk_info  
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="disk_number">
+				disk_number = #disk_number#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="disk_id">
+				disk_id = #disk_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="disk_name">
+				disk_name = #disk_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="disk_type">
+				disk_type = #disk_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="diskgroup_id">
+				diskgroup_id = #diskgroup_id#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty property="disk_number" prepend="and">
+				disk_number = #disk_number#
+			</isNotEmpty>
+			<isNotEmpty property="disk_id" prepend="and">
+				disk_id = #disk_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<update id="updateGroupIdByObj" parameterClass="diskInfoObj">
+		update tb_disk_info  set diskgroup_id = #diskgroup_id#
+		<dynamic prepend="where">
+			<isNotEmpty property="diskgroup_Id" prepend="and">
+				diskgroup_id = #diskgroup_Id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="diskInfoObj">
+		delete from tb_disk_info 
+		<dynamic prepend="where">
+			<isNotEmpty property="disk_number" prepend="and">
+				disk_number = #disk_number#
+			</isNotEmpty>
+			<isNotEmpty property="disk_id" prepend="and">
+				disk_id = #disk_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+</sqlMap>

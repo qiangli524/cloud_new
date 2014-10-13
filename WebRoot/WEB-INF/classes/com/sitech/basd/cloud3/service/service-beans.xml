@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="interService"
+		  class="com.sitech.basd.cloud3.service.monitor.InterServiceImpl"
+		  singleton="true">
+		<property name="interDao">
+			<ref bean="interDao"/>
+		</property>
+	</bean>
+	<bean id="newUIFuncService"
+		  class="com.sitech.basd.cloud3.service.newui.NewUIFuncServiceImpl"
+		  singleton="true">
+		<property name="newUIFuncDao">
+			<ref bean="newUIFuncDao"/>
+		</property>
+	</bean>
+	<bean id="roomService"
+		  class="com.sitech.basd.cloud3.service.machineroom.RoomServiceImpl"
+		  singleton="true">
+		<property name="roomDao">
+			<ref bean="roomDao"/>
+		</property>
+	</bean>
+	<bean id="areaService"
+		  class="com.sitech.basd.cloud3.service.machineroom.AreaServiceImpl"
+		  singleton="true">
+		<property name="areaDao">
+			<ref bean="areaDao"/>
+		</property>
+	</bean>
+	<bean id="tbCloud3AppFileTreeService"
+		  class="com.sitech.basd.cloud3.service.app.TbCloud3AppFileTreeServiceImpl"
+		  singleton="true">
+		<property name="tbCloud3AppFileTreeDao">
+			<ref bean="tbCloud3AppFileTreeDao"/>
+		</property>
+	</bean>
+</beans>
+

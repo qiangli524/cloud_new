@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="condeviceAction" class="com.sitech.basd.envmanager.web.condevice.action.CondeviceAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="condeviceService">
+			<ref bean="condeviceService" />
+		</property>
+		<property name="leaderViewBusinessService">
+			<ref bean="leaderViewBusinessService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="switchesService">
+			<ref bean="switchesService" />
+		</property>
+		<property name="ledgerService">
+			<ref bean="ledgerService" />
+		</property>
+		<property name="configureService">
+			<ref bean="configureService" />
+		</property>
+		<property name="performanceService">
+			<ref bean="performanceService" />
+		</property>
+		
+	</bean>
+
+</beans>

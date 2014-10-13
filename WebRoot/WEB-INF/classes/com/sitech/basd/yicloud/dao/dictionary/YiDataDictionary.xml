@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="YiDataDictionary">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="DictionaryObj"
+		type="com.sitech.basd.yicloud.domain.dictionary.DictionaryObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="YI_DATA_DICTIONARYColumnsNoKey">
+		CODE,NAME,GROUP_NAME,PARENT_ID
+	</sql>
+	<sql id="YI_DATA_DICTIONARYColumns">
+		ID,
+		<include refid="YI_DATA_DICTIONARYColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="YI_DATA_DICTIONARYColumns" />
+		from YI_DATA_DICTIONARY
+		<dynamic prepend="where">
+			<isGreaterThan property="ID" compareValue="0"
+				prepend="and">
+				ID =#ID#
+			</isGreaterThan>
+			<isGreaterThan property="PARENT_ID" compareValue="0"
+				prepend="and">
+				PARENT_ID =#PARENT_ID#
+			</isGreaterThan>
+			<isNotEmpty property="CODE" prepend="and">
+				CODE =#CODE#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				NAME =#NAME#
+			</isNotEmpty>
+			<isNotEmpty property="GROUP_NAME" prepend="and">
+				GROUP_NAME =#GROUP_NAME#
+			</isNotEmpty>
+		</dynamic>
+		order by ID asc
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="DictionaryObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<insert id="insertByObj" parameterClass="DictionaryObj">
+		<selectKey resultClass="Integer" keyProperty="ID">
+			select SEQ_YI_DATA_DICTIONARY.nextval as ID from dual
+		</selectKey>
+		insert into YI_DATA_DICTIONARY(
+		ID,CODE,NAME,GROUP_NAME,PARENT_ID )
+		values(#ID#,#CODE#,#NAME#,#GROUP_NAME#,#PARENT_ID#)
+	</insert>
+	<update id="updateByObj" parameterClass="DictionaryObj">
+		update YI_DATA_DICTIONARY set
+		ID=#ID#,CODE=#CODE#,NAME=#NAME#,GROUP_NAME=#GROUP_NAME#,PARENT_ID=#PARENT_ID#
+		where ID=#ID#
+	</update>
+	<delete id="deleteByObj" parameterClass="DictionaryObj">
+		delete from YI_DATA_DICTIONARY where ID=#ID#
+	</delete>
+	<!-- 查询业务类型(主业务，子业务等) -->
+	<select id="queryBusinessType" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		select NAME,CODE
+		from YI_DATA_DICTIONARY where GROUP_NAME=#GROUP_NAME#
+	</select>
+</sqlMap>

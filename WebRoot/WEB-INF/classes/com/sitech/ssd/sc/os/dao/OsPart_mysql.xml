@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsPart">
+
+	<typeAlias alias="_partModel" type="com.sitech.ssd.sc.os.domain.OsPartModel" />
+
+	<sql id="partTableColumns">
+		os_host_id,part_name,part_fstype,part_grow,part_ondisk,part_size,part_desc,flag
+	</sql>
+	
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+	
+	<insert id="copyOsTemplatePart" parameterClass="_partModel">
+		INSERT INTO tb_os_part(os_host_id,part_name,part_fstype,part_grow,part_ondisk,part_size,part_desc,flag)
+		SELECT #os_host_id# os_host_id,part_name,part_fstype,part_grow,part_ondisk,part_size,part_desc,'1' as flag
+		FROM tb_os_template_part WHERE template_id = #id#
+	</insert>
+	
+	<delete id="deleteOsPart" parameterClass="_partModel">
+		DELETE FROM tb_os_part 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="flag" prepend="and">
+				flag = #flag#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<select id="selectOsPartList" parameterClass="_partModel" resultClass="_partModel">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_part 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="part_fstype" prepend="and">
+				part_fstype LIKE CONCAT('%',#part_fstype#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="part_name" prepend="and">
+				part_name = #part_name#
+			</isNotEmpty>
+			<isNotEmpty property="part_ondisk" prepend="and">
+				part_ondisk LIKE CONCAT('%',#part_ondisk#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="unionOsPartList" parameterClass="_partModel" resultClass="_partModel">
+		SELECT part_name,part_fstype,part_grow,part_ondisk,part_size,part_desc,'1' flag FROM tb_os_template_part WHERE template_id = #id#
+		UNION
+		SELECT part_name,part_fstype,part_grow,part_ondisk,part_size,part_desc,flag FROM tb_os_part WHERE os_host_id = #os_host_id#
+	</select>
+</sqlMap>

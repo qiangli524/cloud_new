@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="hostmanage"
+			 extends="global_package">
+		<action name="hostmanage_*"
+				class="baseBusiHostAction" method="{1}"> 
+			<result name="list">/sxcloud/hostmanage/listBusiHost.jsp</result>
+			<result name="add">/sxcloud/hostmanage/editBusiHost.jsp</result> 
+			<result name="modify">/sxcloud/hostmanage/editBusiHost.jsp</result> 
+			<result name="save" type="redirect">/hostmanage_listBusiHost.do</result>
+			<result name="del" type="redirect">/hostmanage_listBusiHost.do</result>
+		</action>
+		 
+		<action name="hostconfig_*"
+				class="baseBusiHostConfigAction" method="{1}"> 
+			<result name="list">/sxcloud/hostmanage/listBusiHostConfig.jsp</result>
+			<result name="add">/sxcloud/hostmanage/editBusiHostConfig.jsp</result> 
+			<result name="modify">/sxcloud/hostmanage/editBusiHostConfig.jsp</result> 
+			<result name="save" type="redirect">hostconfig_listBusiHostConfig.do?hostId=${theForm.HOSTID}</result>
+			<result name="del" type="redirect">hostconfig_listBusiHostConfig.do?hostId=${theForm.HOSTID}</result>
+			<result name="ssh2Host">/sxcloud/deploy/ssh2Host.jsp</result>
+		</action>
+		
+		<action name="hostconfighis_*"
+				class="baseBusiHostConfigHisAction" method="{1}"> 
+			<result name="list">/sxcloud/hostmanage/listBusiHostConfigHis.jsp</result>
+			<result name="del" type="redirect">hostconfighis_listBusiHostConfigHis.do</result>
+		</action>
+		<action name="hosthis_*"
+				class="baseBusiHostHisAction" method="{1}"> 
+			<result name="list">/sxcloud/hostmanage/listBusiHostHis.jsp</result>
+			<result name="del" type="redirect">hosthis_listBusiHostHis.do</result>
+		</action>
+ 
+	</package>
+
+</struts>

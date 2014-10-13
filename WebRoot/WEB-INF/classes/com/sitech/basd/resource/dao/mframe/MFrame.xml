@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="mFrame">
+	<typeAlias alias="frame" type="com.sitech.basd.resource.domain.mframe.MFrameObj"/>
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                          )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForListBase">
+		SELECT f.ID,f.FRAME_NUM,f.FRAME_NAME,f.FRAME_STATUS,f.IP,f.OEM,f.POSITION,f.FRAME_DESC,
+		to_char(f.INSERT_TIME, 'yyyy-mm-dd hh24:mi:ss') INSERT_TIME,to_char(f.UPDATE_TIME, 'yyyy-mm-dd hh24:mi:ss') UPDATE_TIME,
+		f.INSERT_USER,f.UPDATE_USER
+		FROM tb_resource_mframe f
+		<dynamic prepend="where">
+			<isNotNull property="frame_name" prepend="and">
+				f.FRAME_NAME like '%'||#frame_name#||'%'
+			</isNotNull>
+			<isNotNull property="frame_status">
+				<isNotEqual prepend="and" property="frame_status" compareValue="-1">
+					f.FRAME_STATUS=#frame_status#
+				</isNotEqual>
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				f.ID= #id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+    <!-- 查询所有机框列表-->
+	<select id="queryFrameList" parameterClass="frame" resultClass="frame">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 增加一条机框记录 -->
+	 <insert id="insertFrame" parameterClass="frame">
+	 	insert into tb_resource_mframe
+        (ID,FRAME_NUM,FRAME_NAME,FRAME_STATUS,IP,OEM,POSITION,FRAME_DESC,INSERT_TIME,UPDATE_TIME,INSERT_USER,UPDATE_USER) 
+		values(#id#,#frame_num#,#frame_name#,#frame_status#,#ip#,#oem#,#position#,#frame_desc#,sysdate,#update_time#,#insert_user#,#update_user#)
+	 </insert>
+	  <!-- 更新一条机框信息 -->
+	 <update id="updateFrame" parameterClass="frame">
+	 	UPDATE tb_resource_mframe 
+	 	set FRAME_NUM=#frame_num#,FRAME_NAME=#frame_name#,FRAME_STATUS=#frame_status#,IP=#ip#,OEM=#oem#,POSITION=#position#,FRAME_DESC=#frame_desc#,UPDATE_TIME=sysdate,UPDATE_USER=#update_user#
+        where ID=#id#
+	 </update>
+	 <!-- 删除一条机框记录 -->
+	 <delete id="deleteFrame" parameterClass="frame">
+	 	delete from tb_resource_mframe where ID = #id#
+	 </delete>
+	<!-- 统计机框数目 -->
+	<select id="queryForCount" parameterClass="frame" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+</sqlMap>

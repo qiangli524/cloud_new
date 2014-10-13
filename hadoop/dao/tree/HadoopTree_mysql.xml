@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopTree">
+	<typeAlias alias="hadoopTreeObj" type="domain.tree.HadoopTreeObj"/>
+	<typeAlias alias="serviceObj" type="domain.service.ServiceObj"/>
+	<sql id="baseCloumns">
+		id,`name`,node_type,uuid,parent_id,service_type,user_defined
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="hadoopTreeObj" resultClass="hadoopTreeObj">
+		select
+		<include refid="baseCloumns"/>
+		from tb_hadoop_resource_tree
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				`name` like concat("%",#name#,"%") 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="parent_id">
+				parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="parentIdList">
+				parent_id IN
+				<iterate close=")" conjunction="," open="(" property="parentIdList">
+					#parentIdList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertByObj" parameterClass="hadoopTreeObj">
+		insert into tb_hadoop_resource_tree (id,`name`,node_type,uuid,parent_id,service_type,user_defined) 
+		values (#id#,#name#,#node_type#,#uuid#,#parent_id#,#service_type#,#user_defined#)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="hadoopTreeObj">
+		update tb_hadoop_resource_tree
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="name">
+				`name` = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="parent_id">
+				parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="service_type">
+				service_type = #service_type#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				`name` = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="parent_id">
+				parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				service_type = #service_type#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<delete id="deleteByObj" parameterClass="hadoopTreeObj">
+		delete from tb_hadoop_resource_tree where id = #id#
+		<isNotEmpty prepend="and" property="uuid">
+				<isNotNull property="uuid">
+					uuid = #uuid#
+				</isNotNull>
+		</isNotEmpty>
+	</delete>
+	
+	<select id="queryByObj" parameterClass="hadoopTreeObj" resultClass="hadoopTreeObj">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_hadoop_resource_tree 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="parent_id">
+				<isNotNull property="parent_id">
+					id = #parent_id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForServiceList" parameterClass="hadoopTreeObj" resultClass="serviceObj">
+		SELECT
+			PARENT_ID id,
+			SERVICE_TYPE,
+			count(ID) example_count
+		FROM
+			tb_hadoop_resource_tree
+		<dynamic prepend="WHERE">
+			<isNotEmpty prepend="and" property="parentIdList">
+				PARENT_ID IN
+				<iterate close=")" conjunction="," open="(" property="parentIdList">
+					#parentIdList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+		GROUP BY
+			SERVICE_TYPE
+	</select>
+	
+</sqlMap>

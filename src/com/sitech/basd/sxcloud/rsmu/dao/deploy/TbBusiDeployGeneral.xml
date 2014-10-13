@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!--名称空间,一般取对象前缀,可用于限定范围-->
+<sqlMap namespace="TbBusiDeployGeneral">
+	<!--三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="TbBusiDeployGeneralObj"
+		type="com.sitech.basd.sxlcoud.rsmu.domain.deploy.TbBusiDeployGeneralObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		APPID,HOSTID,TARGET,REPLACEMENT,to_char(UPDATETIME,'yyyy-mm-dd hh24:mi:ss') UPDATETIME
+    </sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryForListByObjBase">
+		select
+		<include refid="tableColumns" />
+		from
+		TB_BUSI_DEPLOY_GENERAL
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="start_time" prepend="AND">
+				<isNotEmpty property="end_time">
+					UPDATETIME BETWEEN
+					to_date(#start_time#,'yyyy-MM-dd') AND to_date(#end_time#,'yyyy-MM-dd')
+               </isNotEmpty>
+			</isNotEmpty>
+		</dynamic>
+		  ORDER BY UPDATETIME DESC
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbBusiDeployGeneralObj"
+		resultClass="TbBusiDeployGeneralObj">
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationStart" />
+			</isGreaterThan>
+		<include refid="queryForListByObjBase" />
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	 <select id="queryForListByObjForCount" parameterClass="TbBusiDeployGeneralObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryForListByObjBase"/>
+       ) virtual_table
+    </select>
+    <insert id="insertByObj" parameterClass="TbBusiDeployGeneralObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_BUSI_DEPLOY_GENERAL.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+		insert into
+		TB_BUSI_DEPLOY_GENERAL (
+		ID,APPID,HOSTID,TARGET,REPLACEMENT
+		)
+		values
+		(
+		#ID#,
+		#APPID#,
+		#HOSTID#,
+		#TARGET#,
+		#REPLACEMENT#
+		)
+	</insert>
+	<update id="updateByObj" parameterClass="TbBusiDeployGeneralObj">
+    update TB_BUSI_DEPLOY_GENERAL set APPID=#APPID#,HOSTID=#HOSTID#,TARGET=#TARGET#,UPDATETIME=#UPDATETIME# where ID=#ID#
+    </update>
+    <delete id="deleteByObj" parameterClass="TbBusiDeployGeneralObj">
+    delete from TB_BUSI_DEPLOY_GENERAL where ID=#ID#
+    </delete>
+</sqlMap>

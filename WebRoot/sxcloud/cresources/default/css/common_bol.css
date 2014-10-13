@@ -1,0 +1,344 @@
+/* CSS Document */
+html,body{width:100%; height:100%; overflow:hidden}
+*{margin:0; padding:0;}
+body{font-size:12px; font-family:microsoft yahei}
+ul,ol{list-style:none}
+img{border:none}
+a{text-decoration:none; font-size:12px;}
+.box:after,.content:after,.wrap:after,.tabtil:after,.square h3 ul:after,.square h3:after,.btns:after,.table-head:after,.query .links:after,.pages:after{content:"."; display:block; clear:both; height:0; font-size:0; line-height:0; visibility:hidden}
+.scrollbody{width:99%!important; width:98%; padding:4px 2px!important; padding:0 10px; height:100%; margin:0 auto; padding-top:4px; overflow-y:auto; overflow-x:hidden;}
+.width-50{width:50px}
+table{border-collapse:collapse}
+table td,table th{empty-cells:show;}
+input[type='text']{border:1px solid #a9d7e1;text-indent:2px;}/*add hlx*/
+.input-txt-style,.input-psw-style{width:140px; height:20px; line-height:20px; padding:0 3px; border:none; border:1px solid #999}
+.btn-style01{width:72px; height:21px; line-height:21px; border:none; background:url(../images/btn01.gif) no-repeat; color:#039; cursor:pointer}
+/*note hlx
+.btn-style02{width:50px; height:19px; line-height:19px; border:none; background:url(../images/btn02.gif) no-repeat; color:#fff; cursor:pointer;}
+.btn-style02-75{width:75px; background:url(../images/btn02-75.gif) no-repeat; height:19px; line-height:19px; border:none; color:#fff; cursor:pointer}
+.btn-style02-100{width:100px; background:url(../images/btn02-100.gif) no-repeat; height:19px; line-height:19px; border:none; color:#fff; cursor:pointer}
+.btn-style02-125{width:125px; background:url(../images/btn02-125.gif) no-repeat; height:19px; line-height:19px; border:none; color:#fff; cursor:pointer}*/
+/*add hlx start*/
+.btn-style02,.btn-style02-75,.btn-style02-100,.btn-style02-125{
+	cursor:pointer;
+	background:#ebf2f3 url(../images/button.gif) repeat-x 0 0;
+	overflow-x:visible;
+	overflow-y:hidden;
+	padding:0 10px;
+	_padding:0 5px;
+	margin:0 2px;
+	color:#004aa3;
+	border:1px solid #7bb0f0;
+	height: 21px;
+	line-height:18px;	
+	font-size:13px;
+	font-family:microsoft yahei;
+}
+/*add hlx end*/
+.btn-style03{width:60px; height:19px; line-height:19px; border:none; background:url(../images/btn03.gif) no-repeat; color:#000; cursor:pointer}
+.textarea{width:60%; padding:4px 8px; overflow:auto}
+.select{width:135px}
+
+.blue-table,.creat-table{border-left:1px solid #b5d4f3; border-bottom:1px solid #b5d4f3; text-align:center; border-collapse:collapse}
+.blue-table .odd{background-color:#f4f7fd}
+.blue-table .bg,.blue-table .bg tr{background-color:#abc5f7}
+
+.blue-table th,.blue-table td,.pop-table th,.pop-table td,.creat-table th,.creat-table td{border:1px solid #b5d4f3; empty-cells:show; color:#0067ca;/*border-bottom:none; border-left:none; height:23px; line-height:23px; padding:0 3px 0 0;20140305 hlx*/line-height:1.5em;padding:4px;}
+.blue-table th,.blue-table td{padding:2px 7px; word-break:keep-all; white-space:nowrap;}
+.blue-table th.break-all,.blue-table td.break-all{white-space:normal}
+.blue-table th{font-size:12px;/*color:#fff;height:22px; line-height:22px;background-color:#5a95ed; hlx*/color:#444;line-height:1.5em;padding:4px;background:url(../images/tableth.png) 0 0 repeat-x;}
+.blue-table td{color:#000;font-size:12px; /*height:22px; line-height:22px; 20140205 hlx*/line-height:1.5em;}
+.blue-table td img{float:left; margin:1px 5px 0 3px;}
+.blue-table td.tr-til{text-align:center; color:#000; font-size:12px;}
+.blue-table td.err{background-image:url(../images/error.gif); background-repeat:no-repeat; background-position:center center}
+.blue-table td.crt{background-image:url(../images/correct.gif); background-repeat:no-repeat; background-position:center center}
+.blue-table a{color:#0033ca; text-decoration:underline}
+.blue-table a:hover{text-decoration:none}
+.sorttable th.nobg{background-image:url(../images/small.gif); cursor:pointer; background-repeat:no-repeat; background-position:left center; padding-left:18px;}
+.sorttable th.header{cursor:pointer}
+.sorttable th.headerSortUp{background-image:url(../images/small_desc.gif); background-repeat:no-repeat}
+.sorttable th.headerSortDown{background-image:url(../images/small_asc.gif); background-repeat:no-repeat}
+.sorttable th{/*background-image:none; padding:0; cursor:auto; 20140305 hlx*/padding:4px;background:url(../images/tableth.png) 0 0 repeat-x;line-height:1.5em;}
+
+.creat-table{text-align:left}
+.creat-table td{padding:2px 8px}
+.creat-table td.til{background:#f7f7f7; text-align:right;}
+.creat-table td .txt{margin-right:3px}
+.creat-table td .textarea{height:100px}
+
+
+.blue-wrap{border:1px solid #a1c5e9}
+.blue-wrap h3{height:23px; line-height:23px; font-size:12px; color:#036; background:url(../images/blue-wrap-tilbg.gif) repeat-x; border-bottom:1px solid #a1c5e9}
+.blue-wrap h3 .bg{background:url(../images/blue-wrap-icon.gif) no-repeat 8px 5px; padding-left:28px;}
+.blue-wrap .content{width:100%; background-color:#f7fbfe;}
+
+.pages li{float:left; height:26px; color:#333; font-size:13px;}
+.pages li select{height:20px; margin:0 2px;}
+.pages li a{color:#3687d8; text-decoration:none; font-size:13px;}
+.pages li a:hover{text-decoration:underline}
+.pages li font{font-size:13px; padding:0 3px;}
+.pages li span{padding:0 3px}
+
+.tree li{padding:8px 0 8px 13px; background:url(../images/tree-libg.gif) no-repeat left 8px}
+.tree li a{color:#333}
+.tree li a:hover{color:#0065cd}
+.tree .node{padding-left:19px; background:url(../images/tree-nodebg.gif) no-repeat left 8px}
+.tree .node ul{display:none}
+.tree .node span{padding-bottom:8px; cursor:pointer}
+.tree .node span.yellow{color:#fd9a01}
+
+.stat-inf dt{ padding:8px 0 4px 0; text-align:center; font-weight:bold; color:#039}
+.stat-inf dd{padding-left:20px;}
+.stat-inf dd h4{color:#00359a; font-weight:normal; height:22px; line-height:22px;}
+.stat-inf dd h4 a{color:#00359a; font-size:12px;}
+.weihu-statinf dd h4{font-size:14px; margin-top:6px;}
+.weihu-statinf dd h4 a{font-size:14px;}
+.stat-inf dd ul{padding:0 12px 0 0; color:#828289}
+.stat-inf dd ul li{ line-height:22px; color:#00359a;}
+.stat-inf dd ul li a{color:#00359a;}
+
+.weihu-statinf dd ul li{font-size:14px; margin-top:6px;}
+.weihu-statinf dd ul li a{font-size:14px;}
+.stat-inf dd .green{color:#45b350; padding:0 4px;}
+.stat-inf dd .orange{color:#ef7d14}
+.pop-body{background-color:#fff; height:98%; margin:0 auto; overflow-x:auto}
+.pop-body form{}
+.pop-body .query-form{ width:99%; border:none}
+.pop-wrap{margin:10px;}
+.pop-wrap h3{border:1px solid #A1C5E9; border-bottom:0px;}
+.pop-table{border:1px solid #b5d4f3; border-top:none; border-right:none; margin:0 auto}
+.pop-table tbody{width:100%}
+.pop-table td{padding:3px 8px; font-size:12px;}
+input.txt{height:20px; line-height:20px; width:150px; border:none; border:1px solid #9dbcd9}
+.pop-table td select{width:135px; height:22px; line-height:22px; border:none; border:1px solid #9dbcd9}
+.pop-table td.til{background-color:#F0F8FF}
+.pop-table .txtarea{height:123px; border:1px solid #9dbcd9; width:98%; margin:5px auto; padding:4px; overflow:auto}
+
+.folder-tree {
+	position:relative;
+	overflow:hidden;
+}
+.folder-tree .option {
+	height: 29px;
+	line-height: 29px;
+	text-align: center;
+	background: #CCCCCC url("../images/tree/tree-option.gif") repeat-x left center;
+	margin: 4px;
+	position:relative;
+	color: #000;
+}
+.folder-tree .option span {
+	height: 29px;
+	line-height: 29px;
+	padding-left: 17px;
+	background-position: left -1px;
+	cursor: pointer;
+	background-repeat: no-repeat;
+}
+.folder-tree .option .openAll {
+	background: url("../images/tree/tree-openAll.gif") no-repeat;
+	padding-right: 10px;
+}
+.folder-tree .option .closeAll {
+	background-image: url("../images/tree/tree-closeAll.gif");
+}
+.folder-tree .root {
+	overflow: auto;
+	padding-left: 20px;
+	
+}
+.folder-tree ul li {
+	line-height: 16px;
+	padding-left: 20px;
+	background: url('../images/tree/tree-leaf.gif') no-repeat;
+	white-space:nowrap;
+}
+.folder-tree ul li ul {
+	display: none;
+}
+.folder-tree .node {
+	background: url('../images/tree/tree-node-off.gif') no-repeat;
+	padding-left: 32px;
+	margin-left: -12px;
+}
+.folder-tree .node a {
+	color: #0099FF;
+}
+.folder-tree .node span {
+	cursor: pointer;
+	display: block;
+	height: 20px;
+	white-space:nowrap;
+	margin-left:-35px;
+	padding-left:35px;
+}
+.folder-tree .on {
+	background: url('../images/tree/tree-node-on.gif') no-repeat;
+}
+
+.KPI{width:100%; height:100%; overflow-y:auto; margin:0 auto; color:#036}
+.KPI .content{width:80%; margin:0 auto; padding:15px 0;}
+.KPI .content h1{text-align:center; font-size:18px;}
+.KPI p{margin:10px 0; font-size:12px; font-weight:bold}
+
+.bluebolder{
+	background-color: #fffeef;
+	border: 1px solid #3387c1; 
+	font-size:12px;
+}
+
+.tableheading{
+	background-image: url('../images/tableheadbg.gif');
+	background-repeat: repeat-x;
+	height: 20px;
+	font-weight: bold;
+	font-size:12px;
+	color: #FFFFFF;
+	padding-left:15px;
+	padding-top:2px;
+	padding-bottom:3px;
+	width:100%;
+}
+
+.greybolder{
+	border: 1px solid #989898;
+	background-color:#FFF;
+	margin:15px;
+	padding:3px;
+	text-align:center;
+	height:50px;
+	width: 50px;
+}
+
+/** for tree **/
+.tree {
+	font-family: microsoft yahei;
+	background-color:#FFFFFF��
+	font-size: 11px;
+	color: #666;
+	white-space: nowrap;
+	width: 90%;
+}
+.tree img {
+	border: 0px;
+	vertical-align: middle;
+}
+.tree a {
+	color: #333;
+	text-decoration: none;
+}
+.tree a.node, .dtree a.nodeSel {
+	white-space: nowrap;
+	padding: 1px 2px 1px 2px;
+}
+.tree a.node:hover, .dtree a.nodeSel:hover {
+	color: #333;
+	text-decoration: none;
+}
+.tree a.nodeSel {
+	background-color: #c0d2ec;
+}
+.tree .clip {
+	overflow: hidden;
+	
+}
+.tree td {
+	FONT-SIZE: 13px
+}
+/*tree start zengls */
+.left-tree{
+	float:left; 
+	width:100%;
+	overflow-y:auto; 
+    overflow-x:auto; 
+	height:100%; 
+	border-right:1px solid #B5D4F3
+	}
+.treeheadbg{
+	background-color: #509cce;
+	background-repeat: repeat-x;
+	height: 15px;
+	font-weight: bold;
+	color: #FFFFFF;
+	padding-left:15px;
+	padding-top:5px;
+	padding-bottom:5px;
+	width:100%;
+	font-size:12px;
+}
+.treebg{
+color: #000000;
+background-color: white;
+border: green solid 1px;
+}
+/*tree end zengls */
+
+.popuTableBody{
+	background:#fff;
+}
+
+.popuTableBodyUnDiv{
+	border:1px solid #B5D4F3; width:96%; margin:0 auto
+}
+
+.popuTableDiv{
+	width:96%; padding:1px; margin:0 auto;
+}
+
+.popuTableGJDiv{
+	width:97%; padding:1px;
+}
+
+.popuTable{
+	border:1px solid #B5D4F3;
+}
+
+.btnCenter{
+	text-align:center;
+}
+
+.dateTxt{
+	width:80px;
+}
+
+.btnStyle1{ 
+	cursor: pointer; 
+	width:48px;
+	height:20px;
+	line-height:22px;
+	border:none;
+	color:#003366;
+	font-size:12px;
+	font-weight:bold;
+	background:url(../images/btnStyleBg2.gif)
+}
+
+.tree_table-ct{text-align:center;height:89%;width:100%;overflow:auto;margin:0px 9px 0px 0px; clear:both;padding-left:2px }
+.tree_table-ct .noresize{text-align:left}
+.tree_table-ct .blue-table{border-top: none;border-right:none;border-left:1px solid #b5d4f3;width:98%; border-bottom:1px solid #b5d4f3; text-align:center;}
+.tree_table-ct .blue-table td{color:#000; height:26px; line-height:26px;}
+.tree_table-ct .blue-table a{color:#0033ca; text-decoration:underline}
+.tree_table-ct .blue-table a:hover{text-decoration:none}
+
+
+.tit-zzi {
+	background:url(../images/tit-bg-02.gif) no-repeat;
+	height: 24px;
+	line-height: 24px;
+	font-size: 12px;
+	color: #fff;
+	font-weight: bold;
+	text-indent: 16px;
+}
+.tit-zzi .icon {
+	float: right;
+	margin-right: 14px;
+}
+
+.disable {
+	background-color: #dcdcdc;
+}
+.error_css{
+	color:#FF0000
+}
+

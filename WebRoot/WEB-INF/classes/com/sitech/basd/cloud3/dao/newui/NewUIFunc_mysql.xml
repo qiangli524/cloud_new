@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="NewUIFunc">
+	<typeAlias alias="HomePageSettingObj" type="com.sitech.basd.cloud3.domain.newui.HomePageSettingObj"/>
+	<!-- 根据用户查询首页可显示图标 -->
+	<select id="getNewUIFunc_new" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		<![CDATA[
+			SELECT DISTINCT F.FUNNAME FUNNAME, F.FUNCID FUNCID, F.FUNCREQUEST FUNCREQUEST,
+			 U.LOGINID LOGINID, P.PIC_PATH PIC_PATH,'three' AS THREE
+			  FROM TB_SYS_FUNCTIONS F, TB_NEWUI_USER_FUNC U, TB_NEWUI_PIC_FUNC P
+			 WHERE F.FUNCID = U.MODULE_ID
+			   AND P.MODULE_ID = U.MODULE_ID
+			   AND U.LOGINID = #LOGINID#
+			   AND F.FUNNAME LIKE CONCAT('%',#FUNNAME#,'%')
+		]]>
+	</select>
+	<!-- 根据用户及其角色查询首页可添加图标 -->
+	<select id="getNewUIAllowAdd" parameterClass="java.util.HashMap"
+		resultClass="java.util.HashMap">
+		<![CDATA[
+			SELECT DISTINCT
+				F.FUNCID FUNCID,
+				F.FUNNAME FUNNAME,
+				F.FUNCREQUEST FUNCREQUEST,
+				P.PIC_PATH PIC_PATH
+			FROM
+				TB_SYS_FUNCTIONS F,
+				TB_NEWUI_PIC_FUNC P,
+				TB_SYS_USERINFO U
+			WHERE
+				F.FUNCID = P.MODULE_ID
+			AND SUBSTR(F.FUNCID, 6, 1) != '0'
+		]]>
+		<isNotEqual property="LOGINID" compareValue="admin">
+			AND F.ID IN (
+			SELECT
+				GF.FUNCID
+			FROM
+				TB_SYS_GROUPFUNC GF,
+				TB_SYS_USERINFO UI,
+				TB_SYS_USERGROUP GR,
+				TB_SYS_GRPMEMBER GM,
+				TB_SYS_FUNCTIONS F
+			WHERE
+				UI.ID = GM.USERID
+			AND GR.ID = GM.GROUPID
+			AND GF.GROUPID = GR.ID
+			AND F.ID=GF.FUNCID
+			AND F.`STATUS`=1
+			AND UI.ACCOUNT = #LOGINID#)
+		</isNotEqual>
+		<![CDATA[
+			AND F.FUNNAME LIKE CONCAT('%',#FUNNAME#,'%')
+			AND  NOT EXISTS  (select UF.MODULE_ID from tb_newui_user_func UF where UF.LOGINID=#LOGINID# and UF.MODULE_ID = F.FUNCID)
+		]]>
+	</select>
+	<insert id="insertNewUIUserFunc" parameterClass="java.util.HashMap">
+		INSERT INTO TB_NEWUI_USER_FUNC(ID,LOGINID,MODULE_ID,IN_DATE) VALUES(#id#,#LOGINID#,#FUNCID#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
+	</insert>
+	<delete id="deleteNewUIUserFunc" parameterClass="java.util.HashMap">
+		DELETE FROM TB_NEWUI_USER_FUNC  WHERE LOGINID=#LOGINID# 
+		<dynamic prepend="and">
+			<isNotEmpty property="FUNCID">
+				MODULE_ID=#FUNCID#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<insert id="insertNewUIPicFunc" parameterClass="java.util.HashMap">
+		INSERT INTO TB_NEWUI_PIC_FUNC(ID,MODULE_ID,PIC_PATH,IN_DATE) VALUES(#id#,#FUNCID#,#PIC_PATH#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
+	</insert>
+	<update id="updateNewUIUserFunc" parameterClass="java.util.HashMap">
+		update TB_NEWUI_USER_FUNC set LOGINID=#LOGINID#,MODULE_ID=#FUNCID#,IN_DATE=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') where MODULE_ID=#OLD_MODULE#
+	</update>
+	<update id="updateNewUIPicFunc" parameterClass="java.util.HashMap">
+		update TB_NEWUI_PIC_FUNC set MODULE_ID=#FUNCID#,PIC_PATH=#PIC_PATH#,IN_DATE=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') where MODULE_ID=#OLD_MODULE#
+	</update>
+	<delete id="deleteNewUIPicFunc" parameterClass="java.util.HashMap">
+		delete from TB_NEWUI_PIC_FUNC where MODULE_ID=#FUNCID# 
+	</delete>
+	<select id="queryHomePageSetting" parameterClass="java.util.HashMap" resultClass="HomePageSettingObj">
+		select id,groupid groupId,`index`,url,title,width from tb_sys_group_homepage_setting where groupid = #gourpid# 
+		<isNotEmpty property="width" prepend="and">
+			<isEqual property="width" compareValue="2">
+				width = 2
+			</isEqual>
+			<isNotEqual property="width" compareValue="2">
+				<![CDATA[
+				width < 2
+				]]>
+			</isNotEqual>
+		</isNotEmpty>
+		order by `index` asc
+	</select>
+	
+</sqlMap>

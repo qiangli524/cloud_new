@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasBusiStatistics">
+	<typeAlias alias="PaasBusiTreeObj" type="com.sitech.ssd.ah.paas.busiResource.domain.tree.PaasBusiTreeObj"/>
+	<typeAlias alias="GreenPlumHostInfoObj" type="com.sitech.ssd.ah.paas.domain.host.GreenPlumHostInfoObj"/>
+	<typeAlias alias="VmReportForm" type="com.sitech.ssd.ah.reportform.vm.domain.VmReportForm"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="vmDetailBase">
+		SELECT
+	    t1.vh_type vmType,
+	    CONCAT(CASE when a2.type = 4 then a22.name ELSE a2.name END) AS busiParent,
+		CONCAT(CASE when a2.type = 4 then a2.name ELSE '-' END) AS busi,
+		a222.name AS username,
+	    concat(t1.CONNECT_ID,'_',t1.VH_UUID) as vmId,
+		t1.VH_NAME vmName,
+		IFNULL(t1.VH_IP, '-') as ip
+		FROM
+		TB_CLOUD2_VMHOST_INFO t1
+		LEFT JOIN tb_busi_system_tree a1 ON a1.entity_id = t1.VH_UUID AND a1.connect_id = t1.CONNECT_ID
+		LEFT JOIN tb_busi_system_tree a2 ON a1.parent_id = a2.id
+		LEFT JOIN tb_busi_system_tree a22 ON a2.parent_id = a22.id
+		LEFT JOIN tb_sys_userinfo a222 ON a22.user_id = a222.id
+		LEFT JOIN TB_CLOUD2_IP_INFO a3 ON t1.VH_IP=a3.IPADDRESS
+		LEFT JOIN TB_CLOUD2_NET_INFO a4 ON a3.NET_ID=a4.NET_ID
+		LEFT JOIN tb_host_global_info host_global on host_global.host_uuid=t1.host_code and host_global.connect_uuid=t1.connect_id
+	</sql>
+	<!-- 查询子系统的个数 -->
+	<select id="queryForSysNum" parameterClass="PaasBusiTreeObj" resultClass="int">
+		select count(uuid) from tb_paas_busi_tree
+		 <dynamic prepend="where">
+		 	<isNotEmpty prepend="and" property="node_type">
+		 		node_type = #node_type#
+		 	</isNotEmpty>
+		 </dynamic>
+	</select>
+	<!-- 查询子系统集合 -->
+	<select id="queryForSysList" parameterClass="PaasBusiTreeObj" resultClass="PaasBusiTreeObj">
+		select * from tb_paas_busi_tree
+		 <dynamic prepend="where">
+		 	<isNotEmpty prepend="and" property="node_type">
+		 		node_type = #node_type#
+		 	</isNotEmpty>
+		 </dynamic>
+	</select>
+	<!-- 关联boss节点下的物理主机个数 -->
+	<select id="queryForSysCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+      select count(t1.uuid) from tb_paas_busi_tree t1 
+       left join tb_paas_busi_tree t2 on t1.parent_id = t2.uuid
+       left join tb_paas_busi_tree t3 on t3.uuid = t2.parent_id
+       left join tb_paas_busi_tree t4 on t4.uuid = t3.parent_id
+       where t1.node_type in (4)  
+       		and t4.uuid = #uuid#
+    </select>
+    <!-- 关联boss节点下的虚拟主机个数 -->
+	<select id="queryForSysVmCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+      select count(t1.uuid) from tb_paas_busi_tree t1 
+       left join tb_paas_busi_tree t2 on t1.parent_id = t2.uuid
+       left join tb_paas_busi_tree t3 on t3.uuid = t2.parent_id
+       left join tb_paas_busi_tree t4 on t4.uuid = t3.parent_id
+       where t1.node_type in (5)  
+       		and t4.uuid = #uuid#
+    </select>
+    <!-- 查询boss下业务个数 -->
+    <select id="queryForSysBusiCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+    	select count(t1.uuid) from tb_paas_busi_tree t1 
+       left join tb_paas_busi_tree t2 on t1.parent_id = t2.uuid
+       where t1.node_type = 2
+       	 and t2.uuid = #uuid#
+    </select>
+    <!-- 业务节点下物理主机个数 -->
+    <select id="queryForBusiCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+      select count(t1.uuid) from tb_paas_busi_tree t1 
+       left join tb_paas_busi_tree t2 on t1.parent_id = t2.uuid
+       left join tb_paas_busi_tree t3 on t3.uuid = t2.parent_id
+       where t1.node_type = 4
+       	 and t3.uuid = #uuid#
+    </select>
+     <!-- 业务节点下虚拟主机个数 -->
+    <select id="queryForBusiVmCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+      select count(t1.uuid) from tb_paas_busi_tree t1 
+       left join tb_paas_busi_tree t2 on t1.parent_id = t2.uuid
+       left join tb_paas_busi_tree t3 on t3.uuid = t2.parent_id
+       where t1.node_type = 5
+       	 and t3.uuid = #uuid#
+    </select>
+    <!-- 服务节点下物理主机个数-->
+    <select id="queryHostsForServiceCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+    	select count(*) from tb_paas_busi_tree t1 
+    		left join TB_CLOUD2_HOST_INFO h on h.eq_id = t1.entity_id
+    		left join tb_paas_busi_tree t2 on t1.parent_id = t2.uuid
+	        where t1.node_type = 4
+	       	  and t1.server_type = #server_type#
+       		  and t2.uuid = #uuid# 
+       		<isNotEmpty property="eq_name" prepend="and">
+				h.eq_name like CONCAT('%',#eq_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="eq_ip" prepend="and">
+			    h.eq_ip like CONCAT('%',#eq_ip#,'%')
+			</isNotEmpty>
+    </select>
+    <!-- 服务节点下物理主机列表-->
+    <select id="queryHostsForService" parameterClass="PaasBusiTreeObj" resultClass="GreenPlumHostInfoObj">
+    	select h.EQ_NAME,h.eq_ip,h.eq_type,h.H_UUID,h.allocated,h.hasvertual,h.status status,h.sn,h.connect_id connectId from tb_paas_busi_tree t1 
+    		left join TB_CLOUD2_HOST_INFO h on h.eq_id = t1.entity_id
+    		left join tb_paas_busi_tree t2 on t1.parent_id = t2.uuid
+	        where t1.node_type = 4
+	       	  and t1.server_type = #server_type#
+       		  and t2.uuid = #uuid# 
+       		<isNotEmpty property="eq_name" prepend="and">
+				h.eq_name like CONCAT('%',#eq_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="eq_ip" prepend="and">
+			    h.eq_ip like CONCAT('%',#eq_ip#,'%')
+			</isNotEmpty>
+	   	<isGreaterThan property="PAGESIZE" compareValue="0">
+		        <include refid="paginationEnd"/> 
+		</isGreaterThan>
+    </select>
+    <!-- 服务节点下虚拟主机个数-->
+    <select id="queryVmHostsForServiceCount" parameterClass="PaasBusiTreeObj" resultClass="int">
+    	select count(*) from (<include refid="vmDetailBase"/> 
+    	<dynamic prepend="where" >
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.VH_NAME like CONCAT('%',#vmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+			    t1.VH_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+    	) tt 
+    	where tt.vmId in (
+    		(select tt1.entity_id from tb_paas_busi_tree tt1 
+			left join tb_paas_busi_tree tt2 on tt2.uuid = tt1.parent_id 
+			where tt2.uuid = #uuid# 
+			and tt1.server_type = #server_type#
+			and tt1.node_type = 5)
+    	)
+		        
+    </select>
+    <!-- 服务节点下虚拟主机列表-->
+    <select id="queryVmHostsForService" parameterClass="PaasBusiTreeObj" resultClass="VmReportForm">
+    	select * from (<include refid="vmDetailBase"/> 
+    		<dynamic prepend="where" >
+			<isNotEmpty property="center_uuid" prepend="and">
+				host_global.center_uuid = #center_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="vmName" prepend="and">
+			    t1.VH_NAME like CONCAT('%',#vmName#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+			    t1.VH_IP like CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+    	) tt 
+    	where tt.vmId in (
+    		(select tt1.entity_id from tb_paas_busi_tree tt1 
+			left join tb_paas_busi_tree tt2 on tt2.uuid = tt1.parent_id 
+			where tt2.uuid = #uuid# 
+			and tt1.server_type = #server_type#
+			and tt1.node_type = 5)
+    	)
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+		        <include refid="paginationEnd"/> 
+		</isGreaterThan>
+    </select>
+</sqlMap>

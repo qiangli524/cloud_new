@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="strategy">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="StrategyObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.StrategyObj" />
+	<typeAlias alias="TriggerRelationObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.TriggerRelationObj" />
+	<typeAlias alias="KPIWeightObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.KPIWeightObj" />
+	<typeAlias alias="StaskObj"
+		type="com.sitech.basd.yicloud.domain.scheduler.StaskObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryListBase">
+	<!-- 	select a.strategy_id,
+       a.strategy_name,
+       a.strategy_desc,
+       a.type,
+       a.strateay_level,
+       a.entity_id,
+       a.enable,
+       a.effect_date,
+       a.excute,
+       a.excute_type,
+       to_char(a.ins_date, 'yyyy-mm-dd hh24:mi:ss') ins_date,
+       a.creater,
+       a.temp_id,
+       c.tigger_level,
+       c.kpi_id,
+       ((select d.kpi_desc from TB_KPI_WEIGHT d where d.kpi_id = b.kpi_id) ||
+       c.operator || c.threshold || ',采集次数' || c.tigger_n || ',间隔时间:' ||
+       c.interval || '分钟') content
+  from TB_SCHEDULER_STRATEGY         a,
+       TB_SCHEDULER_TRIGGER_RELATION  b,
+       TB_SCHEDULER_TRIGGER_DEF      c
+ where a.strategy_id = b.scheduler_id
+   and c.trigger_id = b.trigger_id
+   
+   -->
+   	  select strategy_id,
+       strategy_name,
+       strategy_desc,
+       type,
+       strateay_level,
+       entity_id,
+        entity_name,
+       enable,
+          effect_date,
+          excute,
+          excute_type,
+       ins_date,
+          creater,
+          temp_id,
+          tigger_level,
+          interval,
+          tigger_n,
+          kpi_desc,
+          operator,
+          threshold
+  from (select a.strategy_id,
+               a.strategy_name,
+               a.strategy_desc,
+               a.type,
+               a.strateay_level,
+               a.entity_id,
+               a.entity_name,
+               a.enable,
+               a.effect_date,
+               a.excute,
+               a.excute_type,
+               to_char(a.ins_date, 'yyyy-mm-dd hh24:mi:ss') ins_date,
+               a.creater,
+               a.temp_id,
+               c.tigger_level,
+               c.kpi_id,
+               c.interval, 
+               c.tigger_n, 
+               (select d.kpi_desc
+                   from TB_KPI_WEIGHT d
+                  where d.kpi_id = b.kpi_id) kpi_desc,
+                   c.operator,
+                    c.threshold
+          from TB_SCHEDULER_STRATEGY         a,
+               TB_SCHEDULER_TRIGGER_RELATION b,
+               TB_SCHEDULER_TRIGGER_DEF      c
+         where a.strategy_id = b.scheduler_id
+           and c.trigger_id = b.trigger_id
+             <isNotNull prepend="and" property="strategy_id">
+	 		a.strategy_id = #strategy_id#
+	</isNotNull>
+   <isNotNull prepend="and" property="strategy_name">
+	 		a.strategy_name like '%'||#strategy_name#||'%'
+	</isNotNull>
+	<isNotNull prepend="and" property="enable">
+			a.enable = #enable#
+	</isNotNull>  
+           ) t
+           
+ group by strategy_id,
+          strategy_name,
+          strategy_desc,
+          type,
+          strateay_level,
+          entity_id,
+          entity_name,
+          enable,
+          effect_date,
+          excute,
+          excute_type,
+          ins_date,
+          creater,
+          temp_id,
+          tigger_level,
+          interval,
+          tigger_n,
+          kpi_desc,
+          operator,
+          threshold
+	</sql>
+	<select id="queryList" parameterClass="StrategyObj" resultClass="StrategyObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForCount" parameterClass="StrategyObj" resultClass="int">
+		select count(strategy_id)  from (
+		<include refid="queryListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <insert id="insertByObj" parameterClass="StrategyObj">
+	 	<selectKey keyProperty="strategy_id" resultClass="java.lang.String">
+	 		select ID_SCHEDULER_STRATEGY.nextval as strategy_id from dual
+	 	</selectKey>
+	 	insert into TB_SCHEDULER_STRATEGY(
+	 		STRATEGY_ID,STRATEGY_NAME,STRATEGY_DESC,TYPE,STRATEAY_LEVEL,ENTITY_ID,ENABLE,EFFECT_DATE,EXCUTE,EXCUTE_TYPE,STATUS,TEMP_ID,INS_DATE,CREATER,ENTITY_NAME
+	 	)values(
+	 		#strategy_id#,#strategy_name#,#strategy_desc#,#type#,#strateay_level#,#entity_id#,#enable#,#effect_date#,#excute#,#excute_type#,0,#temp_id#,sysdate,#creater#,#entity_name#
+	 	)
+	 </insert>
+	 <delete id="deleteByObj" parameterClass="StrategyObj">
+	 	delete from TB_SCHEDULER_STRATEGY where strategy_id = #strategy_id#
+	 </delete>
+	 <insert id="insertTriggerRelation" parameterClass="TriggerRelationObj">
+	 	insert into TB_SCHEDULER_TRIGGER_RELATION(
+	 		SCHEDULER_ID,TRIGGER_ID,KPI_ID,ENTITY_ID,KPI_N,INS_DATE
+	 	)values(
+	 		#scheduler_id#,#trigger_id#,#kpi_id#,#entity_id#,#kpi_n#,sysdate
+	 	)
+	 </insert>
+	 <delete id="deleteRelation" parameterClass="TriggerRelationObj">
+	 	delete from TB_SCHEDULER_TRIGGER_RELATION where scheduler_id = #scheduler_id#
+	 </delete>
+	 <select id="querykpis" parameterClass="KPIWeightObj" resultClass="KPIWeightObj">
+	 	select kpi_id,kpi_weight,kpi_desc,kpi_type from TB_KPI_WEIGHT where 1=1
+	 	<isNotNull prepend="and" property="kpi_id">
+	 		kpi_id = #kpi_id#
+	 	</isNotNull>
+	 	<isNotNull prepend="and" property="kpi_type">
+	 		kpi_type = #kpi_type#
+	 	</isNotNull>
+	 </select>
+	 <update id="updateByObj" parameterClass="StrategyObj">
+	 	update TB_SCHEDULER_STRATEGY set STRATEGY_NAME=#strategy_name#,STRATEGY_DESC=#strategy_desc#,TYPE=#type#,STRATEAY_LEVEL=#strateay_level#,
+	 	ENTITY_ID=#entity_id#,ENABLE=#enable#,EFFECT_DATE=#effect_date#,EXCUTE=#excute#,EXCUTE_TYPE=#excute_type#,STATUS=0,TEMP_ID=#temp_id#,ENTITY_NAME=#entity_name#
+	 	where STRATEGY_ID=#strategy_id#
+	 </update>
+	 <update id="updateTriggerRelation" parameterClass="TriggerRelationObj">
+	 	update TB_SCHEDULER_TRIGGER_RELATION set
+	 		TRIGGER_ID=#trigger_id#,KPI_ID=#kpi_id#,ENTITY_ID=#entity_id#
+	 	where SCHEDULER_ID=#scheduler_id# 
+	 </update>
+	 
+	 <select id="strategykpi" parameterClass="TriggerRelationObj" resultClass="TriggerRelationObj">
+	 	select scheduler_id,kpi_id from TB_SCHEDULER_TRIGGER_RELATION where scheduler_id = #scheduler_id#
+	 </select>
+	  <insert id="insertTaskObj" parameterClass="StaskObj">
+	  	insert into TB_SCHEDULER_STRATEGY_TASK(
+	 		TASK_ID,STRATEGY_ID,TYPE ,VH_ID,HOST_ID,STATUS,INS_DATE         
+	 	)values(
+	 		#TASK_ID#,#STRATEGY_ID#,#TYPE#,#VH_ID#,#HOST_ID#,#STATUS#,sysdate
+	 	)
+	  </insert>
+	 
+</sqlMap>

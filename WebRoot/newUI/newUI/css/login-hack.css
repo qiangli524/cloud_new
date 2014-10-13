@@ -1,0 +1,13 @@
+@charset "gb2312";
+/*
+ * Filename: login-hack.css
+ * Description: login css hack
+ * Version: 1.0.0
+ * Author: kevin.si-tech
+ * UpdateBy: kevin
+*/
+.loginPanel {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/login-panel-bg.png',sizingMethod='image');_background:none;}
+.loginPanel .txt {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/login-btn-01.png',sizingMethod='image');_background:none;}
+.loginPanel .txt2 {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/login-btn-03.png',sizingMethod='image');_background:none;}
+.loginPanel .loginBtn {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/login-btn-02.png',sizingMethod='image');_background:none;}
+.loginPanel .resetBtn {_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/btn-02.gif',sizingMethod='image');_background:none;}

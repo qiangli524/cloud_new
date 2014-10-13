@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbCloud2VirtualConfig">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbCloud2VirtualConfigObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.virtual.TbCloud2VirtualConfigObj" />
+	<typeAlias alias="TbCloud2VirtualInfoObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.virtual.TbCloud2VirtualInfoObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,SPACE,to_char(UPDATETTIME,'yyyy-mm-dd
+		hh24:mi:ss') UPDATETTIME
+	</sql>
+
+	<sql id="tableTbCloud2VirtualConfigColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryTbCloud2VirtualConfigByObjBase">
+		select
+		a.ID,a.HOSTID,a.TYPE,a.HOSTUSERNAME,a.HOSRPWD,a.SPACE,a.STATUS,to_char(UPDATETTIME,'yyyy-mm-dd
+		hh24:mi:ss') UPDATETTIME, b.VH_NAME HOSTNAME,b.VH_IP IP from
+		TB_CLOUD2_VMHOST_CONFIG a,TB_CLOUD2_VH_POOL b where
+		a.hostid=b.VH_ID
+		<isGreaterThan property="ID" compareValue="0" prepend="and">
+			a.ID =#ID#
+		</isGreaterThan>
+		<isGreaterThan property="TYPE" compareValue="0" prepend="and">
+			a.TYPE =#TYPE#
+		</isGreaterThan>
+		<isGreaterThan property="HOSTID" compareValue="0"
+			prepend="and">
+			a.HOSTID =#HOSTID#
+		</isGreaterThan>
+		<isNotEmpty property="HOSTUSERNAME" prepend="and">
+			a.HOSTUSERNAME like '%'||#HOSTUSERNAME#||'%'
+		</isNotEmpty>
+		order by a.ID desc
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbCloud2VirtualConfigObj"
+		resultClass="TbCloud2VirtualConfigObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryTbCloud2VirtualConfigByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="TbCloud2VirtualConfigObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryTbCloud2VirtualConfigByObjBase" />
+		) virtual_table
+	</select>
+	
+	 <delete id="deleteByObj" parameterClass="TbCloud2VirtualConfigObj">
+		delete from TB_CLOUD2_VMHOST_CONFIG where ID=#ID#
+	</delete>
+	<update id="updateByObj" parameterClass="TbCloud2VirtualConfigObj">
+		update TB_CLOUD2_VMHOST_CONFIG set
+		HOSTID=#HOSTID#,HOSTUSERNAME=#HOSTUSERNAME#,HOSRPWD=#HOSRPWD#,STATUS=#STATUS#,SPACE=#SPACE#,TYPE=#TYPE#
+		where ID=#ID#
+	</update>
+	<insert id="insertByObj" parameterClass="TbCloud2VirtualConfigObj">
+		<selectKey resultClass="int" keyProperty="ID">
+			SELECT ID_TB_CLOUD2_VMHOST_CONFIG.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		insert into TB_CLOUD2_VMHOST_CONFIG(
+		ID,HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,UPDATETTIME,SPACE,STATUS )
+		values(#ID#,#HOSTID#,#TYPE#,#HOSTUSERNAME#,#HOSRPWD#,SYSDATE,#SPACE#,#STATUS#)
+	</insert>
+</sqlMap>

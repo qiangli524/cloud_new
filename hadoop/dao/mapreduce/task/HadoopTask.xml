@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopTask">
+	<typeAlias alias="HadoopTaskObj" type="domain.mapreduce.task.HadoopTaskObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryTaskListByObjBase">
+		SELECT
+			t.id,
+			t.state,
+			t.type,
+			t.successfulAttempt,
+			t.progress,
+			to_char(t.startTime,'yyyy-mm-dd hh24:mi:ss') startTime,
+			to_char(t.finishTime,'yyyy-mm-dd hh24:mi:ss') finishTime,
+			to_char(t.elapsedTime,'yyyy-mm-dd hh24:mi:ss') elapsedTime,
+		FROM
+			tb_hadoop_application t
+		LEFT JOIN tb_hadoop_cluster_info b ON  t.cluster_id = b.ID
+		<dynamic prepend="WHERE">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+					b.id = #id#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<select id="queryTaskListByObjCount" parameterClass="HadoopTaskObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryTaskListByObjBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 查询任务列表 -->
+	<select id="queryTaskListByObj" parameterClass="HadoopTaskObj" resultClass="HadoopTaskObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	    </isGreaterThan>
+		<include refid ="queryTaskListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+</sqlMap>

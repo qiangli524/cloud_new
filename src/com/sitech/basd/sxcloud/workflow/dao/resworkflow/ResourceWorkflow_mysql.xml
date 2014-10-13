@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceWorkflow">
+
+	<typeAlias alias="ResourceOrderInfoObj" type="com.sitech.basd.sxcloud.workflow.domain.resourceorder.ResourceOrderInfoObj" />
+ 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<insert id="addOrderInfo" parameterClass="ResourceOrderInfoObj">
+    	INSERT INTO TB_ASLM_FLOW_RESOURCE_INFO(NEED_NUMBERS,NEED_SPONSOR,NEED_START,NEED_STATUS,TYPE,NEED_END,content,WORKLOAD_ID)
+    	VALUES(#NEED_NUMBERS#,#NEED_SPONSOR#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#NEED_STATUS#,#TYPE#,DATE_FORMAT(#NEED_END#,'%Y-%m-%d %H:%i:%S'),#content#,#WORKLOAD_ID#)		
+	</insert>
+	
+	<delete id="deleteOrderInfo" parameterClass="java.lang.String">
+		DELETE FROM TB_ASLM_FLOW_RESOURCE_INFO WHERE NEED_NUMBERS = #NEED_NUMBERS# 	
+	</delete>
+	
+	
+	<sql id="queryOrderListSql">
+		SELECT A.ID
+			,A.NEED_NUMBERS
+			,A.NEED_SPONSOR
+			,DATE_FORMAT(A.NEED_START,'%Y-%m-%d %H:%i:%S')NEED_START 
+			,DATE_FORMAT(A.NEED_END,'%Y-%m-%d %H:%i:%S')NEED_END
+			,A.NEED_STATUS 
+			,A.TYPE
+			,A.content
+		FROM TB_ASLM_FLOW_RESOURCE_INFO A
+        <dynamic prepend="where">
+               <isNotEmpty property="NEED_NUMBERS" prepend="AND">
+                	A.NEED_NUMBERS = #NEED_NUMBERS#
+               </isNotEmpty>
+               <isNotEmpty property="NEED_SPONSOR" prepend="AND">
+               		A.NEED_SPONSOR = #NEED_SPONSOR#
+               </isNotEmpty>
+               <isNotEmpty property="NEED_END" prepend="AND">
+               		A.NEED_END = #NEED_END#
+               </isNotEmpty>
+                <isGreaterThan property="NEED_STATUS" compareValue="-1" prepend="AND">
+               		A.NEED_STATUS = #NEED_STATUS#
+               </isGreaterThan>                          
+        </dynamic> 
+	</sql>
+	
+	<sql id="queryWorkOrderListSql">
+		SELECT A.ID
+			,A.NEED_NUMBERS
+			,A.NEED_SPONSOR
+			,DATE_FORMAT(A.NEED_START,'%Y-%m-%d %H:%i:%S')NEED_START 
+			,DATE_FORMAT(A.NEED_END,'%Y-%m-%d %H:%i:%S')NEED_END
+			,A.NEED_STATUS 
+			,A.TYPE
+			,A.content
+			,A.APPLY_TYPE
+		FROM TB_ASLM_FLOW_RESOURCE_INFO A
+        <dynamic prepend="where">
+               <isNotEmpty property="NEED_NUMBERS" prepend="AND">
+                	A.NEED_NUMBERS = #NEED_NUMBERS#
+               </isNotEmpty>
+               <isNotEmpty property="NEED_SPONSOR" prepend="AND">
+               		A.NEED_SPONSOR = #NEED_SPONSOR#
+               </isNotEmpty>
+               <isNotEmpty property="APPLY_TYPE" prepend="AND">
+               		A.APPLY_TYPE = #APPLY_TYPE#
+               </isNotEmpty>
+                <isGreaterThan property="NEED_STATUS" compareValue="-1" prepend="AND">
+               		A.NEED_STATUS = #NEED_STATUS#
+               </isGreaterThan>                          
+        </dynamic>
+        order by ID
+	</sql>
+	<select id="queryOrderList"  parameterClass="ResourceOrderInfoObj" resultClass="ResourceOrderInfoObj">
+			<include refid="queryOrderListSql"/>
+			order by ID
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationEnd" />
+			</isGreaterThan>
+	</select>
+	
+	<select id="queryWorkOrderList"  parameterClass="ResourceOrderInfoObj" resultClass="ResourceOrderInfoObj">
+			<include refid="queryWorkOrderListSql"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryOrderForCount" parameterClass="ResourceOrderInfoObj" resultClass="int">
+       select count(1) from (
+        <include refid="queryOrderListSql"/>
+       ) virtual_table
+    </select>
+	<update id="alterOrderInfo" parameterClass="ResourceOrderInfoObj">
+		UPDATE TB_ASLM_FLOW_RESOURCE_INFO
+		SET NEED_END = DATE_FORMAT(#NEED_END#,'%Y-%m-%d %H:%i:%S')
+    		,NEED_STATUS = #NEED_STATUS#,content=#content#,TYPE=#TYPE#
+		WHERE NEED_NUMBERS = #NEED_NUMBERS#
+	</update>
+	<update id="updateByObj" parameterClass="ResourceOrderInfoObj">
+	    update TB_ASLM_FLOW_RESOURCE_INFO set NEED_STATUS=#NEED_STATUS#  where NEED_NUMBERS = #NEED_NUMBERS#
+    </update>
+    <select id="queryVirtualId"  resultClass="ResourceOrderInfoObj">
+       select WORKLOAD_ID,NEED_NUMBERS from TB_ASLM_FLOW_RESOURCE_INFO where  NEED_STATUS='2' and TYPE in ('6','7','1','2')
+    </select>
+</sqlMap>

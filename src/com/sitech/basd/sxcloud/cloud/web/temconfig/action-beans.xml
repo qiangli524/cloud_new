@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="templetConfigAction" class="com.sitech.basd.sxcloud.cloud.web.temconfig.action.TempletConfigAction"
+		singleton="false">
+		<property name="templetConfigService">
+			<ref bean="templetConfigService"/>
+		</property>
+	</bean>
+</beans>
+
+

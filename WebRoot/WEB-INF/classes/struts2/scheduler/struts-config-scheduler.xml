@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="quartzScheduler" extends="global_package">
+		<action name="quartzScheduler_*" class="schedulerAction" method="{1}">
+			<result name="list">/scheduler/schedulerTaskList.jsp</result>
+			<result name="showvm" type="redirect">showvm_listvm2.do</result>
+			<result name="redirectList" type="redirect">quartzScheduler_schedulerTaskList.do</result>
+			<result name="redirectSetjob" type="redirect">quartzScheduler_setjob.do</result>
+			<result name="setjob">/scheduler/setJob.jsp</result>
+			<result name="redirect" type="redirect">quartzScheduler_schedulerTaskList.do</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- 模块名称映射文件 -->
+	<!-- 添加集群 -->
+	<entry key="add_cluster">数据中心->数据中心->添加集群</entry>
+	<!-- 删除集群 -->
+	<entry key="delete_cluster">数据中心->数据中心->删除集群</entry>
+	<!-- 添加数据中心 -->
+	<entry key="add_datacenter">数据中心->数据中心->添加数据中心</entry>
+	<!-- 删除数据中心 -->
+	<entry key="delete_datacenter">数据中心->数据中心->删除数据中心</entry>
+	<!-- 添加宿主机 -->
+	<entry key="add_hostsystem">数据中心->数据中心->添加宿主机</entry>
+	<!-- 删除宿主机 -->
+	<entry key="delete_hostsystem">数据中心->数据中心->移除宿主机</entry>
+	<!-- 修改虚拟机电源状态 -->
+	<entry key="put_vm_powerstatus">数据中心->数据中心->修改虚拟机电源状态</entry>
+	<!-- 删除虚拟机 -->
+	<entry key="delete_virtualmachine">数据中心->数据中心->删除虚拟机</entry>
+	<!-- 根据模板克隆虚拟机 -->
+	<entry key="create_vm_by_template">数据中心->数据中心->根据模板克隆虚拟机</entry>
+	<!-- 根据虚拟机克隆虚拟机 -->
+	<entry key="create_vm_by_vm">数据中心->数据中心->根据虚拟机克隆虚拟机 </entry>
+	<!-- 创建虚拟机快照 -->
+	<entry key="create_vm_snapshot">数据中心->数据中心->创建虚拟机快照 </entry>
+	<!-- 虚拟机快照操作 -->
+	<entry key="oper_vm_snapshot">数据中心->数据中心->虚拟机快照操作 </entry>
+	<!-- 虚拟机控制台-->
+	<entry key="vm_console">数据中心->数据中心->虚拟机控制台 </entry>
+	<!-- 编辑虚拟机-->
+	<entry key="vm_edit">数据中心->数据中心->编辑虚拟机 </entry>
+</properties>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="farmsAction" class="com.sitech.basd.sxcloud.cloud.web.loadBalancing.action.FarmsAction"
+		singleton="false" >
+		<property name="farmsService">
+			<ref bean="farmsService" />
+		</property> 
+		<property name="farmServerService">
+			<ref bean="farmServerService" />
+		</property>
+		<property name="l4policyService">
+			<ref bean="l4policyService" />
+		</property> 
+	</bean>
+	<bean id="farmServerAction" class="com.sitech.basd.sxcloud.cloud.web.loadBalancing.action.FarmServerAction"
+		singleton="false" >
+		<property name="farmsService">
+			<ref bean="farmsService" />
+		</property> 
+		<property name="farmServerService">
+			<ref bean="farmServerService" />
+		</property>
+	</bean>
+	<bean id="l4PolicyAction" class="com.sitech.basd.sxcloud.cloud.web.loadBalancing.action.L4PolicyAction"
+		singleton="false" >
+		<property name="l4policyService">
+			<ref bean="l4policyService" />
+		</property> 
+		<property name="farmsService">
+			<ref bean="farmsService" />
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

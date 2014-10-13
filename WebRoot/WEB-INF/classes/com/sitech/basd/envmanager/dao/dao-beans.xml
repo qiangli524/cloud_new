@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="performanceDao" class="com.sitech.basd.envmanager.dao.performance.PerformanceDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="ledgerDao" class="com.sitech.basd.envmanager.dao.ledger.LedgerDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="versionDao" class="com.sitech.basd.envmanager.dao.version.VersionDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="configureDao" class="com.sitech.basd.envmanager.dao.configure.ConfigureDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="condeviceDao" class="com.sitech.basd.envmanager.dao.condevice.CondeviceDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="updatepwdDao" class="com.sitech.basd.envmanager.dao.updatepwd.UpdatepwdDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="scriptmanageDao" class="com.sitech.basd.envmanager.dao.scriptmanage.ScriptmanageDaoImpl" 
+		singleton="true" parent="baseDaoBean">
+	</bean>
+	
+</beans>

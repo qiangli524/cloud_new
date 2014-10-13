@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="rol"
+			 extends="global_package">
+		<action name="boltree_*" class="bolTreeAction" method="{1}">
+			<result name="list">/bol/listBolTree.jsp</result>
+			<result name="tree" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="tabs">/bol/tabs.jsp</result>
+		</action>
+		<action name="bolresource_*" class="bolResourceAction" method="{1}">
+			<result name="showInfo">/bol/tab/showInfo.jsp</result>
+			<result name="listProcess">/bol/tab/listProcess.jsp</result>
+			<result name="listResource">/bol/tab/listResource.jsp</result>
+			<result name="resourcesRegister">/bol/tab/resourcesRegister.jsp</result>
+		</action>
+		<action name="boltask_*" class="bolTaskAction" method="{1}">
+		</action>
+		<!-- 集群 -->
+		<action name="bolcluster_*" class="bolClusterAction" method="{1}">
+			<result name="list">bol/cluster/listBolCluster.jsp</result>
+			<result name="insert" type="json"></result>
+			<result name="mod">bol/cluster/modCluster.jsp</result>
+			<result name="add">bol/cluster/modCluster.jsp</result>
+			<result name="update" type="json"></result>
+			<result name="del" type="redirectAction">bolcluster_listBolCluster</result>
+			
+		</action>
+		<!-- 主机 -->
+		<action name="bolhost_*" class="bolHostAction" method="{1}">
+			<result name="list">bol/host/listBolHost.jsp</result>
+			<result name="insert" type="json"></result>
+			<result name="mod">bol/host/modHost.jsp</result>
+			<result name="add">bol/host/modHost.jsp</result>
+			<result name="update" type="json"></result>
+			<result name="del" type="redirectAction">bolhost_listBolHost</result>
+			<result name="activeHost" type="redirectAction">bolhost_listBolHost</result>
+		</action>
+		<!-- 节点 -->
+		<action name="bolnode_*" class="bolNodeAction" method="{1}">
+			<result name="list">/bol/node/listBolNode.jsp</result>
+			<result name="add">/bol/node/editBolNode.jsp</result>
+			<result name="mod">/bol/node/editBolNode.jsp</result>
+			<result name="save" type="redirect">bolnode_listBolNode.do</result>
+			<result name="del" type="redirect">bolnode_listBolNode.do</result>
+		</action>
+		<action name="bolnodetask_*" class="nodeTaskAction" method="{1}">
+			<result name="list">/bol/nodetask/listBolNodeTask.jsp</result>
+			<result name="apply">/bol/nodetask/applyPage.jsp</result>
+			<result name="save" type="redirect">bolnodetask_listNodeTask.do</result>
+			
+			<result name="addInformation">/bol/nodetask/addInformationPage.jsp</result>
+			<result name="upgradeRequest">/bol/nodetask/upgradePage.jsp</result>
+			<result name="releaseRequest">/bol/nodetask/releasePage.jsp</result>
+			
+			<result name="selectParam">/bol/nodetask/selectBolProgram.jsp</result>
+		</action>
+		
+		<action name="bolprogramlib_*" class="bolProgramLibAction" method="{1}">
+			<result name="list">/bol/program/listBolProgramLib.jsp</result>
+			<result name="add">/bol/program/updateBolProgramLibPage.jsp</result>
+			<result name="update">/bol/program/updateBolProgramLibPage.jsp</result>
+			<result name="save" type="redirect">bolprogramlib_listBolProgramLib.do</result>
+		</action>
+		
+		<action name="bolprocess_*" class="bolProcessAction" method="{1}">
+			<result name="list">/bol/process/listBolProcess.jsp</result>
+			<result name="add">/bol/process/updateBolProcessPage.jsp</result>
+			<result name="update">/bol/process/updateBolProcessPage.jsp</result>
+			<result name="save" type="redirect">bolprocess_listBolProcess.do</result>
+		</action>
+		
+		<action name="bolprogram_*" class="bolProgramAction" method="{1}">
+			<result name="list">/bol/program/listBolProgram.jsp</result>
+			<result name="add">/bol/program/updateBolProgramPage.jsp</result>
+			<result name="update">/bol/program/updateBolProgramPage.jsp</result>
+			<result name="save" type="redirect">bolprogram_listBolProgram.do</result>
+		</action>
+		<action name="bolprogramcomposite_*" class="bolProgramCompositeAction" method="{1}">
+			<result name="list">/bol/program/listBolProgramComposite.jsp</result>
+			<result name="add">/bol/program/updateBolProgramCompositePage.jsp</result>
+			<result name="update">/bol/program/updateBolProgramCompositePage.jsp</result>
+			<result name="save" type="redirect">bolprogramcomposite_listBolProgramComposite.do</result>
+		</action>
+	</package>
+</struts>

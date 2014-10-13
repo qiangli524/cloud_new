@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiHostConfigHis">
+
+    <typeAlias alias="TbBusiHostConfigHisObj" type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusiHostConfigHisObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+    <sql id="tableColumnsNoKey">      
+    HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,SPACE,DATE_FORMAT(INSERTTIME,'%Y-%m-%d %H:%i:%S') INSERTTIME,UPDATEUSER,UPDATETYPE
+    </sql>
+    <sql id="tableColumns">
+        ID,
+        <include refid="tableColumnsNoKey"/>
+    </sql>
+      <sql id="queryByObjBase">
+        select
+        <include refid="tableColumns"/>
+        from
+        TB_BUSI_HOST_CONFIG_HIS where 1=1 
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="UPDATEUSER" prepend="and">
+                UPDATEUSER like CONCAT('%',#UPDATEUSER#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="UPDATETYPE" prepend="and">
+                UPDATETYPE =#UPDATETYPE#
+               </isNotEmpty> 
+     </sql>
+     <select id="queryForListByObj" parameterClass="TbBusiHostConfigHisObj" resultClass="TbBusiHostConfigHisObj">
+        <include refid="queryByObjBase"/>
+        order by ID desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByObjForCount" parameterClass="TbBusiHostConfigHisObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiHostConfigHisObj">
+    delete from TB_BUSI_HOST_CONFIG_HIS where ID=#ID#
+    </delete>
+    <insert id="insertByObj" parameterClass="TbBusiHostConfigHisObj">
+    insert into TB_BUSI_HOST_CONFIG_HIS(
+     HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,SPACE,UPDATEUSER,UPDATETYPE
+     )
+     values(#HOSTID#,#TYPE#,#HOSTUSERNAME#,#HOSRPWD#,#SPACE#,#UPDATEUSER#,#UPDATETYPE#)
+    
+    </insert>
+      
+</sqlMap>

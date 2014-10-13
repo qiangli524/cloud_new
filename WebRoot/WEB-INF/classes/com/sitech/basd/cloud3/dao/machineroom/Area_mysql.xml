@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="RoomArea">
+
+	<typeAlias alias="RoomAreaObj"
+		type="com.sitech.basd.cloud3.domain.machineroom.RoomAreaObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<!-- 机房区域 -->
+	<insert id="insertAreaObj" parameterClass="RoomAreaObj">
+		insert into TB_CLOUD_MACHINE_ROOMAREA (AREA_ID,AREA_NAME ,AREA_CODE ,AREA_ROOM,LINK_MAN,PHONE,AREA_SIZE,INS_DATE,ROOM_ID )
+		values(#AREA_ID#,#AREA_NAME#,#AREA_CODE#,#AREA_ROOM#,#LINK_MAN#,#PHONE#,#AREA_SIZE#,SYSDATE(),#ROOM_ID#)
+	</insert>
+	<update id="updateAreaObj" parameterClass="RoomAreaObj">
+		update TB_CLOUD_MACHINE_ROOMAREA set area_name=#AREA_NAME#,area_code=#AREA_CODE#,area_room =#AREA_ROOM#,link_man =#LINK_MAN#,phone=#PHONE#
+		,area_size =#AREA_SIZE#,ROOM_ID=#ROOM_ID#
+		where area_id=#AREA_ID#
+	</update>
+	<select id="queryOneArea" parameterClass="RoomAreaObj"
+		resultClass="RoomAreaObj"> 
+		select r.area_id,r.area_name,r.area_code,b.room_name,r.link_man,r.phone,r.area_size ,DATE_FORMAT(r.ins_date,'%Y-%m-%d %H:%i:%S') INS_DATE
+		 from  tb_cloud_machine_roomarea r  left join tb_cloud_machine_room b on r.room_id=b.room_id
+		 where r.area_id=#AREA_ID#
+	</select>
+	<delete id="deleteAreaObj" parameterClass="RoomAreaObj">
+		delete from TB_CLOUD_MACHINE_ROOMAREA  where area_id=#AREA_ID#
+	</delete>
+	
+	<sql id="queryAreaList"> 
+  		select r.area_id,r.area_name,r.area_code,b.room_name,r.link_man,r.phone,r.area_size ,DATE_FORMAT(r.ins_date,'%Y-%m-%d %H:%i:%S') INS_DATE
+		 from  tb_cloud_machine_roomarea r  left join tb_cloud_machine_room b on r.room_id=b.room_id
+		<dynamic prepend="where">
+		<isNotNull property="AREA_NAME">
+		<isNotEmpty property="AREA_NAME" prepend="and">
+			r.area_name like CONCAT('%',#AREA_NAME#,'%')
+		</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="ROOM_ID">
+		<isNotEmpty property="ROOM_ID" prepend="and">
+			r.room_id = #ROOM_ID#
+		</isNotEmpty>
+		</isNotNull>
+		</dynamic>
+	</sql>
+	<select id="queryAreaList" parameterClass="RoomAreaObj"
+		resultClass="RoomAreaObj"> 
+		<include refid="queryAreaList" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryAreaCount" parameterClass="RoomAreaObj"
+		resultClass="int">
+		select count(area_id) from (
+		<include refid="queryAreaList" />
+		) virtual_table
+	</select>
+	</sqlMap>

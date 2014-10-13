@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="convert" extends="global_package">
+		<action name="convert_*"
+				class="convertAction" method="{1}">
+			<result name="convert">/chongqing/conversion.jsp</result>
+			<result name="base">/chongqing/base.jsp</result>
+			<result name="update">/chongqing/updateConversion.jsp</result>
+			
+			<result name="save" type="redirect">convert_goBasePage.do</result>
+			<result name="delete" type="redirect">convert_goBasePage.do</result>
+			<result name="hostIpAddr">/chongqing/queryHostInfo.jsp</result>
+			<result name="vmIpAddr">/chongqing/queryVmInfo.jsp</result>
+			<result name="store" type="json">
+				<param name="root">convertObj</param>
+			</result>
+		</action>
+ </package>
+
+</struts>

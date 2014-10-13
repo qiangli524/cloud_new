@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="configfile" extends="global_package">
+		<action name="configfile_*"
+				class="configAction" method="{1}">
+			<result name="list">/component/config/listConfig.jsp</result>
+			<result name="add">/component/config/addConfig.jsp</result>
+			<result name="mod">/component/config/editConfig.jsp</result>
+			<result name="content">/component/config/configFileInfo.jsp</result>
+			<result name="redirect" type="redirect">configfile_list.do</result>
+			
+		</action>
+		<action name="configgroup_*"
+				class="configGroupAction" method="{1}">
+			<result name="list">/component/config/listConfigGroup.jsp</result>
+			<result name="add">/component/config/addConfigGroup.jsp</result>
+			<result name="mod">/component/config/editConfigGroup.jsp</result>
+			<result name="member">/component/config/selectMember.jsp</result>
+			<result name="listmember">/component/config/listMember.jsp</result>
+		</action>
+		
+		<action name="deployconfig_*"
+				class="deployConfigAction" method="{1}">
+			<result name="list">/component/tree/config/listConfig.jsp</result>
+			<result name="add">/component/tree/config/addConfig.jsp</result>
+			<result name="mod">/component/tree/config/editConfig.jsp</result>
+			<result name="content">/component/tree/config/configFileInfo.jsp</result>
+			<result name="listHadoopConfig">/hadoop/config/listConfig.jsp</result>
+			<result name="addHadoopConfig">/hadoop/config/addConfig.jsp</result>
+			<result name="modConfig">/hadoop/config/editConfig.jsp</result>
+		</action>
+ </package>
+
+</struts>

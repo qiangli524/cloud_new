@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ZookeeperTree">
+<typeAlias alias="ZookeeperTreeObj" type="com.sitech.ssd.ah.zookeeper.domain.ZookeeperTreeObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<select id="queryTreeNodeByObj" parameterClass="ZookeeperTreeObj" resultClass="ZookeeperTreeObj">
+		select uid,node_path fullPath,node_name name,node_alias aliasName from tb_zookeeper_tree_resource 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="fullPath">
+					node_path = #fullPath#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	<update id="updateByObj" parameterClass="ZookeeperTreeObj">
+		update tb_paas_busi_tree
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="name">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="server_type">
+				server_type = #server_type#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<delete id="deleteByObj" parameterClass="PaasBusiTreeObj">
+		delete from tb_paas_busi_tree
+		<dynamic prepend="where">
+			<isNotEmpty prepend="," property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+</sqlMap>

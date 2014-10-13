@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiHostHis">
+
+    <typeAlias alias="TbBusiHostHisObj" type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusiHostHisObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+
+    <sql id="tableColumnsNoKey">      
+    IP,HOSTNAME,DATE_FORMAT(INSERTTIME,'%Y-%m-%d %H:%i:%S') INSERTTIME,STATUS,FREQUENCY,MEMORY,OPERATE_SYSTEM,MANUFACTURERS,HOSTID,UPDATEUSER,UPDATETYPE
+    </sql>
+    
+    <sql id="tableColumns">
+        ID,
+        <include refid="tableColumnsNoKey"/>
+    </sql>
+      <sql id="queryByObjBase">
+        select
+        <include refid="tableColumns"/>
+        from
+        TB_BUSI_HOST_HIS
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="HOSTNAME" prepend="and">
+                HOSTNAME like CONCAT('%',#HOSTNAME#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="STATUS" prepend="and">
+                STATUS =#STATUS#
+               </isNotEmpty>
+               <isNotEmpty property="UPDATETYPE" prepend="and">
+                UPDATETYPE =#UPDATETYPE#
+               </isNotEmpty>  
+        </dynamic> 
+     </sql>
+     <select id="queryForListByObj" parameterClass="TbBusiHostHisObj" resultClass="TbBusiHostHisObj">
+        <include refid="queryByObjBase"/>
+        order by ID desc
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByObjForCount" parameterClass="TbBusiHostHisObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiHostHisObj">
+    delete from TB_BUSI_HOST_HIS where ID=#ID#
+    </delete>
+    <insert id="insertByObj" parameterClass="TbBusiHostHisObj">
+    insert into TB_BUSI_HOST_HIS(
+     IP,HOSTNAME,STATUS,FREQUENCY,MEMORY,OPERATE_SYSTEM,MANUFACTURERS,HOSTID,UPDATEUSER,UPDATETYPE,INSERTTIME
+     )
+     values(#IP#,#HOSTNAME#,#STATUS#,#FREQUENCY#,#MEMORY#,#OPERATE_SYSTEM#,#MANUFACTURERS#,#HOSTID#,#UPDATEUSER#,#UPDATETYPE#,now())
+    </insert>
+      
+</sqlMap>

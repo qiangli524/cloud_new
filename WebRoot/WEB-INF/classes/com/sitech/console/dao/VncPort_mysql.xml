@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="VncPort">
+    <typeAlias alias="TbVncPortVO" type="com.sitech.console.domain.TbVncPortVO"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+     <sql id="queryByObjBase">
+        select id,`host_code`,host_ip,connect_id,port,vmcode,ifused,updatetime
+        from
+        tb_vnc_port
+         <dynamic prepend="where">
+         	   <isNotEmpty property="id" prepend="and">
+               	 id =#id#
+               </isNotEmpty>
+               <isNotEmpty property="host_code" prepend="and">
+               	 host_code like CONCAT('%',#host_code#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="host_ip" prepend="and">
+               	 host_ip  like CONCAT('%',#host_ip#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="connect_id" prepend="and">
+               	 connect_id =#connect_id#
+               </isNotEmpty>
+               <isNotEmpty property="port" prepend="and">
+               	 port =#port#
+               </isNotEmpty>
+               <isNotEmpty property="vmcode" prepend="and">
+               	 vmcode like CONCAT('%',#vmcode#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="ifused" prepend="and">
+               	 ifused =#ifused#
+               </isNotEmpty>
+         </dynamic> 
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="TbVncPortVO" resultClass="TbVncPortVO">
+	        <include refid="queryByObjBase"/>
+	         order by updatetime DESC
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryForCount" parameterClass="TbVncPortVO" resultClass="int">
+	      select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+
+	  <insert id="insertByObj" parameterClass="TbVncPortVO">
+	  		insert into tb_vnc_port(
+	  			id,`host_code`,host_ip,connect_id,port,vmcode,ifused,updatetime
+	  		)
+	  		values(#id#,#host_code#,#host_ip#,#connect_id#,#port#,#vmcode#,#ifused#,#updatetime#)
+	  </insert>
+	  
+	  <update id="updateByObj" parameterClass="TbVncPortVO">
+		update tb_vnc_port
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="host_code">
+				host_code=#host_code#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="host_ip">
+				host_ip=#host_ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="connect_id">
+				connect_id=#connect_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="port">
+				port=#port#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="vmcode">
+				vmcode=#vmcode#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="ifused">
+				ifused=#ifused#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="updatetime">
+				updatetime=#updatetime#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id=#id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_code">
+				host_code=#host_code#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="connect_id">
+				connect_id=#connect_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="port">
+				port=#port#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<update id="releaseVncPost" parameterClass="TbVncPortVO">
+		update tb_vnc_port
+		set vmcode=#vmcode#,ifused=#ifused#,updatetime=#updatetime#
+		where host_code=#host_code#
+		and connect_id=#connect_id#
+		and port=#port#
+	</update>
+	  
+	  <delete id="deleteByObj" parameterClass="TbVncPortVO">
+	    delete from tb_vnc_port
+	    <dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id=#id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_code">
+				host_code=#host_code#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_ip">
+				host_ip=#host_ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="connect_id">
+				connect_id=#connect_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="port">
+				port=#port#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="vmcode">
+				vmcode=#vmcode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ifused">
+				ifused=#ifused#
+			</isNotEmpty>
+		</dynamic>
+	  </delete>
+</sqlMap>

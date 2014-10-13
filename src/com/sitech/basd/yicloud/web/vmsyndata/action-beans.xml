@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="dataSynchron" class="com.sitech.basd.yicloud.web.vmsyndata.action.DataSynchron"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="entityTreeService">
+			<ref bean="entityTreeService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="clusterDao">
+			<ref bean="clusterDao" />
+		</property>
+		<property name="dataStoreService">
+			<ref bean="dataStoreService" />
+		</property>
+		<property name="portGroupService">
+			<ref bean="portGroupService" />
+		</property>
+		<property name="virtualSwitchService">
+			<ref bean="virtualSwitchService" />
+		</property>
+		<property name="templetTreeService">
+			<ref bean="templetTreeService" />
+		</property>
+		<property name="entityRefService">
+			<ref bean="entityRefService" />
+		</property>
+		<property name="nicService">
+			<ref bean="nicService" />
+		</property>
+		<property name="virtualNicService">
+			<ref bean="virtualNicService" />
+		</property>
+		<property name="nicRelationService">
+			<ref bean="nicRelationService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

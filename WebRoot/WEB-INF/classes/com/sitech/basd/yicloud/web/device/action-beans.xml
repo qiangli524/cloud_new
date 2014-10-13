@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="devicetAction" class="com.sitech.basd.yicloud.web.device.action.DeviceAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="deviceService">
+			<ref bean="deviceService" />
+		</property>
+		<property name="leaderViewBusinessService">
+			<ref bean="leaderViewBusinessService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="switchesService">
+			<ref bean="switchesService" />
+		</property>
+	</bean>
+
+</beans>

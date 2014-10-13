@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="UpgradeExample">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="UpgradeExampleObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.upgrade.UpgradeExampleObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		t.HOSTID,t.APPID,DATE_FORMAT(t.UPGRADETIME,'%Y-%m-%d %H:%i:%S') as
+		UPGRADETIME,t.UPGRADE_FLAG,t.START_STOP_FLAG,DATE_FORMAT(t.UPDATETIME,'%Y-%m-%d %H:%i:%S') as UPDATETIME,h.HOSTNAME,m.APPNAME,t.APPPORT,t.KEYNAME
+	</sql>
+	<sql id="tableColumns">
+		t.ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryByObjBase">
+		select
+		<include refid="tableColumns" />
+		from TB_BUSI_UPGRADE_EXAMPLE t,TB_BUSI_HOST
+		h,TB_SYS_APP m where t.hostid = h.id and t.APPID=m.ID
+		<isGreaterThan property="ID" compareValue="0" prepend="and">
+			t.ID =#ID#
+		</isGreaterThan>
+		<isGreaterThan property="APPID" compareValue="0" prepend="and">
+			t.APPID =#APPID#
+		</isGreaterThan>
+		<isNotEmpty property="HOSTNAME" prepend="and">
+			h.hostname like CONCAT('%',#HOSTNAME#,'%')
+		</isNotEmpty>
+		<isGreaterThan property="START_STOP_FLAG" compareValue="0" prepend="and">
+                t.START_STOP_FLAG =#START_STOP_FLAG#
+        </isGreaterThan>
+		<isNotEmpty property="DATAAUTHORITY" prepend="and">
+                t.APPID in ($DATAAUTHORITY$)
+               </isNotEmpty> 
+	</sql>
+	<select id="queryListIDByObj" parameterClass="UpgradeExampleObj" resultClass="UpgradeExampleObj">
+        select ID,UPGRADE_FLAG,START_STOP_FLAG,UPGRADE_PERCENT from TB_BUSI_UPGRADE_EXAMPLE where ID in ($LONGID$) order by ID desc
+    </select>
+	<select id="queryForListByObj" parameterClass="UpgradeExampleObj"
+		resultClass="UpgradeExampleObj"> 
+		<include refid="queryByObjBase" />
+		ORDER BY t.ID DESC
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="UpgradeExampleObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+
+	<delete id="deleteByObj" parameterClass="UpgradeExampleObj">
+		delete from TB_BUSI_UPGRADE_EXAMPLE where ID=#ID#
+	</delete>
+
+	<insert id="insertByObj" parameterClass="UpgradeExampleObj">
+		insert into
+		TB_BUSI_UPGRADE_EXAMPLE(HOSTID,APPID,UPGRADE_FLAG,START_STOP_FLAG,APPPORT,KEYNAME)
+		values (#HOSTID#,#APPID#,0,1,#APPPORT#,#KEYNAME#)
+	</insert>
+
+	<update id="updateByObj" parameterClass="UpgradeExampleObj">
+		update TB_BUSI_UPGRADE_EXAMPLE set
+		UPGRADE_FLAG=#UPGRADE_FLAG#,HOSTID=#HOSTID#,APPID=#APPID#,APPPORT=#APPPORT#,KEYNAME=#KEYNAME# where ID=#ID#
+	</update>
+
+	<update id="upgradeByObj" parameterClass="UpgradeExampleObj">
+		update TB_BUSI_UPGRADE_EXAMPLE set UPGRADE_FLAG =1,UPGRADETIME=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') where ID=#ID#
+	</update>
+
+	<update id="startByObj" parameterClass="UpgradeExampleObj">
+		update TB_BUSI_UPGRADE_EXAMPLE set START_STOP_FLAG =2,UPDATETIME=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') where
+		ID=#ID#
+	</update>
+	<update id="stopByObj" parameterClass="UpgradeExampleObj">
+		update TB_BUSI_UPGRADE_EXAMPLE set START_STOP_FLAG =0,UPDATETIME=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') where
+		ID=#ID#
+	</update>
+	
+	
+	
+	
+	<update id="updateDEPLOY_PERCENT" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_UPGRADE_EXAMPLE set DEPLOY_PERCENT = #DEPLOY_PERCENT# where id = #ID#
+	</update>
+	
+	<update id="updateSTART_STOP_PERCENT" parameterClass="TbBusiDeployExampleObj">
+		update TB_BUSI_UPGRADE_EXAMPLE set START_STOP_PERCENT = #START_STOP_PERCENT# where id = #ID#
+	</update>
+</sqlMap>

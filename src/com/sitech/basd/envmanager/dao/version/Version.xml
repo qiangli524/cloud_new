@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Version">
+ <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="VersionObj" type="com.sitech.basd.envmanager.domain.version.VersionObj"/>
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<delete id="deleteVersionObj" parameterClass="VersionObj">
+		delete ENV_VERSION  where S_ID=#s_id#
+	</delete>
+	<update id="updateVersionObj" parameterClass="VersionObj">
+		update ENV_VERSION set SOFTNAME=#SOFTNAME#,SOFTEDITION=#SOFTEDITION#,SUPLINUX=#SUPLINUX#,SUPUNIX=#SUPUNIX#,SUPSUNOS=#SUPSUNOS#,SYSTEMPATCH=#SYSTEMPATCH#,
+		SYSTEMSERVICE=#SYSTEMSERVICE#,DEPENDPACK=#DEPENDPACK#,COMPILER=#COMPILER#,OTHERPACK=#OTHERPACK#,SOFTPACK=#SOFTPACK#,SOFTLICENSE=#SOFTLICENSE#
+		where S_ID=#s_id#
+	</update>
+	<select id="queryVersionOne" parameterClass="VersionObj" resultClass="VersionObj">
+		select S_ID ,SOFTNAME ,SOFTEDITION  ,SUPLINUX,SUPUNIX ,SUPSUNOS ,SYSTEMPATCH ,SYSTEMSERVICE ,DEPENDPACK ,COMPILER,OTHERPACK ,SOFTPACK,SOFTLICENSE 
+		from ENV_VERSION
+		where S_ID=#s_id#
+	</select>
+	<sql id="queryVersionObj">   
+		select S_ID ,SOFTNAME ,SOFTEDITION  ,SUPLINUX,SUPUNIX ,SUPSUNOS ,SYSTEMPATCH ,SYSTEMSERVICE ,DEPENDPACK ,COMPILER,OTHERPACK ,SOFTPACK,SOFTLICENSE 
+		from ENV_VERSION
+		<dynamic prepend="where">
+		<isNotNull property="SOFTNAME">
+		 <isNotEmpty property="SOFTNAME" prepend="and">
+               SOFTNAME like '%'||#SOFTNAME#||'%'
+            </isNotEmpty>
+         </isNotNull> 
+         <isNotNull property="SOFTEDITION">
+		 <isNotEmpty property="SOFTEDITION" prepend="and">
+               SOFTEDITION like '%'||#SOFTEDITION#||'%'
+            </isNotEmpty>
+         </isNotNull> 
+         <isNotNull property="SUPLINUX">
+		 <isNotEmpty property="SUPLINUX" prepend="and">
+               SUPLINUX like '%'||#SUPLINUX#||'%'
+            </isNotEmpty>
+         </isNotNull> 
+         <isNotNull property="SUPUNIX">
+		 <isNotEmpty property="SUPUNIX" prepend="and">
+               SUPUNIX like '%'||#SUPUNIX#||'%'
+            </isNotEmpty>
+         </isNotNull> 
+		</dynamic>
+	</sql>
+	<select id="queryVersionObj" parameterClass="VersionObj"
+		resultClass="VersionObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryVersionObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryVersionObjCount" parameterClass="VersionObj"
+		resultClass="int">
+		select count(S_ID) from (
+		<include refid="queryVersionObj" />
+		) virtual_table
+	</select>
+	
+	<insert id="insertVersionObj" parameterClass="VersionObj">
+		<selectKey  resultClass="int"  keyProperty="s_id">
+	 		select ID_VERSION.nextval as s_id from dual
+	 	</selectKey>
+		insert into ENV_VERSION (S_ID,SOFTNAME,SOFTEDITION,SUPLINUX,SUPUNIX,SUPSUNOS,SYSTEMPATCH,SYSTEMSERVICE,DEPENDPACK,COMPILER,OTHERPACK,SOFTPACK,SOFTLICENSE) 
+		values (#s_id#,#SOFTNAME#,#SOFTEDITION#,#SUPLINUX#,#SUPUNIX#,#SUPSUNOS#,#SYSTEMPATCH#,#SYSTEMSERVICE#,#DEPENDPACK#,#COMPILER#,#OTHERPACK#,#SOFTPACK#,#SOFTLICENSE#)
+	</insert>
+</sqlMap>

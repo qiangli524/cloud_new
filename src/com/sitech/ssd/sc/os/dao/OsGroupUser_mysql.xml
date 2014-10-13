@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsGroupUser">
+	<typeAlias alias="osGroupUser" type="com.sitech.ssd.sc.os.domain.OsGroupUserModel"/>
+	 
+	<insert id="insertOsGroupUser" parameterClass="osGroupUser">
+		INSERT INTO tb_os_group_user(os_host_id,group_id,user_id,flag,mask) 
+		VALUES(#os_host_id#,#group_id#,#user_id#,#flag#,#mask#)
+	</insert>
+	
+	<!--
+	<insert id="copyOsTemplateGroupUser" parameterClass="osGroupUser">
+		INSERT INTO tb_os_group_user(os_host_id,group_id,user_id,flag)
+		SELECT #os_host_id# os_host_id,group_id,user_id,'1' flag 
+		FROM tb_os_template_group_user WHERE template_id  = #id#
+	</insert>
+	 -->
+	 
+	 <insert id="copyOsTemplateGroupUser" parameterClass="osGroupUser">
+		INSERT INTO tb_os_group_user(os_host_id,group_id,user_id,flag,mask)
+		SELECT u.os_host_id,g.id group_id,u.id user_id,u.flag,tgu.mask
+		FROM tb_os_template_group_user tgu,tb_os_template_user tu,tb_os_template_group tg,
+		     tb_os_group g,tb_os_user u
+		WHERE tgu.user_id = tu.id AND tgu.group_id = tg.id
+		  AND tg.group_name = g.group_name AND tu.user_name = u.user_name 
+		  AND tgu.template_id = #id# 
+		  AND g.os_host_id = #os_host_id# AND g.flag = #flag# 
+		  AND u.os_host_id = #os_host_id# AND u.flag = #flag# 
+	</insert>
+	
+	  
+	<delete id="deleteOsGroupUser" parameterClass="osGroupUser">
+		DELETE FROM tb_os_group_user
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="flag" prepend="and">
+				flag = #flag#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+		   
+	<update id="updateOsGroupUser" parameterClass="osGroupUser">
+		UPDATE tb_os_group_user 
+		SET os_host_id = #os_host_id#,group_id = #group_id#,user_id = #user_id#,flag=#flag#,mask=#mask#
+		WHERE id = #id#
+	</update>
+	
+	<select id="selectOsGroupUser" parameterClass="osGroupUser" resultClass="osGroupUser">
+		SELECT * FROM tb_os_group_user WHERE id = #id#
+	</select>
+	
+	<select id="selectOsGroupUserList" parameterClass="osGroupUser" resultClass="osGroupUser">
+		SELECT * FROM tb_os_group_user
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id = #user_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="showOsGroupUserList" parameterClass="osGroupUser" resultClass="osGroupUser">
+		SELECT gu.id AS id,
+			gu.os_host_id AS os_host_id,
+			gu.flag as flag,
+			gu.mask,
+			u.user_name AS user_id,
+			g.group_name AS group_id 
+		FROM tb_os_group_user gu,tb_os_user u,tb_os_group g
+		WHERE gu.user_id = u.id AND gu.group_id = g.id
+		  AND gu.os_host_id = #os_host_id#
+	</select>
+	
+	<select id="unionOsGroupUserList" parameterClass="osGroupUser" resultClass="osGroupUser">
+		SELECT gu.flag,gu.mask,u.user_name user_id,g.group_name group_id
+		FROM tb_os_group_user gu,tb_os_user u,tb_os_group g
+		WHERE gu.user_id = u.id AND gu.group_id = g.id AND gu.os_host_id =#os_host_id# 
+		UNION
+		SELECT '1' flag,gu.mask,u.user_name user_id,g.group_name group_id
+		FROM tb_os_template_group_user gu,tb_os_template_user u,tb_os_template_group g
+		WHERE gu.user_id = u.id AND gu.group_id = g.id AND gu.template_id = #id# 
+	</select>	
+</sqlMap>

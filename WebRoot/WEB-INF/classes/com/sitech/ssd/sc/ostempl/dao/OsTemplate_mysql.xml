@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplate">
+
+	<typeAlias alias="_OsTemplate" type="com.sitech.ssd.sc.ostempl.domain.OsTemplate" />
+
+	<sql id="partTableColumns">
+		templ_name,templ_desc,os_version
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplate" parameterClass="_OsTemplate">
+		insert into tb_os_template(
+		<include refid="partTableColumns" />
+		)
+		values(#templ_name#,#templ_desc#,#os_version#)
+	</insert>
+
+	<delete id="deleteOsTemplate" parameterClass="_OsTemplate">
+		DELETE FROM tb_os_template
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="templ_name" prepend="and">
+				templ_name = #templ_name#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplate" parameterClass="_OsTemplate">
+		UPDATE tb_os_template 
+		SET templ_name = #templ_name#,
+		    templ_desc = #templ_desc#,
+		    os_version = #os_version#
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<select id="selectOsTemplateList" parameterClass="_OsTemplate"
+		resultClass="_OsTemplate">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="templ_name" prepend="and">
+				templ_name like CONCAT('%',#templ_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="templ_desc" prepend="and">
+				templ_desc like CONCAT('%',#templ_desc#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="os_version" prepend="and">
+				os_version like CONCAT('%',#os_version#,'%')
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY id
+	</select>
+
+	<select id="selectOsTemplate" parameterClass="_OsTemplate"
+		resultClass="_OsTemplate">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template where id = #id#
+	</select>
+</sqlMap>

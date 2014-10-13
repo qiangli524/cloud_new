@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="portgroup" extends="global_package">
+		<action name="portgroup_*"
+				class="portGroupAction" method="{1}">
+			<result name="listVirtualSwitch">/yicloud/portgroup/listVirtualSwitch.jsp</result>
+			<result name="listPortGroup">/yicloud/portgroup/listPortGroup.jsp</result>
+			<result name="listPGDetail">/yicloud/portgroup/listPortGroupDetail.jsp</result>
+			<result name="addPortGroup">/yicloud/portgroup/addPortGroup.jsp</result>
+			<result name="modPortGroup">/yicloud/portgroup/addPortGroup.jsp</result>
+			<result name="savePortGroup" type="redirect">portgroup_listPortGroup.do?ID=${vsId}&amp;NAME=${name}&amp;hostName=${host}&amp;vssType=${vssType}</result>
+			<result name="delPortGroup" type="redirect">portgroup_listPortGroup.do?ID=${vsId}&amp;NAME=${name}&amp;hostName=${host}&amp;vssType=${vssType}</result>
+			<result name="add_net">/yicloud/portgroup/addNetWork.jsp</result>
+			<result name="success">/ajax/ajax.jsp</result>
+			<result name="switch_tab">/yicloud/portgroup/listHostNet.jsp</result>
+		</action>
+ </package>
+
+</struts>

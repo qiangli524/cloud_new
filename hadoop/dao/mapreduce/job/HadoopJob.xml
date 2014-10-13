@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopJob">
+	<typeAlias alias="HadoopJobObj" type="domain.mapreduce.job.HadoopJobObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryApplicationListByObjBase">
+		SELECT
+			t.id,
+			t.name,
+			t.user,
+			t.state,
+			to_char(t.startTime,'yyyy-mm-dd hh24:mi:ss') startTime,
+			to_char(t.finishTime,'yyyy-mm-dd hh24:mi:ss') finishTime,
+			to_char(t.elapsedTime,'yyyy-mm-dd hh24:mi:ss') elapsedTime,
+			t.mapsTotal,
+			t.mapsCompleted,
+			t.reducesTotal,
+			t.reducesCompleted,
+			t.diagnostics,
+			t.uberized,
+			t.mapsPending,
+			t.mapsRunning,
+			t.reducesPending,
+			t.reducesRunning,
+			t.newReduceAttempts,
+			t.runningReduceAttempts,
+			t.failedReduceAttempts,
+			t.killedReduceAttempts,
+			t.successfulReduceAttempts,
+			t.newMapAttempts,
+			t.runningMapAttempts,
+			t.failedMapAttempts,
+			t.killedMapAttempts,
+			t.successfulMapAttempts
+		FROM
+			tb_hadoop_job t
+		LEFT JOIN tb_hadoop_cluster_info b ON  t.cluster_id = b.ID
+		<dynamic prepend="WHERE">
+			<isNotNull property="id">
+				<isNotEmpty property="id">
+					b.id = #id#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		ORDER BY t.name
+	</sql>
+	<select id="queryApplicationListByObjCount" parameterClass="HadoopJobObj" resultClass="int">
+		select count(*)  from (
+		<include refid="queryApplicationListByObjBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 查询作业管理列表 -->
+	<select id="queryApplicationListByObj" parameterClass="HadoopJobObj" resultClass="HadoopJobObj">
+		<include refid ="queryApplicationListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+</sqlMap>

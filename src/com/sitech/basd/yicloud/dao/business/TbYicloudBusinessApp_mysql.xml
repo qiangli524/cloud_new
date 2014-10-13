@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbYicloudBusinessApp">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbYicloudBusinessAppObj"
+		type="com.sitech.basd.yicloud.domain.business.TbYicloudBusinessAppObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="TB_YICLOUD_BUSINESS_APPColumnsNoKey">
+		UPPER_ID,NAME,TYPE,BIND_DEVICE
+	</sql>
+	<sql id="TB_YICLOUD_BUSINESS_APPColumns">
+		ID,
+		<include refid="TB_YICLOUD_BUSINESS_APPColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_YICLOUD_BUSINESS_APPColumns" />
+		from TB_YICLOUD_BUSINESS_APP
+		<dynamic prepend="where">
+			<isGreaterThan property="ID" compareValue="0" prepend="and">
+			ID =#ID#
+		   </isGreaterThan>
+			<isGreaterThan property="UPPER_ID" compareValue="0" prepend="and">
+			UPPER_ID =#UPPER_ID#
+		   </isGreaterThan>
+		   <isGreaterThan property="BIND_DEVICE" compareValue="0" prepend="and">
+			BIND_DEVICE =#BIND_DEVICE#
+		   </isGreaterThan>
+			<isNotEmpty property="NAME" prepend="and">
+				NAME =#NAME#
+			</isNotEmpty>
+			<isNotEmpty property="TYPE" prepend="and">
+				TYPE =#TYPE#
+			</isNotEmpty>
+		</dynamic> 
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj"
+		parameterClass="TbYicloudBusinessAppObj"
+		resultClass="TbYicloudBusinessAppObj">
+		<include refid="queryByObjBase" />
+		order by ID asc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="TbYicloudBusinessAppObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	  <insert id="insertByObj" parameterClass="TbYicloudBusinessAppObj">
+		insert into TB_YICLOUD_BUSINESS_APP(
+		NAME,TYPE,UPPER_ID,BIND_DEVICE
+		)
+		values(#NAME#,#TYPE#,#UPPER_ID#,#BIND_DEVICE#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="TbYicloudBusinessAppObj">
+		update TB_YICLOUD_BUSINESS_APP set ID=#ID#,NAME=#NAME#,TYPE=#TYPE#,UPPER_ID=#UPPER_ID#,BIND_DEVICE=#BIND_DEVICE#
+		where ID=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="TbYicloudBusinessAppObj">
+		delete from TB_YICLOUD_BUSINESS_APP where ID=#ID#
+	  </delete>
+	  <select id="queryAppIdList" parameterClass="TbYicloudBusinessAppObj" resultClass="TbYicloudBusinessAppObj">
+		select NAME,ID from TB_YICLOUD_BUSINESS_APP 
+	  </select >
+</sqlMap>

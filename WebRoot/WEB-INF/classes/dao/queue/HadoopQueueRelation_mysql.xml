@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopQueueRelation">
+	<typeAlias alias="HadoopQueueRelationObj" type="domain.queue.HadoopQueueRelationObj"/>
+	
+		 <sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="HadoopQueueRelationObj" resultClass="HadoopQueueRelationObj">
+		select queue_id,entity_id,entity_type from tb_hadoop_queue_user_config_relation 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="queue_id">
+				queue_id = #queue_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_type">
+				entity_type = #entity_type#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertByObj" parameterClass="HadoopQueueRelationObj">
+		INSERT INTO tb_hadoop_queue_user_config_relation(queue_id,entity_id,entity_type) VALUES(#queue_id#,#entity_id#,#entity_type#)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="HadoopQueueRelationObj">
+		UPDATE tb_hadoop_queue_user_config_relation
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="queue_id">
+				queue_id = #queue_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="entity_id">
+				entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="entity_type">
+				entity_type = #entity_type#
+			</isNotEmpty>
+		</dynamic>
+		where queue_id = #queue_id#
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="HadoopQueueRelationObj">
+		DELETE from tb_hadoop_queue_user_config_relation 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="queue_id">
+				queue_id = #queue_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="queueIdList">
+				queue_id in
+				<iterate close=")" conjunction="," open="(" property="queueIdList">
+					#queueIdList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+</sqlMap>

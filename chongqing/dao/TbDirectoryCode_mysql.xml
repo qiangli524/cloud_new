@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbDirectoryCode">
+	<typeAlias alias="TbDirectoryCodeVO" type="domain.TbDirectoryCodeVO"/>
+	<select id="queryForList" parameterClass="TbDirectoryCodeVO" resultClass="TbDirectoryCodeVO">
+	  select id,code,name,ditypecode,description
+	  from tb_directory_code 
+	  <dynamic prepend="where">
+	    <isNotNull property="id" prepend="and">
+	        id=#id#
+	    </isNotNull>
+	    <isNotNull property="code" prepend="and">
+	    		code = #code#
+	    </isNotNull>
+	     <isNotNull property="ditypecode" prepend="and">
+	     		 ditypecode=#ditypecode#
+	    </isNotNull>
+	     <isNotNull property="name" prepend="and">
+	     		 name=#name#
+	    </isNotNull>
+	  </dynamic>
+	</select>
+</sqlMap>

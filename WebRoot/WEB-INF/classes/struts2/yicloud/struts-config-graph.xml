@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+    <package name="graph.editors" namespace="/graph/editors" extends="global_package">
+        <action name="editor" class="mxGraphAction" method="mxGraphEditor">
+            <result>/graph/editors/mxGraphEditor.jsp</result>
+        </action>
+        <action name="kbpTopoView">
+            <result>/graph/editors/kbpTopoView.jsp</result>
+        </action>
+        <action name="graph" class="mxGraphAction" method="showMxGraph">
+            <result>/graph/editors/showMxGraph.jsp</result>
+        </action>
+        
+        <action name="save" class="mxGraphAction" method="saveMxGraph">
+            <result type="json">
+                <param name="root">mxGraph</param>
+            </result>
+        </action>
+        <action name="del" class="mxGraphAction" method="delMxGraph">
+            <result type="json">
+                <param name="root">graphIds</param>
+            </result>
+        </action>
+        <action name="all" class="mxGraphAction" method="findAllMxGraph">
+            <result type="json">
+                <param name="root">mxGraphList</param>
+            </result>
+        </action>
+        <action name="*">
+            <result>/graph/editors/{1}.jsp</result>
+        </action>
+        <!-- 业务处理如创建虚拟机等 duangh -->
+        <action name="create" class="handlerAction" method="createVM">
+        </action>
+        
+    </package>
+    
+    <package name="graph.interface" namespace="/graph/interface" extends="default">
+        <action name="*"><!-- 页面接口，action name代表js回调函数名 -->
+            <result>/graph/interface.jsp</result>
+        </action>
+    </package>
+</struts>

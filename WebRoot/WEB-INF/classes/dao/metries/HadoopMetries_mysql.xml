@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="HadoopMetries">
+	<typeAlias alias="hadoopMetriesObj" type="domain.metries.HadoopMetriesObj"/>
+	
+	<select id="queryForListByCluster" parameterClass="hadoopMetriesObj" resultClass="hadoopMetriesObj">
+		select * from tb_hadoop_metries_value
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="entityIdList">
+				entity_id in
+				(
+					select cluster_id from tb_hadoop_cluster_info where id in
+					<iterate close=")" conjunction="," open="(" property="entityIdList">
+						#entityIdList[]#
+					</iterate>
+				)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="metries_id">
+				metries_id = #metries_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

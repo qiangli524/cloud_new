@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
+	default-autowire="byName">
+	<context:property-placeholder location="classpath:weburl.properties" ignore-unresolvable="true"/>
+	<!-- 引入Spring-注解生成bean功能 -->
+	<import resource="classpath:spring/app-config-annotation.xml" />
+	<!-- 引入Properties工具类生成bean功能 -->
+	<import resource="classpath:spring/app-config-properties.xml" />
+	<!-- WebService -->
+<!-- 	<import resource="classpath:spring/app-config-webservice.xml" /> -->
+	<!-- WebService -->
+	<import resource="classpath:rabbitmq/app-config-rabbitmq.xml" />
+	<!-- 进程个数配置 -->
+	<import resource="classpath:spring/thread-service-beans.xml" />
+	<!-- C3P0SqlMap配置 -->
+	<import resource="classpath:spring/app-config-ibatis.xml" />
+	<!-- 原DaoBeans -->
+	<import resource="classpath:spring/app-config-dao.xml" />
+	<!-- 原ServiceBeans -->
+	<import resource="classpath:spring/app-config-service.xml" />
+	<!-- 原ActionBeans -->
+	<import resource="classpath:spring/app-config-action.xml" />
+	<!-- Spring定时调度 -->
+	<import resource="classpath:spring/app-config-quartz.xml" />
+	<!-- Spring切面编程-->
+	<import resource="classpath:spring/app-config-aspectj.xml" />
+	<!-- Cxf rest WebService -->
+	<import resource="classpath:cxf/cxf-server-config.xml"/>
+	<!-- cxf Webservie -->
+	<import resource="classpath:cxf/cxf-server-webservice.xml"/>
+	<!-- 华为的Beans -->
+	<import resource="classpath:spring/app-config-huaweiBean.xml"/>
+</beans>

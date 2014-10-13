@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="IpInfo">
+	<typeAlias alias="IpinfoObj"
+		type="com.sitech.basd.yicloud.domain.ipinfo.IpinfoObj" />
+	<typeAlias alias="DictionaryObj"
+		type="com.sitech.basd.yicloud.domain.dictionary.DictionaryObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select m.IP_ID,
+               m.ISUSED,
+               du.NAME ISUSEDNAME,
+               m.ISBLOCKED,
+               db.NAME ISBLOCKEDNAME,
+               m.IPADDRESS,
+               DATE_FORMAT(m.INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE,
+               m.NET_ID,
+               m.IP_TYPE,
+               dt.NAME IP_TYPENAME
+          from TB_CLOUD2_IP_INFO m, YI_DATA_DICTIONARY du, YI_DATA_DICTIONARY db, YI_DATA_DICTIONARY dt
+         where m.isused = du.code
+           and du.group_name = 'IpInfo_isUsed'
+           and m.isblocked = db.code
+           and db.group_name = 'IpInfo_isBlocked'
+           and m.ip_type = dt.code
+           and dt.group_name = 'IpInfo_iptype'
+        ]]>
+        <isNotEmpty property="IP_ID"  prepend="and">
+			m.IP_ID = #IP_ID#
+		</isNotEmpty>
+
+		<isNotEmpty property="ISUSED" prepend="and">
+			m.ISUSED = #ISUSED#
+		</isNotEmpty>
+
+		<isNotEmpty property="ISBLOCKED" prepend="and">
+			m.ISBLOCKED =
+			#ISBLOCKED#
+		</isNotEmpty>
+
+		<isNotEmpty property="IPADDRESS" prepend="and">
+			m.IPADDRESS like CONCAT('%',#IPADDRESS#,'%')
+		</isNotEmpty>
+		
+		<isNotEmpty property="IP_TYPE" prepend="and">
+			m.IP_TYPE = #IP_TYPE#
+		</isNotEmpty>
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	m.domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+	</sql>
+	
+
+	<select id="queryForListByObj" parameterClass="IpinfoObj"
+		resultClass="IpinfoObj"> 
+		<include refid="queryByObjBase" /> 
+			ORDER BY m.IP_ID
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="IpinfoObj"
+		resultClass="int">
+		select count(IP_ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	
+	<!-- 查询是否使用下拉框的值 -->
+	<select id="queryForListByUsed" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<![CDATA[
+		select ID, CODE, NAME FROM YI_DATA_DICTIONARY yd
+        where yd.GROUP_NAME = 'IpInfo_isUsed'
+		 ]]>
+	</select>
+	<!-- 查询是否被阻塞下拉框的值 -->
+	<select id="queryForListByBlocked" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<![CDATA[
+		select ID, CODE, NAME FROM YI_DATA_DICTIONARY yd
+        where yd.GROUP_NAME = 'IpInfo_isBlocked'
+		 ]]>
+	</select>
+	<!--查询IP类型下拉框的值 -->
+	<select id="queryForListByType" parameterClass="DictionaryObj"
+		resultClass="DictionaryObj">
+		<![CDATA[
+		select ID, CODE, NAME FROM YI_DATA_DICTIONARY yd
+        where yd.GROUP_NAME = 'IpInfo_iptype'
+		 ]]>
+	</select>
+	<!-- 增加IP池 -->
+	<insert id="insertByObj" parameterClass="IpinfoObj">
+		insert into
+		TB_CLOUD2_IP_INFO(ISUSED,ISBLOCKED,IPADDRESS,INS_DATE,NET_ID,IP_TYPE)
+		values(#ISUSED#,#ISBLOCKED#,#IPADDRESS#,#INS_DATE#,#NET_ID#,#IP_TYPE#)
+	</insert>
+	<!-- 修改IP池信息  -->
+	<update id="updateByObj" parameterClass="IpinfoObj">
+		update TB_CLOUD2_IP_INFO set
+		IP_ID=#IP_ID#,ISUSED=#ISUSED#,ISBLOCKED=#ISBLOCKED#,IPADDRESS=#IPADDRESS#,INS_DATE=#INS_DATE#,IP_TYPE=#IP_TYPE#
+		where IP_ID=#IP_ID#
+	</update>
+	<!-- 根据ID删除IP池信息  -->
+	<delete id="deleteByObj" parameterClass="IpinfoObj">
+		delete from TB_CLOUD2_IP_INFO where IP_ID=#IP_ID#
+	</delete>
+	
+	<select id="queryIpUnusedAndUsedCount" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		<![CDATA[
+		select concat (count1,',',count2) from 
+		(select count(isused) as count1 from tb_cloud2_ip_info where isused = '0' and net_id = #net_id#) a,
+		(select count(isused) as count2 from tb_cloud2_ip_info where isused = '1' and net_id = #net_id#) b
+		 ]]>
+	</select>
+	
+	<select id="queryAllIpUnusedAndUsedCount" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		<![CDATA[
+		select concat (count1,',',count2) from 
+		(select count(isused) as count1 from tb_cloud2_ip_info where isused = '0' and net_id in (select uuid from tb_united_tree)) a,
+		(select count(isused) as count2 from tb_cloud2_ip_info where isused = '1' and net_id in (select uuid from tb_united_tree)) b
+		 ]]>
+	</select>
+	
+	<update id="updateIpState">
+		update tb_cloud2_ip_info set isused = 0 where isused = 1
+	</update>
+	
+	<update id="updateIpStateByIp" parameterClass="java.lang.String">
+		update tb_cloud2_ip_info set isused = 1 where ipaddress = #ip#
+	</update>
+</sqlMap>

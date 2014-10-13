@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsSoft">
+
+	<typeAlias alias="_softModel" type="com.sitech.ssd.sc.os.domain.OsSoftModel" />
+
+	<sql id="partTableColumns">
+		os_host_id,soft_type,soft_name,soft_desc,flag
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+	
+	<insert id="copyOsTemplateSoft" parameterClass="_softModel">
+		INSERT INTO tb_os_soft(os_host_id,soft_type,soft_name,soft_desc,flag)
+		SELECT #os_host_id# os_host_id,soft_type,soft_name,soft_desc,'1' as flag
+		FROM tb_os_template_soft WHERE template_id = #id#
+	</insert>
+	
+	<delete id="deleteOsSoft" parameterClass="_softModel">
+		DELETE FROM tb_os_soft 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="flag" prepend="and">
+				flag = #flag#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<select id="selectOsSoftList" parameterClass="_softModel" resultClass="_softModel">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_soft 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="soft_type" prepend="and">
+				soft_type LIKE CONCAT('%',#soft_type#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="soft_name" prepend="and">
+				soft_name = #soft_name#
+			</isNotEmpty>
+			<isNotEmpty property="soft_desc" prepend="and">
+				soft_desc LIKE CONCAT('%',#soft_desc#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="unionOsSoftList" parameterClass="_softModel" resultClass="_softModel">
+		SELECT soft_name,soft_type,soft_desc,'1' flag FROM tb_os_template_soft WHERE template_id = #id#
+		UNION
+		SELECT soft_name,soft_type,soft_desc,flag FROM tb_os_soft WHERE os_host_id = #os_host_id#
+	</select>
+	
+</sqlMap>

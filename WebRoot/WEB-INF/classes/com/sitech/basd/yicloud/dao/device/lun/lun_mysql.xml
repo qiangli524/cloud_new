@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="lun">
+
+	<typeAlias alias="lunObj" type="com.sitech.basd.yicloud.domain.device.lun.LunObj" />
+	
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="baseCloumns">
+		a.uuid,a.name,a.is_mapping,a.capacity,a.healthy,a.diskGroupId,a.depth,a.controller,a.write_tactics,a.lun_type
+	</sql>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				a.uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				a.name like CONCAT('%',#name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="is_mapping">
+				a.is_mapping = #is_mapping#
+			</isNotEmpty>
+			<isGreaterThan compareValue="0" property="compare" prepend="and">
+				<![CDATA[
+					a.capacity >= #capacity#
+				]]>
+			</isGreaterThan>
+			<isLessThan compareValue="0" property="compare" prepend="and">
+				<![CDATA[
+					a.capacity <= #capacity#
+				]]>
+			</isLessThan>
+			<isNotEmpty prepend="and" property="healthy">
+				a.healthy = #healthy#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="diskGroupId">
+				a.diskGroupId = #diskGroupId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="depth">
+				a.depth = #depth#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="controller">
+				a.controller = #controller#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="write_tactics">
+				a.write_tactics = #write_tactics#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="lunObj" resultClass="lunObj">
+		select
+		<include refid="baseCloumns"/>,b.name diskGroupName,c.name deviceName
+		from tb_store_lun a
+		left join tb_disk_group b
+		on a.diskGroupId = b.uuid
+		left join tb_store_device c
+		on b.storeDeviceId = c.id
+		<include refid="whereClause"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCountByObj" parameterClass="lunObj" resultClass="int">
+		select count(uuid) from tb_store_lun a
+		<include refid="whereClause"/>
+	</select>
+	
+	<insert id="insertByObj" parameterClass="lunObj">
+		insert into tb_store_lun(
+			uuid,name,is_mapping,capacity,healthy,diskGroupId,depth,controller,write_tactics,lun_type
+		) values(
+			#uuid#,#name#,#is_mapping#,#capacity#,#healthy#,#diskGroupId#,#depth#,#controller#,#write_tactics#,#lun_type#
+		)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="lunObj">
+		update tb_store_lun 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="name">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="is_mapping">
+				is_mapping = #is_mapping#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="capacity">
+				capacity = #capacity#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="healthy">
+				healthy = #healthy#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="diskGroupId">
+				diskGroupId = #diskGroupId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="depth">
+				depth = #depth#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="controller">
+				controller = #controller#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="write_tactics">
+				write_tactics = #write_tactics#
+			</isNotEmpty>
+		</dynamic>
+		where uuid = #uuid#
+	</update>
+	<update id="updateGroupIdByObj" parameterClass="lunObj">
+		update tb_store_lun set diskGroupId = #diskGroupId#
+		where diskGroupId = #disk_group_id#
+	</update>
+	<delete id="deleteByObj" parameterClass="lunObj">
+		delete from tb_store_lun 
+		<dynamic prepend="where">
+			<isNotEmpty property="uuid" prepend="and">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uuidList">
+				uuid in
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+</sqlMap>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BolTree">
+<typeAlias alias="bolTreeObj" type="com.sitech.basd.bol.domain.boltree.BolTreeObj"/>
+	
+	<sql id="baseCloumns">
+		t.ID,t.NAME,t.PARENT_ID,t.UUID,t.TYPE
+	</sql>
+
+	<select id="queryForBolTreeList" parameterClass="bolTreeObj" resultClass="bolTreeObj">	
+		SELECT 
+	    t.ID,t.PARENT_ID,t.UUID,t.TYPE,ifnull(h.host_name,t.name) name
+	    from bol_tree t
+	    left join host h on h.host_code = t.uuid
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				t.ID = #id#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				t.NAME like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="parent_id" prepend="and">
+				t.PARENT_ID = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty property="uuid" prepend="and">
+				t.UUID = #uuid#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend="and">
+				t.TYPE = #type#
+			</isNotEmpty>
+		</dynamic>
+		order by t.NAME
+	</select>
+	
+	
+	
+</sqlMap>

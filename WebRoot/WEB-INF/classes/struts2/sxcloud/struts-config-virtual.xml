@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="virpool"
+			 extends="global_package">
+		<action name="virpool_*"
+				class="virtualPoolAction" method="{1}">
+			<result name="listPool">/sxcloud/cloud/virtual/listVirtualPool.jsp</result>
+			<result name="add">/sxcloud/cloud/virtual/editVirtualToPool.jsp</result>
+			<result name="mod">/sxcloud/cloud/virtual/editVirtualToPool.jsp</result>
+			<result name="save" type="redirect">virpool_listVirtualPool.do</result>
+			<result name="del" type="redirect">virpool_listVirtualPool.do</result>
+			<result name="listConfig">/sxcloud/cloud/virtual/listVirPoolConfig.jsp</result>
+			<result name="addConfig">/sxcloud/cloud/virtual/editVirPoolConfig.jsp</result>
+			<result name="modConfig">/sxcloud/cloud/virtual/editVirPoolConfig.jsp</result>
+			<result name="list">/sxcloud/cloud/virtual/listVirtual.jsp</result>
+		</action>
+		
+		<action name="virtual_*"
+			class="virtualAction" method="{1}">
+			<result name="list">/sxcloud/cloud/virtual/listVirtual_old.jsp</result>
+			<result name="mod">/sxcloud/cloud/virtual/editVirtual.jsp</result>
+			<result name="del" type="redirect">virtual_listVirtualInfo.do</result>
+			<result name="adjust">/sxcloud/cloud/virtual/adjustVirtual.jsp</result>
+			<result name="saveAdjust" type="redirect">virtual_listVirtualInfo.do</result>
+			<result name="addMem">/sxcloud/cloud/virtual/addMemVirtual.jsp</result>
+			<result name="saveMem" type="redirect">virtual_listVirtualInfo.do</result>
+			<result name="save" type="redirect">virtual_listVirtualInfo.do</result>
+			<result name="check">/sxcloud/cloud/virtual/checkVirtualInfo.jsp</result>
+		</action>
+	</package>
+</struts>

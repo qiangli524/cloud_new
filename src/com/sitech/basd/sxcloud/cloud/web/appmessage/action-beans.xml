@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.appmessage.action.AppMessageAction -->
+	<bean id="appMessageAction" class="com.sitech.basd.sxcloud.cloud.web.appmessage.action.AppMessageAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="appMessageService">
+			<ref bean="appMessageService" />
+		</property> 
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property> 
+	</bean>
+	<bean id="tbCloudAppInfoAction" class="com.sitech.basd.sxcloud.cloud.web.appmessage.action.TbCloudAppInfoAction"
+		singleton="false">
+		<property name="tbCloudAppInfoService">
+			<ref bean="tbCloudAppInfoService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="hostManageAction"
+		class="com.sitech.basd.sxcloud.cloud.web.resource.action.HostManageAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="leaderViewBusinessService">
+			<ref bean="leaderViewBusinessService" />
+		</property>
+		<property name="deviceService">
+			<ref bean="deviceService" />
+		</property>
+		<property name="dataStoreService">
+			<ref bean="dataStoreService" />
+		</property>
+		<property name="xenStoreService">
+			<ref bean="xenStoreService" />
+		</property>
+	</bean>
+	<bean id="hostPoolAction" class="com.sitech.basd.sxcloud.cloud.web.resource.action.HostPoolAction" 
+	singleton="false">
+		<property name="hostPoolService">
+			<ref bean="hostPoolService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+	</bean>
+
+
+
+</beans>
+

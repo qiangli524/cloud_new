@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="OsHost">
+
+	<typeAlias alias="_hostModel" type="com.sitech.ssd.sc.os.domain.HostModel" />
+	<typeAlias alias="adapterModel" type="com.sitech.ssd.sc.os.domain.AdapterModel" />
+	<typeAlias alias="unitTreeObj"
+		type="com.sitech.basd.resource.domain.united.UnitedTreeObj" />
+
+	<sql id="paginationEnd">
+		<![CDATA[
+            limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+
+	<sql id="_insert_columns">
+		id,eq_id,mge_console_ip,mge_console_username,mge_console_pass,insert_date,install_desc,cpu_cl,memory,storage_num,nic_num,eq_type,serial_num,host_type_num,host_physical_position,store,
+		os_versions,os_digits,raid_information,bond_information,fibercard,shared_storage,stay_machroom,blade_groove
+	</sql>
+
+	<sql id="queryForListBase">
+		SELECT
+		id,eq_id,HOST_NAME,mge_console_ip,mge_console_username,mge_console_pass,install_type,install_state,DATE_FORMAT(insert_date,'%Y-%m-%d')
+		insert_date,DATE_FORMAT(install_date,'%Y-%m-%d')
+		install_date,install_desc,eq_type,
+		cpu_cl,MEMORY,storage_num,nic_num,serial_num,host_type_num,host_physical_position,store,
+		os_versions,os_digits,raid_information,bond_information,fibercard,shared_storage,stay_machroom,blade_groove,swap_type
+		FROM tb_os_host
+		<dynamic prepend="WHERE">
+			<isNotNull property="id">
+				<isNotEmpty property="id" prepend="AND">
+					id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="mge_console_ip">
+				<isNotEmpty property="mge_console_ip" prepend="AND">
+					mge_console_ip LIKE CONCAT('%',#mge_console_ip#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="eq_type">
+				<isNotEmpty property="eq_type" prepend="AND">
+					eq_type =
+					#eq_type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="install_state">
+				<isNotEmpty property="install_state" prepend="AND">
+					install_state =
+					#install_state#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="stay_machroom">
+				<isNotEmpty property="stay_machroom" prepend="AND">
+					stay_machroom =
+					#stay_machroom#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="serial_num">
+				<isNotEmpty property="serial_num" prepend="AND">
+					serial_num LIKE CONCAT('%',#serial_num#,'%')
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+	<insert id="insertHost" parameterClass="_hostModel">
+		insert into tb_os_host(
+		<include refid="_insert_columns" />
+		)
+		values(#id#,#eq_id#,#mge_console_ip#,#mge_console_username#,#mge_console_pass#,#insert_date#,#install_desc#,#cpu_cl#,#memory#,#storage_num#,#nic_num#,#eq_type#,#serial_num#,#host_type_num#,#host_physical_position#,#store#,#os_versions#,#os_digits#,#raid_information#,#bond_information#,#fibercard#,#shared_storage#,#stay_machroom#,#blade_groove#)
+	</insert>
+
+	<insert id="insertXmlImportHost" parameterClass="_hostModel">
+		INSERT INTO
+		tb_os_host
+		(id,eq_id,serial_num,eq_type,host_type_num,cpu_cl,memory,store,mge_console_ip,mge_console_username,
+		mge_console_pass,stay_machroom,host_physical_position,blade_groove,insert_date,nic_num)
+		values
+		(#id#,#eq_id#,#serial_num#,#eq_type#,#host_type_num#,#cpu_cl#,#memory#,#store#,#mge_console_ip#,#mge_console_username#,
+		#mge_console_pass#,#stay_machroom#,#host_physical_position#,#blade_groove#,now(),#nic_num#)
+	</insert>
+	<insert id="insertHostAdapter" parameterClass="adapterModel">
+		INSERT INTO
+		tb_os_host_adapter (os_host_id,nic_order,mac) VALUES
+		(#os_host_id#,#nic_order#,#mac#)
+	</insert>
+
+	<insert id="insertUnitTrees" parameterClass="unitTreeObj">
+	INSERT INTO
+	tb_united_tree
+	(id,NAME,parent_id,TYPE,vtype,UUID,connect_id)
+	VALUES(#id#,#name#,#parent_id#,#type#,#vtype#,#uuid#,#connect_id#)
+	</insert>
+	<select id="selectUnitTreesId" resultClass="unitTreeObj">
+		SELECT id FROM
+		tb_united_tree WHERE vtype='7' AND TYPE ='1' LIMIT 0,1
+	</select>
+
+	<delete id="deleteHost" parameterClass="_hostModel">
+		delete from tb_os_host
+		where id = #id#
+	</delete>
+
+	<update id="updateOsHost" parameterClass="_hostModel">
+		update tb_os_host 
+		   set host_name = #host_name#, os_template = #os_template#,swap_type = #swap_type#
+		 where id=#id#
+	</update>
+	
+	<update id="updateInstallState" parameterClass="_hostModel">
+		update tb_os_host
+		   set install_state=#install_state#
+		 where id=#id#
+	</update>
+
+	<select id="queryForListBySn" parameterClass="_hostModel"
+		resultClass="_hostModel">
+		select eq_id from tb_os_host where serial_num =
+		#serial_num#
+	</select>
+
+	<select id="queryForList" parameterClass="_hostModel"
+		resultClass="_hostModel">
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForCount" parameterClass="_hostModel"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryForListBase" />
+		) virtual_table
+	</select>
+
+	<select id="queryForObject" parameterClass="_hostModel"
+		resultClass="_hostModel">
+		select * from tb_os_host
+		<dynamic prepend="WHERE">
+			<isNotNull property="id">
+				<isNotEmpty property="id" prepend="AND">
+					id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="eq_id">
+				<isNotEmpty property="eq_id" prepend="AND">
+					eq_id = #eq_id#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</select>	
+
+	<select id="selectEqId" resultClass="java.lang.String">
+		SELECT VALUE FROM
+		TB_CLOUD2_GLOBAL_CONFIG c WHERE c.key =
+		'TB_CLOUD2_HOST_INFO_SEQUENCE'
+	</select>
+
+	<select id="queryHostBuss" resultClass="java.util.HashMap"
+		parameterClass="_hostModel">
+		SELECT t.id,f.id AS ownResPoolid, f.name AS ownResPool,
+		t.resBusiSytemId AS bussId,'' AS bussName
+		FROM tb_united_tree
+		t,tb_united_tree f,
+		tb_cloud2_host_info i,tb_os_host h
+		WHERE t.parent_id
+		= f.id AND t.connect_id =
+		i.CONNECT_ID
+		AND h.eq_id = i.EQ_ID AND h.id =
+		#id#
+
+	</select>
+
+
+	<update id="updateEqId" parameterClass="_hostModel">
+		update
+		TB_CLOUD2_GLOBAL_CONFIG c set c.VALUE = #eq_id# WHERE c.key =
+		'TB_CLOUD2_HOST_INFO_SEQUENCE'
+	</update>
+
+	<insert id="insertCloud2HostInfo" parameterClass="_hostModel">
+		INSERT INTO
+		TB_CLOUD2_HOST_INFO(eq_id,
+		eq_name,eq_type,eq_hostname,cpu_cl,MEMORY,store,sn,id,nic_num,allocated,hasvertual,STATUS,ins_date
+		)
+		VALUES(#eq_id#,#host_type_num#,#eq_type#,#host_name#,#cpu_cl#,#memory#,#store#,#serial_num#,#eq_id#,#nic_num#,'0','0','1',
+		NOW())
+	</insert>
+
+	<delete id="deleteCloud2HostInfo" parameterClass="_hostModel">
+		DELETE FROM
+		TB_CLOUD2_HOST_INFO WHERE eq_id = (SELECT eq_id FROM tb_os_host WHERE
+		id=#id#)
+	</delete>
+
+	<update id="updateCloud2HostInfo" parameterClass="_hostModel">
+		update
+		TB_CLOUD2_HOST_INFO c set
+		install_type =#install_type#,
+		host_name =
+		#host_name#,
+		install_state=#install_state#
+		c.eq_id = (SELECT * FROM
+		tb_os_host t
+		WHERE t.id=#id#)
+	</update>
+
+</sqlMap>

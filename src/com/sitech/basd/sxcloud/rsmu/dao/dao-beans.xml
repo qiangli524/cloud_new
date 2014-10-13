@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="baseDaoBean" abstract="true" singleton="true">
+		<!--<property name="sqlMap">
+			<ref bean="sqlMapClientTemplate"/>
+		</property>-->
+	</bean>
+	<bean id="tbSysUserinfoDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysUserinfoDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="securityConfigDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbCloud2SecurityConfigDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysFunctionsDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysFunctionsDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysGroupfuncDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysGroupfuncDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysGrpmemberDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysGrpmemberDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysLoginLogDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysLoginLogDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysOperationLogDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysOperationLogDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysUsergroupDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysUsergroupDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbSysUserShortcutDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.system.TbSysUserShortcutDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiHostObjDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.hostmanage.TbBusiHostObjDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiHostHisObjDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.hostmanage.TbBusiHostHisObjDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="dataExportDao"
+		  class="com.sitech.basd.util.data.dao.DataExportDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>	
+	<bean id="tbSysAppDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.softmanage.TbSysAppDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiDeployExampleDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiDeployExampleDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiDeployStrategyDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiDeployStrategyDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiDeployExampleHisDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiDeployExampleHisDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiDeployAlarmDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiDeployAlarmDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiDoTaskDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiDoTaskDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiHostConfigDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.hostmanage.TbBusiHostConfigDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiHostConfigHisDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.hostmanage.TbBusiHostConfigHisDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="tbBusiAppPortDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.softmanage.TbBusiAppPortDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	<bean id="exampleResumeDao"
+		  class="com.sitech.basd.sxcloud.rsmu.dao.deploy.ExampleResumeDaoImpl"
+		  singleton="true" parent="baseDaoBean">
+	</bean>
+	
+	<bean id="virtualServerDao" class="com.sitech.basd.sxcloud.rsmu.dao.cloudschedu.VirtualServerDaoImpl"
+	 singleton="true" parent="baseDaoBean">
+    </bean> 
+     <bean id="realServerDao" class="com.sitech.basd.sxcloud.rsmu.dao.cloudschedu.RealServerDaoImpl" 
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbBusiSoftwareInfoDao" class="com.sitech.basd.sxcloud.rsmu.dao.softmanage.TbBusiSoftwareInfoDaoImpl" 
+    singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbBusiSoftwareInfoHisDao" class="com.sitech.basd.sxcloud.rsmu.dao.softmanage.TbBusiSoftwareInfoHisDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+     <bean id="upgradeAlarmDao" class="com.sitech.basd.sxcloud.rsmu.dao.upgrade.UpgradeAlarmDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="upgradeExampleDao" class="com.sitech.basd.sxcloud.rsmu.dao.upgrade.UpgradeExampleDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+     <bean id="upgradeStrategyDao" class="com.sitech.basd.sxcloud.rsmu.dao.upgrade.UpgradeStrategyDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+     <bean id="upgradeExampleResumeDao" class="com.sitech.basd.sxcloud.rsmu.dao.upgrade.UpgradeExampleResumeDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbBusiDeployVideorecordDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiDeployVideorecordDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbBusiDeployVideoCommandsetDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiDeployVideoCommandsetDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbBusiVideoExampleDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.TbBusiVideoExampleDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbSysAppHisDao" class="com.sitech.basd.sxcloud.rsmu.dao.softmanage.TbSysAppHisDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="deployConfigFileDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.configfile.DeployConfigFileDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbCloud3AppVersionDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.version.TbCloud3AppVersionDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbCloud3AppFileVersionDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.version.TbCloud3AppFileVersionDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbCloud3AppRollbackFileDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.version.TbCloud3AppRollbackFileDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbCloud3AppRollbackInfoDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.version.TbCloud3AppRollbackInfoDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbCloud3AppOnlineFilepathDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.version.TbCloud3AppOnlineFilepathDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="tbCloud3OnlineHistoryDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.version.TbCloud3OnlineHistoryDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+    <bean id="deployFileVersionDao" class="com.sitech.basd.sxcloud.rsmu.dao.deploy.deployfileversion.DeployFileVersionDaoImpl"
+     singleton="true" parent="baseDaoBean">
+    </bean>
+</beans>
+

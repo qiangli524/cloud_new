@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="MonitorDao">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="MonitorObj" type="com.sitech.basd.sxcloud.cloud.domain.monitor.MonitorObj"/>
+     <typeAlias alias="MonitorAlarmObj" type="com.sitech.basd.sxcloud.cloud.domain.monitor.MonitorAlarmObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>  
+	<!--  查询物理主机信息 -->
+     <sql id="queryPhysicByObjBase">
+        select
+        EQ_ID,KPI_ID,KPI_VALUE,DATE_FORMAT(COLL_TIME,'%Y-%m-%d %H:%i:%S') COLL_TIME
+        from
+        TB_CLOUD2_HOST_COLL
+        <dynamic prepend="where">
+              <isNotEmpty property="EQ_ID" prepend="and">
+                EQ_ID =#EQ_ID#
+              </isNotEmpty>
+        </dynamic> 
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryPhysicForListByObj" parameterClass="MonitorObj" resultClass="MonitorObj">
+	        <include refid="queryPhysicByObjBase"/>
+	        order by EQ_ID asc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryPhysicByObjForCount" parameterClass="MonitorObj" resultClass="int">
+	      select count(EQ_ID) from (
+	        <include refid="queryPhysicByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <!-- 查询虚拟主机信息  -->
+     <sql id="queryVirtualByObjBase">
+        select
+        HY_ID,KPI_ID,KPI_VALUE,DATE_FORMAT(COLL_TIME,'%Y-%m-%d %H:%i:%S') COLL_TIME
+        from     	
+        TB_CLOUD2_HY_COLL
+        <dynamic prepend="where">
+              <isNotEmpty property="HY_ID" prepend="and">
+                HY_ID =#HY_ID#
+              </isNotEmpty>
+        </dynamic>  
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryVirtualForListByObj" parameterClass="MonitorObj" resultClass="MonitorObj">
+	        <include refid="queryVirtualByObjBase"/>
+	        order by HY_ID asc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryVirtualByObjForCount" parameterClass="MonitorObj" resultClass="int">
+	      select count(HY_ID) from (
+	        <include refid="queryVirtualByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <!-- 查询应用信息 -->
+     <sql id="queryAppByObjBase">
+        select
+        APP_ID,KPI_ID,KPI_VALUE,DATE_FORMAT(COLL_TIME,'%Y-%m-%d %H:%i:%S') COLL_TIME
+        from
+        TB_CLOUD2_APPLY_COLL
+        <dynamic prepend="where">
+              <isNotEmpty property="APP_ID" prepend="and">
+                APP_ID =#APP_ID#
+              </isNotEmpty>
+        </dynamic>  
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryAppForListByObj" parameterClass="MonitorObj" resultClass="MonitorObj">
+	        <include refid="queryAppByObjBase"/>
+	         order by APP_ID asc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryAppByObjForCount" parameterClass="MonitorObj" resultClass="int">
+	      select count(APP_ID) from (
+	        <include refid="queryAppByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <!-- 监控告警 -->
+	 <sql id="queryAlarmByObjBase">
+	 	select EVENT_ID,EVENT_NUM,EVENT_COUNT,EVENT_TYPE,EVENT_LEVEL,TITILE,CONTENT
+	 	,DATE_FORMAT(ALARM_TIME,'%Y-%m-%d %H:%i:%S') ALARM_TIME
+	 	,DATE_FORMAT(INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE,EVENT_STAT,EVENT_LOCATION,ENTITY_ID,EVENT_SYS 
+	 	FROM TB_CLOUD2_MONITOR_ALARM
+		<dynamic prepend="where">
+	 		<isNotEmpty property="filterlevel" prepend="and">
+               	EVENT_LEVEL in $filterlevel$
+             </isNotEmpty>
+             <isNotEmpty property="filtertype" prepend="and">
+               	EVENT_TYPE in $filtertype$
+             </isNotEmpty>
+	 		<isNotEmpty property="EVENT_ID" prepend="and">
+               	EVENT_ID =#EVENT_ID#
+             </isNotEmpty>
+            <isNotEmpty property="EVENT_TYPE" prepend="and">
+            	EVENT_TYPE =#EVENT_TYPE#
+            </isNotEmpty>
+            <isNotEmpty property="EVENT_LOCATION" prepend="and">
+               	EVENT_LOCATION like CONCAT('%',#EVENT_LOCATION#,'%')
+            </isNotEmpty>
+            <isNotEmpty property="EVENT_LEVEL" prepend="and">
+               	EVENT_LEVEL =#EVENT_LEVEL#
+            </isNotEmpty>
+            <isNotEmpty property="EVENT_STAT" prepend="and">
+              	EVENT_STAT =#EVENT_STAT#
+            </isNotEmpty>
+            <!-- 添加告警系统条件 add by lizqd 20140904 -->
+            <isNotEmpty property="EVENT_SYS" prepend="and">
+            	EVENT_SYS = #EVENT_SYS#
+            </isNotEmpty>
+            <isNotEmpty property="TITILE" prepend="and">
+            	TITILE like CONCAT('%',#TITILE#,'%')
+            </isNotEmpty>
+            <isNotEmpty property="CONTENT" prepend="and">
+            	CONTENT like CONCAT('%',#CONTENT#,'%')
+            </isNotEmpty>
+            <isNotEmpty property="ALARM_TIME" prepend="and">
+            	<![CDATA[
+            		DATEDIFF(ALARM_TIME,#ALARM_TIME#) >= 0
+            	]]>
+            </isNotEmpty>
+            <isNotEmpty property="INS_DATE" prepend="and">
+            <![CDATA[
+            		DATEDIFF(#INS_DATE#,INS_DATE) >= 0
+            	]]>
+            </isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+								`domain`=#domain#
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+    	</dynamic>
+	 </sql>
+	 <select id="queryAlarmForListByObj" parameterClass="MonitorAlarmObj" resultClass="MonitorAlarmObj">
+	        <include refid="queryAlarmByObjBase"/>
+	        order by ALARM_TIME desc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryAlarmForListByObj_index" parameterClass="MonitorAlarmObj" resultClass="MonitorAlarmObj">
+	        <include refid="queryAlarmByObjBase"/>
+	        order by ALARM_TIME desc 
+	  </select>
+	  <select id="queryAlarmByObjForCount" parameterClass="MonitorAlarmObj" resultClass="int">
+	      select count(EVENT_ID) from (
+	        <include refid="queryAlarmByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <update id="updateByObj" parameterClass="MonitorAlarmObj">
+	  	update TB_CLOUD2_MONITOR_ALARM set EVENT_STAT = '1' where EVENT_ID=#EVENT_ID#
+	  </update>
+	   <delete id="deleteByObj" parameterClass="MonitorAlarmObj">
+	  	delete FROM TB_CLOUD2_MONITOR_ALARM  where EVENT_ID=#EVENT_ID#
+	  </delete>
+	  <insert id="insertByObj" parameterClass="MonitorAlarmObj">
+	  	insert into TB_CLOUD2_MONITOR_ALARM_HIS(
+		EVENT_ID,EVENT_NUM,EVENT_TYPE,EVENT_LEVEL,TITILE,CONTENT,ALARM_TIME,INS_DATE,EVENT_STAT,EVENT_LOCATION,PRO_TIME,ENTITY_ID,EVENT_SYS,domain
+		)
+		values(#EVENT_ID#,#EVENT_NUM#,#EVENT_TYPE#,#EVENT_LEVEL#,#TITILE#,#CONTENT#,DATE_FORMAT(#ALARM_TIME#,'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(#INS_DATE#,'%Y-%m-%d %H:%i:%S'),#EVENT_STAT#,#EVENT_LOCATION#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#ENTITY_ID#,#EVENT_SYS#,#domain#)
+	  </insert>
+	<sql id="queryAlarmHisByObj">
+	 	select EVENT_ID,EVENT_NUM,EVENT_TYPE,EVENT_LEVEL,TITILE,CONTENT
+	 	,DATE_FORMAT(ALARM_TIME,'%Y-%m-%d %H:%i:%S') ALARM_TIME
+	 	,DATE_FORMAT(INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE,EVENT_STAT
+	 	,EVENT_LOCATION,DATE_FORMAT(PRO_TIME,'%Y-%m-%d %H:%i:%S') PRO_TIME,EVENT_SYS 
+	 	FROM TB_CLOUD2_MONITOR_ALARM_HIS
+		where 1=1
+	 		<isNotEmpty property="EVENT_ID" prepend="and">
+                EVENT_ID =#EVENT_ID#
+            </isNotEmpty>
+            <isNotEmpty property="EVENT_TYPE" prepend="and">
+                EVENT_TYPE =#EVENT_TYPE#
+            </isNotEmpty>
+            <isNotEmpty property="TITILE" prepend="and">
+                TITILE like CONCAT('%',#TITILE#,'%')
+            </isNotEmpty>
+            <isNotEmpty property="CONTENT" prepend="and">
+                CONTENT like CONCAT('%',#CONTENT#,'%')
+            </isNotEmpty>
+            <!-- 添加告警系统条件 add by lizqd 20140904 -->
+            <isNotEmpty property="EVENT_SYS" prepend="and">
+            	EVENT_SYS = #EVENT_SYS#
+            </isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+								`domain`=#domain#
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+	 </sql>
+	 <select id="queryAlarmHisForList" parameterClass="MonitorAlarmObj" resultClass="MonitorAlarmObj">
+	        <include refid="queryAlarmHisByObj"/>
+	         order by PRO_TIME desc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryAlarmHisForCount" parameterClass="MonitorAlarmObj" resultClass="int">
+	      select count(EVENT_ID) from (
+	        <include refid="queryAlarmHisByObj"/>
+	       ) virtual_table
+	  </select>
+</sqlMap>

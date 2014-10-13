@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="showVmAction" class="com.sitech.basd.yicloud.web.showVm.action.ShowVmAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="vmHostService">
+			<ref bean="vmHostService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="xenEntityTreeService">
+			<ref bean="xenEntityTreeService" />
+		</property>
+		<property name="entityTreeService">
+			<ref bean="entityTreeService" />
+		</property>
+		<property name="busiHostService">
+			<ref bean="busiHostService" />
+		</property>
+		<property name="deployExampleService">
+			<ref bean="deployExampleService" />
+		</property>
+		<property name="unitedTreeService">
+			<ref bean="unitedTreeService" />
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="deploy"
+			 extends="global_package">
+		<action name="dep_*"
+				class="baseDeployExampleAction" method="{1}"> 
+			<result name="list">/sxcloud/deploy/listDeployExample.jsp</result>
+			<result name="del"  type="redirect">/dep_listDeployExample.do</result>
+			<result name="add">/sxcloud/deploy/editDeployExample.jsp</result> 
+			<result name="modify">/sxcloud/deploy/editDeployExample.jsp</result>
+			<result name="redirect" type="redirect">/dep_listDeployExample.do?sys_id=${sysId}</result> 
+			<result name="selectAppRequest">/sxcloud/deploy/editDeployExample.jsp</result> 
+			<result name="queryAppIp">/sxcloud/deploy/editDeployExample.jsp</result>
+			<result name="deployRequest" type="redirect">/dep_listDeployExample.do</result> 
+			<result name="logInfo">/sxcloud/deploy/checkLogInfo.jsp</result>
+			<result name="getConfigFileInfo">/sxcloud/deploy/configFileInfo.jsp</result> 
+			<result name="upgrade">/sxcloud/deploy/upgradeDeployExample.jsp</result>
+			<result name="bizview">/sxcloud/cloud/bizsystem/listBizView.jsp</result>
+			<result name="treeList">/sxcloud/deploy/listExampleInTree.jsp</result>
+			<result name="batch">/sxcloud/deploy/batchDeployExample.jsp</result>
+			
+			<result name="akeyStartAndStop">/sxcloud/deploy/akeyStartAndStop.jsp</result>
+		</action>
+		
+		
+		<action name="rollback_*"
+				class="versionResumeAction" method="{1}"> 
+			<result name="list">/sxcloud/deploy/listVersionResume.jsp</result>
+			<result name="first">/sxcloud/deploy/VersionResumeFirst.jsp</result>
+			<result name="second">/sxcloud/deploy/VersionResumeSecond.jsp</result>
+			<result name="third">/sxcloud/deploy/VersionResumeThird.jsp</result>
+			<result name="fourth">/sxcloud/deploy/VersionResumeFourth.jsp</result>
+			<result name="finish">/sxcloud/deploy/VersionResumeFinish.jsp</result>
+			<result name="tobkg"  type="redirect">/dep_listDeployExample.do</result> 
+		</action>
+		
+		<action name="dephis_*"
+				class="baseDeployExampleHisAction" method="{1}"> 
+			<result name="list">/sxcloud/deploy/listDeployExampleHis.jsp</result>
+			<result name="del"  type="redirect">/dephis_listDeployExampleHis.do</result>
+		</action>
+		
+		<action name="onlinehis_*"
+				class="onlineHistoryAction" method="{1}"> 
+			<result name="list">/sxcloud/deploy/listOnlineHistory.jsp</result>
+		</action>
+		
+		<action name="alarmt_*"
+				class="baseDeployAlarmAction" method="{1}"> 
+			<result name="list">/sxcloud/deploy/listDeployAlarm.jsp</result>
+		</action>
+		
+		<action name="resume_*"
+				class="baseExampleResumeAction" method="{1}"> 
+			<result name="list">/sxcloud/deploy/ExampleResumeList.jsp</result>
+		</action>
+		
+		<action name="time_*"
+				class="baseDeployTimeConfigAction" method="{1}"> 
+			<result name="list">/sxcloud/deploy/listDeployTimeConfig.jsp</result>
+			<result name="modify">/sxcloud/deploy/editDeployTimeConfig.jsp</result>
+			<result name="redirect" type="redirect">/time_listDeployTimeConfig.do</result> 
+			<result name="add">/sxcloud/deploy/editDeployTimeConfig.jsp</result> 
+			<result name="del"  type="redirect">/time_listDeployTimeConfig.do</result>
+		</action>
+		
+		<action name="depvideo_*"
+				class="deployVideoAction" method="{1}">
+		<!-- 
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+   			<interceptor-ref name="token"></interceptor-ref>
+   			<result name="invalid.token">/sxcloud/deploy/loginHost.jsp</result>
+   		 -->
+			<result name="loginHost">/sxcloud/deploy/loginHost.jsp</result>
+			<result name="makeDeployVideo">/sxcloud/deploy/makeDeployVideo.jsp</result>
+			<result name="showSshFile">/sxcloud/deploy/file.jsp</result>
+			<result name="uploadFile">/sxcloud/deploy/uploadFile.jsp</result>
+			<result name="sshFile">/sxcloud/deploy/file.jsp</result>
+			<result name="failure">/sxcloud/deploy/failure.jsp</result>
+		</action>
+						 
+		<action name="depcomm_*"
+				class="deployVideoCommandsetAction" method="{1}">
+			<result name="reployprocess">/sxcloud/deploy/replay_process.jsp</result>
+			<!-- 浙江移动竞标演示 -->
+			<result name="executeDemo">/sxcloud/deploy/executeDemo.jsp</result>	 
+		</action>
+		
+	</package>
+
+</struts>

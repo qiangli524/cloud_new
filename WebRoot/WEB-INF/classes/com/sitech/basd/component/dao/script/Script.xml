@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Script">
+	<typeAlias alias="ScriptsObj"
+		type="com.sitech.basd.component.domain.script.ScriptObj" />
+	<typeAlias alias="ScriptGroupObj"
+		type="com.sitech.basd.component.domain.script.ScriptGroupObj" />
+	<typeAlias alias="ScriptRelationObj"
+		type="com.sitech.basd.component.domain.script.ScriptRelationObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryForListBase">
+		SELECT a.ID,a.USER_ID,a.NAME,a.TYPE,a.PATH,a.GRADE,a.DESCRIPTION,a.COUNT,a.params,
+		to_char(a.FIRST_TIME,'YYYY-MM-DD HH24:MI:SS') FIRST_TIME,
+		to_char(a.LAST_TIME,'YYYY-MM-DD HH24:MI:SS') LAST_TIME,
+		a.UPLOAD_PERSON,a.UPDATE_PERSON,to_char(a.CREATE_TIME,'YYYY-MM-DD HH24:MI:SS') CREATE_TIME,
+		to_char(a.UPDATE_TIME,'YYYY-MM-DD HH24:MI:SS') UPDATE_TIME,b.IP,b.USERNAME,b.PASSWORD
+		FROM TB_SCRIPT_MANAGE a LEFT JOIN TB_USER_MANAGE b ON a.USER_ID = b.ID
+		<dynamic prepend="where">
+			<isNotNull property="name" prepend="and">
+				a.NAME like '%'||#name#||'%'
+			</isNotNull>
+			<isNotNull property="type">
+				<isNotEqual prepend="and" property="type" compareValue="-1">
+					a.TYPE=#type#
+				</isNotEqual>
+			</isNotNull>
+			<isNotEmpty prepend="and" property="description">
+					a.DESCRIPTION like '%'||#description#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ip">
+					b.ip like '%'||#ip#||'%'
+			</isNotEmpty>
+			<isNotNull property="id" prepend="and">
+				a.ID= #id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<sql id="queryForGroupListBase">
+		select a.ID, a.NAME, a.DESCRIPTION ,to_char(a.CREATE_TIME,'YYYY-MM-DD HH24:MI:SS') CREATE_TIME,a.params,
+		to_char(UPDATE_TIME,'YYYY-MM-DD HH24:MI:SS') UPDATE_TIME ,c.num from TB_SCRIPT_GROUP a left join 
+		(select b.group_id,count(b.script_id)num from tb_script_relation b group by b.group_id)c on 
+		a.id =c.group_id
+		<dynamic prepend="where">
+			<isNotNull property="name" prepend="and">
+				NAME like '%'||#name#||'%'
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				ID =#id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	<!-- 查询基准应用下所有部署实例的脚本列表 -->
+	<sql id="queryScriptAppBase">
+		SELECT DISTINCT
+		      a.id,
+		      a. NAME,
+		      a.type,
+		      a.description,
+		      a.path,
+		      a.grade,
+		      a.count,
+		      a.upload_person,
+		      a.params,
+		      c.ip,
+		      c.username,
+		      c. PASSWORD,
+		      d.busi_id example_id
+		    FROM
+		      TB_SCRIPT_MANAGE a
+		    LEFT JOIN TB_EXAMPLE_RELATION b ON a.ID = b.ENTITY_ID
+		    LEFT JOIN TB_USER_MANAGE c ON a.USER_ID = c.ID
+		    LEFT JOIN TB_BUSI_SYS_TREE d ON b.EXAMPLE_ID LIKE ('%'|| d.busi_id)
+		WHERE
+			a.ID = b.ENTITY_ID
+		AND a.USER_ID = c.ID
+		AND d.PARENT_ID = #example_id#
+		<isNotNull property="encodeExampleStr" prepend="and">
+				b.example_id in ($encodeExampleStr$) 
+			</isNotNull>	
+				order by a.type 
+	</sql>
+	<!-- 查询脚本信息列表 -->
+	<select id="queryForList" parameterClass="ScriptsObj" resultClass="ScriptsObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 查询配置文件组列表 -->
+	<select id="queryForGroupList" parameterClass="ScriptGroupObj" resultClass="ScriptGroupObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForGroupListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 统计脚本文件数目 -->
+	<select id="queryForCount" parameterClass="ScriptsObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 统计配置组数目 -->
+	<select id="queryForGroupCount" parameterClass="ScriptGroupObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForGroupListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <!-- 增加一条脚本记录 -->
+	 <insert id="insertByObj" parameterClass="ScriptsObj">
+	 	insert into TB_SCRIPT_MANAGE(ID,USER_ID,NAME,TYPE,PATH,GRADE,DESCRIPTION,PARAMS,
+	 	COUNT,FIRST_TIME,LAST_TIME,UPLOAD_PERSON,UPDATE_PERSON,CREATE_TIME,UPDATE_TIME,INTERVAL) 
+	 	values(#id#,#user_id#,#name#,#type#,#path#,#grade#,#description#,#params#,0,sysdate,sysdate,
+	 	#upload_person#,#update_person#,sysdate,sysdate,#interval#) 
+	 </insert>
+	 <!-- 增加一条组记录 -->
+	 <insert id="insertGroup" parameterClass="ScriptGroupObj">
+	 	insert into TB_SCRIPT_GROUP(ID,NAME,DESCRIPTION,CREATE_TIME,UPDATE_TIME) 
+	 	values(#id#,#name#,#description#,sysdate,sysdate)
+	 </insert>
+	 
+	 <!-- 更新一条脚本信息 -->
+	 <update id="updateByObj" parameterClass="ScriptsObj">
+	 	update TB_SCRIPT_MANAGE set NAME=#name#,TYPE=#type#,DESCRIPTION=#description#,PARAMS=#params#,
+	 	PATH=#path#,UPDATE_PERSON=#update_person#,GRADE=#grade#,UPDATE_TIME= sysdate
+	 	<dynamic prepend=",">
+	 		<isNotEmpty property="count">
+	 			<isNotNull property="count">
+	 				COUNT= #count#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 	</dynamic>
+	 	where ID = #id#
+	 </update>
+	 <!-- 更新一条组信息 -->
+	 <update id="updateGroup" parameterClass="ScriptGroupObj">
+	 	update TB_SCRIPT_GROUP set NAME=#name#,DESCRIPTION=#description# ,UPDATE_TIME=now() where ID=#id#
+	 </update>
+	 
+	 <!-- 删除一条脚本记录 -->
+	 <delete id="deleteByObj" parameterClass="ScriptsObj">
+	 	delete from TB_SCRIPT_MANAGE where ID = #id#
+	 </delete>
+	 <!-- 删除脚本与组的关系 -->
+	 <delete id="deleteRelation" parameterClass="ScriptsObj">
+	 	delete from TB_SCRIPT_RELATION 
+	 	<dynamic prepend="where">
+	 		<isNotEmpty property="id">
+	 			<isNotNull property="id">
+	 				SCRIPT_ID= #id#
+	 			</isNotNull>
+	 		</isNotEmpty>
+	 	</dynamic>
+	 </delete>
+	 <!-- 删除一个组 -->
+	 <delete id="deleteGroup" parameterClass="ScriptGroupObj">
+	 	delete from TB_SCRIPT_GROUP where ID = #id#
+	 </delete>
+	 
+	 <!-- 查询组已选的成员列表 -->
+	 <select id="querySelectedList" parameterClass="ScriptRelationObj" resultClass="ScriptsObj">
+	 	select a.ID,a.NAME,a.path,a.type,a.description,a.grade,a.params,c.ip,c.username,c.password from TB_SCRIPT_MANAGE a
+	 	, tb_user_manage c where a.user_id = c.id and a.ID 
+   		 in (select b.SCRIPT_ID from TB_SCRIPT_RELATION b where b.GROUP_ID=#group_id#)
+	 </select>
+	 <!-- 查询备选成员 -->
+	 <select id="queryRemainList" parameterClass="ScriptRelationObj" resultClass="ScriptsObj">
+	 	select a.ID,a.NAME,a.path,a.type,a.description,a.grade,a.params,c.ip,c.username,c.password from TB_SCRIPT_MANAGE a
+	 	, tb_user_manage c where a.user_id = c.id and a.ID not in (select b.SCRIPT_ID from TB_SCRIPT_RELATION b where b.GROUP_ID=#group_id#)
+	 </select>
+	 <!-- 删除所有在当前组的成员 -->
+	 <delete id="deleteGroupMember" parameterClass="ScriptRelationObj">
+	 	delete from TB_SCRIPT_RELATION where GROUP_ID = #group_id#
+	 </delete>
+	 <!-- 增加组成员 -->
+	 <insert id="insertGroupMember" parameterClass="ScriptRelationObj">
+	 	insert into TB_SCRIPT_RELATION (GROUP_ID,SCRIPT_ID) values(#group_id#,#script_id#)
+	 </insert>
+	 
+	 <select id="queryForDeployCount" parameterClass="ScriptsObj" resultClass="int">
+	 	select count(d.id) from (
+	 		SELECT
+			a.id,
+			a. NAME,
+			a.type,
+			a.description,
+			a.path,
+			a.grade,
+			a.params,
+			a.upload_person,
+			c.ip,
+			c.username,
+			c. PASSWORD,
+			a.count
+		FROM
+			TB_SCRIPT_MANAGE a
+		LEFT JOIN TB_EXAMPLE_RELATION b ON a.ID = b.ENTITY_ID
+		LEFT JOIN TB_USER_MANAGE c ON a.USER_ID = c.ID
+		<dynamic prepend="where">
+			<isNotNull property="example_id" prepend="and">
+		 		b.EXAMPLE_ID = #example_id#
+		 	</isNotNull>
+		 	<isNotNull property="id" prepend="and">
+		 	 	a.ID=#id#
+		 	</isNotNull>
+		</dynamic>
+	 	) d
+	 </select>
+	 
+	 <!-- 查询部署实例的对应的脚本-->
+	 <select id="queryForDeployList" parameterClass="ScriptsObj" resultClass="ScriptsObj">
+	 	select a.id,a.name,a.type,a.description,a.path,a.grade,a.params,
+		a.upload_person,c.ip,c.username,c.password,a.count
+		 from TB_SCRIPT_MANAGE a, TB_EXAMPLE_RELATION b,TB_USER_MANAGE c 
+		  where a.ID = b.ENTITY_ID and a.USER_ID=c.ID
+	 	<isNotNull property="example_id" prepend="and">
+	 		b.EXAMPLE_ID = #example_id#
+	 	</isNotNull>
+	 	<isNotNull property="id" prepend="and">
+	 	 	a.ID=#id#
+	 	</isNotNull>
+	 </select>
+	 
+	 <!-- 查询基准应用下部署实例所有的脚本 -->
+	 <select id="queryForAppScript" parameterClass="ScriptsObj" resultClass="ScriptsObj">
+	 <isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryScriptAppBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	
+	<select id="queryForAppCount" parameterClass="ScriptsObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryScriptAppBase" />
+		 ) virtual_table
+	 </select>
+	 
+	  <select id="queryLessGradeScript" parameterClass="ScriptsObj" resultClass="ScriptsObj">
+	 	select 	a.ID,
+	 			a.NAME,
+	 			a.TYPE,
+	 			a.PATH,
+	 			a.GRADE,
+	 			a.DESCRIPTION,
+	 			a.COUNT,
+	 			a.params,
+	 			a.interval
+	 			from 
+			tb_script_manage a ,
+			tb_example_relation b
+			where a.TYPE=#type# 
+			and a.GRADE <![CDATA[ <= ]]> #grade#
+			and a.ID=b.ENTITY_ID
+			and b.EXAMPLE_ID=#example_id#
+	 </select>
+	 
+	 <select id="queryByObj" parameterClass="ScriptsObj" resultClass="ScriptsObj">
+	 	select a.ID,
+	 			a.NAME,
+	 			a.TYPE,
+	 			a.PATH,
+	 			a.GRADE,
+	 			a.DESCRIPTION,
+	 			a.COUNT,
+	 			a.params,
+	 			a.interval
+	 	from tb_script_manage a
+	 	where a.ID = #id#
+	 </select>
+</sqlMap>

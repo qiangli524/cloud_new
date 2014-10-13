@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings useStatementNamespaces="true" cacheModelsEnabled="true" enhancementEnabled="true" lazyLoadingEnabled="true" errorTracingEnabled="false" maxRequests="32"
+		maxSessions="10" maxTransactions="5" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysUserinfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbCloud2SecurityConfig_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysFunctions_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysGroupfunc_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysGrpmember_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysLoginLog_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysOperationLog_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysUsergroup_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/system/TbSysUserShortcut_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/ipinfo/IpInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/device/DeviceInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/interfaces/InterfaceInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/connect/ConnectInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/dictionary/YiDataDictionary_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/business/TbYicloudBusinessApp_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/storage/TbYicloudAppStorage_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/ip/TbYicloudAppIp_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbSysApp_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHost_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHostConfig_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHostConfigHis_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/hostmanage/TbBusiHostHis_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/TbBusiDeployExample_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/templet/Templet_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/engine/WorkflowEngine_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/appworkflow/AppDeployWF_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/deploy/TbCloud2DepFile_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/cubinetmanage/TbCubinet_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/resource/HostInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/leader/LeaderViewBusiness_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbBusiAppPort_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/TbBusiDeployAlarm_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/vmman/VMManager_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/vmhost/VMHostInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/image/TbImageInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/net/TbIp_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/net/TbNet_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/defend/DefendInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/eventmanage/EventManageInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/ExampleResume_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/resworkflow/ResourceWorkflow_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/workflow/dao/templet/TempletInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/virtual/TbVirtual_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/monitor/Monitor_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/globalconfig/TbGlobalConfig_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/virtual/TbVirtualPool_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/virtual/TbCloud2VirtualConfig_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/TbBusiDeployTimeConfig_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/appmessage/AppMessageInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/reporthost/TbHost_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/reportvirtual/TbHy_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/reportapp/TbAppColl_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/feedback/PublishFeedBack_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/fileManager/FileManager_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/mytstat/MysqlTableStatus_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/cloudschedu/RealServer_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/cloudschedu/VirtualServer_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbBusiSoftwareInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbBusiSoftwareInfoHis_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/loadBalancing/Farms_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/loadBalancing/FarmsServer_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/loadBalancing/L4_policyDao_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/middleware/MiddlewareInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/opersystem/OperSystemInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeAlarm_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeExample_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeExampleResume_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/upgrade/UpgradeStrategy_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/vmman/VMHostInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/configfile/DeployConfigFile_mysql.xml" />
+
+	<sqlMap resource="com/sitech/basd/yicloud/dao/busitree/BusiTree_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/cluster/ClusterInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/database/AppDatabase_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/datastore/DataStoreDao_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/entityreference/EntityReference_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/entitytree/EntityTree_mysql.xml" />
+
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/alarm/TbCloud2MonitorAlarm_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/appmessage/TbCloudAppInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/bizsystem/BizSystemInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/project/TbProject_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/roommanage/TbRoom_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/temconfig/TempletConfig_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/templet/TempletType_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/vusermanage/VuserManage_mysql.xml" />
+
+	<sqlMap resource="com/sitech/basd/yicloud/dao/xentree/XenEntityTree_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/xenconn/ConnInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/xencluster/XenClusterInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/vmauthority/VmAuthotity_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/templettree/TempletTree_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/taskevent/TaskEvent_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/switches/VirtualSwitch_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/switches/Switches_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/script/Script_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/scheduler/Strategy_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/scheduler/TriggerDef_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/portgroup/PortGroup_mysql.xml" />
+
+	<sqlMap resource="com/sitech/basd/yicloud/dao/kvm/KvmManDao_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/scheduler/KPI_mysql.xml" />
+	<!-- 主机池 -->
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/resource/HostPool_mysql.xml" />
+	<!-- 工作清单 -->
+	<sqlMap resource="com/sitech/basd/tasklist/dao/taskList_mysql.xml" />
+	<!-- 首页 -->
+	<sqlMap resource="com/sitech/basd/cloud3/dao/newui/NewUIFunc_mysql.xml" />
+	<!-- 物理网卡和虚拟网卡的关系 -->
+	<sqlMap resource="com/sitech/basd/yicloud/dao/nic/Nic_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/nic/VirtualNic_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/nic/NicRelation_mysql.xml" />
+	<!-- dhcp -->
+	<sqlMap resource="com/sitech/basd/component/dao/dhcp/Dhcp_mysql.xml" />
+	<!-- 机房 -->
+	<sqlMap resource="com/sitech/basd/cloud3/dao/machineroom/Room_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/cloud3/dao/machineroom/Area_mysql.xml" />
+	<!-- sysapp -->
+	<sqlMap resource="com/sitech/basd/cloud3/dao/sysapp/SysApp_mysql.xml" />
+	<!-- sysappconfig -->
+	<sqlMap resource="com/sitech/basd/cloud3/dao/sysappconfig/SysAppConfig_mysql.xml" />
+
+	<!-- component -->
+	<sqlMap resource="com/sitech/basd/component/dao/config/Config_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/dao/log/Log_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/dao/process/Process_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/dao/script/Script_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/dao/user/User_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/tree/dao/order/Order_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/tree/dao/relation/ExampleRelation_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/tree/dao/rule/RuleValidate_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/tree/dao/tactics/Tactics_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/component/tree/dao/task/Task_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/workorder/WorkOrder_mysql.xml" />
+
+	<!-- resource -->
+	<sqlMap resource="com/sitech/basd/resource/dao/mframe/MFrame_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/switchBoard/switch_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/switchBoard/switchPerformance_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/switchBoard/vlan_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/switchBoard/interface_mysql.xml" />
+	<!-- 交换机 静态路由 -->
+	<sqlMap resource="com/sitech/basd/resource/dao/switchBoard/staticRouter_mysql.xml" />
+
+	<!-- dbmanager -->
+	<sqlMap resource="com/sitech/basd/dbmanager/dao/dbexample/dbexample_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/dbmanager/dao/dbexampleuser/dbexampleuser_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/dbmanager/dao/dbtablespace/dbtablespace_mysql.xml" />
+
+	<!-- globaltask -->
+	<sqlMap resource="com/sitech/basd/yicloud/dao/globaltask/GlobalTask_mysql.xml" />
+
+	<!-- 应用部署树 -->
+	<sqlMap resource="com/sitech/basd/yicloud/dao/busisystree/TbBusiSysTreeLimit_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/busisystree/TbBusiSysTree_mysql.xml" />
+	<!-- 首页 resource.jsp -->
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/showresource/ShowResource_mysql.xml" />
+
+
+	<sqlMap resource="com/sitech/basd/yicloud/dao/xenstore/XenStoreDao_mysql.xml" />
+	<!-- 部署日志 -->
+	<sqlMap resource="com/sitech/basd/component/dao/deploylog/TbBusiDeployLog_mysql.xml" />
+	<!-- 拓扑展示 -->
+	<sqlMap resource="com/sitech/basd/yicloud/dao/graph/TbTopoMxgraph_mysql.xml" />
+	<!-- 文件版本管理 -->
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/deploy/deployfileversion/FileVersion_mysql.xml" />
+	<!-- 部门项目管理 -->
+	<sqlMap resource="com/sitech/basd/cloud3/dao/departproject/DepartProject_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/cloud3/dao/departproject/DepartMan_mysql.xml" />
+	<!-- 项目和虚拟机关系 -->
+	<sqlMap resource="com/sitech/basd/cloud3/dao/departproject/Relation_mysql.xml" />
+
+	<!-- topN (resource包下) -->
+	<sqlMap resource="com/sitech/basd/resource/dao/global/HostGlobal_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/global/VmGlobal_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/global/AlarmGlobal_mysql.xml" />
+	<!-- 统一树（resource包下） -->
+	<sqlMap resource="com/sitech/basd/resource/dao/united/UnitedTree_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/united/ResourceStatistics_mysql.xml" />
+	<!-- 模板列表，用于管理模板 -->
+	<sqlMap resource="com/sitech/basd/resource/dao/template/TemMan_mysql.xml" />
+	<!-- 导出语句配置 -->
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/exportconfig/ExportConfig_mysql.xml" />
+
+	<!-- 短信订阅 -->
+	<sqlMap resource="com/sitech/basd/cloud3/dao/message/Alarm_user_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/cloud3/dao/message/Push_5_0000_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/cloud3/dao/message/Alarm_subscribe_mysql.xml" />
+
+	<!-- 告警阀值配置 -->
+	<sqlMap resource="com/sitech/basd/alarm/dao/AlarmThreshold_mysql.xml" />
+	<!-- 建立模板和虚拟机的关系 -->
+	<sqlMap resource="com/sitech/basd/resource/dao/template/TemVmRelation_mysql.xml" />
+
+	<!-- 存储设备 -->
+	<sqlMap resource="com/sitech/basd/yicloud/dao/datastore/StoreDevice_mysql.xml" />
+
+	<!-- 业务中心 -->
+	<sqlMap resource="com/sitech/basd/busimanager/dao/busitree/BusiManagerTree_mysql.xml" />
+
+	<!-- 业务系统 -->
+	<sqlMap resource="com/sitech/basd/yicloud/dao/busisystem/BusiSystem_mysql.xml" />
+
+	<!-- 资源历史记录 -->
+	<sqlMap resource="com/sitech/basd/resource/dao/resourcehisrecord/resourcehisrecord_mysql.xml" />
+
+	<!-- IBM数据采集 -->
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/dao/ibmcoll/IBMColl_mysql.xml" />
+
+	<!-- 资源视图 -->
+	<sqlMap resource="com/sitech/basd/bol/dao/boltree/BolTree_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/bolresource/BolResource_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/boltask/BolTask_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/cluster/BolCluster_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/host/BolHost_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/node/BolNode_mysql.xml" />
+
+	<sqlMap resource="com/sitech/basd/cloud3/dao/departproject/DepartHisInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/cloud3/dao/departproject/DepartInfo_mysql.xml" />
+
+	<!-- IBM -->
+	<sqlMap resource="com/sitech/basd/ibmmanager/dao/IBMManagerTree_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/ibmmanager/dao/IBMManagerTab_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/ibmmanager/dao/IBMDataCompare_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/ibmmanager/dao/CloudOSDataCompare_mysql.xml" />
+
+	<!-- 定时任务 -->
+	<sqlMap resource="com/sitech/basd/scheduler/dao/task/Task_mysql.xml" />
+
+	<!-- 资源日历 -->
+	<sqlMap resource="com/sitech/basd/resource/dao/calendar/Calendar_mysql.xml" />
+	<!-- huawei -->
+	<sqlMap resource="com/sitech/ssd/gx/dao/entitytree/HuaweiEntityTree_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/gx/dao/huaweivm/HuaweiVMHostInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/gx/dao/huaweihost/HuaweiHost_mysql.xml" />
+
+	<!--报表管理 -->
+	<sqlMap resource="com/sitech/ssd/ah/reportform/vm/dao/reportFormVm_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/reportform/vm/dao/reportFormHost_mysql.xml" />
+
+	<!-- 部署文件树 -->
+	<sqlMap resource="com/sitech/basd/deployfile/dao/DeployFileTree_mysql.xml" />
+
+	<!-- 智能部署Excel -->
+	<sqlMap resource="com/sitech/basd/component/dao/excel/AppExcel_mysql.xml" />
+
+	<!-- 工单管理 -->
+	<!-- <sqlMap resource="com/sitech/ssd/bpm/sql/TbWorkorder_mysql.xml"/> -->
+	<!-- 首页展示 -->
+	<sqlMap resource="com/sitech/basd/resource/dao/united/ResourceOutline_mysql.xml" />
+
+	<!-- 重庆演示 -->
+	<sqlMap resource="dao/Convert_mysql.xml" />
+
+	<!-- BOL -->
+	<sqlMap resource="com/sitech/basd/bol/dao/nodetask/NodeTask_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/process/BolProcess_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/program/BolProgram_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/program/BolProgramComposite_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/program/BolProgramLib_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/bol/dao/nodestatus/BolNodeStatus_mysql.xml" />
+
+	<!-- paas资源树 -->
+	<sqlMap resource="com/sitech/ssd/ah/paas/dao/tree/PaasTree_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/paas/dao/statistics/PaasStatistics_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/paas/dao/host/PaasHostInfo_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/paas/dao/monitor/PaasResourceMonitor_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/paas/dao/entity/PaasEntity_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/paas/dao/tab/PaasTab_mysql.xml" />
+ 	<sqlMap resource="com/sitech/ssd/ah/paas/dao/alarm/PaasAlarm_mysql.xml"/>
+
+
+	<!-- 北京电信 应用监控 -->
+	<sqlMap resource="com/sitech/ssd/bj/chinatelcom/dao/TbCloud2Application_mysql.xml" />
+	<!-- 北京电信 虚拟磁盘 -->
+	<sqlMap resource="com/sitech/shop/dao/disk/VirtualDisk_mysql.xml" />
+	<sqlMap resource="com/sitech/shop/dao/disk/VmDiskRelation_mysql.xml" />
+	<!-- 北京电信 公网ip -->
+	<sqlMap resource="com/sitech/shop/dao/publicIP/publicIP_mysql.xml" />
+	<!-- 北京电信 物理Vlan -->
+	<sqlMap resource="com/sitech/shop/dao/vlan/PhysicalVlan_mysql.xml" />
+	<!-- 北京电信 防火墙规则 -->
+	<sqlMap resource="com/sitech/shop/dao/firewall/Rules_mysql.xml" />
+	<!-- 北京电信 用户日志 -->
+	<sqlMap resource="com/sitech/basd/syslog/dao/user_operation_log_mysql.xml" />
+	<!-- 北京电信 订购关系接口 -->
+	<sqlMap resource="com/sitech/shop/webservice/dao/order_relation_instance_mysql.xml" />
+	<sqlMap resource="com/sitech/shop/webservice/dao/order_relation_mysql.xml" />
+	<sqlMap resource="com/sitech/shop/webservice/dao/order_standard_mysql.xml" />
+	<sqlMap resource="com/sitech/shop/webservice/dao/shop_userinfo_mysql.xml" />
+	<!-- 负载均衡器 -->
+	<sqlMap resource="com/sitech/shop/dao/balance/LoadBalance_mysql.xml" />
+	<!-- 云主机相关 -->
+	<sqlMap resource="com/sitech/shop/dao/vm/VirtualMachine_mysql.xml" />
+	<!--北京电信 工单管理 -->
+	<sqlMap resource="com/sitech/ssd/bpm/dao/CloudWorkorder_mysql.xml"/> 
+	<!-- 北京电信acl号，rule number -->
+	<sqlMap resource="com/sitech/shop/dao/broadband/AclNumber_mysql.xml" />
+	<sqlMap resource="com/sitech/shop/dao/broadband/RuleNumber_mysql.xml" />
+
+
+	<!-- 条目管理 -->
+	<sqlMap resource="com/sitech/basd/subclauses/dao/SubClauses_mysql.xml" />
+
+	<!-- nas展示相关 -->
+	<sqlMap resource="com/sitech/ssd/ah/nas/dao/NasFileSys_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/nas/dao/NasStorePool_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/ah/nas/dao/NasKpi_mysql.xml" />
+
+	<sqlMap resource="dao/directoryType/DirectoryType_mysql.xml" />
+	 <sqlMap resource="dao/clusterKpi/ClusterKpi_mysql.xml"/>
+
+	<!-- snmp协议参数以及管理协议参数 -->
+	<sqlMap resource="com/sitech/basd/yicloud/dao/device/ManageProtocol_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/device/SnmpParam_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sx/report/dao/SxReport_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/resource/dao/host/IPMIInfo_mysql.xml" />
+
+
+	<sqlMap resource="com/sitech/basd/yicloud/dao/device/diskgroup/diskgroup_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/device/lun/lun_mysql.xml" />
+	<sqlMap resource="com/sitech/basd/yicloud/dao/device/disk/DiskInfo_mysql.xml" />
+	<!-- 操作系统自动安装 -->
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsHost_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsUser_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsHostAdapter_mysql.xml" /> 
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsFileSystem_mysql.xml" /> 
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsGroup_mysql.xml" /> 
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsGroupUser_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsSoft_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsPart_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/os/dao/OsVolGroup_mysql.xml" />
+	
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplate_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplateFileSystem_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplateGroup_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplateGroupUser_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplateUser_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplateSoft_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplateVolGroup_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/ostempl/dao/OsTemplatePart_mysql.xml" />
+	<sqlMap resource="com/sitech/ssd/sc/common/dao/TbSysDict_mysql.xml" />
+	
+	<!-- 软件自动安装 -->
+	<sqlMap resource="com/sitech/ssd/sc/software/dao/SoftwareInstall_mysql.xml" />
+
+	<!-- 数据字典 -->
+	<sqlMap resource="dao/TbDirectoryCode_mysql.xml" />
+
+	<!-- 报表统计 -->
+	<sqlMap resource="com/sitech/basd/report/dao/Report_mysql.xml" />
+	<sqlMap resource="com/sitech/console/dao/VncPort_mysql.xml" />
+	<!-- 自定义报表 -->
+	<sqlMap resource="com/sitech/ssd/hlj/report/dao/CustomReport_mysql.xml" />
+	<!-- 资产报表 -->
+	<sqlMap resource="com/sitech/ssd/hlj/report/dao/AssetReport_mysql.xml" />
+	<!-- Boss应用进程注册 、监控-->
+     <sqlMap resource="com/sitech/ssd/ah/boss/dao/procedure/bossProcedure_mysql.xml"/>
+     <sqlMap resource="com/sitech/ssd/ah/boss/dao/monitor/bossProcessMonitor_mysql.xml"/>
+     <sqlMap resource="com/sitech/ssd/ah/boss/dao/monitor/BossBusiMonitor_mysql.xml"/>
+      <!-- paas业务资源树 -->
+     <sqlMap resource="com/sitech/ssd/ah/paas/busiResource/dao/tree/PaasBusiTree_mysql.xml"/>
+     <sqlMap resource="com/sitech/ssd/ah/paas/busiResource/dao/statistics/PaasBusiStatistics_mysql.xml"/>
+     <sqlMap resource="com/sitech/ssd/ah/paas/busiResource/dao/host/paasHostMonitor_mysql.xml"/>
+     <!-- 用户实体对应 -->
+	<sqlMap resource="com/sitech/basd/sxcloud/cloud/service/userentity/UserEntity_mysql.xml"	/>
+
+	<!-- 资源视图查询 -->
+	<sqlMap resource="dao/resourceV/ResourceView_mysql.xml" />	
+
+	<!-- 基准应用树 -->
+	<sqlMap resource="com/sitech/basd/deployfile/dao/TbBaseAppFileTree_mysql.xml" />
+	<!--安徽监控配置管理  -->
+	<sqlMap resource="com/sitech/ssd/ah/busiMonitor/dao/MonitorCfg_mysql.xml"/>
+	<!--安徽运营指标  -->
+	<sqlMap resource="com/sitech/ssd/ah/busiMonitor/dao/MonitorReport_mysql.xml"/>
+	<!-- 软件文件信息 -->
+	<sqlMap resource="com/sitech/basd/sxcloud/rsmu/dao/softmanage/TbBusiSoftwareFileInfo_mysql.xml" />
+	<!-- zookeeper监控配置 -->
+	<sqlMap resource="com/sitech/taokeeper/dao/impl/zookeeperAlarmSettings_mysql.xml" />
+	<sqlMap resource="com/sitech/taokeeper/dao/impl/zookeeperReport_mysql.xml" />
+	<sqlMap resource="com/sitech/taokeeper/dao/impl/zookeeperSetting_mysql.xml" />
+	<sqlMap resource="com/sitech/taokeeper/dao/impl/zooKeeperCluster_mysql.xml" />
+	<sqlMap resource="com/sitech/taokeeper/dao/impl/zookeeperNodesInfo_mysql.xml" />
+	
+	<!-- add by wangjl_cmi_jl 20140911 boss业务监控报警配置sql文件 -->
+	<sqlMap resource="com/sitech/ssd/ah/busiMon/dao/BossBusiMonAlarmCfg_mysql.xml" />
+		<!-- 虚拟机与存储相关 -->
+ <sqlMap resource="com/sitech/basd/resource/dao/united/vm/VmDatastoreRelation_mysql.xml" />
+</sqlMapConfig>

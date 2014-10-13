@@ -1,0 +1,52 @@
+/*
+ * @Filename: grid.css
+ * @Description: grid style
+ * @Version: 1.0.0
+ * @Author: wangyq
+ * @Update: wangyq
+*/
+.ued-grid {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+    list-style-type: none;
+    padding-left:0;
+    padding-right:0;
+    margin-left:0;
+    margin-right:0;
+}
+
+.ued-gl { float:left; margin: 0; }
+.ued-gr { float:right; margin: 0 0 0 -5px; }
+
+.ued-g20 { width:20%; }
+.ued-g30 { width:30%; }
+.ued-g40 { width:40%; }
+.ued-g60 { width:60%; }
+.ued-g70 { width:70%; }
+.ued-g80 { width:80%; }
+.ued-g25 { width:25%; }
+.ued-g33 { width:33.333%; }
+.ued-g50 { width:50%; }
+.ued-g66 { width:66.666%; }
+.ued-g75 { width:75%; }
+.ued-g38 { width:38.2%; }
+.ued-g62 { width:61.8%; }
+
+/*.ued-gbox { padding: 0 10px }
+.ued-gbox-left { padding: 0 10px 0 0 }
+.ued-gbox-right { padding: 0 0 0 10px }*/
+
+.ued-equalize { overflow:hidden; }
+
+.ued-equalize > [class*="ued-g"] {
+    display:table-cell;
+    float:none;
+    margin:0;
+    vertical-align:top;
+}
+
+.ued-equalize > [class*="ued-g"] > [class*="ued-gbox"] {
+    padding-bottom: 10000px;
+    margin-bottom: -10000px;
+}

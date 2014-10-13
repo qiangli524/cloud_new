@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbYicloudAppStorage">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbYicloudAppStorageObj"
+		type="com.sitech.basd.yicloud.domain.storage.TbYicloudAppStorageObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="TB_YICLOUD_APP_STORAGEColumnsNoKey">
+		APP_ID,BIND_DEVICE,USER_NAME,USER_ID,GROUP_ID,FILE_PATH,STORAGE_SIZE,AVAILABLE
+	</sql>
+	<sql id="TB_YICLOUD_APP_STORAGEColumns">
+		ID,
+		<include refid="TB_YICLOUD_APP_STORAGEColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_YICLOUD_APP_STORAGEColumns" />
+		from TB_YICLOUD_APP_STORAGE
+		<dynamic prepend="where">
+			<isGreaterThan property="ID" compareValue="0" prepend="and">
+			ID =#ID#
+		   </isGreaterThan>
+			<isGreaterThan property="APP_ID" compareValue="0" prepend="and">
+			APP_ID =#APP_ID#
+		   </isGreaterThan>
+		   <isGreaterThan property="BIND_DEVICE" compareValue="0" prepend="and">
+			BIND_DEVICE =#BIND_DEVICE#
+		   </isGreaterThan>
+			<isNotEmpty property="USER_NAME" prepend="and">
+				USER_NAME =#USER_NAME#
+			</isNotEmpty>
+			<isNotEmpty property="USER_ID" prepend="and">
+				USER_ID =#USER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="GROUP_ID" prepend="and">
+				GROUP_ID =#GROUP_ID#
+			</isNotEmpty>
+			<isNotEmpty property="FILE_PATH" prepend="and">
+				FILE_PATH =#FILE_PATH#
+			</isNotEmpty>
+			<isNotEmpty property="STORAGE_SIZE" prepend="and">
+				STORAGE_SIZE =#STORAGE_SIZE#
+			</isNotEmpty>
+			<isNotEmpty property="AVAILABLE" prepend="and">
+				AVAILABLE =#AVAILABLE#
+			</isNotEmpty>
+		</dynamic>
+		order by ID asc
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj"
+		parameterClass="TbYicloudAppStorageObj"
+		resultClass="TbYicloudAppStorageObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="TbYicloudAppStorageObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	  <insert id="insertByObj" parameterClass="TbYicloudAppStorageObj">
+	  <selectKey resultClass="Integer" keyProperty="ID" >
+	  	select ID_YICLOUD_APP_STORAGE.nextval as ID from dual
+	  	</selectKey>
+		insert into TB_YICLOUD_APP_STORAGE(
+		ID,APP_ID,BIND_DEVICE,USER_NAME,USER_ID,GROUP_ID,FILE_PATH,STORAGE_SIZE,AVAILABLE
+		)
+		values(#ID#,#APP_ID#,#BIND_DEVICE#,#USER_NAME#,#USER_ID#,#GROUP_ID#,#FILE_PATH#,#STORAGE_SIZE#,#AVAILABLE#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="TbYicloudAppStorageObj">
+		update TB_YICLOUD_APP_STORAGE set APP_ID=#APP_ID#,BIND_DEVICE=#BIND_DEVICE#,
+		USER_NAME=#USER_NAME#,USER_ID=#USER_ID#,GROUP_ID=#GROUP_ID#,FILE_PATH=#FILE_PATH#,
+		STORAGE_SIZE=#STORAGE_SIZE#,AVAILABLE=#AVAILABLE#
+		where ID=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="TbYicloudAppStorageObj">
+		delete from TB_YICLOUD_APP_STORAGE where ID=#ID#
+	  </delete>
+</sqlMap>

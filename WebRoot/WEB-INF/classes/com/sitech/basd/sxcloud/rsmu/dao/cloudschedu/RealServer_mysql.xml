@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="RealServer">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="RealServerObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.cloudschedu.RealServerObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		name,virtualAddress,realAddress,weight,forwarding_method,request,receive,optr_id,opt_time,INFO
+	</sql>
+	<sql id="tableColumns">
+		id,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryByObjBase">
+		select
+		t.id,t.name,t.virtualAddress,t.realAddress,t.weight,t.forwarding_method,t.request,t.receive,t.optr_id,DATE_FORMAT(t.opt_time,'%Y-%m-%d 
+		%H:%i:%S') as opt_time,t.INFO,v.name as virtual_name from
+		TB_REAL_SERVER t,TB_REAL_SERVER v where t.virtualAddress=
+		v.INFO
+		<isGreaterThan property="INFO" compareValue="0" prepend="and">
+			t.INFO =#INFO#
+		</isGreaterThan>
+		<isNotEmpty property="name" prepend="and">
+			t.name like CONCAT('%',#name#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="realAddress" prepend="and">
+			t.realAddress like CONCAT('%',#realAddress#,'%')
+		</isNotEmpty>
+	</sql>
+	<select id="queryForListByObj" parameterClass="RealServerObj"
+		resultClass="RealServerObj">  
+		<include refid="queryByObjBase" />
+		order by t.id desc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="RealServerObj"
+		resultClass="int">
+		select count(id) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<delete id="deleteByObj" parameterClass="RealServerObj">
+		delete from TB_REAL_SERVER where INFO=#INFO#
+	</delete>
+	<insert id="insertByObj" parameterClass="RealServerObj">
+		insert into
+		TB_REAL_SERVER(id,name,virtualAddress,realAddress,weight,forwarding_method,request,receive,optr_id,opt_time,INFO)
+		values
+		(ID_REAL_SERVER.NEXTVAL,#name#,#virtualAddress#,#realAddress#,#weight#,#forwarding_method#,#request#,#receive#,#optr_id#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#INFO#)
+	</insert>
+
+	<update id="updateByObj" parameterClass="RealServerObj">
+		update TB_REAL_SERVER set
+		name=#name#,virtualAddress=#virtualAddress#,realAddress=#realAddress#,weight=#weight#,forwarding_method=#forwarding_method#,request=#request#,
+		receive=#receive#,optr_id=#optr_id#,opt_time=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') where
+		INFO=#INFO#
+	</update>
+
+</sqlMap>

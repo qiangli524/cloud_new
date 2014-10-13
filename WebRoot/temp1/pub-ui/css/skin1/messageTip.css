@@ -1,0 +1,14 @@
+/*
+ * @Filename: messageTip.css
+ * @Description: messageTip style
+ * @Version: 1.0.0
+ * @Author: hanlx
+ * @Update: *****
+*/
+
+.l-verify-tip{position:absolute;}
+.l-verify-tip-corner{position:absolute;background:url('images/verify-corner.gif') 0 0 no-repeat; width:8px; line-height:9px; height:9px; overflow:hidden; top:5px; left:0px; z-index:10001;}
+.l-verify-tip-cornerT{background-position:-80px 0;margin-left:-8px;margin-top:9px;}
+.l-verify-tip-cornerB{background-position:-160px 0;left:5px;top:-6px;margin-left:-8px;}
+.l-verify-tip-box{position:absolute; left:7px;top:0px;border:1px solid #FFC340; background:#FFFCC7; z-index:10000; padding:4px 18px 4px 8px; width:100px; font-size:12px; } 
+.l-verify-tip-close{position:absolute;top:2px;right:2px;background:url(images/icon/cross.gif) 0 0 no-repeat;width:16px;height:16px;display:block;z-index:10001;cursor:pointer;}

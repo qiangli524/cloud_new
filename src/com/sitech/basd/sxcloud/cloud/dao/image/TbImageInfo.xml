@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbImageInfo">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbCloud2ImageInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.image.TbCloud2ImageInfoObj"/>
+    <typeAlias alias="VMHostObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj"/>
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+    <sql id="TB_CLOUD2_IMAGE_INFOColumnsNoKey">
+          IM_NAME ,IM_DESC ,IM_STATE,IM_VERSION ,IM_TYPE,IM_SPECVERSION,IM_LOG ,PROJECT_ID,TEM_ID,OS_ID
+    </sql>
+    <sql id="TB_CLOUD2_IMAGE_INFOColumns">
+       IM_ID,IM_MEM,IM_CPU,IM_STORAGE,IM_SYSTEM,IM_IP,
+        <include refid="TB_CLOUD2_IMAGE_INFOColumnsNoKey"/>
+    </sql>
+    
+     <sql id="queryByObjBase">
+        select
+        <include refid="TB_CLOUD2_IMAGE_INFOColumns"/>
+        from
+        TB_CLOUD2_IMAGE_INFO
+        <dynamic prepend="where">
+              <isNotEmpty property="IM_ID" prepend="and">
+                IM_ID =#IM_ID#
+                </isNotEmpty>
+               <isNotEmpty property="IM_NAME" prepend="and">
+                IM_NAME =#IM_NAME#
+               </isNotEmpty>
+               <isNotNull property="IM_TYPE" prepend="and">
+                IM_TYPE =#IM_TYPE#
+               </isNotNull>
+        </dynamic> 
+                order by IM_ID asc
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="TbCloud2ImageInfoObj" resultClass="TbCloud2ImageInfoObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryByObjBase"/>
+	        
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="TbCloud2ImageInfoObj" resultClass="int">
+	      select count(IM_ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <delete id="deleteByObj" parameterClass="TbCloud2ImageInfoObj">
+	    delete from TB_CLOUD2_IMAGE_INFO where IM_ID=#IM_ID#
+	  </delete>
+	  <update id="updateByObj" parameterClass="TbCloud2ImageInfoObj">
+	    update TB_CLOUD2_IMAGE_INFO set IM_NAME=#IM_NAME#,IM_DESC=#IM_DESC#,IM_STATE=#IM_STATE#,
+	    IM_VERSION=#IM_VERSION#,IM_SPECVERSION=#IM_SPECVERSION#,PROJECT_ID=#PROJECT_ID# where IM_ID=#IM_ID#
+	  </update><!-- 
+	  <insert id="insertByObj" parameterClass="TbCloud2ImageInfoObj">
+       <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_SYS_FUNCTIONS.NEXTVAL AS ID FROM DUAL
+       </selectKey>
+       insert into TB_CLOUD2_IMAGE_INFO(
+       ID,FUNCID,FUNNAME,STATUS,REMARK,TYPE,FUNCREQUEST,ISREFRESH
+       )
+       values(#ID#,#FUNCID#,#FUNNAME#,#STATUS#,#REMARK#,#TYPE#,#FUNCREQUEST#,#ISREFRESH#)
+       
+      </insert>
+       -->
+       <select id ="queryForTypeList" parameterClass="TbCloud2ImageInfoObj" resultClass="TbCloud2ImageInfoObj">
+       select DISTINCT  IM_TYPE from TB_CLOUD2_IMAGE_INFO 
+       </select>
+       
+       <update id="updateName" parameterClass="TbCloud2ImageInfoObj">
+	    update TB_CLOUD2_IMAGE_INFO set IM_NAME=#IM_NAME# where IM_ID=#IM_ID#
+	  </update>
+	  
+	  <select id="queryVMHostByVMObj" parameterClass="VMHostObj" resultClass="VMHostObj">
+	      select VH_NAME,VH_MEM,VH_CPU,VH_STORAGE,VH_SYSTEM,VH_DESC,VH_STAT,ID from TB_CLOUD2_VMHOST_INFO
+	      <dynamic prepend="where">
+	      		<isNotEqual prepend="and" property="ID" compareValue="0">
+	      			ID = #ID#
+	      		</isNotEqual>
+	      		<isNotNull prepend="and" property="VH_UNITID">
+	      			VH_UUID = #VH_UNITID#
+	      		</isNotNull>
+	      </dynamic>
+	  </select>
+</sqlMap>

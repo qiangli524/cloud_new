@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="huaweiHostDao" class="com.sitech.ssd.gx.dao.huaweihost.HuaweiHostDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	
+	<bean id="huaweiVMHostDao" class="com.sitech.ssd.gx.dao.huaweivm.HuaweiVMHostDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+	
+	<bean id="huaweiEntityTreeDao" class="com.sitech.ssd.gx.dao.entitytree.HuaweiEntityTreeDaoImpl" singleton="true" parent="baseDaoBean">
+	</bean>
+</beans>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="Middleware">
+	<typeAlias alias="MiddlewareObj"
+		type="com.sitech.basd.yicloud.domain.middleware.MiddlewareObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryByObjBase">
+		<![CDATA[
+		select m.ID,
+               m.NAME,
+               m.VERSION,
+               m.REMARK,
+               m.PARTH,
+               DATE_FORMAT(m.UPDATETIME,'%Y-%m-%d %H:%i:%S') UPDATETIME
+          from TB_YICLOUD_MIDDLEWARE m
+        ]]>
+			<dynamic prepend="where">
+				<isNotEqual property="ID" compareValue="0" prepend="and" >
+					m.ID=#ID#
+				</isNotEqual>
+				<isNotEmpty property="NAME" prepend="and">
+					m.NAME like CONCAT('%',#NAME#,'%')
+				</isNotEmpty>
+			</dynamic> 
+	</sql>
+	
+
+	<select id="queryForListByObj" parameterClass="MiddlewareObj"
+		resultClass="MiddlewareObj"> 
+		<include refid="queryByObjBase" />
+		order by m.ID
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="MiddlewareObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	  <insert id="insertByObj" parameterClass="MiddlewareObj">
+		insert into TB_YICLOUD_MIDDLEWARE(
+		NAME,VERSION,REMARK,UPDATETIME,PARTH
+		)
+		values(#NAME#,#VERSION#,#REMARK#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#PARTH#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="MiddlewareObj">
+		update TB_YICLOUD_MIDDLEWARE set NAME=#NAME#,VERSION=#VERSION#,REMARK=#REMARK#,UPDATETIME=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),PARTH=#PARTH#
+		where ID=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="MiddlewareObj">
+		delete from TB_YICLOUD_MIDDLEWARE where ID=#ID#
+	  </delete>
+</sqlMap>

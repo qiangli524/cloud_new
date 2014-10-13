@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ZookeeperMonitor">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="TaoKeeperSettings" type="com.sitech.taokeeper.model.TaoKeeperSettings" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="taoKeeperSettingsObjBaseCloumns">
+			r.settings_id settingsId,
+			r.env_name envName,
+			r.max_threads_of_zookeeper_check maxThreadsOfZooKeeperCheck,
+			r.description description
+	</sql>
+	<select id="queryTaoKeeperSettingsObjList" parameterClass="TaoKeeperSettings" resultClass="TaoKeeperSettings">
+		SELECT <include refid ="taoKeeperSettingsObjBaseCloumns" />
+		 FROM tb_taokeeper_settings r 
+		<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="settingsId">
+						r.settings_id = #settingsId#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	
+	
+	
+	<update id="updateTaokeeperSettings" parameterClass="TaoKeeperSettings">
+		UPDATE tb_taokeeper_settings SET env_name=#envName#,
+			max_threads_of_zookeeper_check=#maxThreadsOfZooKeeperCheck#,
+			description=#description# 
+		WHERE settings_id=#settingsId#
+	</update>
+	
+	<insert id="insertTaokeeperSettings" parameterClass="TaoKeeperSettings">
+		INSERT into tb_taokeeper_settings ( env_name,max_threads_of_zookeeper_check, description ) 
+		VALUES( #envName#,#maxThreadsOfZooKeeperCheck#,#description# )
+	
+	</insert>
+	
+</sqlMap>

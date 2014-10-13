@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="WorkOrder">
+	<typeAlias alias="WorkOrderObj" type="com.sitech.basd.sxcloud.cloud.domain.workorder.WorkOrderObj"/>
+	<typeAlias alias="projectObj" type="com.sitech.basd.cloud3.domain.departproject.DepartProjectObj"/>
+	
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<sql id="resourceCloumns">
+		a.ID,a.CPU_NUM,a.MEM_SIZE,a.SR_SIZE,a.NETWORK_ID,a.TEMPLATE_ID,a.TEMPLATE_TYPE,a.STATUS,a.WORKORDER_ID,a.DEAL_COUNT,a.ENTITY_ID,
+		a.VM_NAME,a.IPADDRESS,a.MESSAGE,to_char(a.DEALTIME,'yyyy-mm-dd HH24:mi:ss') DEALTIME,a.HOST_NAME,a.ISREFERHOST,a.HOST_ID
+	</sql>
+	
+	<sql id="workorderCloumns">
+		b.UUID,b.TYPE,DATE_FORMAT(b.REQUESTDONETIME,'%Y-%m-%d %H:%i:%s') REQUESTDONETIME,
+		to_char(b.RECEIVETIME,'yyyy-mm-dd HH24:mi:ss') RECEIVETIME,to_char(b.EXETIME,'yyyy-mm-dd HH24:mi:ss') EXETIME,
+		b.BOMC_UUID,b.STATE,b.CAMEFROM,b.WSTAT,b.WMESSAGE
+	</sql>
+	
+	<sql id="wholeCloumns">
+		a.ID,a.CPU_NUM,a.MEM_SIZE,a.SR_SIZE,a.NETWORK_ID,a.TEMPLATE_ID,a.TEMPLATE_TYPE,a.STATUS,a.WORKORDER_ID,a.DEAL_COUNT,a.ENTITY_ID,
+		a.VM_NAME,a.IPADDRESS,a.MESSAGE,to_char(a.DEALTIME,'yyyy-mm-dd HH24:mi:ss') DEALTIME,a.HOST_NAME,
+		b.UUID,b.TYPE,DATE_FORMAT(b.REQUESTDONETIME,'%Y-%m-%d %H:%i:%s') REQUESTDONETIME,
+		to_char(b.RECEIVETIME,'yyyy-mm-dd HH24:mi:ss') RECEIVETIME,to_char(b.EXETIME,'yyyy-mm-dd HH24:mi:ss') EXETIME,
+		b.BOMC_UUID,b.STATE,b.CAMEFROM,b.WSTAT,b.WMESSAGE,a.BUSI_ID,a.PROJECT_USER_ID,a.PROJECT_ID,
+	</sql>
+	
+	<select id="queryByObj" parameterClass="WorkOrderObj" resultClass="WorkOrderObj">
+		<isGreaterThan compareValue="0" property="PAGESIZE">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		select
+		<include refid="workorderCloumns"/>,PROJECT_NAME,
+		count(case when a.STATUS = 2 then 'success' end) SUCCESS,
+		count(case when a.STATUS = 3 then 'faluire' end) FALUIRE,
+		count(case when a.STATUS = 1 then 'dealing' end) DEALING,
+		count(case when a.STATUS = 0 then 'wait' end) WAITDEAL,
+		count(case when a.`STATUS` = 4 then 'unmountstore' end) UNMOUNTSTORE,
+		count(a.ID) ALLCOUNT,
+		a.VM_NAME, a.PROJECT_USER_ID,a.PROJECT_ID,
+		from TB_CLOUD2_WORKORDER_INFO b 
+		left join tb_workorder_resource a on a.WORKORDER_ID = b.UUID
+		left join tb_project_info c on a.PROJECT_ID = c.ID
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="UUID">
+				b.UUID = #UUID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TYPE">
+				b.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="REQUESTDONETIME">
+				b.REQUESTDONETIME = to_date(#REQUESTDONETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="RECEIVETIME">
+				b.RECEIVETIME = to_date(#RECEIVETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="EXETIME">
+				b.EXETIME = to_date(#EXETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_USER_ID">
+				b.PROJECT_USER_ID = #PROJECT_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="BOMC_UUID">
+				b.BOMC_UUID like '%'||#BOMC_UUID#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="STATE">
+				b.STATE = #STATE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="CAMEFROM">
+				b.CAMEFROM = #CAMEFROM#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WSTAT">
+				b.WSTAT = #WSTAT#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WMESSAGE">
+				b.WMESSAGE = #WMESSAGE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="BUSISYSTEMID">
+				a.BUSI_ID = #BUSISYSTEMID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_ID">
+				a.PROJECT_ID = #PROJECT_ID#
+			</isNotEmpty>
+		</dynamic>
+		group by b.UUID
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="countByObj" parameterClass="WorkOrderObj" resultClass="int">
+		select count(distinct b.UUID) from TB_CLOUD2_WORKORDER_INFO b 
+		left join (select rres.WORKORDER_ID,rres.PROJECT_ID,rres.PROJECT_USER_ID from tb_workorder_resource rres 
+				inner join tb_project_info ppii on rres.PROJECT_ID = ppii.id) c on b.UUID = c.WORKORDER_ID
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="UUID">
+				b.UUID = #UUID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TYPE">
+				b.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="REQUESTDONETIME">
+				b.REQUESTDONETIME = to_date(#REQUESTDONETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="RECEIVETIME">
+				b.RECEIVETIME = to_date(#RECEIVETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="EXETIME">
+				b.EXETIME = to_date(#EXETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="BOMC_UUID">
+				b.BOMC_UUID like '%'||#BOMC_UUID#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="STATE">
+				b.STATE = #STATE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="CAMEFROM">
+				b.CAMEFROM = #CAMEFROM#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WSTAT">
+				b.WSTAT = #WSTAT#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WMESSAGE">
+				b.WMESSAGE = #WMESSAGE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_USER_ID">
+				c.PROJECT_USER_ID = #PROJECT_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_ID">
+				c.PROJECT_ID = #PROJECT_ID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryResourceList" parameterClass="WorkOrderObj" resultClass="WorkOrderObj">
+		select 
+		<include refid="resourceCloumns"/>,c.NAME NETWORK_NAME,d.NAME TEMPLATENAME,
+			a.busi_id resBusiSytemId,e.name resBusiSystemName ,a.app_dir resAppDir,a.app_size resAppSize
+			,e2.name resParentBusiSystemName,e2.id resParentBusiSystemiId,b.STATE,d.TYPE TEMP_TYPE
+			,a.PROJECT_ID,u.NAME PROJECT_USER_NAME,p.PROJECT_NAME  
+		from tb_workorder_resource a left join tb_cloud2_net_info c on a.NETWORK_ID = c.NET_ID 
+		left join tb_tem_manage d on a.TEMPLATE_ID = (d.CONNECT_ID||'_'||d.TEMPLATE_CODE) 
+		left join tb_busi_system_tree e on e.id = a.busi_id 
+		left join tb_busi_system_tree e2 on e2.id = e.parent_id 
+		left join TB_CLOUD2_WORKORDER_INFO b on a.WORKORDER_ID = b.UUID
+		left join tb_project_info p on a.PROJECT_ID = p.ID
+		left join tb_sys_userinfo u on a.PROJECT_USER_ID = u.ACCOUNT
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="ID">
+				a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="CPU_NUM">
+				a.CPU_NUM = #CPU_NUM#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MEM_SIZE">
+				a.MEM_SIZE = #MEM_SIZE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="SR_SIZE">
+				a.SR_SIZE = #SR_SIZE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="NETWORK_ID">
+				a.NETWORK_ID = #NETWORK_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TEMPLATE_ID">
+				a.TEMPLATE_ID = #TEMPLATE_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TEMPLATE_TYPE">
+				a.TEMPLATE_TYPE = #TEMPLATE_TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="STATUS">
+				a.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WORKORDER_ID">
+				a.WORKORDER_ID = #WORKORDER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DEAL_COUNT">
+				a.DEAL_COUNT = #DEAL_COUNT#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ENTITY_ID">
+				a.ENTITY_ID = #ENTITY_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="VM_NAME">
+				a.VM_NAME = #VM_NAME#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IPADDRESS">
+				a.IPADDRESS = #IPADDRESS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MESSAGE">
+				a.MESSAGE = #MESSAGE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DEALTIME">
+				a.DEALTIME = to_date(#DEALTIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="HOST_NAME">
+				a.HOST_NAME = #HOST_NAME#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForWholeListByObj" parameterClass="WorkOrderObj" resultClass="WorkOrderObj">
+		select
+		<include refid="wholeCloumns"/>
+		from tb_workorder_resource a left join TB_CLOUD2_WORKORDER_INFO b on a.WORKORDER_ID = b.UUID
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="ID">
+				a.ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="CPU_NUM">
+				a.CPU_NUM = #CPU_NUM#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MEM_SIZE">
+				a.MEM_SIZE = #MEM_SIZE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="SR_SIZE">
+				a.SR_SIZE = #SR_SIZE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="NETWORK_ID">
+				a.NETWORK_ID = #NETWORK_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TEMPLATE_ID">
+				a.TEMPLATE_ID = #TEMPLATE_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TEMPLATE_TYPE">
+				a.TEMPLATE_TYPE = #TEMPLATE_TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="STATUS">
+				a.STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WORKORDER_ID">
+				a.WORKORDER_ID = #WORKORDER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DEAL_COUNT">
+				a.DEAL_COUNT = #DEAL_COUNT#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ENTITY_ID">
+				a.ENTITY_ID = #ENTITY_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="VM_NAME">
+				a.VM_NAME = #VM_NAME#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IPADDRESS">
+				a.IPADDRESS = #IPADDRESS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MESSAGE">
+				a.MESSAGE = #MESSAGE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DEALTIME">
+				a.DEALTIME = to_date(#DEALTIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="HOST_NAME">
+				a.HOST_NAME = #HOST_NAME#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_ID">
+				a.PROJECT_ID = #PROJECT_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="BOMC_UUID">
+				a.BOMC_UUID = #BOMC_UUID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_USER_ID">
+				a.PROJECT_USER_ID = #PROJECT_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="UUID">
+				b.UUID = #UUID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TYPE">
+				b.TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="REQUESTDONETIME">
+				b.REQUESTDONETIME = to_date(#REQUESTDONETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="RECEIVETIME">
+				b.RECEIVETIME = to_date(#RECEIVETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="EXETIME">
+				b.EXETIME = to_date(#EXETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="STATE">
+				b.STATE = #STATE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="CAMEFROM">
+				b.CAMEFROM = #CAMEFROM#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WSTAT">
+				b.WSTAT = #WSTAT#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="WMESSAGE">
+				b.WMESSAGE = #WMESSAGE#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="BUSISYSTEMID">
+				a.BUSI_ID = #BUSISYSTEMID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<update id="updateByObj" parameterClass="WorkOrderObj">
+		update tb_workorder_resource set HOST_ID = #HOST_ID# 
+		<dynamic>
+			<isNotEmpty prepend="," property="ID">
+				ID = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="CPU_NUM">
+				CPU_NUM = #CPU_NUM#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="MEM_SIZE">
+				MEM_SIZE = #MEM_SIZE#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="SR_SIZE">
+				SR_SIZE = #SR_SIZE#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="NETWORK_ID">
+				NETWORK_ID = #NETWORK_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="TEMPLATE_ID">
+				TEMPLATE_ID = #TEMPLATE_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="TEMPLATE_TYPE">
+				TEMPLATE_TYPE = #TEMPLATE_TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="STATUS">
+				STATUS = #STATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="WORKORDER_ID">
+				WORKORDER_ID = #WORKORDER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="DEAL_COUNT">
+				DEAL_COUNT = #DEAL_COUNT#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="ENTITY_ID">
+				ENTITY_ID = #ENTITY_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="VM_NAME">
+				VM_NAME = #VM_NAME#
+			</isNotEmpty>
+			<isNotNull prepend="," property="IPADDRESS">
+				IPADDRESS = #IPADDRESS#
+			</isNotNull>
+			<isNotEmpty prepend="," property="MESSAGE">
+				MESSAGE = #MESSAGE#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="DEALTIME">
+				DEALTIME = to_date(#DEALTIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="HOST_NAME">
+				HOST_NAME = #HOST_NAME#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="resBusiSytemId">
+				busi_id = #resBusiSytemId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="resAppDir">
+				app_dir = #resAppDir#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="resAppSize">
+				app_size = #resAppSize#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="PROJECT_ID">
+				PROJECT_ID = #PROJECT_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="PROJECT_USER_ID">
+				PROJECT_USER_ID = #PROJECT_USER_ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="ISREFERHOST">
+				ISREFERHOST = #ISREFERHOST#
+			</isNotEmpty>
+		</dynamic>
+		where ID = #ID#
+	</update>
+	
+	<update id="updateWorkOrderTable" parameterClass="WorkOrderObj">
+		update TB_CLOUD2_WORKORDER_INFO 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="UUID">
+				UUID = #UUID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="TYPE">
+				TYPE = #TYPE#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="REQUESTDONETIME">
+				REQUESTDONETIME = to_date(#REQUESTDONETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="RECEIVETIME">
+				RECEIVETIME = to_date(#RECEIVETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="EXETIME">
+				EXETIME = to_date(#EXETIME#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="BOMC_UUID">
+				BOMC_UUID = #BOMC_UUID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="STATE">
+				STATE = #STATE#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="CAMEFROM">
+				CAMEFROM = #CAMEFROM#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="WSTAT">
+				WSTAT = #WSTAT#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="WMESSAGE">
+				WMESSAGE = #WMESSAGE#
+			</isNotEmpty>
+		</dynamic>
+		where UUID = #UUID#
+	</update>
+	
+	<delete id="deleteResourceByObj" parameterClass="WorkOrderObj">
+		delete from tb_workorder_resource where ID = #ID#
+	</delete>
+	
+	<select id="queryProjectList" resultClass="projectObj">
+		select ID,PROJECT_NAME from tb_project_info where ID in (select PROJECT_ID from tb_workorder_resource)
+	</select>
+	
+	<select id="queryProjectName" parameterClass="projectObj" resultClass="projectObj">
+		select PROJECT_NAME from tb_project_info where ID = #ID#
+	</select>
+	
+	<select id="queryUsedByProject" parameterClass="string" resultClass="WorkOrderObj">
+		select  CPU_NUM, MEM_SIZE,SR_SIZE 
+		from tb_workorder_resource t,tb_cloud2_workorder_info a
+		where t.WORKORDER_ID = a.UUID and t.STATUS 
+		<![CDATA[
+			<> 2
+		]]>
+		<dynamic>
+			<isNotEmpty property="ID" prepend="and">
+				t.ID
+					<![CDATA[
+						<> #ID#
+					]]>
+			</isNotEmpty>
+		</dynamic>
+		and a.TYPE = 0 and t.PROJECT_ID = #project_ID# 
+	</select>
+	
+	<insert id="insertWorkOrderTable" parameterClass="WorkOrderObj"> 
+		insert into TB_CLOUD2_WORKORDER_INFO(UUID,TYPE,USERNAME,REQUESTDONETIME,RECEIVETIME,EXETIME,
+				PROJECT_USER_ID,PROJECT_ID,BOMC_UUID,STATE,CAMEFROM,WSTAT,WMESSAGE)
+		values(#UUID#,#TYPE#,#USERNAME#,to_date(#REQUESTDONETIME#,'yyyy-mm-dd HH24:mi:ss'),
+			to_date(#RECEIVETIME#,'yyyy-mm-dd HH24:mi:ss'),to_date(#EXETIME#,'yyyy-mm-dd HH24:mi:ss'),
+			#PROJECT_USER_ID#,#PROJECT_ID#,#BOMC_UUID#,#STATE#,#CAMEFROM#,#WSTAT#,#WMESSAGE#)
+	</insert>
+	
+	<insert id="insertResource" parameterClass="WorkOrderObj">
+		insert into tb_workorder_resource(ID,CPU_NUM,MEM_SIZE,SR_SIZE,NETWORK_ID,TEMPLATE_ID,TEMPLATE_TYPE,STATUS,WORKORDER_ID,DEAL_COUNT,
+			ENTITY_ID,VM_NAME,IPADDRESS,MESSAGE,DEALTIME,HOST_NAME)
+		values(#ID#,#CPU_NUM#,#MEM_SIZE#,#SR_SIZE#,#NETWORK_ID#,#TEMPLATE_ID#,#TEMPLATE_TYPE#,#STATUS#,#WORKORDER_ID#,#DEAL_COUNT#,
+			#ENTITY_ID#,#VM_NAME#,#IPADDRESS#,#MESSAGE#,to_date(#DEALTIME#,'yyyy-mm-dd HH24:mi:ss'),HOST_NAME) 
+	</insert>
+	
+	<select id="queryByProject" parameterClass="string" resultClass="WorkOrderObj">
+        <!-- 
+		select concat(concat(vm.CONNECT_ID,'_'),vm.VH_UUID) ENTITY_ID,vm.VH_NAME VM_NAME,vm.VH_IP VM_IP,vm.VH_SYSTEM VM_SYSTEM,vm.VH_CPU CPU_NUM,vm.VH_MEM MEM_SIZE,vm.VH_STORAGE SR_SIZE,n.NAME NETWORK_NAME  
+		from tb_workorder_resource r2,tb_cloud2_workorder_info i,tb_cloud2_net_info n,tb_cloud2_vmhost_info vm 
+ 		where i.PROJECT_ID='1' and i.UUID = r2.WORKORDER_ID and r2.ENTITY_ID=concat(concat(vm.CONNECT_ID,'_'),vm.VH_UUID)  and r2.NETWORK_ID=n.NET_ID;
+ 		 -->
+ 		SELECT concat(concat(vm.CONNECT_ID,'_'),vm.VH_UUID) ENTITY_ID,vm.VH_NAME VM_NAME,vm.VH_IP VM_IP,vm.VH_SYSTEM VM_SYSTEM,
+			vm.VH_CPU CPU_NUM,vm.VH_MEM MEM_SIZE,vm.VH_STORAGE SR_SIZE,netip.`name` NETWORK_NAME 
+		from tb_project_vm_relation r
+			inner join tb_cloud2_vmhost_info vm on r.vm_uuid = vm.vh_uuid and r.connect_id = vm.connect_id
+			left join (SELECT ip.ipaddress,net.name from tb_cloud2_net_info net 
+							inner join tb_cloud2_ip_info ip where net.net_id = ip.net_id ) netip on netip.ipaddress = vm.vh_ip
+		WHERE r.project_id=#projectId#
+	</select>
+	
+	<delete id="deleteWorkOrderByObj" parameterClass="WorkOrderObj">
+		delete from tb_cloud2_workorder_info where UUID = #UUID#
+	</delete>
+	
+	<select id="queryUnDealedResource" parameterClass="WorkOrderObj" resultClass="WorkOrderObj">
+		select 
+		<include refid="wholeCloumns"/>
+		from tb_workorder_resource a
+		left join tb_cloud2_workorder_info b
+		on a.WORKORDER_ID = b.UUID
+		where a.STATUS 
+		<![CDATA[
+			<> 2
+		]]>
+		and b.STATE = 0
+		<dynamic>
+			<isNotEmpty prepend="and" property="VM_NAME">
+				a.VM_NAME like CONCAT('%',#VM_NAME#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queruForHostInfo" parameterClass="WorkOrderObj" resultClass="WorkOrderObj">
+		SELECT
+			x.id CLUSTERID,
+			x.`name` CLUSTERNAME,
+			x.connect_id CONNECT_ID,
+			y.HOST_NAME
+		FROM
+			tb_united_tree x
+		INNER JOIN (
+			SELECT
+				a.HOST_ID,
+				b.`name` HOST_NAME,
+				b.parent_id
+			FROM
+				tb_workorder_resource a
+			LEFT JOIN tb_united_tree b ON CONCAT_WS('_', b.uuid, b.connect_id) = a.HOST_ID
+			where a.ID = #ID#
+		) y ON x.id = y.parent_id
+	</select>
+	
+</sqlMap>

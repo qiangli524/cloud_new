@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsGroup">
+	<typeAlias alias="osGroup" type="com.sitech.ssd.sc.os.domain.OsGroupModel"/>
+	 
+	<insert id="insertOsGroup" parameterClass="osGroup">
+		INSERT INTO tb_os_group(os_host_id,group_id,group_name,group_desc) 
+		VALUES(#os_host_id#,#group_id#,#group_name#,#group_desc#)
+	</insert>
+	  
+	<insert id="copyOsTemplateGroup" parameterClass="osGroup">
+		INSERT INTO tb_os_group(os_host_id,group_id,group_name,group_desc,flag)
+		SELECT #os_host_id# os_host_id,group_id,group_name,group_desc,'1' flag 
+		FROM tb_os_template_group WHERE template_id  = #id#
+	</insert>  
+	  
+	<delete id="deleteOsGroup" parameterClass="osGroup">
+		DELETE FROM tb_os_group
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="flag" prepend="and">
+				flag = #flag#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+		   
+	<update id="updateOsGroup" parameterClass="osGroup">
+		UPDATE tb_os_group
+		SET os_host_id = #os_host_id#,group_id = #group_id#,group_name = #group_name#,group_desc = #group_desc#
+		WHERE id = #id#
+	</update>
+	
+	<select id="selectOsGroup" parameterClass="osGroup" resultClass="osGroup">
+		SELECT * FROM tb_os_group WHERE id = #id#
+	</select>	
+	
+	<select id="selectOsGroupList" parameterClass="osGroup" resultClass="osGroup">
+		SELECT * FROM tb_os_group
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id#
+			</isNotEmpty>
+			<isNotEmpty property="group_name" prepend="and">
+				group_name = #group_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<sql id="unionColumns">
+		group_id,group_name,group_desc		
+	</sql>
+	<select id="unionOsGroupList" parameterClass="osGroup" resultClass="osGroup">
+	SELECT <include refid="unionColumns" />,'1' flag 
+	  FROM tb_os_template_group WHERE template_id = #id#
+	UNION
+	SELECT <include refid="unionColumns" />,flag 
+	  FROM tb_os_group WHERE os_host_id = #os_host_id#
+	</select>	
+</sqlMap>

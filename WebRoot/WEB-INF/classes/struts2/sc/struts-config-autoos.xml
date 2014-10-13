@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="autoos" extends="global_package">
+		<action name="autoos_*" class="autoOSAction" method="{1}">
+			<result name="list">/sc/os/autoOS.jsp</result>
+			<result name="addOsHost">/sc/os/addOsHost.jsp</result>
+			<result name="customedInstall">/sc/os/customedInstall.jsp</result>
+			<result name="modify">/sc/os/addOsHost.jsp</result>
+			<result name="templateInstall">/sc/os/templateInstall.jsp</result>
+			<result name="hostDetail">/sc/os/hostDetail.jsp</result>
+			<result name="validUserInfo">/sc/os/validUserInfo.jsp</result>
+			<result name="OsConfig">/sc/os/OsConfig.jsp</result>
+			<result name="OsConfigBase">/sc/os/OsConfigBase.jsp</result>
+			<result name="OsConfigDetail">/sc/os/OsConfigDetail.jsp</result>
+		</action>
+		<action name="hostexcel_*" class="osXlsSupportAction" method="{1}">
+			<result name="excel_browse">/sc/os/excel_browse.jsp</result>
+		</action>
+		<!-- 
+		<action name="software_*" class="softwareInstallAction" method="{1}">
+			<result name="list">/sc/software/list.jsp</result>
+			<result name="add">/sc/software/add.jsp</result>
+			<result name="customedInstall">/sc/os/customedInstall.jsp</result>
+			<result name="templateInstall">/sc/os/templateInstall.jsp</result>
+		</action>
+		 -->
+		<action name="hostAdapter_*" class="osHostAdapterAction" method="{1}">
+			<result name="hostAdapter">/sc/os/hostAdapter.jsp</result>
+			<result name="updateHostAdapter">/sc/os/updateHostAdapter.jsp</result>
+		</action>		
+		              
+		<action name="osFileSystem_*" class="osFileSystemAction" method="{1}">
+			<result name="osFileSystem">/sc/os/osFileSystem.jsp</result>
+			<result name="addOsFileSystem">/sc/os/addOsFileSystem.jsp</result>
+			<result name="updateOsFileSystem">/sc/os/updateOsFileSystem.jsp</result>
+		</action>	
+		
+		<action name="osGroup_*" class="osGroupAction" method="{1}">
+			<result name="osGroup">/sc/os/osGroup.jsp</result>
+			<result name="addOsGroup">/sc/os/addOsGroup.jsp</result>
+			<result name="updateOsGroup">/sc/os/updateOsGroup.jsp</result>
+		</action>
+		
+		<action name="osUser_*" class="osUserAction" method="{1}">
+			<result name="osUser">/sc/os/osUser.jsp</result>
+			<result name="addOsUser">/sc/os/addOsUser.jsp</result>
+			<result name="updateOsUser">/sc/os/updateOsUser.jsp</result>
+		</action>
+		<action name="osGroupUser_*" class="osGroupUserAction" method="{1}">
+			<result name="osGroupUser">/sc/os/osGroupUser.jsp</result>
+			<result name="addOsGroupUser">/sc/os/addOsGroupUser.jsp</result>
+			<result name="updateOsGroupUser">/sc/os/updateOsGroupUser.jsp</result>
+		</action>
+		
+		<action name="osTemplate_*" class="osTemplateAction" method="{1}">
+			<result name="osTemplateList">/sc/ostempl/OsTemplateList.jsp</result>
+			<result name="osTemplate">/sc/ostempl/OsTemplate.jsp</result>
+			<result name="osTemplateConfig">/sc/ostempl/OsTemplateConfig.jsp</result>
+			<result name="osTemplateBase">/sc/ostempl/OsTemplateBase.jsp</result>
+			<result name="osTemplateDetail">/sc/ostempl/OsTemplateDetail.jsp</result>
+			<result name="addOsTemplate">/sc/ostempl/addOsTemplate.jsp</result>
+			<result name="updateOsTemplate">/sc/ostempl/updateOsTemplate.jsp</result>
+			<result name="copyOsTemplate">/sc/ostempl/copyOsTemplate.jsp</result>
+			<result name="redirect" type="redirect">osTemplate_showOsTemplate.do</result>
+		</action>
+		
+		<action name="osTemplComp_*" class="osTemplateComponetAction" method="{1}">
+			<result name="osTemplUser">/sc/ostempl/OsTemplUser.jsp</result>
+			<result name="addOsTemplUser">/sc/ostempl/addOsTemplUser.jsp</result>
+			<result name="updateOsTemplUser">/sc/ostempl/updateOsTemplUser.jsp</result>
+			<!-- <result name="redirectUser" type="redirect">osTemplComp_showOsTemplateUser.do</result> -->
+			
+			<result name="osTemplGroup">/sc/ostempl/OsTemplGroup.jsp</result>
+			<result name="addOsTemplGroup">/sc/ostempl/addOsTemplGroup.jsp</result>
+			<result name="updateOsTemplGroup">/sc/ostempl/updateOsTemplGroup.jsp</result>
+			<!-- <result name="redirectGroup" type="redirect">osTemplComp_showOsTemplateGroup.do</result> -->
+			
+			<result name="osTemplFileSystem">/sc/ostempl/OsTemplFileSystem.jsp</result>
+			<result name="addOsTemplFileSystem">/sc/ostempl/addOsTemplFileSystem.jsp</result>
+			<result name="updateOsTemplFileSystem">/sc/ostempl/updateOsTemplFileSystem.jsp</result>
+			<!-- <result name="redirectFileSystem" type="redirect">osTemplComp_showOsTemplateFileSystem.do</result> -->
+			
+			<result name="osTemplGroupUser">/sc/ostempl/OsTemplGroupUser.jsp</result>
+			<result name="addOsTemplGroupUser">/sc/ostempl/addOsTemplGroupUser.jsp</result>
+			<result name="updateOsTemplGroupUser">/sc/ostempl/updateOsTemplGroupUser.jsp</result>
+			<!-- <result name="redirectGroupUser" type="redirect">osTemplComp_showOsTemplateGroupUser.do</result> -->
+		
+			<result name="osTemplSoft">/sc/ostempl/OsTemplSoft.jsp</result>
+			<result name="addOsTemplSoft">/sc/ostempl/addOsTemplSoft.jsp</result>
+			<result name="updateOsTemplSoft">/sc/ostempl/updateOsTemplSoft.jsp</result>
+			
+			<result name="osTemplPart">/sc/ostempl/OsTemplPart.jsp</result>
+			<result name="addOsTemplPart">/sc/ostempl/addOsTemplPart.jsp</result>
+			<result name="updateOsTemplPart">/sc/ostempl/updateOsTemplPart.jsp</result>
+			
+			<result name="osTemplVolGroup">/sc/ostempl/OsTemplVolGroup.jsp</result>
+			<result name="addOsTemplVolGroup">/sc/ostempl/addOsTemplVolGroup.jsp</result>
+			<result name="updateOsTemplVolGroup">/sc/ostempl/updateOsTemplVolGroup.jsp</result>
+		</action>				
+	</package>
+</struts>

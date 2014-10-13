@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="vmware" extends="global_package">
+		<action name="vmw_*"
+				class="vmwManAction" method="{1}">
+			<result name="edit">/yicloud/vmware/deployVM.jsp</result>
+			<result name="adjust">/yicloud/vmware/deployVM.jsp</result>
+			<result name="clone">/yicloud/vmware/cloneVM.jsp</result>
+			<result name="success">/ajax/ajax.jsp</result>
+			<result name="ajax">/ajax/ajax.jsp</result>
+			<result name="oper_success">/yicloud/vmware/success.jsp</result>
+			<result name="migrate_page">/yicloud/vmware/migrateVM.jsp</result>
+			<result name="error">/yicloud/vmware/exception.jsp</result>
+			<result name="adjustVmwPage">/yicloud/vmware/adjustVMSetting.jsp</result>
+			<result name="vmInfo">/yicloud/vmware/vmInfo.jsp</result>
+			<result name="demo">/yicloud/vmware/deployVMForDemo.jsp</result>
+			<result name="cloneToTemplet">/yicloud/vmware/cloneToTemplet.jsp</result>
+			<result name="cloneVMToCluster">/yicloud/vmware/cloneVMToCluster.jsp</result>
+			<result name="deployVMData">/yicloud/vmware/deployVMToCluster.jsp</result>
+			<result name="openconsole">/yicloud/vmware/openconsole.jsp</result>
+			<result name="addnic">/yicloud/vmware/addnic.jsp</result>
+			<result name="clone_page">/yicloud/vmware/deployVMByTem.jsp</result>
+			<result name="success" type="stream">
+    	        <param name="contentDisposition">attachment;filename="${fileName}"</param>
+    	        <param name="inputName">downloadFile</param>
+    	    </result>
+		</action>
+ </package>
+
+</struts>

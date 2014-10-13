@@ -1,0 +1,104 @@
+CREATE DEFINER = `ssduser`@`10.243.124.%` PROCEDURE `pro_Cloud_BusinessHealthVal`()
+BEGIN
+/**
+*功能描述：定时统计各数据中心下的各业务健康度
+*时间：2014-07-03 20:10:05
+*authors:qism
+*/
+DECLARE db_id varchar(128);
+DECLARE done int DEFAULT 0;
+#第一步：首先查询出所有的数据库类型节点集合(oracle、weblogic) CURSOR用于处理多行记录的查询结果#
+DECLARE db_ids CURSOR FOR SELECT t.id FROM tb_paas_resource_tree t
+		where (t.node_type=21 and t.server_type=3) or (t.node_type=31 and t.server_type=5);
+DECLARE CONTINUE HANDLER FOR NOT FOUND SET done=1;
+#第二步：迭代数据库节点#
+OPEN db_ids;
+	db_loop: LOOP
+		FETCH db_ids INTO db_id; 	
+		IF done=1 THEN   /* No more rows */
+			LEAVE db_loop;   /* 跳出循环 */
+        END IF; 
+		BEGIN		
+				DECLARE business_id varchar(128);
+				DECLARE busi int DEFAULT 0;
+				DECLARE business_entity_id varchar(128);
+				DECLARE business_server_type int;
+				DECLARE business_kpi_value varchar(128);
+				DECLARE maxEnti_coll_time datetime;#该业务下实例中最大的采集时间，后面作为业务平均度采集时间#
+				#查询数据库的业务节点#
+				DECLARE business_ids CURSOR FOR SELECT t1.id from tb_paas_resource_tree t1 
+						where  t1.parent_id = db_id;
+				DECLARE CONTINUE HANDLER FOR NOT FOUND SET busi=1;
+				#第三步：迭代业务节点#
+				OPEN business_ids;
+					business_loop: LOOP
+						#先创建一个缓存表#
+						DROP TABLE IF EXISTS temp_health;
+						create TEMPORARY table temp_health(entity_id VARCHAR(128),kpi_value varchar(128));
+						FETCH business_ids INTO business_id; 	
+						IF busi=1 THEN 
+							LEAVE business_loop;   
+						END IF;	
+						#SELECT business_id;
+						BEGIN
+							DECLARE entity_id varchar(128);
+							DECLARE kpi_value varchar(128);
+							DECLARE enti int DEFAULT 0;
+							DECLARE oldBusi_coll_time datetime;
+							DECLARE newEnti_coll_time datetime;								
+							#查询业务节点下的实例节点#
+							DECLARE entity_ids CURSOR FOR select t4.entity_id from tb_paas_resource_tree t2 
+								   LEFT JOIN tb_paas_resource_tree t3 on t2.id = t3.parent_id
+								   LEFT JOIN tb_paas_resource_tree t4 on t3.id = t4.parent_id
+							 where t2.id = business_id 
+							   and t4.server_type in ('32','52');#oracle、weblogic 实例类型#
+							DECLARE CONTINUE HANDLER FOR NOT FOUND SET enti=1;
+							#获取此次采集实例中最大的采集时间#
+							select m3.coll_time into maxEnti_coll_time from tb_paas_resource_tree t2 
+								   LEFT JOIN tb_paas_resource_tree t3 on t2.id = t3.parent_id
+								   LEFT JOIN tb_paas_resource_tree t4 on t3.id = t4.parent_id
+									 LEFT JOIN tb_paas_resource_coll m3 on t4.entity_id = m3.entity_id
+							 where t2.id = business_id 
+							   and t4.server_type in ('32','52')
+						  order by m3.coll_time DESC
+							 limit 0,1;
+							#查询业务id对应的entity_id#
+							SELECT t5.entity_id,t5.server_type into business_entity_id,business_server_type from tb_paas_resource_tree t5 WHERE t5.id = business_id;
+							#先得到上次最新业务健康值的采集时间#
+							SELECT m.coll_time into oldBusi_coll_time FROM tb_paas_resource_coll m 
+							 WHERE m.kpi_name = 'PS-03-08-008' 
+							   AND m.entity_id=business_entity_id 
+						  ORDER BY m.coll_time DESC LIMIT 0,1;
+							#SELECT oldBusi_coll_time;
+							#第四步：迭代实例节点，得到服务下每个实例最新的健康度的值#
+							OPEN entity_ids;
+								entity_loop: LOOP
+								SET enti=0;
+									FETCH entity_ids INTO entity_id; 						
+									IF enti=1 THEN
+										LEAVE entity_loop;
+									END IF;	
+									select m1.kpi_value,m1.coll_time into kpi_value,newEnti_coll_time from tb_paas_resource_coll m1 where m1.entity_id = entity_id 
+										   AND m1.kpi_name='PS-03-08-007'
+										   ORDER BY m1.coll_time DESC LIMIT 0,1;
+									#比较实例健康度采集时间与上一次业务健康度采集时间大小，如果小于或等于，则停止本次业务健康度统计，如果大于，则执行#
+									IF oldBusi_coll_time is NULL THEN
+										INSERT INTO temp_health VALUES (entity_id,kpi_value);
+									ELSEIF newEnti_coll_time > oldBusi_coll_time THEN	
+										#将实例健康值插入缓存表中#
+										INSERT INTO temp_health VALUES(entity_id,kpi_value);
+									ELSE 
+										LEAVE business_loop;
+									END IF;
+								END LOOP entity_loop;
+							CLOSE entity_ids;						
+						END;
+						#第五步：统计缓存表，得到该业务平均值#
+						SELECT avg(h.kpi_value) into business_kpi_value from temp_health h;						
+					  INSERT INTO tb_paas_resource_coll VALUES (business_entity_id,'PS-03-08-008',business_kpi_value,business_server_type,CURRENT_TIMESTAMP(),maxEnti_coll_time,'');				
+					END LOOP business_loop;	
+				CLOSE business_ids;
+		END;
+	END LOOP db_loop;
+CLOSE db_ids;
+END;

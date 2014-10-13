@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="hostLog">
+	<typeAlias alias="LogObj"
+		type="com.sitech.basd.component.domain.log.LogObj" />
+	<typeAlias alias="TbOperationLogObj" type="com.sitech.basd.component.domain.log.TbOperationLogObj" />
+	 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryForListBase">
+		select a.ID,a.USER_ID userId,a.NAME,a.TYPE,a.CATEGORY,a.DESCRIPTION,a.EXTENSION,a.PATH,DATE_FORMAT(a.INS_DATE,'%Y-%m-%d %H:%i:%s') insDate,
+		b.IP hostIP,b.USERNAME hostUser,b.PASSWORD userPwd,h.HOSTPORT hostPort
+		from TB_HOST_LOG a left join TB_USER_MANAGE b on a.USER_ID = b.ID 
+		left join tb_busi_host h on b.IP=h.IP
+			<dynamic prepend="where">
+				<isNotNull property="id" prepend="and">
+					a.ID= #id#
+				</isNotNull>
+				<isNotNull property="name" prepend="and">
+					a.NAME like CONCAT('%',#name#,'%')
+				</isNotNull>
+				<isNotNull property="hostIP" prepend="and">
+					b.IP like CONCAT('%',#hostIP#,'%')
+				</isNotNull>
+			</dynamic> 
+	</sql>
+	<sql id="queryForListBaseOrderBy">
+		order by a.INS_DATE desc
+	</sql>
+	<!-- 查询配置的日志列表 -->
+	<select id="queryForList" parameterClass="LogObj" resultClass="LogObj"> 
+		<include refid="queryForListBase" />
+		<include refid="queryForListBaseOrderBy" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForCount" parameterClass="LogObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+	<insert id="insertByObj" parameterClass="LogObj">
+		insert into TB_HOST_LOG(ID,USER_ID,NAME,TYPE,CATEGORY,DESCRIPTION,EXTENSION,PATH,INS_DATE)
+		values(#id#,#userId#,#name#,#type#,#category#,#description#,#extension#,#path#,now())
+	</insert>
+	
+	<update id="updateByObj" parameterClass="LogObj">
+		update TB_HOST_LOG set NAME=#name#,TYPE=#type#,CATEGORY=#category#,DESCRIPTION=#description#,EXTENSION=#extension#,PATH=#path#,INS_DATE=now()
+		where ID = #id#
+	</update>
+	<delete id="deleteByObj" parameterClass="LogObj">
+		delete from TB_HOST_LOG where ID = #id#
+	</delete>
+	
+	<!-- 应用部署查询日志 -->
+	<select id="queryLogDeploy" parameterClass="LogObj" resultClass="LogObj">
+		select a.ID,
+       		a.USER_ID userId,
+       		a.NAME,
+       		a.TYPE,
+       		a.CATEGORY,
+       		a.DESCRIPTION,
+	    	a.EXTENSION,
+    	   	a.PATH,
+       		DATE_FORMAT(a.INS_DATE, '%Y-%m-%d %H:%i:%s') insDate	
+  		from TB_HOST_LOG a,TB_EXAMPLE_RELATION b
+  		where a.id = b.entity_id and b.type = '2'
+		<isNotNull property="appId" prepend="and">
+			b.EXAMPLE_ID = #appId#
+		</isNotNull>
+		order by a.INS_DATE desc
+	</select>
+	<!-- 查询一个基准应用下所有实例的日志管理 -->
+	<sql id="queryLogAppBase">
+		select distinct a.ID,
+	       		a.USER_ID userId,
+	       		a.NAME,
+	       		a.TYPE,
+	       		a.CATEGORY,
+	       		a.DESCRIPTION,
+		    	a.EXTENSION,
+	    	   	a.PATH,
+	       		DATE_FORMAT(a.INS_DATE, '%Y-%m-%d %H:%i:%s') insDate	
+		FROM
+			TB_HOST_LOG a,
+			TB_EXAMPLE_RELATION b,
+			TB_USER_MANAGE c,
+			TB_BUSI_SYS_TREE d
+		WHERE
+			a.ID = b.ENTITY_ID
+		AND a.USER_ID = c.ID
+		AND d.PARENT_ID = #appId#
+  		<isNotNull property="encodeExampleStr" prepend="and">
+			b.example_id in ($encodeExampleStr$) 
+		</isNotNull>
+	</sql>
+	<sql id="queryLogAppBaseOrderBy">
+		order by a.INS_DATE desc
+	</sql>
+	<select id="queryLogAppDeploy" parameterClass="LogObj" resultClass="LogObj">
+		<include refid="queryLogAppBase" />
+		<include refid="queryLogAppBaseOrderBy" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForAppCount" parameterClass="LogObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryLogAppBase" />
+		 ) virtual_table
+	 </select>
+	  <sql id="queryOperationLogBase">
+	 	select a.example_id exampleId,
+		       a.operation_type operationType,
+		       a.issuccess isSuccess,
+		       a.description description,
+		       DATE_FORMAT(a.update_time,'%Y-%m-%d %H:%i:%S') update_time,
+		       b.example_name exampleName
+		  from TB_EXAMPLE_OPERATION_LOG a, TB_BUSI_DEPLOY_EXAMPLE b
+		 where a.example_id = b.id
+		 <isNotNull prepend="and" property="exampleId">
+		 	<isNotEmpty property="exampleId">
+		 		a.example_id = #exampleId#
+		 	</isNotEmpty>
+		 </isNotNull>
+		 order by a.update_time desc
+	 </sql>
+	 <select id="queryOperationLog" parameterClass="TbOperationLogObj" resultClass="TbOperationLogObj">
+		<include refid="queryOperationLogBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryOperationLogCount" parameterClass="TbOperationLogObj" resultClass="int">
+		select count(*)  from (
+		<include refid="queryOperationLogBase" />
+		 ) virtual_table
+	 </select>
+	 <!-- 通过实例ID 删除操作日志表中数据 -->
+	 <delete id="deleteOperationLog" parameterClass="TbOperationLogObj">
+	 	delete from TB_EXAMPLE_OPERATION_LOG 
+	 	<dynamic prepend="where">
+	 		<isNotNull prepend="and" property="exampleId">
+			 	<isNotEmpty property="exampleId">
+			 		example_id = #exampleId#
+			 	</isNotEmpty>
+		 	</isNotNull>
+	 	</dynamic>
+	 </delete>
+</sqlMap>

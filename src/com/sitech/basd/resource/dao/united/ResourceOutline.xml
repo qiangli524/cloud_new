@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceOutline">
+	<typeAlias alias="ResourceOutlineObj" type="com.sitech.basd.resource.domain.united.ResourceOutlineObj"/>
+	<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	
+	<select id="queryForNetList" parameterClass="ResourceOutlineObj" resultClass="ResourceOutlineObj">
+		select a.ipAllCount,a.ipUsedCount,b.parent_id domainName from (
+			select count(IP_ID) ipAllCount,
+				sum(case when ISUSED = 1 OR ISBLOCKED = 1 then 1 else 0 END) ipUsedCount,
+				NET_ID
+		 	from tb_cloud2_ip_info GROUP BY NET_ID
+		) a INNER JOIN tb_united_tree b
+		ON a.NET_ID = b.uuid group by b.parent_id
+	</select>
+	
+	<select id="queryCpuResource" parameterClass="ResourceOutlineObj" resultClass="Data">
+		select DISTINCT t.VALUE value 
+			from tb_resource_statistics t where t.KEY = #key#		
+	</select>
+	
+	<select id="queryMemResource" parameterClass="ResourceOutlineObj" resultClass="Data">
+		select DISTINCT ROUND(t.VALUE/1024,2) value 
+			from tb_resource_statistics t where t.KEY = #key#
+	</select>
+	
+	<select id="queryStoreResource" parameterClass="ResourceOutlineObj" resultClass="Data">
+		select DISTINCT ROUND(t.VALUE/1024,2) value 
+			from tb_resource_statistics t where t.KEY = #key#
+	</select>
+
+</sqlMap>

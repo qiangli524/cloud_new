@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 用于oracle数据库查询>
+<sqlMap namespace="CalendarNew">
+    <!-- 查询资源信息-->
+	<select id="queryResource" parameterClass="java.util.HashMap"   resultClass="java.util.HashMap">
+		<![CDATA[
+	    	SELECT * FROM (SELECT
+			C.VALUE,C.KEYY
+			FROM
+			tb_resource_calendar C
+			WHERE
+			C.INSERT_TIME < #selectTime#
+			ORDER BY c.INSERT_TIME DESC) WHERE rownum <= 15;
+		]]>
+	</select>
+</sqlMap>

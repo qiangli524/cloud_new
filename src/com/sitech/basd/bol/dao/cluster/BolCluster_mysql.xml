@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BolCluster">
+	<typeAlias alias="BolClusterVO"
+		type="com.sitech.basd.bol.domain.cluster.BolClusterVO" />
+
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+		</sql>
+
+	<insert id="insertByBolClusterVO" parameterClass="BolClusterVO">
+		insert into CLOUD_GROUP
+		(GROUP_ID,GROUP_NAME,GROUP_DESC,STATE,STATE_DATE)
+		values
+		(#id#,#name#,#descrip#,#status#,sysdate)
+	</insert>
+
+	<sql id="Columns">
+		GROUP_ID id,GROUP_NAME name,GROUP_DESC descrip,STATE status,DATE_FORMAT(STATE_DATE,'%Y-%m-%d %H:%i:%S') lastUpdate
+	</sql>
+	
+	<sql id="querySqlBase">
+		select
+		<include refid="Columns" />
+		from CLOUD_GROUP
+		<dynamic prepend="where">
+			<isGreaterThan property="id" compareValue="0" prepend="and">
+				GROUP_ID =#id#
+			</isGreaterThan>
+			<isNotEmpty property="name" prepend="and">
+				GROUP_NAME like '%'||#name#||'%'
+			</isNotEmpty>
+			<isGreaterThan property="status" compareValue="-1" prepend="and">
+				STATE =#status#
+			</isGreaterThan>
+		</dynamic>
+		order by id asc
+	</sql>
+	
+	<select id="queryID" resultClass="java.lang.Integer">
+		select max(GROUP_ID) from CLOUD_GROUP
+	</select>
+
+	<select id="queryForListByObj" parameterClass="BolClusterVO"
+		resultClass="BolClusterVO">
+		<include refid="querySqlBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryForCount" parameterClass="BolClusterVO"
+		resultClass="int">
+		select count(id) from (
+		<include refid="querySqlBase" />
+		) virtual_table
+	</select>
+	
+	<!-- 更新一条交换机记录 -->
+	 <update id="updateByBolClusterVO" parameterClass="BolClusterVO">
+	 	UPDATE CLOUD_GROUP 
+	 	<dynamic prepend="set">
+	 		<isNotEmpty prepend="," property="name">
+	 			GROUP_NAME=#name#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="descrip">
+	 			GROUP_DESC=#descrip#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="status">
+	 			STATE=#status#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="lastUpdate">
+	 			STATE_DATE=sysdate
+	 		</isNotEmpty>
+	 	</dynamic>
+        where GROUP_ID=#id#
+	 </update>
+	 <!-- 删除数据 -->
+	 <delete id="deleteByBolClusterVO" parameterClass="BolClusterVO">
+	 	delete from CLOUD_GROUP
+	 	<dynamic prepend="where">
+	 		<isNotEmpty prepend="," property="id">
+	 			GROUP_ID=#id#
+	 		</isNotEmpty>
+	 	</dynamic>
+	 </delete>
+</sqlMap>

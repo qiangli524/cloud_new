@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BossProcedure">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="ProcedureObj" type="com.sitech.ssd.ah.boss.domain.procedure.ProcedureObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<!-- 程序总个数 -->
+	<select id="queryBossProcedureCount" parameterClass="ProcedureObj" resultClass="int">
+		SELECT count(*)
+		FROM
+			tb_boss_app_reg_info r
+		LEFT JOIN tb_user_manage u ON r.user_uid = u.ID
+		LEFT JOIN tb_boss_config c ON r.cluster_id = c.nodeId
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="cluster_id">
+				r.cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="app_pool">
+				r.app_pool = #app_pool#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_ip">
+				r.host_ip  LIKE CONCAT("%",#host_ip#,"%") 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="operator_id">
+				r.operator_id = #operator_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="install_status">
+				r.install_status = #install_status#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- 查询程序列表 -->
+	<select id="queryBossProcedureList" parameterClass="ProcedureObj" resultClass="ProcedureObj">
+		SELECT r.uid,r.cluster_id,r.app_pool,r.user_uid,r.operator_id,r.host_ip,r.host_id,r.program_name,r.startscript,r.stopscript,r.install_status,r.note,
+		 	   u.username,
+			   c.nodename
+		FROM
+			tb_boss_app_reg_info r
+			LEFT JOIN tb_user_manage u ON r.user_uid = u.ID
+			LEFT JOIN tb_boss_config c ON r.cluster_id = c.nodeId
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="cluster_id">
+				r.cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="app_pool">
+				r.app_pool = #app_pool#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_ip">
+				r.host_ip  LIKE CONCAT("%",#host_ip#,"%") 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="operator_id">
+				r.operator_id = #operator_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="install_status">
+				r.install_status = #install_status#
+			</isNotEmpty>
+		</dynamic>
+		order by r.cluster_id Asc,r.app_pool asc,r.operator_id asc
+		<include refid="paginationEnd"/> 
+	</select>
+	<!-- 检查集群和进程名称是否联合唯一 -->
+	<select id="queryForIpAndAppCount" parameterClass="ProcedureObj" resultClass="int">
+		select count(*) from tb_boss_app_reg_info 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="cluster_id">
+				cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="program_name">
+				program_name = #program_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- 查询单个进程对象 -->
+	<select id="queryProcedureByUid" parameterClass="ProcedureObj" resultClass="ProcedureObj">
+		select r.uid,r.cluster_id,r.app_pool,r.user_uid,r.operator_id,r.host_ip,r.host_id,r.program_name,r.startscript,r.stopscript,r.install_status,r.note
+		 from tb_boss_app_reg_info r where r.uid = #uid#
+	</select>
+	<!-- 用于保存操作 -->
+	<insert id="insertByObj" parameterClass="ProcedureObj">
+		insert into tb_boss_app_reg_info (uid,cluster_id,app_pool,user_uid,operator_id,host_ip,host_id,program_name,startscript,stopscript,install_status,note) 
+		values (#uid#,#cluster_id#,#app_pool#,#user_uid#,#operator_id#,#host_ip#,#host_id#,#program_name#,#startScript#,#stopScript#,#install_status#,#note#)
+	</insert>
+	<!-- 用于修改操作 -->
+	<update id="updateByObj" parameterClass="ProcedureObj">
+		update tb_boss_app_reg_info set 
+			<isNotEmpty property="cluster_id">
+				cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="app_pool">
+				app_pool = #app_pool#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="user_uid">
+				user_uid = #user_uid#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="operator_id">
+				operator_id = #operator_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="host_ip">
+				host_ip = #host_ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="host_id">
+				host_id = #host_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="program_name">
+				program_name = #program_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="startScript">
+				startscript = #startScript#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="stopScript">
+				stopscript = #stopScript#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="install_status">
+				install_status = #install_status#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="note">
+				note = #note#
+			</isNotEmpty>
+		where uid = #uid#
+	</update>
+	<!-- 用于卸载操作 -->
+	<update id="unloadProcedureObj" parameterClass="ProcedureObj">
+		update tb_boss_app_reg_info set install_status = '2'
+			where uid = #uid#
+	</update>
+	<!-- 根据集群和池子得到进程集合-->
+	<select id="queryProcedureListByCluAndPool" parameterClass="ProcedureObj" resultClass="ProcedureObj">
+		select uid,program_name from tb_boss_app_reg_info
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="cluster_id">
+					cluster_id = #cluster_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="app_pool">
+					app_pool = #app_pool#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+</sqlMap>

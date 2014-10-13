@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiHostConfigHis">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbBusiHostConfigHisObj" type="com.sitech.basd.sxcloud.rsmu.domain.hostmanage.TbBusiHostConfigHisObj"/>
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+    <sql id="tableColumnsNoKey">      
+    HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,SPACE,to_char(INSERTTIME,'yyyy-mm-dd hh24:mi:ss') INSERTTIME,UPDATEUSER,UPDATETYPE
+    </sql>
+    <sql id="tableColumns">
+        ID,
+        <include refid="tableColumnsNoKey"/>
+    </sql>
+      <sql id="queryByObjBase">
+        select
+        <include refid="tableColumns"/>
+        from
+        TB_BUSI_HOST_CONFIG_HIS where 1=1 
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isNotEmpty property="UPDATEUSER" prepend="and">
+                UPDATEUSER like '%'||#UPDATEUSER#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="UPDATETYPE" prepend="and">
+                UPDATETYPE =#UPDATETYPE#
+               </isNotEmpty>
+                order by ID desc
+     </sql>
+     <select id="queryForListByObj" parameterClass="TbBusiHostConfigHisObj" resultClass="TbBusiHostConfigHisObj">
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationStart"/>
+        </isGreaterThan>
+        <include refid="queryByObjBase"/>
+        
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByObjForCount" parameterClass="TbBusiHostConfigHisObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiHostConfigHisObj">
+    delete from TB_BUSI_HOST_CONFIG_HIS where ID=#ID#
+    </delete>
+    <insert id="insertByObj" parameterClass="TbBusiHostConfigHisObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_BUSI_HOST_CONFIG_HIS.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+    insert into TB_BUSI_HOST_CONFIG_HIS(
+     ID,HOSTID,TYPE,HOSTUSERNAME,HOSRPWD,SPACE,UPDATEUSER,UPDATETYPE
+     )
+     values(#ID#,#HOSTID#,#TYPE#,#HOSTUSERNAME#,#HOSRPWD#,#SPACE#,#UPDATEUSER#,#UPDATETYPE#)
+    
+    </insert>
+      
+</sqlMap>

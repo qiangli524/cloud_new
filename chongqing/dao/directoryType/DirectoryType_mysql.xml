@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DirectoryType">
+	<typeAlias alias="DirectoryTypeObj" type="domain.directoryType.DirectoryTypeObj"/>
+	
+	<sql id="allColumns">
+		t.id,t.code,t.name,t.description
+	</sql>
+	 <!-- 查询类型 -->
+	 <select id="queryForList" parameterClass="DirectoryTypeObj" resultClass="DirectoryTypeObj">
+			select 
+			<include refid="allColumns"/>
+			 from tb_directory_type t
+			 <dynamic prepend="where">
+			 	<isNotEmpty property="id" prepend="and">t.id=#id#</isNotEmpty>
+			 </dynamic>
+			order by t.code
+	 </select>
+	 
+	  <!-- 插入类型 -->
+	 <insert id="insertByObj" parameterClass="DirectoryTypeObj">
+	 	insert into tb_directory_type (id, code, name, description) values (#id#,#code#,#name#,#description#)
+	 </insert>
+	 
+	 
+	 <!-- 更新类型 -->
+	 <update id="updateByObj" parameterClass="DirectoryTypeObj">
+	 	update tb_directory_type set code = #code#, name = #name#, description = #description# where id = #id# ;
+	 </update>
+	 	  
+	  <delete id="deleteByObj" parameterClass="DirectoryTypeObj">
+		delete
+		from
+		tb_directory_type
+		where id = #id# 
+	  </delete>
+	  
+</sqlMap>

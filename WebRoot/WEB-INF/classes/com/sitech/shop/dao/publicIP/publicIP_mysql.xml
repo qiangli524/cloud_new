@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="publicip">
+
+	<typeAlias alias="publicIpObj" type="com.sitech.shop.domain.ip.PublicIPObj"/>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+
+	<sql id="baseQuerySql">
+		
+			SELECT
+				b.VH_NAME,
+				b.VH_DESC,
+				a.ipaddress,
+				a.intranet_ip,
+				DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+				DATE_FORMAT(a.end_time,'%Y-%m-%d %H:%i:%s') end_time,
+				a.user_id,
+				a.entity_id,
+				a.connect_id,
+				a.region_id,
+				a.icp_id,
+				a.description,
+				a.id,
+				a.status,
+				a.payment_type,
+				a.obtain_way
+			FROM
+				tb_public_ip a
+				LEFT JOIN tb_cloud2_vmhost_info b ON a.entity_id = b.VH_UUID
+				AND a.connect_id = b.CONNECT_ID
+				where a.ipaddress is not null and a.ipaddress  <![CDATA[<>]]>''
+			<include refid="whereClause"/>
+	</sql>
+
+	<sql id="whereClause">
+		<dynamic prepend="and">
+			<isNotEmpty prepend="and" property="user_id">
+				a.user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="region_id">
+				a.region_id = #region_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ipaddress">
+				a.ipaddress like CONCAT('%',#ipaddress#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="icp_id">
+				a.icp_id = #icp_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				a.status = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				a.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="connect_id">
+				a.connect_id = #connect_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="description">
+				a.description like CONCAT('%',#description#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="intranet_ip">
+				a.intranet_ip = #intranet_ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="id">
+				a.id =#id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForObj" parameterClass="publicIpObj" resultClass="publicIpObj">
+		SELECT
+				a.ipaddress,
+				a.intranet_ip,
+				DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+				DATE_FORMAT(a.end_time,'%Y-%m-%d %H:%i:%s') end_time,
+				a.user_id,
+				a.entity_id,
+				a.connect_id,
+				a.region_id,
+				a.icp_id,
+				a.description,
+				a.id,
+				a.status,
+				a.payment_type,
+				a.obtain_way,
+				a.type
+			FROM
+				tb_public_ip a
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="user_id">
+				a.user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="region_id">
+				a.region_id = #region_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="ipaddress">
+				a.ipaddress like CONCAT('%',#ipaddress#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="icp_id">
+				a.icp_id = #icp_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				a.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="connect_id">
+				a.connect_id = #connect_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="intranet_ip">
+				a.intranet_ip = #intranet_ip#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="id">
+				a.id =#id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="type">
+				a.type =#type#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForCountByObj" parameterClass="publicIpObj" resultClass="int">
+		select count(id) from (
+			<include refid="baseQuerySql"/>
+		) virtual_table
+	</select>
+	
+	<select id="queryForListUnionTablesByObj" parameterClass="publicIpObj" resultClass="publicIpObj">
+		<include refid="baseQuerySql"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd"/> 
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForListByObj" parameterClass="publicIpObj" resultClass="publicIpObj">
+		<include refid="baseQuerySql"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd"/> 
+		</isGreaterThan>
+	</select>
+	
+	<update id="updateByObj" parameterClass="publicIpObj" >
+		update tb_public_ip
+		<dynamic prepend="set">
+			<isNotEmpty property="user_id" prepend=",">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="ipaddress" prepend=",">
+				ipaddress = #ipaddress#
+			</isNotEmpty>
+			<isNotEmpty property="intranet_ip" prepend=",">
+				intranet_ip = #intranet_ip#
+			</isNotEmpty>
+			<isNotEmpty property="icp_id" prepend=",">
+				icp_id = #icp_id#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend=",">
+				status = #status#
+			</isNotEmpty>
+			<isNotEmpty property="entity_id" prepend=",">
+				entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty property="connect_id" prepend=",">
+				connect_id = #connect_id#
+			</isNotEmpty>
+			<isNotEmpty property="description" prepend=",">
+				description = #description#
+			</isNotEmpty>
+			<isNotEmpty property="region_id" prepend=",">
+				region_id = #region_id#
+			</isNotEmpty>
+			<isNotEmpty property="addr_group" prepend=",">
+				addr_group = #addr_group#
+			</isNotEmpty>
+			<isNotEmpty property="acl_num" prepend=",">
+				acl_num = #acl_num#
+			</isNotEmpty>
+			<isNotEmpty property="create_time" prepend=",">
+				create_time = #create_time#
+			</isNotEmpty>
+			<isNotEmpty property="end_time" prepend=",">
+				end_time = #end_time#
+			</isNotEmpty>
+			<!-- 服务状态 （过期）-->
+			<isNotEmpty property="type" prepend=",">
+				type = #type#
+			</isNotEmpty>
+		</dynamic>
+		where id = #id#
+	</update>
+	
+	<update id="releaseByObj" parameterClass="publicIpObj">
+		update tb_public_ip set intranet_ip = null,entity_id=null,connect_id=null,
+		status=0
+		where  id = #id#			
+	</update>
+	
+	<select id="queryForIntranetIp" parameterClass="publicIpObj" resultClass="publicIpObj">
+		SELECT
+			t.id,
+			t.entity_id,
+			t.connect_id,
+			t.intranet_ip,
+			t.ipaddress
+		FROM
+			tb_public_ip t
+		where  t.ipaddress is null || t.ipaddress =''
+		<dynamic prepend="and">
+			<isEmpty property="entity_id" prepend="and">
+				entity_id = #entity_id#
+			</isEmpty>
+			<isEmpty property="connect_id" prepend="and">
+				connect_id = #connect_id#
+			</isEmpty>
+			<isEmpty property="type" prepend="and">
+				type = #type#
+			</isEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertByObj" parameterClass="publicIpObj">
+		insert into tb_public_ip(
+			id,user_id,ipaddress,icp_id,status,entity_id,description,
+			intranet_ip,region_id,addr_group,acl_num,create_time,end_time,payment_type,obtain_way
+		) values(
+			#id#,#user_id#,#ipaddress#,#icp_id#,#status#,#entity_id#,#description#,
+			#intranet_ip#,#region_id#,#addr_group#,#acl_num#,#create_time#,#end_time#,#payment_type#,#obtain_way#
+		)
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="publicIpObj">
+		delete from tb_public_ip
+		where id=#id#
+	</delete>
+	
+	<!-- 取消绑定内网IP -->
+	<update id="ucancelBindByObj" parameterClass="publicIpObj" >
+		update tb_public_ip set intranet_ip = NULL where id=#id#
+	</update>
+	
+	<!-- 修改公网IP状态 -->
+	<update id="updateStatusByIp" parameterClass="publicIpObj" >
+		update tb_public_ip set status = #status# where ipaddress=#ipaddress#
+	</update>
+	
+</sqlMap>

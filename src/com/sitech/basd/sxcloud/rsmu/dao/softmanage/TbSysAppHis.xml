@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysAppHis">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbSysAppHisObj" type="com.sitech.basd.sxcloud.rsmu.domain.softmanage.TbSysAppHisObj"/>
+    <delete id="deleteByObj" parameterClass="TbSysAppHisObj">
+   		delete from TB_SYS_APP_HIS where ID=#id#
+    </delete>
+    <insert id="insertByObj" parameterClass="TbSysAppHisObj">
+    <selectKey resultClass="int" keyProperty="id" >
+        SELECT ID_SYS_APP_HIS.NEXTVAL AS id FROM DUAL
+    </selectKey>
+    insert into TB_SYS_APP_HIS(
+     ID ,APP_ID ,REMARK
+     )
+     values(#id#,#app_id#,#remark#)
+    </insert>
+    
+    <select id="historyVersion" parameterClass="TbSysAppHisObj" resultClass="TbSysAppHisObj">
+    	select a.catch_status,
+       			to_char(a.CATCH_TIME, 'mm-dd hh24:mi') catch_time,
+       			b.id,
+       			b.remark
+  				from TB_SYS_APP a
+ 				right join TB_SYS_APP_HIS b on a.id = b.app_id
+ 				where b.app_id = #app_id#
+    </select>
+</sqlMap>

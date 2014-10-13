@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="DepartHisInfo">
+
+	<typeAlias alias="departHisInfoObj"
+		type="com.sitech.basd.cloud3.domain.departproject.DepartHisInfoObj" />
+	  
+	  <sql id="baseCloumns">
+	  	id,depart_id,resource_size,resource_used_size,resource_type,DATE_FORMAT(coll_time,'%Y-%m-%d %H:%i:%s') coll_time
+	  </sql>
+	  
+	  <select id="queryForList" parameterClass="departHisInfoObj" resultClass="departHisInfoObj">
+	  		select 
+	  		<include refid="baseCloumns"/>
+	  		from tb_depart_his_info 
+	  		<dynamic prepend="where">
+	  			<isNotEmpty prepend="and" property="id">
+	  				id = #id#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="depart_id">
+	  				depart_id = #depart_id#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="resource_size">
+	  				resource_size = #resource_size#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="resource_used_size">
+	  				resource_used_size = #resource_used_size#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="resource_type">
+	  				resource_type = #resource_type#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="coll_time">
+	  				coll_time = STR_TO_DATE(#coll_time#,'%Y-%m-%d %H:%i:%s')
+	  			</isNotEmpty>
+	  		</dynamic>
+	  </select>
+	  
+	  <select id="queryForListByMap" parameterClass="java.util.HashMap" resultClass="departHisInfoObj">
+<!-- 	  		select  -->
+<!-- 	  		<include refid="baseCloumns"/> -->
+<!-- 	  		from tb_depart_his_info -->
+<!-- 	  		where depart_id = #departId# and resource_type = #resourceType# and -->
+<!-- 	  		coll_time <![CDATA[>]]> #startTime# and coll_time <![CDATA[<]]> #endTime# -->
+	  		SELECT
+					max(depart_id) AS depart_id,
+					DATE_FORMAT(
+						max(coll_time),
+						'%Y-%m-%d'
+					) coll_time,
+					max(resource_size) AS resource_size,
+					MAX(resource_used_size) AS resource_used_size,
+					MAX(resource_type) AS resource_type
+				FROM
+					tb_depart_his_info
+				WHERE
+					depart_id = #departId# 
+				AND resource_type = #resourceType#
+				AND coll_time <![CDATA[>]]> #startTime# and coll_time <![CDATA[<]]> #endTime#
+				GROUP BY
+					depart_id,
+					resource_size,
+					resource_used_size,
+					resource_type
+				order by coll_time
+	  </select>
+	  
+</sqlMap>

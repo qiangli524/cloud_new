@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiDeployTimeConfig">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbBusiDeployTimeConfigObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.TbBusiDeployTimeConfigObj" />
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+	    TB_BUSI_DEPLOY_TIMECONFIG.NAME,TB_BUSI_DEPLOY_TIMECONFIG.APPID,TB_BUSI_DEPLOY_TIMECONFIG.EXPRESSION,
+	    to_char(TB_BUSI_DEPLOY_TIMECONFIG.UPDATETIME,'yyyy-mm-dd hh24:mi:ss') UPDATETIME,TB_BUSI_DEPLOY_TIMECONFIG.STATUS
+    </sql>
+	<sql id="tableColumns">
+		TB_BUSI_DEPLOY_TIMECONFIG.ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryForListByObjBase">
+		select
+		<include refid="tableColumns" />,TB_SYS_APP.APPNAME
+		from
+		TB_BUSI_DEPLOY_TIMECONFIG  left join TB_SYS_APP on TB_BUSI_DEPLOY_TIMECONFIG.appid = TB_SYS_APP.id
+		<dynamic prepend="WHERE">
+		<isGreaterThan property="ID" compareValue="0" prepend="and">
+              TB_BUSI_DEPLOY_TIMECONFIG.ID =#ID#
+        </isGreaterThan>
+        </dynamic>
+		ORDER BY UPDATETIME DESC
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbBusiDeployTimeConfigObj"
+		resultClass="TbBusiDeployTimeConfigObj">
+			<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationStart" />
+			</isGreaterThan>
+		<include refid="queryForListByObjBase" />
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	 <select id="queryForListByObjForCount" parameterClass="TbBusiDeployTimeConfigObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryForListByObjBase"/>
+       ) virtual_table
+    </select>
+    <insert id="insertByObj">
+    <selectKey resultClass="int" keyProperty="ID" >
+        SELECT ID_BUSI_DEPLOYTIME_CONFIG.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+    insert into TB_BUSI_DEPLOY_TIMECONFIG(
+    ID,NAME,APPID,EXPRESSION,EXECUTE_FLAG,UPDATETIME,STATUS,EXECUTE_FLAG2
+     )
+     values(#ID#,#NAME#,#APPID#,#EXPRESSION#,#EXECUTE_FLAG#,SYSDATE,#STATUS#,#EXECUTE_FLAG2#)
+    </insert>
+	<update id="updateByObj1" parameterClass="TbBusiDeployTimeConfigObj">
+    update TB_BUSI_DEPLOY_TIMECONFIG set EXECUTE_FLAG2=#EXECUTE_FLAG2#,STATUS=#STATUS#,APPID=#APPID#,EXPRESSION=#EXPRESSION#,UPDATETIME=sysdate,EXECUTE_FLAG = 0 where ID=#ID#
+    </update>
+	<update id="updateByObj" parameterClass="TbBusiDeployTimeConfigObj">
+    update TB_BUSI_DEPLOY_TIMECONFIG set EXPRESSION=#EXPRESSION#,UPDATETIME=sysdate,EXECUTE_FLAG = 0 where ID=#ID#
+    </update>
+    <update id="updateByObj2" parameterClass="TbBusiDeployTimeConfigObj">
+    update TB_BUSI_DEPLOY_TIMECONFIG set STATUS=#STATUS#,UPDATETIME=sysdate,EXECUTE_FLAG2 = 0 where ID=#ID#
+    </update>
+    <update id="updateByObj3" parameterClass="TbBusiDeployTimeConfigObj">
+    update TB_BUSI_DEPLOY_TIMECONFIG set EXPRESSION=#EXPRESSION#,STATUS=#STATUS#,UPDATETIME=sysdate,EXECUTE_FLAG = 0 EXECUTE_FLAG2 = 0 where ID=#ID#
+    </update>
+    <delete id="deleteByObj" parameterClass="TbBusiDeployTimeConfigObj">
+    delete from TB_BUSI_DEPLOY_TIMECONFIG where ID=#ID#
+    </delete>
+</sqlMap>

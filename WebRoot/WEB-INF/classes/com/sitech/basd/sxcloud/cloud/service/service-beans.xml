@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="templetService"
+		class="com.sitech.basd.sxcloud.cloud.service.templet.TempletServiceImpl"
+		singleton="false">
+		<property name="templetDao">
+			<ref bean="templetDao"/>
+		</property>
+	</bean>
+	<bean id="cubinetService"
+		class="com.sitech.basd.sxcloud.cloud.service.cubinetmanage.CubinetServiceImpl"
+		singleton="false">
+		<property name="tbCubinetDao">
+			<ref bean="tbCubinetDao"/>
+		</property>
+	</bean>	
+	<bean id="hostInfoService"
+		class="com.sitech.basd.sxcloud.cloud.service.resource.HostInfoServiceImpl"
+		singleton="false">
+		<property name="hostInfoDao">
+			<ref bean="hostInfoDao"/>
+		</property>
+	</bean>
+	<bean id="operationService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.OperationServiceImpl"
+		  singleton="true">
+		<property name="tbSysOperationLogDao">
+			<ref bean="tbSysOperationLogDao"/>
+		</property>
+	</bean>	
+			<bean id="leaderViewBusinessService"
+		  class=" com.sitech.basd.sxcloud.cloud.service.leader.LeaderViewBusinessServiceImpl"
+		  singleton="true">
+		<property name="leaderViewBusinessDao">
+			<ref bean="leaderViewBusinessDao"/>
+		</property>
+	</bean>	
+	<bean id="vmHostService"
+		class="com.sitech.basd.sxcloud.cloud.service.vmhost.VMHostServiceImpl"
+		singleton="true">
+		<property name="vmHostDao">
+			<ref bean="vmHostDao"/>
+		</property>
+	</bean>
+	<bean id="ipService"
+		class="com.sitech.basd.sxcloud.cloud.service.net.IpServiceImpl"
+		singleton="true">
+		<property name="tbIpDao">
+			<ref bean="tbIpDao"/>
+		</property>
+		<property name="tbCloud2MonitorAlarmDao">
+			<ref bean="tbCloud2MonitorAlarmDao"/>
+		</property>
+	</bean>
+	<bean id="netService"
+		class="com.sitech.basd.sxcloud.cloud.service.net.NetServiceImpl"
+		singleton="true">
+		<property name="tbNetDao">
+			<ref bean="tbNetDao"/>
+		</property>
+		<property name="tbCloud2MonitorAlarmDao">
+			<ref bean="tbCloud2MonitorAlarmDao"/>
+		</property>
+	</bean>	
+	<bean id="imageService"
+		class="com.sitech.basd.sxcloud.cloud.service.image.ImageServiceImpl"
+		singleton="true">
+		<property name="tbImageInfoDao">
+			<ref bean="tbImageInfoDao"/>
+		</property>
+		<property name="tbVirtualDao">
+			<ref bean="tbVirtualDao"/>
+		</property>
+		<property name="tbCloud2MonitorAlarmDao">
+			<ref bean="tbCloud2MonitorAlarmDao"/>
+		</property>
+		<property name="tbGlobalConfigDao">
+			<ref bean="tbGlobalConfigDao"/>
+		</property> 
+	</bean>
+	<bean id="defendService"
+		  class="com.sitech.basd.sxcloud.cloud.service.defend.DefendServiceImpl"
+		  singleton="true">
+		<property name="defendDao">
+			<ref bean="defendDao"/>
+		</property>
+	</bean>	
+	<bean id="virtualService"
+		class="com.sitech.basd.sxcloud.cloud.service.virtual.VirtualServiceImpl"
+		singleton="true">
+		<property name="tbVirtualDao">
+			<ref bean="tbVirtualDao"/>
+		</property>
+		<property name="tbCloud2MonitorAlarmDao">
+			<ref bean="tbCloud2MonitorAlarmDao"/>
+		</property>
+	</bean>	
+<bean id="eventManageService"
+		class="com.sitech.basd.sxcloud.cloud.service.eventmanage.EventManageServiceImpl"
+		singleton="true">
+		<property name="eventManageDao">
+			<ref bean="eventManageDao"/>
+		</property>
+		<property name="tbCloud2MonitorAlarmDao">
+			<ref bean="tbCloud2MonitorAlarmDao"/>
+		</property>
+	</bean>
+		<bean id="monitorService"
+		class="com.sitech.basd.sxcloud.cloud.service.monitor.MonitorServiceImpl"
+		singleton="true">
+		<property name="monitorDao">
+			<ref bean="monitorDao"/>
+		</property>
+	</bean>
+	<bean id="tbGlobalConfigService"
+		class="com.sitech.basd.sxcloud.cloud.service.globalconfig.TbGlobalConfigServiceImpl"
+		singleton="true">
+		<property name="tbGlobalConfigDao">
+			<ref bean="tbGlobalConfigDao"/>
+		</property>
+	</bean>
+	<bean id="virtualPoolService"
+		class="com.sitech.basd.sxcloud.cloud.service.virtual.VirtualPoolServiceImpl"
+		singleton="true">
+		<property name="tbVirtualPoolDao">
+			<ref bean="tbVirtualPoolDao"/>
+		</property>
+	</bean>	
+	<bean id="tbCloud2VirtualConfigService" class="com.sitech.basd.sxcloud.cloud.service.virtual.TbCloud2VirtualConfigServiceImpl"
+		singleton="true">
+		<property name="tbCloud2VirtualConfigDao">
+			<ref bean="tbCloud2VirtualConfigDao"/>
+		</property>
+	</bean>
+	<bean id="appMessageService" class="com.sitech.basd.sxcloud.cloud.service.appmessage.AppMessageServiceImpl"
+		singleton="true">
+		<property name="appMessageDao">
+			<ref bean="appMessageDao"/>
+		</property>
+	</bean>
+	<bean id="reportHostService"
+		class="com.sitech.basd.sxcloud.cloud.service.reporthost.ReportHostServiceImpl"
+		singleton="true">
+		<property name="tbHostDao">
+			<ref bean="tbHostDao"/>
+		</property>
+	</bean>
+	<bean id="reportVirtualService"
+		class="com.sitech.basd.sxcloud.cloud.service.reportvirtual.ReportVirtualServiceImpl"
+		singleton="true">
+		<property name="tbHyDao">
+			<ref bean="tbHyDao"/>
+		</property>
+	</bean>	
+	<bean id="reportAppCollService" class="com.sitech.basd.sxcloud.cloud.service.reportapp.ReportAppCollServiceImpl"
+		singleton="true">
+		<property name="tbAppCollDao">
+			<ref bean="tbAppCollDao"/>
+		</property>
+	</bean>
+	<bean id="publishFeedBackService" class="com.sitech.basd.sxcloud.cloud.service.feedback.PublishFeedBackServiceImpl"
+		singleton="true">
+		<property name="publishFeedBackDao">
+			<ref bean="publishFeedBackDao"/>
+		</property>
+		<property name="mysqlTableStatusDao">
+			<ref bean="mysqlTableStatusDao"/>
+		</property>
+	</bean>	
+	<bean id="fileManagerService"	class="com.sitech.basd.sxcloud.cloud.service.fileManager.FileManagerServiceImpl"
+		singleton="true">
+		<property name="fileManagerDao">
+			<ref bean="fileManagerDao"/>
+		</property>
+	</bean>
+	<bean id="farmsService"	class="com.sitech.basd.sxcloud.cloud.service.loadBalancing.FarmsServiceImpl"
+		singleton="true">
+		<property name="farmsDao">
+			<ref bean="farmsDao"/>
+		</property>
+	</bean>
+	<bean id="farmServerService"	class="com.sitech.basd.sxcloud.cloud.service.loadBalancing.FarmServerServiceImpl"
+		singleton="true">
+		<property name="farmsServerDao">
+			<ref bean="farmsServerDao"/>
+		</property>
+	</bean>
+	<bean id="l4policyService"	class="com.sitech.basd.sxcloud.cloud.service.loadBalancing.L4_policyServiceImpl"
+		singleton="true">
+		<property name="l4policyDao">
+			<ref bean="l4policyDao"/>
+		</property>
+	</bean>
+	<bean id="tbCloudAppInfoService"	class="com.sitech.basd.sxcloud.cloud.service.appmessage.TbCloudAppInfoServiceImpl"
+		singleton="true">
+		<property name="tbCloudAppInfoDao">
+			<ref bean="tbCloudAppInfoDao"/>
+		</property>
+	</bean>
+	<bean id="bizSystemService"	class="com.sitech.basd.sxcloud.cloud.service.bizsystem.BizSystemServiceImpl"
+		singleton="true">
+		<property name="bizSystemDao">
+			<ref bean="bizSystemDao"/>
+		</property>
+	</bean>
+	<bean id="templetConfigService" class="com.sitech.basd.sxcloud.cloud.service.temconfig.TempletConfigServiceImpl"
+		singleton="false">
+		<property name="templetConfigDao">
+			<ref bean="templetConfigDao"/>
+		</property>
+	</bean>
+	<bean id="tbProjectService" class="com.sitech.basd.sxcloud.cloud.service.project.TbProjectServiceImpl" singleton="false">
+		<property name="tbProjectDao">
+			<ref bean="tbProjectDao"/>
+		</property>
+		<property name="tbCloud2MonitorAlarmDao">
+			<ref bean="tbCloud2MonitorAlarmDao"/>
+		</property>
+	</bean>
+	<bean id="vuserManageService" class="com.sitech.basd.sxcloud.cloud.service.vusermanage.VuserManageServiceImpl" singleton="false">
+		<property name="vuserManageDao">
+			<ref bean="vuserManageDao"/>
+		</property>
+	</bean>
+	<bean id="tbCloud2MonitorAlarmService" class="com.sitech.basd.sxcloud.cloud.service.alarm.TbCloud2MonitorAlarmServiceImpl" singleton="false">
+		<property name="tbCloud2MonitorAlarmDao">
+			<ref bean="tbCloud2MonitorAlarmDao"/>
+		</property>
+	</bean>
+	<!-- 展示资源趋势图 -->
+	<bean id="showResourceService" class="com.sitech.basd.sxcloud.cloud.service.showresource.ShowResourceServiceImpl" singleton="false">
+		<property name="showResourceDao">
+			<ref bean="showResourceDao"/>
+		</property>
+		<property name="dataStoreDao">
+			<ref bean="dataStoreDao"/>
+		</property>
+	</bean>
+	<!-- 主机池 -->
+	<bean id="hostPoolService"
+		class="com.sitech.basd.sxcloud.cloud.service.resource.HostPoolServiceImpl"
+		singleton="false">
+		<property name="hostPoolDao">
+			<ref bean="hostPoolDao"/>
+		</property>
+	</bean>
+	
+	<!-- 导出语句配置 -->
+	<bean id="exportConfigService"
+		class="com.sitech.basd.sxcloud.cloud.service.exportconfig.ExportConfigServiceImpl"
+		singleton="false">
+		<property name="exportConfigDao">
+			<ref bean="exportConfigDao"/>
+		</property>
+	</bean>
+</beans>
+

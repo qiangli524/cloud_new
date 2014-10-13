@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbBusiAppPort">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbBusiAppPortObj" type="com.sitech.basd.sxcloud.rsmu.domain.softmanage.TbBusiAppPortObj"/>
+ 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+    <sql id="tableColumnsNoKey">      
+    APPID,PORT,ISDEFAULT
+    </sql>
+    <sql id="tableColumns">
+        ID,
+        <include refid="tableColumnsNoKey"/>
+    </sql>
+      <sql id="queryByObjBase">
+        select
+        <include refid="tableColumns"/>
+        from
+        TB_BUSI_APP_PORT
+        <dynamic prepend="where">
+               <isGreaterThan property="ID" compareValue="0" prepend="and">
+                ID =#ID#
+               </isGreaterThan>
+               <isGreaterThan property="APPID" compareValue="0" prepend="and">
+                APPID =#APPID#
+               </isGreaterThan>
+               <isGreaterThan property="PORT" compareValue="0" prepend="and">
+                PORT =#PORT#
+               </isGreaterThan> 
+        </dynamic> 
+     </sql>
+     <select id="queryForListByObj" parameterClass="TbBusiAppPortObj" resultClass="TbBusiAppPortObj">
+        <include refid="queryByObjBase"/>
+         order by ID
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+     </select>
+     <select id="queryByObjForCount" parameterClass="TbBusiAppPortObj" resultClass="int">
+      select count(ID) from (
+        <include refid="queryByObjBase"/>
+       ) virtual_table
+    </select>
+    <delete id="deleteByObj" parameterClass="TbBusiAppPortObj">
+    delete from TB_BUSI_APP_PORT where PORT=#PORT#
+    </delete>
+    <delete id="deleteAppidByObj" parameterClass="TbBusiAppPortObj">
+    delete from TB_BUSI_APP_PORT where APPID=#APPID#
+    </delete>
+    <update id="updateByObj" parameterClass="TbBusiAppPortObj">
+    update TB_BUSI_APP_PORT set APPID=#APPID#,PORT=#PORT#,ISDEFAULT=#ISDEFAULT# where ID=#ID#
+    </update>
+    <insert id="insertByObj" parameterClass="TbBusiAppPortObj">
+     insert into TB_BUSI_APP_PORT(
+     APPID,PORT,ISDEFAULT
+     )
+     values(#APPID#,#PORT#,#ISDEFAULT#)
+    
+    </insert>
+      
+</sqlMap>

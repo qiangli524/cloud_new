@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbYicloudAppIp">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbYicloudAppIpObj"
+		type="com.sitech.basd.yicloud.domain.ip.TbYicloudAppIpObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="TB_YICLOUD_APP_IPColumnsNoKey">
+		APP_ID,BIND_DEVICE,ISUSE,MAX_BANDWIDTH,TELECOM_OPERATOR,MIDDLEWARE,PORT
+		,PORT_TYPE,BANDWIDTH_MONITER,IP,IP_TYPE,ISIPOPEN,PORT_MAPPING,LOAD_VIRTUAL_IP,ISLOADBALANCE
+	</sql>
+	<sql id="TB_YICLOUD_APP_IPColumns">
+		ID,
+		<include refid="TB_YICLOUD_APP_IPColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_YICLOUD_APP_IPColumns" />
+		from TB_YICLOUD_APP_IP
+		<dynamic prepend="where">
+			<isGreaterThan property="ID" compareValue="0" prepend="and">
+			ID =#ID#
+		   </isGreaterThan>
+			<isGreaterThan property="APP_ID" compareValue="0" prepend="and">
+			APP_ID =#APP_ID#
+		   </isGreaterThan>
+		   <isGreaterThan property="BIND_DEVICE" compareValue="0" prepend="and">
+			BIND_DEVICE =#BIND_DEVICE#
+		   </isGreaterThan>
+			<isNotEmpty property="ISUSE" prepend="and">
+				ISUSE =#ISUSE#
+			</isNotEmpty>
+			<isNotEmpty property="MAX_BANDWIDTH" prepend="and">
+				MAX_BANDWIDTH =#MAX_BANDWIDTH#
+			</isNotEmpty>
+			<isNotEmpty property="TELECOM_OPERATOR" prepend="and">
+				TELECOM_OPERATOR =#TELECOM_OPERATOR#
+			</isNotEmpty>
+			<isNotEmpty property="MIDDLEWARE" prepend="and">
+				MIDDLEWARE =#MIDDLEWARE#
+			</isNotEmpty>
+			<isNotEmpty property="PORT_TYPE" prepend="and">
+				PORT_TYPE =#PORT_TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="IP_TYPE" prepend="and">
+				IP_TYPE =#IP_TYPE#
+			</isNotEmpty>
+			<isNotEmpty property="ISIPOPEN" prepend="and">
+				ISIPOPEN =#ISIPOPEN#
+			</isNotEmpty>
+			<isNotEmpty property="PORT_MAPPING" prepend="and">
+				PORT_MAPPING like CONCAT('%',#PORT_MAPPING#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="LOAD_VIRTUAL_IP" prepend="and">
+				LOAD_VIRTUAL_IP like CONCAT('%',#LOAD_VIRTUAL_IP#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="ISLOADBALANCE" prepend="and">
+				ISLOADBALANCE =#ISLOADBALANCE#
+			</isNotEmpty>
+		</dynamic> 
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj"
+		parameterClass="TbYicloudAppIpObj"
+		resultClass="TbYicloudAppIpObj"> 
+		<include refid="queryByObjBase" />
+		order by ID asc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 获取业务应用ID列表 -->
+	<select id="queryForAppIdList" resultClass="TbYicloudAppIpObj">
+		select APP_ID from TB_YICLOUD_APP_IP
+	</select>
+	<!-- 获取绑定设备主机ID列表 -->
+	<select id="queryForBindDeviceList" resultClass="TbYicloudAppIpObj">
+		select ID BIND_ID,NAME_ZH  from TB_YICLOUD_DEVICE
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="TbYicloudAppIpObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	  <insert id="insertByObj" parameterClass="TbYicloudAppIpObj">
+		insert into TB_YICLOUD_APP_IP(
+		APP_ID,BIND_DEVICE,ISUSE,MAX_BANDWIDTH,TELECOM_OPERATOR,MIDDLEWARE,PORT,PORT_TYPE,
+		BANDWIDTH_MONITER,IP_TYPE,ISIPOPEN,PORT_MAPPING,LOAD_VIRTUAL_IP,ISLOADBALANCE
+		)
+		values(#APP_ID#,#BIND_DEVICE#,#ISUSE#,#MAX_BANDWIDTH#,#TELECOM_OPERATOR#,
+		#MIDDLEWARE#,#PORT#,#PORT_TYPE#,#BANDWIDTH_MONITER#,#IP_TYPE#,#ISIPOPEN#,
+		#PORT_MAPPING#,#LOAD_VIRTUAL_IP#,#ISLOADBALANCE#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="TbYicloudAppIpObj">
+		update TB_YICLOUD_APP_IP set APP_ID=#APP_ID#,BIND_DEVICE=#BIND_DEVICE#,ISUSE=#ISUSE#,
+		MAX_BANDWIDTH=#MAX_BANDWIDTH#,TELECOM_OPERATOR=#TELECOM_OPERATOR#,MIDDLEWARE=#MIDDLEWARE#,
+		PORT_TYPE=#PORT_TYPE#,IP_TYPE=#IP_TYPE#,ISIPOPEN=#ISIPOPEN#,PORT_MAPPING=#PORT_MAPPING#,
+		LOAD_VIRTUAL_IP=#LOAD_VIRTUAL_IP#,ISLOADBALANCE=#ISLOADBALANCE#
+		where ID=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="TbYicloudAppIpObj">
+		delete from TB_YICLOUD_APP_IP where ID=#ID#
+	  </delete>
+</sqlMap>

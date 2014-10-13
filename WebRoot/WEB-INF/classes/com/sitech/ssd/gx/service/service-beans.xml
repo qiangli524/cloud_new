@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="huaweiHostService"
+		  class="com.sitech.ssd.gx.service.huaweihost.HuaweiHostServiceImpl"
+		  singleton="true">
+		<property name="huaweiHostDao">
+			<ref bean="huaweiHostDao"/>
+		</property>
+	</bean>
+	
+	<bean id="huaweiVMHostService"
+		  class="com.sitech.ssd.gx.service.huaweivm.HuaweiVMHostServiceImpl"
+		  singleton="true">
+		<property name="huaweiVMHostDao">
+			<ref bean="huaweiVMHostDao"/>
+		</property>
+	</bean>
+	
+	<bean id="huaweiEntityTreeService"
+		  class="com.sitech.ssd.gx.service.entitytree.HuaweiEntityTreeServiceImpl"
+		  singleton="true">
+		<property name="huaweiEntityTreeDao">
+			<ref bean="huaweiEntityTreeDao"/>
+		</property>
+	</bean>
+	
+	<bean id="syncHuaweiData" class="com.sitech.ssd.gx.service.sync.SyncHuaweiDataImpl" singleton="true">
+		<property name="huaweiHostDao">
+			<ref bean="huaweiHostDao"/>
+		</property>
+		<property name="huaweiVMHostDao">
+			<ref bean="huaweiVMHostDao"/>
+		</property>
+		<property name="huaweiEntityTreeDao">
+			<ref bean="huaweiEntityTreeDao"/>
+		</property>
+	</bean>
+	
+	<bean id="huaweiClusterService" class="com.sitech.ssd.gx.service.huaweiCluster.HuaweiClusterServiceImpl" singleton="true">
+	</bean>
+	
+</beans>
+

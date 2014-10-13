@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="MachineRoom">
+	<typeAlias alias="MachineRoomObj" type="com.sitech.basd.cloud3.domain.machineroom.MachineRoomObj"/>
+	 
+	<sql id="paginationEnd">
+		<![CDATA[
+			limit #FIRSTROWNUM#,#PAGESIZE#
+		]]>
+	</sql>
+	
+	<sql id="BaseQuery">
+		select r.ROOM_ID,r.ROOM_NAME,r.ROOM_CODE,r.ROOM_CITY,r.ROOM_ADDRESS,r.LINK_MAN,r.PHONE,r.ROOM_TYPE,r.ROOM_SIZE,
+			DATE_FORMAT(r.INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE from TB_CLOUD_MACHINE_ROOM r 
+			<dynamic prepend="where">
+				<isNotNull property="ROOM_ID" prepend="and">
+					r.ROOM_ID = #ROOM_ID#
+				</isNotNull>
+				<isNotNull property="ROOM_NAME" prepend="and">
+					r.ROOM_NAME = #ROOM_NAME#
+				</isNotNull>
+				<isNotNull property="ROOM_CODE" prepend="and">
+					r.ROOM_CODE = #ROOM_CODE#
+				</isNotNull>
+				<isNotNull property="ROOM_CITY" prepend="and">
+					r.ROOM_CITY = #ROOM_CITY#
+				</isNotNull>
+				<isNotNull property="ROOM_ADDRESS" prepend="and">
+					r.ROOM_ADDRESS = #ROOM_ADDRESS#
+				</isNotNull>
+				<isNotNull property="LINK_MAN" prepend="and">
+					r.LINK_MAN = #LINK_MAN#
+				</isNotNull>
+				<isNotNull property="PHONE" prepend="and">
+					r.PHONE = #PHONE#
+				</isNotNull>
+				<isNotNull property="ROOM_TYPE" prepend="and">
+					r.ROOM_TYPE = #ROOM_TYPE#
+				</isNotNull>
+				<isNotNull property="ROOM_SIZE" prepend="and">
+					r.ROOM_SIZE = #ROOM_SIZE#
+				</isNotNull>
+			</dynamic>
+	</sql>
+	
+	<sql id="queryRoomList"> 
+		select r.ROOM_ID,r.ROOM_NAME,r.ROOM_CODE ,r.ROOM_CITY,r.ROOM_ADDRESS,r.LINK_MAN,r.PHONE,r.ROOM_TYPE,r.ROOM_SIZE,DATE_FORMAT(r.INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE
+		,count(a.AREA_ID) shu from TB_CLOUD_MACHINE_ROOM r left join TB_CLOUD_MACHINE_ROOMAREA a on r.ROOM_ID=a.ROOM_ID
+		<dynamic prepend="where">
+				<isNotEmpty property="ROOM_NAME" prepend="and">
+						r.ROOM_NAME like CONCAT('%',#ROOM_NAME#,'%')
+				</isNotEmpty>
+		</dynamic>
+		group by r.ROOM_ID
+		order by DATE_FORMAT(r.INS_DATE,'%Y-%m-%d %H:%i:%S') desc
+	</sql>
+	
+	<select id="queryRoomOne" parameterClass="MachineRoomObj" resultClass="MachineRoomObj">
+		select r.ROOM_ID,r.ROOM_NAME,r.ROOM_CODE,r.ROOM_CITY,r.ROOM_ADDRESS,r.LINK_MAN,r.PHONE,r.ROOM_TYPE,r.ROOM_SIZE,
+			DATE_FORMAT(r.INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE from TB_CLOUD_MACHINE_ROOM r where r.ROOM_ID=#ROOM_ID#	
+	</select>
+	
+	<select id="queryRoomObj" parameterClass="MachineRoomObj" resultClass="MachineRoomObj">
+		<include refid="BaseQuery"/>
+	</select>
+	
+	<delete id="deleteRoomObj" parameterClass="MachineRoomObj">
+		delete from TB_CLOUD_MACHINE_ROOM where ROOM_ID = #ROOM_ID#
+	</delete>
+	
+	<update id="updateRoomObj" parameterClass="MachineRoomObj">
+		update TB_CLOUD_MACHINE_ROOM r
+		<dynamic prepend="set">
+				<isNotNull property="ROOM_ID" prepend=",">
+					r.ROOM_ID = #ROOM_ID#
+				</isNotNull>
+				<isNotNull property="ROOM_NAME" prepend=",">
+					r.ROOM_NAME = #ROOM_NAME#
+				</isNotNull>
+				<isNotNull property="ROOM_CODE" prepend=",">
+					r.ROOM_CODE = #ROOM_CODE#
+				</isNotNull>
+				<isNotNull property="ROOM_CITY" prepend=",">
+					r.ROOM_CITY = #ROOM_CITY#
+				</isNotNull>
+				<isNotNull property="ROOM_ADDRESS" prepend=",">
+					r.ROOM_ADDRESS = #ROOM_ADDRESS#
+				</isNotNull>
+				<isNotNull property="LINK_MAN" prepend=",">
+					r.LINK_MAN = #LINK_MAN#
+				</isNotNull>
+				<isNotNull property="PHONE" prepend=",">
+					r.PHONE = #PHONE#
+				</isNotNull>
+				<isNotNull property="ROOM_TYPE" prepend=",">
+					r.ROOM_TYPE = #ROOM_TYPE#
+				</isNotNull>
+				<isNotNull property="ROOM_SIZE" prepend=",">
+					r.ROOM_SIZE = #ROOM_SIZE#
+				</isNotNull>
+				<isNotNull property="INS_DATE" prepend=",">
+					r.INS_DATE = STR_TO_DATE(#INS_DATE#,'%Y-%m-%d %H:%i:%S')
+				</isNotNull>
+		</dynamic>
+		where r.ROOM_ID = #ROOM_ID#
+	</update>
+	
+	<insert id="insertRoomObj" parameterClass="MachineRoomObj">
+		insert into TB_CLOUD_MACHINE_ROOM 
+		<dynamic prepend="(">
+				<isNotNull property="ROOM_ID" prepend=",">
+					ROOM_ID 
+				</isNotNull>
+				<isNotNull property="ROOM_NAME" prepend=",">
+					ROOM_NAME
+				</isNotNull>
+				<isNotNull property="ROOM_CODE" prepend=",">
+					ROOM_CODE
+				</isNotNull>
+				<isNotNull property="ROOM_CITY" prepend=",">
+					ROOM_CITY 
+				</isNotNull>
+				<isNotNull property="ROOM_ADDRESS" prepend=",">
+					ROOM_ADDRESS 
+				</isNotNull>
+				<isNotNull property="LINK_MAN" prepend=",">
+					LINK_MAN 
+				</isNotNull>
+				<isNotNull property="PHONE" prepend=",">
+					PHONE 
+				</isNotNull>
+				<isNotNull property="ROOM_TYPE" prepend=",">
+					ROOM_TYPE 
+				</isNotNull>
+				<isNotNull property="ROOM_SIZE" prepend=",">
+					ROOM_SIZE 
+				</isNotNull>
+					,INS_DATE)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+				<isNotNull property="ROOM_ID" prepend=",">
+					#ROOM_ID#
+				</isNotNull>
+				<isNotNull property="ROOM_NAME" prepend=",">
+					#ROOM_NAME#
+				</isNotNull>
+				<isNotNull property="ROOM_CODE" prepend=",">
+					#ROOM_CODE#
+				</isNotNull>
+				<isNotNull property="ROOM_CITY" prepend=",">
+					#ROOM_CITY#
+				</isNotNull>
+				<isNotNull property="ROOM_ADDRESS" prepend=",">
+					#ROOM_ADDRESS#
+				</isNotNull>
+				<isNotNull property="LINK_MAN" prepend=",">
+					#LINK_MAN#
+				</isNotNull>
+				<isNotNull property="PHONE" prepend=",">
+					#PHONE#
+				</isNotNull>
+				<isNotNull property="ROOM_TYPE" prepend=",">
+					#ROOM_TYPE#
+				</isNotNull>
+				<isNotNull property="ROOM_SIZE" prepend=",">
+					#ROOM_SIZE#
+				</isNotNull>
+					,SYSDATE())
+		</dynamic>
+	</insert>
+	
+	<select id="queryRoomList" parameterClass="MachineRoomObj" resultClass="MachineRoomObj"> 
+		<include refid="queryRoomList"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd"/>
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryRoomCount" parameterClass="MachineRoomObj" resultClass="int"> 
+		 select count(ROOM_ID) from TB_CLOUD_MACHINE_ROOM
+		 <dynamic prepend="where">
+				<isNotEmpty property="ROOM_NAME" prepend="and">
+						ROOM_NAME like CONCAT('%',#ROOM_NAME#,'%')
+				</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

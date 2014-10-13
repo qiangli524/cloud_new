@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BossMonitor">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="BossMonitorObj" type="com.sitech.ssd.ah.boss.domain.monitor.BossMonitorObj" />
+	<typeAlias alias="CommonObj" type="com.sitech.ssd.ah.boss.domain.common.CommonObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="processObjBaseCloumns">
+			r.uid,
+			r.cluster_id,
+			r.app_pool,
+			r.host_ip,
+			r.user_uid,
+			r.operator_id,
+			r.running_port,
+			r.program_name,
+			r.`status`
+	</sql>
+	<!-- 程序总个数 -->
+	<select id="queryForMonitorObjCount" parameterClass="BossMonitorObj" resultClass="int">
+		SELECT count(*) 
+			FROM
+			tb_boss_app_reg_info r
+		LEFT JOIN tb_user_manage u ON r.user_uid = u.ID
+		LEFT JOIN tb_boss_config c ON r.cluster_id = c.nodeId
+		WHERE
+			r.install_status = '1'
+			<isNotEmpty prepend="and" property="operator_id">
+				r.operator_id = #operator_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_id">
+				r.cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="program_name">
+				r.program_name like CONCAT('%',#program_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_ip">
+				r.host_ip like CONCAT('%', #host_ip#,'%')
+			</isNotEmpty>
+	</select>
+	<!-- 查询进程列表 -->
+	<select id="queryMonitorObjList" parameterClass="BossMonitorObj" resultClass="BossMonitorObj">
+		SELECT
+			<include refid ="processObjBaseCloumns" />,
+			u.username,
+			c.nodename
+		FROM
+			tb_boss_app_reg_info r
+		LEFT JOIN tb_user_manage u ON r.user_uid = u.ID
+		LEFT JOIN tb_boss_config c ON r.cluster_id = c.nodeId
+		WHERE
+			r.install_status = '1'
+			<isNotEmpty prepend="and" property="operator_id">
+				r.operator_id = #operator_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_id">
+				r.cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="program_name">
+				r.program_name like CONCAT('%',#program_name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="host_ip">
+				r.host_ip like CONCAT('%', #host_ip#,'%')
+			</isNotEmpty>
+			order by r.cluster_id ASC,r.program_name ASC,r.host_ip ASC,r.status ASC
+	</select>
+	<!-- 修改进程启停标识 -->
+	<update id="updateByObj" parameterClass="BossMonitorObj">
+		update tb_boss_app_reg_info set 
+		operator_id = #operator_id#,status = 4
+	  	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="cluster_id">
+					cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="program_name">
+					program_name = #program_name#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<!-- 查找单个进程对象 -->
+	<select id="queryByObj" parameterClass="BossMonitorObj" resultClass="BossMonitorObj">
+		select <include refid ="processObjBaseCloumns" /> from tb_boss_app_reg_info r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="cluster_id">
+						r.cluster_id = #cluster_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="program_name">
+						r.program_name = #program_name#
+				</isNotEmpty>
+			</dynamic> 
+	</select>
+	<select id="queryCommonObjList" parameterClass="CommonObj" resultClass="CommonObj">
+		select  b.nodeId,b.nodeName,b.type,b.uid  from tb_boss_config b
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="type">
+						b.type = #type#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	<!-- 查询集群种类 -->
+	<select id="queryMonitorObjListf" parameterClass="BossMonitorObj" resultClass="BossMonitorObj">
+		SELECT
+			cluster_id
+		FROM
+			tb_boss_app_reg_info 
+			group by cluster_id
+	</select>
+	<!-- 根据集群查找旗下池子 -->
+	<select id="queryMonitorObjByClu" parameterClass="BossMonitorObj" resultClass="BossMonitorObj">
+		SELECT
+			<include refid ="processObjBaseCloumns" />
+		FROM
+			tb_boss_app_reg_info r
+		WHERE
+			r.install_status != '2'
+			<isNotEmpty prepend="and" property="cluster_id">
+				r.cluster_id = #cluster_id#
+			</isNotEmpty>
+	</select>
+	<!-- 根据集群、池子查找旗下主机 -->
+	<select id="queryMonitorObjByPoolAndClu" parameterClass="BossMonitorObj" resultClass="BossMonitorObj">
+		SELECT
+			host_ip
+		FROM
+			tb_boss_app_reg_info 
+		WHERE
+			install_status != '2'
+			<isNotEmpty prepend="and" property="cluster_id">
+				cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="program_name">
+				program_name like CONCAT('%',#program_name#,'%')
+			</isNotEmpty>
+			group by host_ip
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="MonitorReport">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="MonitorReportObj" type="com.sitech.ssd.ah.busiMonitor.domain.MonitorReportObj" />
+	<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<!-- 供折线图展示 -->
+	<select id="queryChartJSONForTraffic" parameterClass="MonitorReportObj" resultClass="data">
+		select * from (
+		SELECT
+			str_to_date(r.TIME_SEQ,'%Y%m%d%H') value,
+			ROUND(SUM(r.IN_COUNT),1) label2,
+            ROUND(SUM(r.OUT_COUNT),1) label3,
+            ROUND(SUM(r.NO_MASTER_COUNT),1) label,
+            ROUND(SUM(r.ERROR_COUNT),1) label4
+		FROM
+			tb_boss_busi_coll_info r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="busiKpi">
+					r.BUSI_KPI = #busiKpi#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="clusterName">
+					r.CLUSTER_NAME = #clusterName#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="poolName">
+					r.POOL_NAME  = #poolName# 
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="progressNode">
+					r.PROGRESS_NODE  = #progressNode# 
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="onlineFlag">
+					r.ONLINE_FLAG  = #onlineFlag# 
+				</isNotEmpty>
+				<isNotEmpty property="startTime">
+					<isNotEmpty property="endTime" prepend="and">
+					r.START_TIME between STR_TO_DATE(#startTime#,'%Y%m%d%H') and STR_TO_DATE(#endTime#,'%Y%m%d%H')
+					</isNotEmpty>
+				</isNotEmpty>
+			</dynamic>
+			GROUP BY
+				r.TIME_SEQ
+			LIMIT 0,#num#) tt 
+			order by tt.value ASC
+	</select>
+</sqlMap>

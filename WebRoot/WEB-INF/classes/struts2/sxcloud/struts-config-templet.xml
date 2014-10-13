@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="templet"
+			 extends="global_package">
+		<action name="templet_*"
+				class="templetAction" method="{1}">
+			<result name="success">/sxcloud/cloud/templet/listTempletInfo.jsp</result>
+			<result name="add">/sxcloud/cloud/templet/addTempletInfo.jsp</result>
+			<result name="modify">/sxcloud/cloud/templet/editTempletInfo.jsp</result>
+			<result name="list">/sxcloud/cloud/templet/lookTempletInfo.jsp</result>
+			<result name="redirect" type="redirect">templet_listTempletInfo.do</result>
+			<result name="listRelease">/sxcloud/cloud/templet/listReleaseTemplet.jsp</result>
+			<result name="release">/sxcloud/cloud/templet/releaseTemplet.jsp</result>
+			<result name="saveRelease" type="redirect">templet_listReleaseTemplet.do</result>
+			<result name="available">/sxcloud/cloud/templet/listAvailableTemplet.jsp</result>
+			<result name="his">/sxcloud/cloud/templet/listTempletHis.jsp</result>
+			<result name="listTempletType">/sxcloud/cloud/templet/listTempletType.jsp</result>
+			<result name="addTempletType">/sxcloud/cloud/templet/editTempletType.jsp</result>
+			<result name="modTempletType">/sxcloud/cloud/templet/editTempletType.jsp</result>
+			<result name="saveTempletType" type="redirect">templet_listTempletType.do</result>
+			<result name="delTempletType" type="redirect">templet_listTempletType.do</result>
+			<result name="listAllTempletOfType">/sxcloud/cloud/templet/listAllTempletOfType.jsp</result>
+			<result name="listAllTemplet">/sxcloud/cloud/templet/listAllTemplet.jsp</result>
+			<result name="bindingImage" type="redirect">templet_listAllTemplet.do?ID=${id}</result>
+			<result name="cancleBindingImage" type="redirect">templet_listAllTempletOfType.do?ID=${id}&amp;NAME=${name}</result>
+		</action>
+	</package>
+</struts>

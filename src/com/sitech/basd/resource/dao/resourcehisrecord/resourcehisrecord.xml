@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="ResourceHisRecord">
+	<typeAlias alias="recordObj" type="com.sitech.basd.resource.domain.resourcehisrecord.ResourceHisRecordObj"/>
+	
+	<select id="queryForListByMap" parameterClass="java.util.HashMap" resultClass="recordObj">
+		select * from tb_cloud2_resource_his where coll_time 
+		<![CDATA[
+			> #startTime#
+		]]>
+		and coll_time
+		<![CDATA[
+			< #endTime#
+		]]>
+		and KPI_ID = #kpiId#
+	</select>
+</sqlMap>

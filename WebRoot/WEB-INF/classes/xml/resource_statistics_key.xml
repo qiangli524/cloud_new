@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<!-- 数据中心总个数，用于统一树根节点 -->
+	<entry key="dc_all_count">dc_all_count</entry>
+	
+	<!-- vCPU总个数，用于统一树根节点 -->
+	<entry key="vcpu_all_count">vcpu_all_count</entry>
+	<!-- vCPU使用率，用于统一树根节点 -->
+	<entry key="vcpu_used_count">vcpu_used_count</entry>
+	<!-- vCPU分配数，用于统一树根节点 -->
+	<entry key="vcpu_allo_count">vcpu_allo_count</entry>
+	
+	<!-- 物理cpu使用hz，用于统一树根节点 -->
+	<entry key="cpu_all_mhz">cpu_all_mhz</entry>
+	<!-- 物理cpu已使用hz，用于统一树根节点 -->
+	<entry key="cpu_used_mhz">cpu_used_mhz</entry>
+	
+	<!-- 物理内存总mb，用于统一树根节点 -->
+	<entry key="mem_all_mb">mem_all_mb</entry>
+	<!-- 物理内存已使用mb，用于统一树根节点 -->
+	<entry key="mem_used_mb">mem_used_mb</entry>
+	<!-- 物理内存已分配mb，用于统一树根节点 -->
+	<entry key="mem_allo_mb">mem_allo_mb</entry>
+	
+	<!-- 网络个数 -->
+	<entry key="net_all_count">net_all_count</entry>
+	<!-- IP总数 -->
+	<entry key="ip_all_count">ip_all_count</entry>
+	<!-- IP已使用数 -->
+	<entry key="ip_used_count">ip_used_count</entry>
+	
+	<!-- 集群总数 -->
+	<entry key="cluster_all_count">cluster_all_count</entry>
+	<!-- vmware集群个数 -->
+	<entry key="cluster_vmware_count">cluster_vmware_count</entry>
+	<!-- xen集群个数 -->
+	<entry key="cluster_xen_count">cluster_xen_count</entry>
+	
+	<!-- 主机总数 -->
+	<entry key="host_all_count">host_all_count</entry>
+	<!-- x86主机个数 -->
+	<entry key="host_x86_count">host_x86_count</entry>
+	<!-- 机架服务器个数 -->
+	<entry key="host_frame_count">host_frame_count</entry>
+	
+	<!-- 正在运行主机个数 -->
+	<entry key="host_run_count">host_run_count</entry>
+	<!-- 已经停止主机个数 -->
+	<entry key="host_stop_count">host_stop_count</entry>
+	
+	
+	<!-- 虚拟机总数 -->
+	<entry key="vm_all_count">vm_all_count</entry>	
+	<!-- vmware虚拟机个数 -->
+	<entry key="vm_vmware_count">vm_vmware_count</entry>
+	<!-- vmware虚拟机运行个数 -->
+	<entry key="vm_vmware_run_count">vm_vmware_run_count</entry>
+	<!-- vmware虚拟机停止个数 -->
+	<entry key="vm_vmware_stop_count">vm_vmware_stop_count</entry>
+	<!-- xen虚拟机个数 -->
+	<entry key="vm_xen_count">vm_xen_count</entry>
+	<!-- xen虚拟机运行个数 -->
+	<entry key="vm_xen_run_count">vm_xen_run_count</entry>
+	<!-- xen虚拟机停止个数 -->
+	<entry key="vm_xen_stop_count">vm_xen_stop_count</entry>
+	
+	
+	
+	<!-- vmware cpu总量 -->
+	<entry key="vmware_cpu_count">vmware_cpu_count</entry>
+	<!-- vmware cpu已使用量 -->
+	<entry key="vmware_cpu_used_count">vmware_cpu_used_count</entry>
+	<!-- vmware cpu分配量-->
+	<entry key="vmware_cpu_allo_count">vmware_cpu_allo_count</entry>
+	<!-- xen cpu总量 -->
+	<entry key="xen_cpu_count">xen_cpu_count</entry>
+	<!-- xen cpu已使用量 -->
+	<entry key="xen_cpu_used_count">xen_cpu_used_count</entry>
+	<!-- xen cpu分配量-->
+	<entry key="xen_cpu_allo_count">xen_cpu_allo_count</entry>
+	
+	<!-- vmware内存总量 -->
+	<entry key="vmware_mem_count">vmware_mem_count</entry>
+	<!-- vmware内存使用量-->
+	<entry key="vmware_mem_used_count">vmware_mem_used_count</entry>
+	<!-- vmware内存分配量-->
+	<entry key="vmware_mem_allo_count">vmware_mem_allo_count</entry>
+	<!-- xen内存总量-->
+	<entry key="xen_mem_count">xen_mem_count</entry>
+	<!-- xen内存使用量-->
+	<entry key="xen_mem_used_count">xen_mem_used_count</entry>
+	<!-- vmware内存分配量-->
+	<entry key="xen_mem_allo_count">xen_mem_allo_count</entry>
+	
+	<!-- 存储有效容量 -->
+	<entry key="storage_valid_mb">storage_valid_mb</entry>
+	<!-- 存储接入容量 -->
+	<entry key="storage_mount_mb">storage_mount_mb</entry>
+	<!-- 存储置备容量 -->
+	<entry key="storage_allo_mb">storage_allo_mb</entry>
+	<!-- 存储使用容量 -->
+	<entry key="storage_used_mb">storage_used_mb</entry>
+	
+	
+	<!-- vmware存储总量 -->
+	<entry key="vmware_store_count">vmware_store_count</entry>
+	<!-- vmware存储使用量-->
+	<entry key="vmware_store_used_count">vmware_store_used_count</entry>
+	<!-- vmware存储置备量-->
+	<entry key="vmware_store_allo_count">vmware_store_allo_count</entry>
+	<!-- xen存储总量-->
+	<entry key="xen_store_count">xen_store_count</entry>
+	<!-- xen存储使用量-->
+	<entry key="xen_store_used_count">xen_store_used_count</entry>
+	<!-- xen存储置备量-->
+	<entry key="xen_store_allo_count">xen_store_allo_count</entry>
+	
+	<!-- 已分配主机-->
+	<entry key="host_allocated_count">host_allocated_count</entry>
+	<entry key="host_unallocated_count">host_unallocated_count</entry>
+	<entry key="host_not_allocated_run_count">host_not_allocated_run_count</entry>
+	<entry key="host_not_allocated_stop_count">host_not_allocated_stop_count</entry>
+	<entry key="host_not_allocated_x86_count">host_not_allocated_x86_count</entry>
+	<entry key="host_not_allocated_frame_count">host_not_allocated_frame_count</entry>
+	
+	<!-- 异常状态主机数量 -->
+	<entry key="host_serious_count">host_serious_count</entry>
+	<!-- vmware异常 -->
+	<entry key="vmware_serious_count">vmware_serious_count</entry>
+	<!-- xen异常 -->
+	<entry key="xen_serious_count">xen_serious_count</entry>
+	
+	
+	
+</properties>

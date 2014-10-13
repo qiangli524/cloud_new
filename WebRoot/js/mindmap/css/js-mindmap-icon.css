@@ -1,0 +1,75 @@
+html,body {
+   width: 99%;
+   height: 99%;
+   background:-webkit-gradient(linear, 0 0, 0 100%, from(#5a95ed), to(#71C2F8));
+   filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr='#5a95ed',endColorStr='#71C2F8',gradientType='0'); 
+}
+.js-mindmap-active a.node {
+	height:80px;
+	padding-top: 60px;
+	background-position: top center;
+}
+
+.icon-cloud{
+	background:url("../images/cloud.png")  no-repeat;
+}
+.icon-dc{
+	background:url("../images/dc.png")  no-repeat;
+}
+.icon-hadoop-cluster{
+	background:url("../images/hadoop-cluster.png")  no-repeat;
+}
+.icon-hbase-cluster{
+	background:url("../images/hbase-cluster.png")  no-repeat;
+}
+.icon-hive-cluster{
+	background:url("../images/hive-cluster.png")  no-repeat;
+}
+.icon-zookeeper-cluster{
+	background:url("../images/zookeeper-cluster.png")  no-repeat;
+}
+.icon-storm-cluster{
+	background:url("../images/storm-cluster.png")  no-repeat;
+}
+.icon-impala-cluster{
+	background:url("../images/impala-cluster.png")  no-repeat;
+}
+.icon-mapreduce{
+	background:url("../images/mapreduce.png")  no-repeat;
+}
+.icon-hdfs{
+	background:url("../images/hdfs.png")  no-repeat;
+}
+.icon-regionserver{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-thriftserver{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-reducemanager{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-nodemanager{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-namenode{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-datanode{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-journalnode{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-znode{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-hmaster{
+	background:url("../images/service.png")  no-repeat;
+}
+.icon-host{
+	background:url("../images/host.png")  no-repeat;
+}
+.icon-miniComputer{
+	background:url("../images/hive-cluster.png")  no-repeat;
+}

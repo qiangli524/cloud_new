@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="ipinfo" extends="global_package">
+		<action name="ipinfo_*" 
+		        class="ipinfoAction" method="{1}">
+			<result name="success">/yicloud/ipinfo/listIpInfo.jsp</result>
+			<result name="add">/yicloud/ipinfo/addIpInfo.jsp</result>
+			<result name="modify">/yicloud/ipinfo/editIpInfo.jsp</result>
+			<result name="redirect" type="redirect">ipinfo_listIpinfo.do</result>
+		</action>
+ </package>
+
+</struts>

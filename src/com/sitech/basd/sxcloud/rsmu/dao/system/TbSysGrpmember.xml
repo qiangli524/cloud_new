@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysGrpmember">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbSysGrpmemberObj" type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysGrpmemberObj"/>
+    
+     <select id="queryForListByObj" parameterClass="TbSysGrpmemberObj" resultClass="TbSysGrpmemberObj">
+        select m.USERID,m.GROUPID,n.NAME USERNAME from TB_SYS_GRPMEMBER m,TB_SYS_USERINFO n  where m.USERID = n.ID 
+               <isGreaterThan property="USERID" compareValue="0" prepend="and">
+                USERID =#USERID#
+               </isGreaterThan> 
+               <isGreaterThan property="GROUPID" compareValue="0" prepend="and">
+                GROUPID =#GROUPID#
+               </isGreaterThan>     
+     </select>
+    
+    <delete id="deleteByObj" parameterClass="TbSysGrpmemberObj">
+    delete from TB_SYS_GRPMEMBER where  GROUPID =#GROUPID# 
+    <isGreaterThan property="USERID" compareValue="0" prepend="and">
+                USERID =#USERID#
+               </isGreaterThan> 
+    </delete>
+
+    <insert id="insertByObj" parameterClass="TbSysGrpmemberObj">
+    insert into TB_SYS_GRPMEMBER(USERID,GROUPID) values(#USERID#,#GROUPID#)
+    </insert>
+</sqlMap>

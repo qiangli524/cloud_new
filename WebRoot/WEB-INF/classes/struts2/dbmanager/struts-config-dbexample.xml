@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="dbexample" extends="global_package">
+		<action name="dbexample_*" class="dBExampleAction" method="{1}">
+			<result name="listdbexample">/dbmanager/dbexample/listDbExample.jsp</result>
+			<result name="addbexample">/dbmanager/dbexample/addDbExample.jsp</result>
+			<result name="delbexample">/dbmanager/dbexample/listDbExample.jsp</result>
+			<result name="listtablespace">/dbmanager/dbtablespace/listTableSpace.jsp</result>
+			<result name="editexampleuser">/dbmanager/dbexampleuser/addExampleUser.jsp</result>
+			<result name="edittablespace">/dbmanager/dbtablespace/addTableSpace.jsp</result>
+			<result name="listexampleuser">/dbmanager/dbexampleuser/listExampleUser.jsp</result>
+			<result name="modExampleUser">/dbmanager/dbexampleuser/addExampleUser.jsp</result>
+			<result name="addExampleUser">/dbmanager/dbexampleuser/addExampleUser.jsp</result>
+			<result name="listpower">/dbmanager/dbexampleuser/listPowers.jsp</result>
+			<result name="delExampleUser" type="json"></result>
+			<result name="saveExampleUser" type="json"></result>
+		</action>
+ </package>
+
+</struts>

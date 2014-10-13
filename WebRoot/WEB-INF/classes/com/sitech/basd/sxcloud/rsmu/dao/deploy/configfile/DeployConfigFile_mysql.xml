@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DeployConfig">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="DeployConfigFile"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.configfile.DeployConfigFile" />
+
+	<select id="queryForListByObj" parameterClass="DeployConfigFile"
+		 resultClass="DeployConfigFile">
+		select ID,IP,PATH,MODIFYTTIME from TB_CLOUD_DEPLOY_CONFIGFILE_HIS
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="IP" prepend="AND">
+					IP=#IP#
+			</isNotEmpty>
+			<isNotEmpty property="PATH" prepend="AND">
+					PATH=#PATH#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY MODIFYTTIME DESC
+	</select>
+    <delete id="deleteByObj" parameterClass="DeployConfigFile">
+      delete from TB_CLOUD_DEPLOY_CONFIGFILE_HIS 
+	     <dynamic prepend="WHERE">
+			<isNotEmpty property="IP" prepend="AND">
+					IP=#IP#
+			</isNotEmpty>
+			<isNotEmpty property="PATH" prepend="AND">
+					PATH=#PATH#
+			</isNotEmpty>
+		</dynamic>
+    </delete>
+    <insert id="insertByObj" parameterClass="DeployConfigFile">
+      insert into TB_CLOUD_DEPLOY_CONFIGFILE_HIS(
+          ID,IP,PATH,MODIFYTTIME
+      )
+      values(#ID#,#IP#,#PATH#,SYSDATE())
+    </insert>
+</sqlMap>

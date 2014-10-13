@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ZookeeperMonitorForCluster">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名-->
+	<typeAlias alias="ZooKeeperCluster" type="com.sitech.taokeeper.model.ZooKeeperCluster" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="zooKeeperClusterObjBaseCloumns">
+			r.cluster_id clusterId,
+			r.cluster_name clusterName,
+			r.server_list serverListStr,
+			r.description description,
+			r.ssh_username,
+			r.ssh_passwd,
+			r.ssh_port
+	</sql>
+	<select id="queryZooKeeperClusterObjList" parameterClass="ZooKeeperCluster" resultClass="ZooKeeperCluster">
+	
+		SELECT <include refid ="zooKeeperClusterObjBaseCloumns" />
+		 FROM tb_zookeeper_cluster r 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="clusterId">
+						r.cluster_id = #clusterId#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	<select id="queryClusterListForCount" parameterClass="ZooKeeperCluster" resultClass="int">
+		select count(*) FROM tb_zookeeper_cluster r
+	</select>
+	<select id="queryClusterList" parameterClass="ZooKeeperCluster" resultClass="ZooKeeperCluster">
+		SELECT <include refid ="zooKeeperClusterObjBaseCloumns" />
+		 FROM tb_zookeeper_cluster r
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="clusterName">
+						r.clusterName = #clusterName#
+				</isNotEmpty>
+			</dynamic>
+	</select>
+	
+	<update id="updateZooKeeperCluster" parameterClass="ZooKeeperCluster">
+		UPDATE tb_zookeeper_cluster
+		SET cluster_name = #clusterName#,
+		server_list = #serverListStr#, 
+		description = #description#,
+		ssh_username = #ssh_username#,
+		ssh_passwd = #ssh_passwd#,
+		ssh_port = #ssh_port#
+		WHERE
+			cluster_id = #clusterId#
+	</update>
+	
+	<insert id="insertZooKeeperCluster" parameterClass="ZooKeeperCluster">
+		INSERT INTO tb_zookeeper_cluster ( cluster_name, server_list, description,ssh_username,ssh_passwd,ssh_port) 
+		VALUES (#clusterName#,#serverListStr#,#description#,#ssh_username#,#ssh_passwd#,#ssh_port#);
+		<selectKey resultClass="int" keyProperty="clusterId">
+	       		SELECT @@IDENTITY AS clusterId
+		</selectKey>
+	</insert>
+	<delete id="deleteZooKeeperCluster" parameterClass="ZooKeeperCluster">
+		delete from tb_zookeeper_cluster 
+		<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="clusterId">
+						cluster_id = #clusterId#
+				</isNotEmpty>
+			</dynamic>
+	</delete>
+</sqlMap>

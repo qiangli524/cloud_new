@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="file"
+			 extends="global_package">
+		<action name="file_*"
+				class="fileManagerAction" method="{1}">
+			<result name="FileManagerList">/sxcloud/cloud/fileManager/fileManagerList.jsp</result>
+			<result name="showFileManagerAdd">/sxcloud/cloud/fileManager/fileManagerEdit.jsp</result>
+			<result name="showFileManagerUpdate">file_FileManagerList.do</result>
+			<result name="showDirectoryList">/sxcloud/cloud/fileManager/directoryList.jsp</result>
+			<result name="dirManagerAdd">/sxcloud/cloud/fileManager/directoryEdit.jsp</result>
+			<result name="dirManagerUpdate">/sxcloud/cloud/fileManager/directoryEdit.jsp</result>
+			<result name="showHelpFileList">/sxcloud/cloud/fileManager/helpFileUploadList.jsp</result>
+			<result name="helpFileAdd">/sxcloud/cloud/fileManager/helpFileUploadedit.jsp</result>
+		</action>
+	</package>
+</struts>

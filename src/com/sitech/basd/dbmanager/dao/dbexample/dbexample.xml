@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="example">
+	<typeAlias alias="exampleObj" type="com.sitech.basd.dbmanager.domain.dbexample.DBExampleObj"/>
+	<sql id="paginationStart">
+		<![CDATA[
+                         SELECT * FROM (SELECT VIRTUAL_TABLE.*, ROWNUM ROWNUM_ FROM (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                          )VIRTUAL_TABLE WHERE ROWNUM<=#FIRSTROWNUM#+#PAGESIZE# ) WHERE ROWNUM_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForListBase">
+	SELECT
+		e.ID,
+		e.EXAMPLE_NAME,
+		e.EXAMPLE_IP,
+		e.ISCOMPLETE,
+		e.DATA_FILE_PATH,
+		e.SYS_PASS,
+		e.USERID
+	FROM  TB_DB_EXAMPLE e
+		<dynamic prepend="where">
+			<isNotNull property="example_name" prepend="and">
+				e.EXAMPLE_NAME like '%'||#example_name#||'%'
+			</isNotNull>
+			<isNotNull property="data_file_path" prepend="and">
+				e.DATA_FILE_PATH like '%'||#data_file_path#||'%'
+			</isNotNull>
+			<isNotNull property="sys_pass" prepend="and">
+				e.SYS_PASS = #sys_pass#
+			</isNotNull>
+			<isNotNull property="example_ip">
+				<isGreaterThan prepend="and" property="example_ip" compareValue="-1">
+					e.EXAMPLE_IP=#example_ip#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="iscomplete">
+				<isGreaterThan prepend="and" property="iscomplete" compareValue="-1">
+					e.ISCOMPLETE=#iscomplete#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				e.ID= #id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+    <!-- 查询所有example-->
+	<select id="queryExampleList" parameterClass="exampleObj" resultClass="exampleObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	
+	<select id="queryExampleAndUserManagerBy" parameterClass="exampleObj" resultClass="exampleObj">
+	 SELECT T.USERNAME,T.PASSWORD,B.EXAMPLE_NAME,B.EXAMPLE_IP,B.ISCOMPLETE,B.DATA_FILE_PATH,B.SYS_PASS,B.USERID  
+	 FROM TB_USER_MANAGE T ,TB_DB_EXAMPLE B WHERE T.ID=B.USERID AND B.ID=#id#
+	</select>
+	
+	<!-- 增加一条example记录 -->
+	 <insert id="insertExample" parameterClass="exampleObj">
+	 	insert into TB_DB_EXAMPLE
+        (ID,EXAMPLE_NAME,EXAMPLE_IP,DATA_FILE_PATH,SYS_PASS,USERID) 
+		values(#id#,#example_name#,#example_ip#,#data_file_path#,#sys_pass#,#userid#)
+	 </insert>
+	<!-- 更新一条example记录 -->
+	 <update id="updateExample" parameterClass="exampleObj">
+	 	UPDATE TB_DB_EXAMPLE 
+	 	<dynamic prepend="set">
+	 		<isNotEmpty property="example_name" prepend=",">
+	 			EXAMPLE_NAME=#example_name#
+	 		</isNotEmpty>
+	 		<isNotEmpty property="example_ip" prepend=",">
+	 			EXAMPLE_IP=#example_ip#
+	 		</isNotEmpty>
+	 		<isNotEmpty property="iscomplete" prepend=",">
+	 			ISCOMPLETE = #iscomplete#
+	 		</isNotEmpty>
+	 		<isNotEmpty property="data_file_path" prepend=",">
+	 			DATA_FILE_PATH = #data_file_path#
+	 		</isNotEmpty>
+	 		<isNotEmpty property="sys_pass" prepend=",">
+	 			SYS_PASS = #sys_pass#
+	 		</isNotEmpty>
+	 		<isNotEmpty property="userid" prepend=",">
+	 			USERID = #userid#
+	 		</isNotEmpty>
+	 	</dynamic>
+        where ID=#id#
+	 </update>
+	 <!-- 删除一条example记录 -->
+	 <delete id="deleteExample" parameterClass="exampleObj">
+	 	delete from TB_DB_EXAMPLE where ID = #id#
+	 </delete>
+	<!-- 统计example记录条数 -->
+	<select id="queryForCount" parameterClass="exampleObj" resultClass="int">
+		select count(id)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+</sqlMap>

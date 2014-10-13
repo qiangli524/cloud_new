@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ServiceKpiRelation">
+    <typeAlias alias="ServiceKpiRelationObj" type="domain.relation.ServiceKpiRelationObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+     <sql id="queryServiceKpiRelatonListBase">
+        SELECT
+			a.kpi_id,
+			a.service_name,
+			c.description
+		FROM
+			tb_hadoop_servicename_kpi_relation a left join
+			tb_hadoop_kpi_desc c on a.kpi_id = c.kpi_id
+			<dynamic prepend="where">
+				 <isNotEmpty property="service_name" prepend="and">
+		        		 a.service_name like CONCAT('%',#service_name#,'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="kpi_id" prepend="and">
+		        		 a.kpi_id like CONCAT('%',#kpi_id#,'%')
+		        </isNotEmpty>
+		        <isNotEmpty property="description" prepend="and">
+		        		c.description like CONCAT('%',#description#,'%')
+		        </isNotEmpty>
+			</dynamic>
+			 order by a.service_name
+     </sql>
+	  <select id="queryServiceKpiRelatonList" parameterClass="ServiceKpiRelationObj" resultClass="ServiceKpiRelationObj">
+	        <include refid="queryServiceKpiRelatonListBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	   <select id="queryServiceKpiRelatonListCount" parameterClass="ServiceKpiRelationObj" resultClass="int">
+	      select count(*) from (
+	        <include refid="queryServiceKpiRelatonListBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <!-- 查询服务名称 -->
+	  <select id="queryServiceNameList" parameterClass="ServiceKpiRelationObj" resultClass="ServiceKpiRelationObj">
+	  		select DISTINCT t.`NAME` service_name from tb_hadoop_resource_tree t 
+	  		<dynamic prepend="where">
+	  			<isNotEmpty prepend="and" property="nodeType">
+	  				 t.node_type = #nodeType#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="service_type">
+	  				 t.service_type = #service_type#
+	  			</isNotEmpty>
+	  		</dynamic>
+	  		ORDER BY t.`NAME`
+	  </select>
+	   <!-- 查询KPI_ID(英文指标) -->
+	  <select id="queryKpiNameList" parameterClass="ServiceKpiRelationObj" resultClass="ServiceKpiRelationObj">
+	  		select t.kpi_id,t.description from tb_hadoop_kpi_desc t 
+	  			<dynamic prepend="where">
+	  				<isNotEmpty property="kpi_id" prepend="and">
+        		 		t.kpi_id like CONCAT('%',#kpi_id#,'%')
+	        		</isNotEmpty>
+	        		<isNotEmpty property="description" prepend="and">
+	        			t.description like CONCAT('%',#description#,'%')
+	       			</isNotEmpty>
+	  			</dynamic>
+	  </select>
+	  
+	  <insert id="saveServiceNameKpiRelation" parameterClass="ServiceKpiRelationObj">
+	  		insert into tb_hadoop_servicename_kpi_relation(service_name,kpi_id) values (#service_name#,#kpi_id#)
+	  </insert>
+	  
+	   <delete id="delServiceNameKpiRelation" parameterClass="ServiceKpiRelationObj">
+		  	delete from tb_hadoop_servicename_kpi_relation 
+		  	<dynamic prepend="where">
+		  		<isNotEmpty property="service_name" prepend="and">
+		        		service_name = #service_name#
+	       		 </isNotEmpty>
+		  		<isNotEmpty property="kpi_id" prepend="and">
+		  				kpi_id = #kpi_id#
+		  		</isNotEmpty>
+		  	</dynamic>
+	  </delete>
+</sqlMap>

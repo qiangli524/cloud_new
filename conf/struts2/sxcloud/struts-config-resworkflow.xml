@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="resworkflow"
+			 extends="global_package">
+		<action name="resworkflow_*"
+				class="resWorkflowAction" method="{1}">
+			<result name="add">/sxcloud/cloud/workflow/resworkflow/addOrderInfo.jsp</result>
+			<result name="next">/sxcloud/cloud/workflow/resworkflow/resourceOrderNextDealManInfo.jsp</result>
+			<result name="wrong">/sxcloud/cloud/workflow/appworkflow/addAppDeployOrder.jsp</result>
+			<result name="back" type="redirect">resworkflow_rejectResourceOrder.do</result>
+			<result name="draft" type="redirect">resworkflow_getOrderDraftInfo.do</result>
+			<result name="draftInfo">/sxcloud/cloud/workflow/resworkflow/listOrderDraftInfo.jsp</result>
+			<result name="del" type="redirect">resworkflow_getOrderDraftInfo.do</result>
+			<result name="alter_draft" >/sxcloud/cloud/workflow/resworkflow/alterOrderInfo.jsp</result>
+			<result name="error">/sxcloud/common/error.jsp</result>
+			<result name="wait_list" type="redirect">resworkflow_listDealResourceOrder.do?FLOW_TYPE=${FLOW_TYPE}</result>
+			<result name="order_info">/sxcloud/cloud/workflow/resworkflow/listWaitOrderInfo.jsp</result>
+			<result name="list_workorder">/sxcloud/cloud/workflow/resworkflow/listWorkOrderInfo.jsp</result>
+			<result name="deal">/sxcloud/cloud/workflow/resworkflow/dealResourceDeploy.jsp</result>
+			<result name="dealWorkOrder">/sxcloud/cloud/workflow/resworkflow/dealWorkOrderResourceDeploy.jsp</result>
+			<result name="agree">/sxcloud/cloud/workflow/resworkflow/resourceOrderNextDealManInfo.jsp</result>
+			<result name="templet">/sxcloud/cloud/workflow/resworkflow/editResourceOrder.jsp</result>
+			<result name="select">/sxcloud/cloud/workflow/resworkflow/editResourceOrder.jsp</result>
+			<result name="reject">/sxcloud/cloud/workflow/resworkflow/resourceOrderNextDealManInfo.jsp</result>
+			<result name="already_list" type="redirect">resworkflow_listDealResourceOrder.do?FLOW_TYPE=${FLOW_TYPE}</result>
+			<result name="back_list" type="redirect">resworkflow_listDealResourceOrder.do?FLOW_TYPE=${FLOW_TYPE}</result>
+			<result name="myresource" >/sxcloud/cloud/workflow/resworkflow/myResourceOrder.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="InterDetail">
+	<typeAlias alias="InterfaceDetailObj"
+		type="com.sitech.basd.cloud3.domain.monitor.InterfaceDetailObj" />
+	<typeAlias alias="InterfaceInfoObj"
+		type="com.sitech.basd.cloud3.domain.monitor.InterfaceInfoObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                    limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="TB_CLOUD3_INTERFACE_DETAILColumnsNoKey">
+		to_char(START_TIME,'yyyy-mm-dd hh24:mi:ss') START_TIME,to_char(END_TIME,'yyyy-mm-dd hh24:mi:ss') END_TIME,INTERVAL,INTER_ID,ISSUCCESS,RUNLOG
+	</sql>
+	<sql id="TB_CLOUD3_INTERFACE_DETAILColumns">
+		ID,
+		<include refid="TB_CLOUD3_INTERFACE_DETAILColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_CLOUD3_INTERFACE_DETAILColumns" />
+		from TB_CLOUD3_INTERFACE_DETAIL
+		<dynamic prepend="where">
+			<isNotNull property="inter_id" prepend="and">
+				INTER_ID=#inter_id#
+			</isNotNull>
+		</dynamic>
+		order by ID asc
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj"
+		parameterClass="InterfaceDetailObj"
+		resultClass="InterfaceDetailObj">
+		<include refid="queryByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="InterfaceDetailObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	
+	<select id="queryForList" parameterClass="InterfaceInfoObj" resultClass="InterfaceInfoObj">
+		select ID,INTER_TYPE,INTER_IP,INTER_PORT,INTER_URL,INTER_STATE from TB_CLOUD3_INTERFACE_INFO
+	</select>
+</sqlMap>

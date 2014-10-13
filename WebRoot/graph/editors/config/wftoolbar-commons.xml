@@ -1,0 +1,82 @@
+
+<mxDefaultToolbar>
+    <add as="select" mode="select" icon="images/select.gif"/>
+    <add as="pan" mode="pan" icon="images/pan.gif"/>
+    <add as="connect" mode="connect" icon="images/connect.gif"><![CDATA[
+		function (editor){
+			editor.graph.setCellStyles(mxConstants.STYLE_STROKECOLOR, '#00EE00');
+			editor.defaultEdgeStyle = 'elbowEdge';
+		}
+	]]>
+    </add>
+    <add as="connect" mode="connect" icon="images/straight.gif"><![CDATA[
+		function (editor){
+            editor.defaultEdgeStyle = null;
+		}
+	]]>
+    </add>
+    <br/>
+    <hr/>
+    <add as="undo" action="undo" icon="images/undo.gif"/>
+    <add as="redo" action="redo" icon="images/redo.gif"/>
+    <br/>
+    <hr/>
+    <add as="cut" action="cut" icon="images/cut.gif"/>
+    <add as="copy" action="copy" icon="images/copy.gif"/>
+    <add as="paste" action="paste" icon="images/paste.gif"/>
+    <add as="delete" action="delete" icon="images/delete.gif"/>
+    <br/>
+    <hr/>
+    <add as="group" action="group" icon="images/group.gif"/>
+    <add as="ungroup" action="ungroup" icon="images/ungroup.gif"/>
+    <br/>
+    <hr/>
+    <add as="Swimlane" template="swimlaneV" icon="images/swimlaneV.gif"/>
+    <add as="添加标题" template="text" style="text;fontSize=18" icon="images/text.gif"/>
+    <br/>
+    <hr/>
+    <add as="虚拟机(VMware)" template="VMware" icon="images/cloud/VMware.png"/>
+    <add as="虚拟机(PowerVM)" template="PowerVM" icon="images/cloud/PowerVM.png"/>
+    <add as="X86物理机" template="X86Computer" icon="images/cloud/X86Computer.png"/>
+    <add as="小型机" template="MiniComputer" icon="images/cloud/MiniComputer.png"/>
+	<add as="维护终端" template="Terminal" icon="images/workplace.png"/>
+	<add as="集群" template="Cluster" icon="images/cloud/cluster.png"/>
+	<add as="云" template="Cloud" icon="images/cloud/cloud.png"/>
+	<!-- 
+	<add as="小型机gif" template="MiniGif" icon="images/cloud/MiniComputer.png"/>
+	<add as="集群gif" template="ClusterGif" icon="images/cloud/cluster.png"/>
+	 -->
+	<add as="Xcp宿主机" template="XenHost" icon="images/topo/Host.png"/>
+	<add as="Xcp虚拟机" template="XenVM" icon="images/cloud/X86Computer.png"/>
+	<add as="未启动Xcp虚拟机" template="XenVMOff" icon="images/cloud/X86Computer.gray.png"/>
+    <br/>
+    <hr/>
+    <add as="分布式文件存储" template="DFStorage" icon="images/cloud/DFStorage.png"/>
+    <add as="FC-SAN存储" template="FCSANStorage" icon="images/cloud/FCSANStorage.png"/>
+    <add as="非通用存储" template="NUStorage" icon="images/cloud/NUStorage.png"/>
+    <add as="存储" template="XenStorage" icon="images/topo/Storage.png"/>
+    <br/>
+    <hr/>
+    <add as="防火墙" template="Firewall" icon="images/cloud/Firewall.png"/>
+    <add as="负载均衡器" template="LoadBalancer" icon="images/cloud/LoadBalancer.png"/>
+    <add as="路由器" template="Router" icon="images/cloud/Router.png"/>
+    <add as="交换机" template="Switch" icon="images/cloud/Switch.png"/>
+    <add as="虚拟交换机" template="VSwitch" icon="images/topo/Switch.png"/>
+    <add as="数据库" template="Database" icon="images/topo/Database_16x16.png"/>
+    <br/>
+    <hr/>
+    <add as="备份资源" template="Backup" icon="images/cloud/Backup.png"/>
+    <add as="CRM" template="CRM" icon="images/system/CRM_16x16.png"/>
+    <add as="KeBao" template="KeBao" icon="images/system/KeBao_16x16.png"/>
+    <add as="EAI" template="EAI" icon="images/system/EAI_16x16.png"/>
+    <add as="ZongZi" template="ZongZi" icon="images/system/ZongZi_16x16.png"/>
+    <br/>
+    <hr/>
+    <add as="fit" action="fit" icon="images/zoom.gif"/>
+    <add as="zoomIn" action="zoomIn" icon="images/zoomin.gif"/>
+    <add as="zoomOut" action="zoomOut" icon="images/zoomout.gif"/>
+    <add as="actualSize" action="actualSize" icon="images/zoomactual.gif"/>
+    <hr/>
+    <add as="返回" action="back" icon="images/back.gif"/>
+    <add as="save" action="save" icon="images/save.gif"/>
+</mxDefaultToolbar>

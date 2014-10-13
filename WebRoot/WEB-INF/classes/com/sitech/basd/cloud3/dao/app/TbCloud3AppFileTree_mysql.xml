@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbCloud3AppFileTree">
+	<typeAlias alias="TbCloud3AppFileTreeVO"
+		type="com.sitech.basd.cloud3.domain.app.TbCloud3AppFileTreeVO" />
+	<select id="queryVOByParentPath" parameterClass="TbCloud3AppFileTreeVO" resultClass="TbCloud3AppFileTreeVO">
+		SELECT T.ID FROM TB_CLOUD3_APP_FILE_TREE T WHERE T.FILEPATH=#filePath# AND T.APPID=#appId#
+	</select>
+	<select id="queryVOListByParentID">
+		SELECT T.ID,T.FILENAME,T.FILEPATH,T.IFUPDATE,T.PARENT_ID,(CASE T.FILETYPE
+         WHEN '2' THEN
+          'TRUE'
+         WHEN '1' THEN
+          'FALSE'
+       END) ISPARENT FROM TB_CLOUD3_APP_FILE_TREE T WHERE T.PARENT_ID=#parent_id#
+	</select>
+	
+	<insert id="insertByVO" parameterClass="TbCloud3AppFileTreeVO">
+		<selectKey resultClass="String" keyProperty="id">
+			SELECT sys_guid() AS id FROM DUAL
+		</selectKey>
+		insert into TB_CLOUD3_APP_FILE_TREE(ID,FILENAME,FILEPATH,FILETYPE,PARENT_ID,APPID)
+		values(#id#,#fileName#,#filePath#,#fileType#,#parent_id#,#appId#)
+	</insert>
+</sqlMap>

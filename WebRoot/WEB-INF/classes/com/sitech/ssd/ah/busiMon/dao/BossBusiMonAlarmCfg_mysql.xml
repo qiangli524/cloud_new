@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BossBusiMonAlarmCfg">
+    
+    <typeAlias alias="tbBossBusiMonAlarmCfg" type="com.sitech.ssd.ah.busiMon.domain.TbBossBusiMonAlarmCfg"/>
+    <typeAlias alias="monitorCfgObj" type="com.sitech.ssd.ah.busiMonitor.domain.MonitorCfgObj"/>
+    
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+     <sql id="queryByObjBase">
+        SELECT
+			ID,
+			KPI_ID,
+			FLAG,
+			SUB_ENTITY,
+			DATE_FORMAT(START_TIME,'%Y-%m-%d %H:%i:%S')START_TIME,
+			DATE_FORMAT(END_TIME,'%Y-%m-%d %H:%i:%S')END_TIME,
+			SERIOUS_ALARM_EXPRESSION,
+			SERIOUS_ALARM_INFO_EXPRESSION,
+			COMMON_ALARM_EXPRESSION,
+			COMMON_ALARM_INFO_EXPRESSION,
+			STATE
+		FROM
+			tb_boss_busi_mon_alarm_cfg
+		<dynamic prepend="where">
+            <isNotEmpty property="KPI_ID" prepend="and">
+          		KPI_ID =#KPI_ID#
+            </isNotEmpty>
+            <isNotEmpty property="STATE" prepend="and">
+          		STATE =#STATE#
+            </isNotEmpty>
+        </dynamic>
+     </sql>
+     
+	 <select id="queryForListByObj" parameterClass="tbBossBusiMonAlarmCfg" resultClass="tbBossBusiMonAlarmCfg">
+	        <include refid="queryByObjBase"/>
+	         order by DB_TIME desc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        	<include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  
+	  <select id="queryByObjForCount" parameterClass="tbBossBusiMonAlarmCfg" resultClass="int">
+	      select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <insert id="insertByObj" parameterClass="tbBossBusiMonAlarmCfg">
+			INSERT INTO tb_boss_busi_mon_alarm_cfg 
+			<isNotEmpty  property="START_TIME">
+				<isNotEmpty  property="END_TIME">
+					(ID,KPI_ID,FLAG,SUB_ENTITY,START_TIME,END_TIME,SERIOUS_ALARM_EXPRESSION,SERIOUS_ALARM_INFO_EXPRESSION,COMMON_ALARM_EXPRESSION,COMMON_ALARM_INFO_EXPRESSION,STATE,DB_TIME)VALUES
+					(#ID#,#KPI_ID#,#FLAG#,#SUB_ENTITY#,STR_TO_DATE(#START_TIME#,'%Y-%m-%d %H:%i:%s'),STR_TO_DATE(#END_TIME#,'%Y-%m-%d %H:%i:%s'),#SERIOUS_ALARM_EXPRESSION#,#SERIOUS_ALARM_INFO_EXPRESSION#,#COMMON_ALARM_EXPRESSION#,#COMMON_ALARM_INFO_EXPRESSION#,#STATE#,NOW())
+				</isNotEmpty>
+			</isNotEmpty>
+			<isEmpty property="START_TIME">
+				<isEmpty property="END_TIME">
+					(ID,KPI_ID,FLAG,SUB_ENTITY,SERIOUS_ALARM_EXPRESSION,SERIOUS_ALARM_INFO_EXPRESSION,COMMON_ALARM_EXPRESSION,COMMON_ALARM_INFO_EXPRESSION,STATE,DB_TIME)VALUES
+					(#ID#,#KPI_ID#,#FLAG#,#SUB_ENTITY#,#SERIOUS_ALARM_EXPRESSION#,#SERIOUS_ALARM_INFO_EXPRESSION#,#COMMON_ALARM_EXPRESSION#,#COMMON_ALARM_INFO_EXPRESSION#,#STATE#,NOW())
+				</isEmpty>
+			</isEmpty>
+	  </insert>
+	  
+	   <update id="update" parameterClass="tbBossBusiMonAlarmCfg">
+	  		update tb_boss_busi_mon_alarm_cfg 
+	  		<isNotEmpty  property="START_TIME">
+				<isNotEmpty  property="END_TIME">
+					set KPI_ID=#KPI_ID#,FLAG=#FLAG#,SUB_ENTITY=#SUB_ENTITY#,START_TIME=STR_TO_DATE(#START_TIME#,'%Y-%m-%d %H:%i:%s'),END_TIME=STR_TO_DATE(#END_TIME#,'%Y-%m-%d %H:%i:%s'),SERIOUS_ALARM_EXPRESSION=#SERIOUS_ALARM_EXPRESSION#,SERIOUS_ALARM_INFO_EXPRESSION=#SERIOUS_ALARM_INFO_EXPRESSION#,COMMON_ALARM_EXPRESSION=#COMMON_ALARM_EXPRESSION#,COMMON_ALARM_INFO_EXPRESSION=#COMMON_ALARM_INFO_EXPRESSION#,STATE=#STATE#,DB_TIME=NOW()
+  					where ID=#ID#
+				</isNotEmpty>
+			</isNotEmpty>
+			<isEmpty property="START_TIME">
+				<isEmpty property="END_TIME">
+					set KPI_ID=#KPI_ID#,FLAG=#FLAG#,SUB_ENTITY=#SUB_ENTITY#,SERIOUS_ALARM_EXPRESSION=#SERIOUS_ALARM_EXPRESSION#,SERIOUS_ALARM_INFO_EXPRESSION=#SERIOUS_ALARM_INFO_EXPRESSION#,COMMON_ALARM_EXPRESSION=#COMMON_ALARM_EXPRESSION#,COMMON_ALARM_INFO_EXPRESSION=#COMMON_ALARM_INFO_EXPRESSION#,STATE=#STATE#,DB_TIME=NOW()
+  					where ID=#ID#
+				</isEmpty>
+			</isEmpty>
+	  </update>
+	  
+	  <select id = "queryById" parameterClass="tbBossBusiMonAlarmCfg" resultClass="tbBossBusiMonAlarmCfg">
+	  		SELECT
+				ID,
+				KPI_ID,
+				FLAG,
+				SUB_ENTITY,
+				DATE_FORMAT(START_TIME,'%Y-%m-%d %H:%i:%S')START_TIME,
+				DATE_FORMAT(END_TIME,'%Y-%m-%d %H:%i:%S')END_TIME,
+				SERIOUS_ALARM_EXPRESSION,
+				SERIOUS_ALARM_INFO_EXPRESSION,
+				COMMON_ALARM_EXPRESSION,
+				COMMON_ALARM_INFO_EXPRESSION,
+				STATE
+	  		from  tb_boss_busi_mon_alarm_cfg
+	  		<dynamic prepend="where">
+		  		<isNotNull property="ID">
+		  			<isNotEmpty property="ID" prepend="and">
+	          			ID =#ID#
+	           		 </isNotEmpty>
+		  		</isNotNull>
+		  		
+		  		<isNotNull property="KPI_ID">
+		  			<isNotEmpty property="KPI_ID" prepend="and">
+	          			KPI_ID =#KPI_ID#
+	           		 </isNotEmpty>
+		  		</isNotNull>
+		  		
+		  		<isNotNull property="FLAG">
+		  			<isNotEmpty property="FLAG" prepend="and">
+	          			FLAG =#FLAG#
+	           		 </isNotEmpty>
+		  		</isNotNull>
+		  		
+		  		<isNotNull property="SUB_ENTITY">
+		  			<isNotEmpty property="SUB_ENTITY" prepend="and">
+	          			SUB_ENTITY =#SUB_ENTITY#
+	           		 </isNotEmpty>
+		  		</isNotNull>
+		  		
+            </dynamic>
+	  </select>
+	  
+	  <delete id="delete" parameterClass="tbBossBusiMonAlarmCfg">
+			delete from tb_boss_busi_mon_alarm_cfg 
+				<dynamic prepend="where">
+					<isNotEmpty prepend="and" property="resultList">
+						ID  in 
+					    <iterate close=")" conjunction="," open="(" property="resultList">
+								#resultList[]#
+						</iterate>
+					</isNotEmpty>
+					<isEmpty prepend="and" property="resultList">
+						1!=1
+					</isEmpty>
+				</dynamic>
+	  </delete>
+	  
+	  <update id="openOrCloseBossBusiMon" parameterClass="tbBossBusiMonAlarmCfg">
+	  		update tb_boss_busi_mon_alarm_cfg 
+	  		<isNotEmpty  property="STATE">
+	  			<isNotEmpty  property="STATE">
+	  				set STATE=#STATE#
+	  			</isNotEmpty>
+	  		</isNotEmpty>
+	  		<dynamic prepend="where">
+	  			<isNotEmpty  property="ID">
+					<isNotEmpty  property="ID">
+						ID=#ID#
+					</isNotEmpty>
+				</isNotEmpty>
+	  		</dynamic>
+	  </update>
+	  
+	  <select id = "queryPathByIp" parameterClass="java.util.HashMap" resultClass="monitorCfgObj">
+	  		SELECT
+				kpiRefInfo.ID as id, 
+				kpiRefInfo.EXT_EQ_ID as extEqId,
+				kpiRefInfo.HOST_IP as hostIp,
+				kpiRefInfo.KPI_ID as kpiId,
+				kpiRefInfo.KPI_CFG_VALUE as kpiCfgValue,
+				kpiRefInfo.USER_ID as userId,
+				kpiRefInfo.BUSI_DESC as busiDesc,
+				kpiRefInfo.BUSI_TYPE as busiType,
+				kpiRefInfo.HOST_TYPE as hostType
+	  		from  tb_boss_busi_kpi_ref_info kpiRefInfo
+	  		where
+	  	   `STATUS` = 1
+			and BUSI_TYPE = '01'
+	  		
+	  		<isNotNull property="hostIp">
+	  			<isNotEmpty property="hostIp" prepend="and">
+          			HOST_IP =#hostIp#
+           		 </isNotEmpty>
+	  		</isNotNull>
+	  		
+	  		<isNotNull property="dieKpiId">
+	  			<isNotEmpty property="dieKpiId" prepend="and">
+          			KPI_ID =#dieKpiId#
+           		 </isNotEmpty>
+	  		</isNotNull>
+		  		
+	  </select>
+	  
+</sqlMap>

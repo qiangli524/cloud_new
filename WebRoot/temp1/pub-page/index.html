@@ -1,0 +1,482 @@
+﻿<!DOCTYPE HTML>
+<html>
+    
+    <head>
+        <title>
+            index
+        </title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="../pub-ui/css/skin1/all.css">
+        <link rel="stylesheet" type="text/css" href="../pub-ui/css/skin1/colorbox.css">
+        <script type="text/javascript" src="../pub-ui/js/lib/jquery-1.7.2.min.js">
+        </script>
+        <script type="text/javascript" src="../pub-ui/js/plugin/all-min.js">
+        </script>
+        <script type="text/javascript" src="../pub-ui/js/plugin/My97DatePicker/WdatePicker.js">
+        </script>
+        <script type="text/javascript" src="../pub-ui/js/plugin/highcharts.js">
+        </script>
+        <link type="text/css" href="../pub-ui/css/skin1/grid.css" rel="stylesheet">
+        <link type="text/css" href="../pub-ui/css/skin1/tabs.css" rel="stylesheet">
+        <script type="text/javascript" src="../pub-ui/js/plugin/tabs.js">
+        </script>
+        <link type="text/css" href="../pub-ui/css/skin1/panel.css" rel="stylesheet">
+        <link type="text/css" href="../pub-ui/css/skin1/button.css" rel="stylesheet">
+        <script type="text/javascript" src="../pub-ui/js/plugin/panel.js">
+        </script>
+		<script type="text/javascript" src="../pub-ui/js/plugin/progressbar.js">
+        </script>
+        <link type="text/css" href="../pub-ui/css/skin1/table.css" rel="stylesheet">
+        <script type="text/javascript" src="../pub-ui/js/plugin/table.js">
+        </script>
+        <script type="text/javascript">
+            $(function () {
+                $(".collapse").toggle(function () {
+                    $(this).addClass("expand");
+                    $(this).parents(".ued-tab").children(".tab-content").stop(true, false).hide();
+                }, function () {
+                    $(this).removeClass("expand");
+                    $(this).parents(".ued-tab").children(".tab-content").stop(true, false).show();
+                })
+            })
+        </script>
+    </head>
+    
+    <body treerel="1">
+        <div class="pdt-10 pdb-10 pdl-10 pdr-10">
+            <div class="ued-grid mgb-10">
+                <div class="ued-g50 ued-gl">
+                    <div class="ued-gbox">
+                        <div class="pdr-10 pdb-10 ued-panel-4" data-role="ued-panel">
+                            <h3>
+                                <b>资源</b>
+                                <span>
+                                    <!--<a class="tool collapse">
+                                    </a>-->
+                                    <a class="tool close">
+                                    </a>
+                                </span>
+                            </h3>
+                            <div class="ued-content pdt-5 pdb-5 pdr-5 pdl-5">
+                                <div class="ued-tab" data-role="ued-tabs" data-rel="trigger:'click',activeIndex:0">
+                                    <div class="title-bg clearfix">
+                                        <ul class="nav-tabs">
+                                            <li class="">
+                                                <a href="#list1">
+                                                    计算资源
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#chart1">
+                                                    存储资源
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#manage1">
+                                                    网络资源
+                                                </a>
+                                            </li>
+                                            <a class="tool position collapse"></a>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane" id="list1">
+                                            <div class="pd-10">
+                                                <div class="ued-grid">
+                                                    <div class="ued-g50 ued-gl">
+                                                        <div class="ued-gbox">
+                                                            <div class="pd-10" data-role="ued-chart" data-rel="series:[{type: 'pie'}]">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="ued-g50 ued-gr">
+                                                        <div class="ued-gbox">
+                                                            <div class="pd-10" data-role="ued-chart" data-rel="series:[{type: 'pie'}]">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="chart1">
+                                            <div class="pd-10">
+                                                内容区域二
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="manage1">
+                                            <div class="pd-10">
+                                                内容区域三
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pdr-10 pdb-10 ued-panel-4" data-role="ued-panel">
+                            <h3>
+                                <b>部门预算</b>
+                                <span>
+                                    <!--<a class="tool collapse">
+                                    </a>-->
+                                    <a class="tool close">
+                                    </a>
+                                </span>
+                            </h3>
+                            <div class="ued-content pdt-5 pdb-5 pdr-5 pdl-5">
+                                <div class="ued-tab" data-role="ued-tabs" data-rel="trigger:'click',activeIndex:0">
+                                    <div class="title-bg clearfix">
+                                        <ul class="nav-tabs">
+                                            <li class="">
+                                                <a href="#list1">
+                                                    计算资源
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#chart1">
+                                                    存储资源
+                                                </a>
+                                            </li>
+                                            <a class="tool position collapse"></a>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                <div class="ued-tab tab-style" data-role="ued-tabs" data-rel="trigger:'click',activeIndex:0">
+                                                    <div class="title-bg clearfix">
+                                                        <ul class="nav-tabs">
+                                                            <li class="">
+                                                                <a href="#list1">
+                                                                    CPU维度
+                                                                </a>
+                                                            </li>
+                                                            <li class="">
+                                                                <a href="#chart1">
+                                                                    内存为度
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane">
+                                                            <div class="pdt-10">
+                                                                <table cellspacing="0" cellpadding="0" border="0" width="100%" class="ued-table">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <th>
+                                                                                CLUSTER名称
+                                                                            </th>
+                                                                            <th>
+                                                                                CPU使用率
+                                                                            </th>
+                                                                            <th>
+                                                                                内存使用率
+                                                                            </th>
+                                                                            <th>
+                                                                                存储资源使用率
+                                                                            </th>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                JSYD_Cluster_XenServer
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                JSYD_Cluster_XenServer
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                JSYD_Cluster_XenServer
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                            <td>
+                                                                                进度条
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane">
+                                                            <div class="pd-10">
+                                                                内容区域二
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane">
+                                                            <div class="pd-10">
+                                                                <br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                内容区域二
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                内容区域三
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ued-g50 ued-gr">
+                    <div class="ued-gbox">
+                        <div class="pdr-5 pdb-10 ued-panel-4" data-role="ued-panel">
+                            <h3>
+                                <b>资源总量占用率TOP5 cluster</b>
+                                <span>
+                                    <!--<a class="tool collapse">
+                                    </a>-->
+                                    <a class="tool close">
+                                    </a>
+                                </span>
+                            </h3>
+                            <div class="ued-content pdt-5 pdb-5 pdr-5 pdl-5">
+                                <div class="ued-tab" data-role="ued-tabs" data-rel="trigger:'click',activeIndex:0">
+                                    <div class="title-bg clearfix">
+                                        <ul class="nav-tabs">
+                                            <li class="">
+                                                <a href="#list1">
+                                                    计算资源
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#chart1">
+                                                    存储资源
+                                                </a>
+                                            </li>
+                                            <a class="tool position collapse"></a>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                <div class="ued-tab tab-style" data-role="ued-tabs" data-rel="trigger:'click',activeIndex:0">
+                                                    <div class="title-bg clearfix">
+                                                        <ul class="nav-tabs">
+                                                            <li class="">
+                                                                <a href="#list1">
+                                                                    CPU维度
+                                                                </a>
+                                                            </li>
+                                                            <li class="">
+                                                                <a href="#chart1">
+                                                                    内存维度
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane" id="list1">
+                                                            <div class="pdt-10">
+                                                                <table cellspacing="0" cellpadding="0" border="0" width="100%" class="ued-table">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <th>
+                                                                                CLUSTER名称
+                                                                            </th>
+                                                                            <th>
+                                                                                CPU使用率
+                                                                            </th>
+                                                                            <th>
+                                                                                内存使用率
+                                                                            </th>
+                                                                            <th>
+                                                                                存储资源使用率
+                                                                            </th>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                JSYD_Cluster_XenServer
+                                                                            </td>
+                                                                            <td>
+                                                                             
+            <span class="progressBar" data-role="ued-progressbar" data-rel="val:20"></span>
+                                                                            </td>
+                                                                            <td>
+            <span class="progressBar" data-role="ued-progressbar" data-rel="val:30"></span>
+                                                                            </td>
+                                                                            <td>
+            <span class="progressBar" data-role="ued-progressbar" data-rel="val:40"></span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                JSYD_Cluster_XenServer
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="progressBar" data-role="ued-progressbar" data-rel="val:50"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="progressBar" data-role="ued-progressbar" data-rel="val:60"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="progressBar" data-role="ued-progressbar" data-rel="val:70"></span>
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td>
+                                                                                JSYD_Cluster_XenServer
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="progressBar" data-role="ued-progressbar" data-rel="val:80"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="progressBar" data-role="ued-progressbar" data-rel="val:90"></span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="progressBar" data-role="ued-progressbar" data-rel="val:100"></span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane" id="chart1">
+                                                            <div class="pd-10">
+                                                                内容区域二
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane" id="manage1">
+                                                            <div class="pd-10">
+                                                                <br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                内容区域二
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                内容区域三
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pdr-5 pdb-10 ued-panel-4" data-role="ued-panel">
+                            <h3>
+                                <b>资源总量占用率TOP10业务</b>
+                                <span>
+                                    <!--<a class="tool collapse">
+                                    </a>-->
+                                    <a class="tool close">
+                                    </a>
+                                </span>
+                            </h3>
+                            <div class="ued-content pdt-5 pdb-5 pdr-5 pdl-5">
+                                <div class="ued-tab" data-role="ued-tabs" data-rel="trigger:'click',activeIndex:0">
+                                    <div class="title-bg clearfix">
+                                        <ul class="nav-tabs">
+                                            <li class="">
+                                                <a href="#list1">
+                                                    计算资源
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="#chart1">
+                                                    存储资源
+                                                </a>
+                                            </li>
+                                            <a class="tool position collapse"></a>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content">
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                <div class="ued-tab tab-style" data-role="ued-tabs" data-rel="trigger:'click',activeIndex:0">
+                                                    <div class="title-bg clearfix">
+                                                        <ul class="nav-tabs">
+                                                            <li class="">
+                                                                <a href="#list1">
+                                                                    虚拟机维度
+                                                                </a>
+                                                            </li>
+                                                            <li class="">
+                                                                <a href="#chart1">
+                                                                    物理机维度
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="tab-content">
+                                                        <div class="tab-pane">
+                                                            <div class="pd-10">
+                                                                <div class="pd-10" data-role="ued-chart" data-rel="series:[{type: 'column'},{type: 'column'}]">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane">
+                                                            <div class="pd-10">
+                                                                内容区域二
+                                                            </div>
+                                                        </div>
+                                                        <div class="tab-pane">
+                                                            <div class="pd-10">
+                                                                <br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                内容区域二
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane">
+                                            <div class="pd-10">
+                                                内容区域三
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

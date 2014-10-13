@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="fusioncharts"
+			 extends="global_package">
+		<!-- 实体TopN -->
+		<action name="entityTopN_*" class="entityTopNFusionchartsAction" method="{1}">
+			<result name="top_tabs">/reportcharts/topn/tabs.jsp</result>
+			<result name="queryhosttopn" type="json">
+				<param name="root">fusionChartsString</param>
+			</result>
+			<result name="hosttopn">/reportcharts/topn/topn-host-charts.jsp</result>
+			<result name="vmtopn">/reportcharts/topn/topn-vm-charts.jsp</result>
+		</action>
+	</package>
+</struts>

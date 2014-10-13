@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HostPool">
+
+	<typeAlias alias="HostPoolObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.resource.TbCloud2HostPoolObj" />
+
+	<sql id="paginationStart">
+		<![CDATA[
+             select * from (select virtual_table.*, rownum rownum_ from (
+        ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+	<select id="queryHostObj" parameterClass="HostPoolObj"
+		resultClass="HostPoolObj"> 
+	select ID ,NAME ,POOL_DESC 
+		from TB_CLOUD_HOST_POOL
+		where ID=#ID#
+	</select>
+	<delete id="deleteHostForPool" parameterClass="HostPoolObj">
+	delete TB_CLOUD_HOST_POOL where ID=#ID#
+	</delete>
+	<update id="updateHostForPool" parameterClass="HostPoolObj">
+	update TB_CLOUD_HOST_POOL set NAME=#NAME#,POOL_DESC=#POOL_DESC# where ID=#ID#
+	</update>
+	<insert id="insertHostForPool" parameterClass="HostPoolObj">
+	insert into TB_CLOUD_HOST_POOL (ID,NAME,POOL_DESC,INS_DATE)values(#ID#,#NAME#,#POOL_DESC#,sysdate)
+	</insert>
+	<sql id="queryHostForPool">
+		select pl.ID ,pl.NAME ,to_char(pl.INS_DATE,'yyyy-mm-dd hh24:mi:ss') INS_DATE,
+    	pl.POOL_DESC,count(inf.POOL_ID) shu from TB_CLOUD_HOST_POOL pl 
+    	left join TB_HOST_POOL_RELATION inf on pl.id=inf.POOL_ID AND EXISTS (SELECT * FROM TB_CLOUD2_HOST_INFO B
+		WHERE inf.host_id = b.id) 
+    	<dynamic prepend="where">
+			<isNotEmpty property="NAME" prepend="and">
+				pl.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="POOL_TYPE" prepend="and">
+				pl.POOL_TYPE like '%'||#POOL_TYPE#||'%'
+			</isNotEmpty>
+		</dynamic>
+		group by pl.ID,pl.NAME,INS_DATE,POOL_DESC
+         order by INS_DATE desc
+	</sql>
+	<select id="queryHostForPool" parameterClass="HostPoolObj"
+		resultClass="HostPoolObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryHostForPool" /> 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryHostPoolForCount" parameterClass="HostPoolObj"
+		resultClass="int">
+		select count(1) from (
+		<include refid="queryHostForPool" /> 
+		) virtual_table
+	</select>
+	<!--end-->
+	<sql id="queryHostForPoolName">
+		select inf.eq_name,to_char(inf.INS_DATE,'yyyy-mm-dd hh24:mi:ss') INS_DATE,inf.eq_ip,inf.EQ_HOSTNAME,inf.VLANIP,inf.cpu_desc from TB_CLOUD2_HOST_INFO  inf 
+    	where inf.HOST_POOL_ID =#HOST_POOL_ID#
+	</sql>
+		<select id="queryHostForPoolName" parameterClass="HostPoolObj"
+		resultClass="HostPoolObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryHostForPoolName" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryHostPoolNameCount" parameterClass="HostPoolObj"
+		resultClass="int">
+		select count(1) from (
+		<include refid="queryHostForPoolName" />
+		) virtual_table
+	</select>
+	<delete id="deleteHostRelation" parameterClass="HostPoolObj">
+		delete from TB_HOST_POOL_RELATION where pool_id = #ID# 
+	</delete>
+</sqlMap>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="healthy" extends="global_package">
+		<action name="healthy_*"
+				class="healthyManagerAction" method="{1}">
+			<result name="list">/yicloud/healthy/listHealthyTree.jsp</result>
+			<result name="HealthyTabs">/yicloud/healthy/healthytabs.jsp</result>
+			<result name="HealhtyReport">/yicloud/healthy/HealhtyReport.jsp</result>
+			<result name="WarnInfo">/yicloud/healthy/WarnInfo.jsp</result>
+			<result name="his" type="redirect">healthy_getWarnInfo.do</result>
+		</action>
+ </package>
+
+</struts>

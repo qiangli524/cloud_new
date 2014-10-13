@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="kvm" extends="global_package">
+		<action name="yvm_*"
+				class="kvmManAction" method="{1}">
+			<result name="lookupimg">/yicloud/kvm/listImageInfo.jsp</result>
+			<result name="checkkvm">/yicloud/kvm/listVirtualInfo.jsp</result>
+			<result name="add_host">/yicloud/kvm/addHost.jsp</result>
+			<result name="save_host" type="redirect">yvm_addHost.do?ID=${ID}</result>
+			<result name="listmac">/yicloud/device/listDevice.jsp</result>
+			<result name="listhealth">/yicloud/vmman/listHealthState.jsp</result>
+			<result name="success">/ajax/ajax.jsp</result>
+		</action>
+ </package>
+
+</struts>

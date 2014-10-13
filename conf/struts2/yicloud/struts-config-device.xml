@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="device" extends="global_package">
+		<action name="deviceinfo_*" 
+		        class="devicetAction" method="{1}">
+		    <result name="success">/yicloud/device/listDevice.jsp</result>
+			<result name="add">/yicloud/device/addDevice.jsp</result>
+			<result name="modify">/yicloud/device/editDevice.jsp</result>
+			<result name="redirect" type="redirect">deviceinfo_listDevice.do</result>
+			<result name="host">/yicloud/device/editHost.jsp</result>
+			<result name="switch">/yicloud/device/editTrans.jsp</result>
+			<result name="raid">/yicloud/device/editRaid.jsp</result>
+		</action>
+		
+		<!-- 磁盘 -->
+		<action name="diskinfo_*" 
+		        class="diskInfoAction" method="{1}">
+		    <result name="list">/yicloud/datastore/disk/listDiskInfo.jsp</result>
+			<result name="add">/yicloud/datastore/disk/editDiskInfo.jsp</result>
+			<result name="mod">/yicloud/datastore/disk/editDiskInfo.jsp</result>
+		</action>
+		
+		<!-- 磁盘组 -->
+		<action name="diskgroup_*" 
+		        class="diskGroupAction" method="{1}">
+		    <result name="list">/yicloud/datastore/diskgroup/listDiskGroup.jsp</result>
+			<result name="add">/yicloud/datastore/diskgroup/editDiskGroup.jsp</result>
+			<result name="mod">/yicloud/datastore/diskgroup/editDiskGroup.jsp</result>
+			<result name="addDisk">/yicloud/datastore/diskgroup/listDiskInfo.jsp</result>
+		</action>
+		
+		<!-- lun块 -->
+		<action name="lun_*" 
+		        class="lunAction" method="{1}">
+		    <result name="list">/yicloud/datastore/lun/listLun.jsp</result>
+			<result name="add">/yicloud/datastore/lun/editLun.jsp</result>
+			<result name="mod">/yicloud/datastore/lun/editLun.jsp</result>
+		</action>
+ </package>
+
+</struts>

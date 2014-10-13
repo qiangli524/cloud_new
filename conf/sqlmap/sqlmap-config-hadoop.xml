@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMapConfig
+    PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings useStatementNamespaces="true" cacheModelsEnabled="true"
+		enhancementEnabled="true" lazyLoadingEnabled="true"
+		errorTracingEnabled="false" maxRequests="32" maxSessions="10"
+		maxTransactions="5" />
+	<!-- hadoop集群操作 -->
+	<sqlMap resource="dao/cluster/HadoopCluster_mysql.xml"/>
+	<sqlMap resource="dao/tree/HadoopTree_mysql.xml"/>
+	<sqlMap resource="dao/monitor/HadoopMonitor_mysql.xml"/>
+	<sqlMap resource="dao/host/HadoopHostInfo_mysql.xml"/>
+	<sqlMap resource="dao/relation/ServiceKpiRelation_mysql.xml"/>
+	<sqlMap resource="dao/users/HadoopUsers_mysql.xml"/>
+	<sqlMap resource="dao/service/HadoopServiceNode_mysql.xml"/>
+	<sqlMap resource="dao/mapreduce/application/HadoopApplication_mysql.xml"/>
+	<sqlMap resource="dao/mapreduce/job/HadoopJob_mysql.xml"/>
+	<sqlMap resource="dao/mapreduce/task/HadoopTask_mysql.xml"/>
+	<sqlMap resource="dao/kpi/HadoopKpi_mysql.xml"/>
+	<sqlMap resource="dao/datanode/HadoopDataNode_mysql.xml"/>
+	<sqlMap resource="dao/metries/HadoopMetries_mysql.xml"/>
+	<sqlMap resource="dao/jvm/HadoopJvm_mysql.xml"/>
+	<sqlMap resource="dao/queue/HadoopQueue_mysql.xml"/>
+	<sqlMap resource="dao/users/HadoopUserGroup_mysql.xml"/> 
+	<sqlMap resource="dao/users/HadoopUserServiceRelation_mysql.xml"/> 
+	<sqlMap resource="dao/users/HadoopUserDealTask_mysql.xml"/> 
+	<sqlMap resource="dao/users/HadoopGroupMember_mysql.xml"/> 
+	<sqlMap resource="dao/users/HadoopAuthority_mysql.xml"/> 
+	<sqlMap resource="dao/queue/HadoopQueueRelation_mysql.xml"/> 
+</sqlMapConfig>

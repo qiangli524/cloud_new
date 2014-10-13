@@ -1,0 +1,284 @@
+/*
+ * @Filename: panel.css
+ * @Description: panel style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: yangpl
+ * @skin:{
+        "ued-panel":"#279fe9",
+        "ued-panel-1":"#4abf03",
+        "ued-panel-2":"#fb8b09",
+		"ued-panel-3":"#f8482b",
+		"ued-panel-4":"#90cffb",
+		"ued-panel-5":"#d2d2d2"
+    }@skin
+	
+*/
+/*默认形态*/
+.ued-panel {
+	background:#fff
+}
+.ued-panel h3 {
+	border-radius: 3px 3px 0 0;
+	padding-left: 10px;
+	color:#fff;
+	line-height:24px;
+	margin:0;
+	background:#279fe9;
+	font-size:12px;
+	border: 1px solid #279fe9;
+	border-bottom:2px solid #279fe9;
+}
+.ued-panel h3 b {
+	width:5px;
+	height:16px;
+	background:#6ac314;
+	display:inline-block;
+	margin:0 10px 0 0;
+}
+.ued-content {
+	border: #d7d7d7 solid 1px;
+	border-top:none;
+	border-radius:0 0 3px 3px ;
+}
+
+
+
+
+
+/*面板皮肤颜色1*/
+.ued-panel-1 {
+	background:#fff
+}
+.ued-panel-1 h3 {
+	border-radius: 3px 3px 0 0;
+	padding-left: 10px;
+	color:#fff;
+	line-height:24px;
+	margin:0;
+	background:#4abf03;
+	font-size:12px;
+	border: 1px solid #4abf03;
+	border-bottom:2px solid #4abf03;
+}
+.ued-panel-1 h3 b {
+	width:5px;
+	height:16px;
+	background:#6ac314;
+	display:inline-block;
+	margin:0 10px 0 0;
+}
+.ued-content-1 {
+	border: #d7d7d7 solid 1px;
+	border-top:none;
+	border-radius:0 0 3px 3px ;
+}
+
+/*面板皮肤颜色2*/
+.ued-panel-2 {
+	background:#fff
+}
+.ued-panel-2 h3 {
+	border-radius: 3px 3px 0 0;
+	padding-left: 10px;
+	color:#fff;
+	line-height:24px;
+	margin:0;
+	background:#fb8b09;
+	font-size:12px;
+	border: 1px solid #fb8b09;
+	border-bottom:2px solid #fb8b09;
+}
+.ued-panel-2 h3 b {
+	width:5px;
+	height:16px;
+	background:#6ac314;
+	display:inline-block;
+	margin:0 10px 0 0;
+}
+.ued-content-2{
+	border: #d7d7d7 solid 1px;
+	border-top:none;
+	border-radius:0 0 3px 3px ;
+}
+
+
+/*面板皮肤颜色3*/
+.ued-panel-3 {
+	background:#fff
+}
+.ued-panel-3 h3 {
+	border-radius: 3px 3px 0 0;
+	padding-left: 10px;
+	color:#fff;
+	line-height:24px;
+	margin:0;
+	background:#f8482b;
+	font-size:12px;
+	border: 1px solid #f8482b;
+	border-bottom:2px solid #f8482b;
+}
+.ued-panel-3 h3 b {
+	width:5px;
+	height:16px;
+	background:#6ac314;
+	display:inline-block;
+	margin:0 10px 0 0;
+}
+.ued-content-3 {
+	border: #d7d7d7 solid 1px;
+	border-top:none;
+	border-radius:0 0 3px 3px ;
+}
+
+
+/*面板皮肤颜色4*/
+.ued-panel-4 {
+	background:#fff;
+	position:relative
+}
+.ued-panel-4 h3 {
+	color:#FFF;
+	line-height:24px;
+	margin:0;
+	background:url(../../images/barbg.png) left top no-repeat;
+	font-size:12px;
+	padding-left:10px
+}
+.ued-panel-4 h3 b{
+	background:url(../../images/barbg.png) right -25px no-repeat;
+	display:block;
+	height:24px;
+}
+.ued-content-4 {
+	border: #d7d7d7 solid 1px;
+	border-top:none;
+	border-radius:0 0 3px 3px ;
+}
+/*面板皮肤颜色5*/
+.ued-panel-5 {
+	background:#fff
+}
+.ued-panel-5 h3 {
+	border-radius: 3px 3px 0 0;
+	padding-left: 10px;
+	color:#666;
+	line-height:24px;
+	margin:0;
+	background:#f3f3f3;
+	font-size:12px;
+	border: 1px solid #d7d7d7;
+}
+.ued-panel-5 h3 b {
+	width:5px;
+	height:16px;
+	background:#6ac314;
+	display:inline-block;
+	margin:0 10px 0 0;
+}
+.ued-content-5 {
+	border: #d7d7d7 solid 1px;
+	border-top:none;
+	border-radius:0 0 3px 3px ;
+}
+
+/*面板工具*/
+.ued-panel h3 span, .ued-panel-1 h3 span, .ued-panel-2 h3 span, .ued-panel-3 h3 span, .ued-panel-4 h3 span, .ued-panel-5 h3 span {
+	*margin-top:-18px;
+	position:absolute;
+	top:0; right:10px
+}
+.tool {
+	display: inline-block;
+	width:9px;
+	height:10px;
+	margin-right:10px;
+	overflow: hidden;
+}
+.tool.min {
+	background:url("images/panel-tool2.gif") 0 0 repeat-x;
+}
+.tool.max {
+	background:url("images/panel-tool2.gif") -9px 0 repeat-x;
+}
+.tool.restore {
+	background:url("images/panel-tool2.gif") -18px 0 repeat-x;
+}
+.position{ position:absolute; right:5px; bottom:0}
+.tool.collapse {
+	background:url("images/col-bg.gif") 0 0 repeat-x;
+	width:29px;
+	height:23px;
+}
+.tool.expand {
+	background:url("images/col-bg.gif") -30px 0 repeat-x;
+	width:29px;
+	height:23px
+}
+.tool.close {
+	background:url("images/panel-tool2.gif") -45px 3px no-repeat;
+	width:18px;
+	height:21px;
+}
+.tool .min:hover {
+	background:url("images/panel-tool2.gif") 0 -10px repeat-x;
+}
+.tool.max:hover {
+	background:url("images/panel-tool2.gif") -9px -10px repeat-x;
+}
+.tool.restore:hover {
+	background:url("images/panel-tool2.gif") -18px -10px repeat-x;
+}
+
+
+.ued-panel-footer {
+	border-top: 1px dashed #d7d7d7;
+	text-align:center
+}
+
+
+/*形态2*/
+.panel-style h3 {
+	border-radius: 0;
+	color:#666;
+	background:#fff;
+	border-top:1px solid #d7d7d7;
+	border-left:1px solid #d7d7d7;
+	border-right:1px solid #d7d7d7;
+}
+.panel-style .tool.min {
+	background:url("images/panel-tool.gif") 0 0 repeat-x;
+}
+.panel-style .tool.max {
+	background:url("images/panel-tool.gif") -9px 0 repeat-x;
+}
+.panel-style .tool.restore {
+	background:url("images/panel-tool.gif") -18px 0 repeat-x;
+}
+.panel-style .tool.expand {
+	background:url("images/panel-tool.gif") -27px 0 repeat-x;
+}
+.panel-style .tool.collapse {
+	background:url("images/panel-tool.gif") -36px 0 repeat-x;
+}
+.panel-style .tool.close {
+	background:url("images/panel-tool.gif") -45px 0 repeat-x;
+}
+.panel-style .tool .min:hover {
+	background:url("images/panel-tool.gif") 0 -10px repeat-x;
+}
+.panel-style .tool.max:hover {
+	background:url("images/panel-tool.gif") -9px -10px repeat-x;
+}
+.panel-style .tool.restore:hover {
+	background:url("images/panel-tool.gif") -18px -10px repeat-x;
+}
+.panel-style .tool.expand:hover {
+	background:url("images/panel-tool.gif") -27px -10px repeat-x;
+}
+.panel-style .tool.collapse:hover {
+	background:url("images/panel-tool.gif") -36px -10px repeat-x;
+}
+.panel-style .tool.close:hover {
+	background:url("images/panel-tool.gif") -45px -10px repeat-x;
+}

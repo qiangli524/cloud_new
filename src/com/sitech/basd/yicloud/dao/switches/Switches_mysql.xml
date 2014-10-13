@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="SwitchInfo">
+	<typeAlias alias="SwitchObj"
+		type="com.sitech.basd.yicloud.domain.switches.SwitchObj" />
+	<sql id="queryByObjBase">
+		<![CDATA[
+			select ID,DEVICE_ID, NAME,TYPE,LOCATION,PORT_100M_NUMS,PORT_100M_USABLE,
+			PORT_RJ45_NUMS,PORT_RJ45_USABLE,PORT_FIBER_NUMS,PORT_FIBER_USABLE,
+			PORT_ATM_NUMS,PORT_ATM_USABLE,PORT_EI_NUMS,PORT_EI_USABLE,IP_ADDR
+			from TB_YICLOUD_DEVICE_SWITCH where 1=1
+		]]>
+		<isNotEqual property="DEVICE_ID" compareValue="0" prepend="and">
+			DEVICE_ID = #DEVICE_ID#
+		</isNotEqual>
+		<isNotEmpty property="NAME" prepend="and">
+			NAME like CONCAT('%',#NAME#,'%')
+		</isNotEmpty>
+		order by ID
+
+	</sql>
+
+	<select id="queryForListByObj" parameterClass="SwitchObj"
+		resultClass="SwitchObj">
+		<include refid="queryByObjBase" />
+	</select>
+
+	<select id="queryByObjForCount" parameterClass="SwitchObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<!-- 添加设备主机 -->
+	<insert id="insertByObj" parameterClass="SwitchObj">
+	insert into
+		TB_YICLOUD_DEVICE_SWITCH(DEVICE_ID, NAME,TYPE,LOCATION,PORT_100M_NUMS,PORT_100M_USABLE,
+			PORT_RJ45_NUMS,PORT_RJ45_USABLE,PORT_FIBER_NUMS,PORT_FIBER_USABLE,
+			PORT_ATM_NUMS,PORT_ATM_USABLE,PORT_EI_NUMS,PORT_EI_USABLE,IP_ADDR)
+		values(#DEVICE_ID#,#NAME#,#TYPE#,#LOCATION#,#PORT_100M_NUMS#,#PORT_100M_USABLE#,
+			#PORT_RJ45_NUMS#,#PORT_RJ45_USABLE#,#PORT_FIBER_NUMS#,#PORT_FIBER_USABLE#,
+			#PORT_ATM_NUMS#,#PORT_ATM_USABLE#,#PORT_EI_NUMS#,#PORT_EI_USABLE#,#IP_ADDR#)
+	</insert>
+	<!-- 修改设备主机 -->
+	<update id="updateByObj" parameterClass="SwitchObj">
+		update TB_YICLOUD_DEVICE_SWITCH set
+		NAME=#NAME#,TYPE=#TYPE#,LOCATION=#LOCATION#,PORT_100M_NUMS=#PORT_100M_NUMS#,
+		PORT_100M_USABLE=#PORT_100M_USABLE#,PORT_RJ45_NUMS=#PORT_RJ45_NUMS#,PORT_RJ45_USABLE=#PORT_RJ45_USABLE#,
+		PORT_FIBER_NUMS=#PORT_FIBER_NUMS#,PORT_FIBER_USABLE=#PORT_FIBER_USABLE#,PORT_ATM_NUMS=#PORT_ATM_NUMS#,
+		PORT_ATM_USABLE=#PORT_ATM_USABLE#,PORT_EI_NUMS=#PORT_EI_NUMS#,PORT_EI_USABLE=#PORT_EI_USABLE#,IP_ADDR=#IP_ADDR#
+		where DEVICE_ID=#DEVICE_ID#
+	</update>
+	<!-- 根据ID删除设备主机 -->
+	<delete id="deleteByObj" parameterClass="SwitchObj">
+		delete from TB_YICLOUD_DEVICE_SWITCH where DEVICE_ID=#DEVICE_ID#
+	</delete>
+	
+	<select id="getIdSequence" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		select max(ID)+1 from TB_YICLOUD_DEVICE_SWITCH
+	</select>
+</sqlMap>

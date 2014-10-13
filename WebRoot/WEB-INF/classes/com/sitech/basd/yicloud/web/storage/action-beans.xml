@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="tbYicloudAppStorageAction" class="com.sitech.basd.yicloud.web.storage.action.TbYicloudAppStorageAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="tbYicloudAppStorageService">
+			<ref bean="tbYicloudAppStorageService" />
+		</property>
+		<property name="tbYicloudBusinessAppService">
+			<ref bean="tbYicloudBusinessAppService" />
+		</property>
+		<property name="deviceService">
+			<ref bean="deviceService" />
+		</property>
+	</bean>
+
+</beans>

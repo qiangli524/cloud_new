@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbCloud2MonitorAlarm">
+	<typeAlias alias="TbCloud2MonitorAlarmObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.alarm.TbCloud2MonitorAlarmObj" />
+		<typeAlias alias="MonitorAlarmObj" type="com.sitech.basd.sxcloud.cloud.domain.monitor.MonitorAlarmObj"/>
+	<!--  插入告警  -->
+	<insert id="insertAlarmByObj"
+		parameterClass="TbCloud2MonitorAlarmObj">
+		insert into
+		TB_CLOUD2_MONITOR_ALARM(EVENT_ID,EVENT_NUM,EVENT_TYPE,EVENT_LEVEL,TITILE,
+		CONTENT,ALARM_TIME,INS_DATE,EVENT_STAT,EVENT_LOCATION)
+		values(#EVENT_ID#,#EVENT_NUM#,
+		#EVENT_TYPE#,#EVENT_LEVEL#,#TITILE#,#CONTENT#,to_date(#ALARM_TIME#,'yyyy-MM-dd hh24-mi-ss'),sysdate, #EVENT_STAT#,#EVENT_LOCATION#)
+	</insert>
+	<sql id="ColumnsNoKey">
+		EVENT_ID,EVENT_NUM,EVENT_TYPE,EVENT_LEVEL,TITILE,
+		CONTENT,ALARM_TIME,INS_DATE,EVENT_STAT,EVENT_LOCATION,EVENT_COUNT
+	</sql>
+	<sql id="Columns">
+		<include refid="ColumnsNoKey" />
+	</sql>
+	<!--  查询告警数据(唯一确定)  -->
+	<select id="queryAlarmDataByObj"
+		parameterClass="TbCloud2MonitorAlarmObj"
+		resultClass="TbCloud2MonitorAlarmObj">
+		select
+		<include refid="Columns" />
+		from TB_CLOUD2_MONITOR_ALARM where EVENT_TYPE=#EVENT_TYPE#
+	    and EVENT_LEVEL=#EVENT_LEVEL# and TITILE=#TITILE#
+		and EVENT_LOCATION=#EVENT_LOCATION#
+	</select>
+	<!--  更新告警数据  -->
+	<update id="updateAlarmDataTime" parameterClass="TbCloud2MonitorAlarmObj">
+		update TB_CLOUD2_MONITOR_ALARM set ALARM_TIME=to_date(#ALARM_TIME#,'yyyy-MM-dd
+		hh24:mi:ss'),EVENT_COUNT=#EVENT_COUNT# where EVENT_ID=#EVENT_ID#
+	</update>
+	<!--  更新告警状态  -->
+	<update id="updateAlarmDataStat" parameterClass="TbCloud2MonitorAlarmObj">
+		update TB_CLOUD2_MONITOR_ALARM set EVENT_STAT=#EVENT_STAT# where EVENT_ID=#EVENT_ID#
+	</update>
+	<!--  查询从当前日期起一个月外的数据  -->
+	<select id="queryAlarmDataOutOneMonth"
+		resultClass="TbCloud2MonitorAlarmObj"
+		parameterClass="TbCloud2MonitorAlarmObj">
+		select
+		<include refid="Columns" />
+		from TB_CLOUD2_MONITOR_ALARM where INS_DATE >= sysdate -
+		interval '31' day and INS_DATE
+		<![CDATA[ <= ]]>
+		sysdate
+	</select>
+	<!--  删除无用数据  -->
+	<delete id="deleteAlarmDataByObj"
+		parameterClass="TbCloud2MonitorAlarmObj">
+		delete from TB_CLOUD2_MONITOR_ALARM where EVENT_ID=#EVENT_ID#
+	</delete>
+	
+	<!-- 查询不同级别告警记录数 -->
+	<select id="getAlarmsNum" parameterClass="MonitorAlarmObj" resultClass="java.lang.Integer">
+		select count(t.event_level)
+		from tb_cloud2_monitor_alarm t 
+		<dynamic prepend="where">
+	 		<isNotEmpty property="filterlevel" prepend="and">
+               	EVENT_LEVEL in $filterlevel$
+             </isNotEmpty>
+             <isNotEmpty property="filtertype" prepend="and">
+               	EVENT_TYPE in $filtertype$
+             </isNotEmpty>
+	 		<isNotEmpty property="EVENT_ID" prepend="and">
+               	EVENT_ID =#EVENT_ID#
+             </isNotEmpty>
+            <isNotEmpty property="EVENT_TYPE" prepend="and">
+            	EVENT_TYPE =#EVENT_TYPE#
+            </isNotEmpty>
+            <isNotEmpty property="EVENT_LOCATION" prepend="and">
+               	EVENT_LOCATION like '%'||#EVENT_LOCATION#||'%'
+            </isNotEmpty>
+            <isNotEmpty property="EVENT_LEVEL" prepend="and">
+               	EVENT_LEVEL =#EVENT_LEVEL#
+            </isNotEmpty>
+            <isNotEmpty property="EVENT_STAT" prepend="and">
+              	EVENT_STAT =#EVENT_STAT#
+            </isNotEmpty>
+            <isNotEmpty property="TITILE" prepend="and">
+            	TITILE like '%'||#TITILE#||'%'
+            </isNotEmpty>
+            <isNotEmpty property="CONTENT" prepend="and">
+            	CONTENT like '%'||#CONTENT#||'%'
+            </isNotEmpty>
+            <isNotEmpty property="ALARM_TIME" prepend="and">
+            	<![CDATA[
+            		DATEDIFF(ALARM_TIME,#ALARM_TIME#) >= 0
+            	]]>
+            </isNotEmpty>
+            <isNotEmpty property="INS_DATE" prepend="and">
+            <![CDATA[
+            		DATEDIFF(#INS_DATE#,INS_DATE) >= 0
+            	]]>
+            </isNotEmpty>
+        </dynamic>  
+		group by t.event_level 
+		order by t.event_level asc
+	</select>
+</sqlMap>

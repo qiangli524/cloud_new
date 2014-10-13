@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="cluster">
+	<typeAlias alias="ClusterObj"
+		type="com.sitech.basd.yicloud.domain.cluster.ClusterObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryGroupListBase">
+		select a.GROUP_ID,a.TYPE,a.NAME group_name,a.CLUSTER_CODE c_uuid,b.NAME  from TB_CLUSTER_DRS_GROUP a, 
+		TB_CLOUD_ENTITY_TREE b where a.CLUSTER_CODE=b.ENTITY_ID 
+			<isNotNull  prepend="and" property="name">
+				a.NAME = #name#
+			</isNotNull>
+			<isNotNull prepend="and" property="group_id">
+				a.GROUP_ID = #group_id#
+			</isNotNull>
+		order by a.TYPE
+	</sql>
+	<insert id="insertByObj" parameterClass="ClusterObj">
+		<selectKey resultClass="int" keyProperty="id">
+			select ID_CLUSTER_INFO.NEXTVAL AS id FROM dual
+		</selectKey>
+		insert into
+		TB_CLOUD_CLUSTER_INFO(ID,NAME,TYPE,HASTATE,DRSSTATE,C_UUID)
+		values(#id#,#name#,#type#,#hastate#,#drsstate#,#c_uuid#)
+	</insert>
+	<select id="queryListByObj" parameterClass="ClusterObj" resultClass="ClusterObj">
+		select id,name,type,hastate,drsstate,c_uuid from TB_CLOUD_CLUSTER_INFO
+		<dynamic prepend="where">
+			<isNotEqual compareValue="0" prepend="and" property="id">
+				id = #id#
+			</isNotEqual>
+			<isNotNull prepend="and" property="c_uuid">
+				C_UUID = #c_uuid#
+			</isNotNull>
+		</dynamic>
+	</select>
+	<update id="updateByObj" parameterClass="ClusterObj">
+		update TB_CLOUD_CLUSTER_INFO set hastate=#hastate#,drsstate=#drsstate# 
+		<dynamic prepend="where">
+			<isNotEqual compareValue="0" prepend="and" property="id">
+				id = #id#
+			</isNotEqual>
+			<isNotNull prepend="and" property="c_uuid">
+				C_UUID = #c_uuid#
+			</isNotNull>
+		</dynamic>
+	</update>
+	<update id="updateByObjUuid" parameterClass="ClusterObj">
+		update TB_CLOUD_CLUSTER_INFO set hastate=#hastate#,drsstate=#drsstate# where C_UUID= #c_uuid#
+	</update>
+	<delete id="deleteByObj" parameterClass="ClusterObj">
+		delete from TB_CLOUD_CLUSTER_INFO
+		<dynamic prepend="where">
+			<isNotEqual compareValue="0" prepend="and" property="id">
+				id = #id#
+			</isNotEqual>
+			<isNotNull prepend="and" property="c_uuid">
+				C_UUID = #c_uuid#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	<select id="queryForCollection" parameterClass="ClusterObj" resultClass="ClusterObj">
+		select NAME,TYPE,C_UUID from TB_CLOUD_CLUSTER_INFO where ID=#id#
+	</select>
+	<select id="getIdSequence" resultClass="int">
+		select ID_CLUSTER_INFO.NEXTVAL AS ID FROM dual
+	</select>
+	<insert id="insertForConnection" parameterClass="ClusterObj">
+		insert into
+		TB_CLOUD_CLUSTER_INFO(ID,NAME,TYPE,HASTATE,DRSSTATE,C_UUID)
+		values(#id#,#name#,#type#,#hastate#,#drsstate#,#c_uuid#)
+	</insert>
+	<update id="updateForConnection" parameterClass="ClusterObj">
+		update TB_CLOUD_CLUSTER_INFO set C_UUID=#c_uuid# where NAME= #name#
+	</update>
+	
+	<!-- DRS组相关 -->
+	<select id="queryForGroupId" resultClass="int">
+		select ID_CLUSTER_GROUP.nextval as GROUP_ID from dual 
+	</select>
+	<insert id="addDRSGroup" parameterClass="java.util.HashMap">
+		insert into TB_CLUSTER_DRS_GROUP(GROUP_ID,TYPE,NAME,CLUSTER_CODE) values(#group_id#,#type#,#name#,#cluster_code#)
+	</insert>
+	<insert id="addDRSGroupDetail" parameterClass="java.util.HashMap">
+		insert into TB_CLUSTER_GROUP_DETAIL(GROUP_ID,ENTITY_ID,NAME) values(#group_id#,#entity_id#,#name#)
+	</insert>
+	<!-- 
+	<select id="queryGroupList" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		select a.GROUP_ID,a.TYPE,a.NAME,a.CLUSTER_CODE,b.NAME  CLUSTER_NAME from TB_CLUSTER_DRS_GROUP a, TB_CLOUD_ENTITY_TREE b where a.CLUSTER_CODE=b.ENTITY_ID
+		<dynamic prepend="where">
+			<isNotNull  prepend="and" property="type">
+				TYPE = #type#
+			</isNotNull>
+		</dynamic>
+	</select>
+	 -->
+	<select id="queryGroupList" parameterClass="ClusterObj" resultClass="ClusterObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryGroupListBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryGroupCount" parameterClass="ClusterObj" resultClass="int">
+		select count(GROUP_ID)  from (
+		<include refid="queryGroupListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <delete id="deleteGroup" parameterClass="java.util.HashMap">
+	 	delete from TB_CLUSTER_DRS_GROUP t where t.GROUP_ID=#group_id#
+	 </delete>
+	 
+	  <delete id="deleteGroupDetail" parameterClass="java.util.HashMap">
+	 	delete from TB_CLUSTER_GROUP_DETAIL t where t.GROUP_ID=#group_id#
+	 </delete>
+	 
+	 <!-- 用于同步vCenter中的DRS组 -->
+	 <delete id="deleteAllGroup">
+	 	delete from  TB_CLUSTER_DRS_GROUP
+	 </delete>
+	 <delete id="deleteAllGroupDetail">
+	 	delete from  TB_CLUSTER_GROUP_DETAIL 
+	 </delete>
+	 <!-- 根据group_id查询组成员 -->
+	 <select id="listGroupMember" parameterClass="java.util.HashMap" resultClass="ClusterObj">
+	 	select t.GROUP_ID group_id,t.ENTITY_ID entityId,t.NAME name from TB_CLUSTER_GROUP_DETAIL t  where t.group_id=#group_id#
+	 </select>
+</sqlMap>

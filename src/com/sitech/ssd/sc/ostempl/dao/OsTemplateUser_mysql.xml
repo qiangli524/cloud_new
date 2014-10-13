@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplateUser">
+
+	<typeAlias alias="_OsTemplateUser" type="com.sitech.ssd.sc.ostempl.domain.OsTemplateUser" />
+
+	<sql id="partTableColumns">
+		template_id,user_name,pass_word,primary_group,home_dir,user_id,user_desc
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplateUser" parameterClass="_OsTemplateUser">
+		insert into tb_os_template_user(
+		<include refid="partTableColumns" />
+		)
+		values(#template_id#,#user_name#,#pass_word#,#primary_group#,#home_dir#,#user_id#,#user_desc#)
+	</insert>
+	
+	<insert id="copyOsTemplateUser" parameterClass="_OsTemplateUser">
+		insert into tb_os_template_user(<include refid="partTableColumns" />)
+		select (SELECT id FROM tb_os_template WHERE templ_name = #id#) <include refid="partTableColumns" />
+		from tb_os_template_user where template_id = #template_id#
+	</insert>	
+
+	<delete id="deleteOsTemplateUser" parameterClass="_OsTemplateUser">
+		delete from tb_os_template_user
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplateUser" parameterClass="_OsTemplateUser">
+		UPDATE tb_os_template_user
+		SET template_id = #template_id#,
+			user_name = #user_name#,
+			pass_word = #pass_word#,
+			primary_group = #primary_group#,
+			home_dir = #home_dir#,
+			user_id = #user_id#,
+			user_desc = #user_desc#
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<!--
+	<select id="selectOsTemplateUserList" parameterClass="_OsTemplateUser"
+		resultClass="_OsTemplateUser">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_user
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="user_name" prepend="and">
+				user_name = #user_name#
+			</isNotEmpty>
+			<isNotEmpty property="pass_word" prepend="and">
+				pass_word = #pass_word#
+			</isNotEmpty>
+			<isNotEmpty property="home_dir" prepend="and">
+				home_dir LIKE CONCAT('%',#home_dir#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="primary_group" prepend="and">
+				primary_group LIKE CONCAT('%',#primary_group#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	-->
+	<select id="selectOsTemplateUserList" parameterClass="_OsTemplateUser"
+		resultClass="_OsTemplateUser">
+		SELECT u.id,u.template_id,u.user_name,u.pass_word,u.home_dir,u.user_id,u.user_desc,p.group_name primary_group
+		  FROM tb_os_template_user u,tb_os_template_group p
+		 WHERE u.primary_group = p.id
+		<isNotEmpty property="id" prepend="and">
+			u.id = #id#
+		</isNotEmpty>
+		<isNotEmpty property="template_id" prepend="and">
+			u.template_id = #template_id#
+		</isNotEmpty>
+		<isNotEmpty property="user_name" prepend="and">
+			u.user_name = #user_name#
+		</isNotEmpty>
+		<isNotEmpty property="pass_word" prepend="and">
+			u.pass_word = #pass_word#
+		</isNotEmpty>
+		<isNotEmpty property="home_dir" prepend="and">
+			u.home_dir LIKE CONCAT('%',#home_dir#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="primary_group" prepend="and">
+			p.group_name LIKE CONCAT('%',#primary_group#,'%')
+		</isNotEmpty>
+	</select>
+	
+	<select id="selectOsTemplateUser" parameterClass="_OsTemplateUser"
+		resultClass="_OsTemplateUser">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_user
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+			<isNotEmpty property="user_name" prepend="and">
+				user_name = #user_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

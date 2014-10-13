@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="tb_order_relation_instance" >
+
+    <!-- 订购关系实例对象-->
+    <typeAlias alias="orderRelationInstance" type="com.sitech.shop.webservice.domain.TbOrderRelationInstance"/>
+
+    <!-- 订购关系实例 例子对象-->
+    <typeAlias alias="orderRelationInstanceExample" type="com.sitech.shop.webservice.domain.TbOrderRelationInstanceExample"/>
+
+    <!-- 订购关系实例结果集-->
+     <resultMap id="baseResultMap" class="com.sitech.shop.webservice.domain.TbOrderRelationInstance" >
+    <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="product_instance_id" property="productInstanceId" jdbcType="VARCHAR" />
+    <result column="customer_id" property="customerId" jdbcType="VARCHAR" />
+    <result column="if_primary" property="ifPrimary" jdbcType="VARCHAR" />
+    <result column="product_id" property="productId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="acct_id" property="acctId" jdbcType="VARCHAR" />
+    <result column="serv_id" property="servId" jdbcType="VARCHAR" />
+    <result column="create_status" property="createStatus" jdbcType="VARCHAR" />
+    <result column="vm_id" property="vmId" jdbcType="VARCHAR" />
+    <result column="vm_name" property="vmName" jdbcType="VARCHAR" />
+    <result column="vm_login_name" property="vmLoginName" jdbcType="VARCHAR" />
+    <result column="vm_login_password" property="vmLoginPassword" jdbcType="VARCHAR" />
+    <result column="Public_Ip_address" property="publicIpAddress" jdbcType="VARCHAR" />
+    <result column="Ip_address" property="ipAddress" jdbcType="VARCHAR" />
+    <result column="is_sendsms" property="isSendsms" jdbcType="VARCHAR"/>
+    <result column="is_sendshop" property="isSendshop" jdbcType="VARCHAR"/>
+    <result column="v_center_code" property="vCenterCode" jdbcType="VARCHAR"/>
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP"/>
+    <result column="return_shop_date" property="returnShopDate" jdbcType="TIMESTAMP"/>
+    <result column="last_update_date" property="lastUpdateDate" jdbcType="TIMESTAMP"/>
+    <result column="change_status" property="changeStatus" jdbcType="VARCHAR" />
+    <result column="service_begin_time" property="serviceBeginTime" jdbcType="TIMESTAMP" />
+    <result column="service_end_time" property="serviceEndTime" jdbcType="TIMESTAMP" />
+    <result column="boAttr1" property="boattr1" jdbcType="VARCHAR" />
+    <result column="boAttr2" property="boattr2" jdbcType="VARCHAR" />
+    <result column="boAttr3" property="boattr3" jdbcType="VARCHAR" />
+    <result column="boAttr4" property="boattr4" jdbcType="VARCHAR" />
+    <result column="boAttr5" property="boattr5" jdbcType="VARCHAR" />
+  </resultMap>
+
+    <!-- 分页sql	 -->
+    <sql id="pagination">
+       <![CDATA[
+                 limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+	
+    <!-- 条件解析-->
+    <sql id="example_Where_Clause" >
+    <iterate property="oredCriteria" conjunction="or" prepend="where" removeFirstPrepend="iterate" >
+      <isEqual property="oredCriteria[].valid" compareValue="true" >
+        (
+        <iterate prepend="and" property="oredCriteria[].criteriaWithoutValue" conjunction="and" >
+          $oredCriteria[].criteriaWithoutValue[]$
+        </iterate>
+        <iterate prepend="and" property="oredCriteria[].criteriaWithSingleValue" conjunction="and" >
+          $oredCriteria[].criteriaWithSingleValue[].condition$
+            #oredCriteria[].criteriaWithSingleValue[].value#
+        </iterate>
+        <iterate prepend="and" property="oredCriteria[].criteriaWithListValue" conjunction="and" >
+          $oredCriteria[].criteriaWithListValue[].condition$
+          <iterate property="oredCriteria[].criteriaWithListValue[].values" open="(" close=")" conjunction="," >
+            #oredCriteria[].criteriaWithListValue[].values[]#
+          </iterate>
+        </iterate>
+        <iterate prepend="and" property="oredCriteria[].criteriaWithBetweenValue" conjunction="and" >
+          $oredCriteria[].criteriaWithBetweenValue[].condition$
+          #oredCriteria[].criteriaWithBetweenValue[].values[0]# and
+          #oredCriteria[].criteriaWithBetweenValue[].values[1]#
+        </iterate>
+        )
+      </isEqual>
+    </iterate>
+  </sql>
+
+    <!-- 基础查询sql -->
+    <sql id="queryBaseSql">
+            SELECT
+                uuid,
+                order_id,
+                product_instance_id,
+                customer_id,
+                if_primary,
+                product_id,
+                STATUS,
+                acct_id,
+                serv_id,
+                create_status,
+                vm_id,
+                vm_name,
+                vm_login_name,
+                vm_login_password,
+                Public_Ip_address,
+                Ip_address,
+                is_sendsms,
+                is_sendshop,
+                v_center_code,
+                create_date,
+                return_shop_date,
+                last_update_date,
+                change_status,
+                service_begin_time, 
+                service_end_time,
+                boAttr1,
+                boAttr2,
+                boAttr3,
+                boAttr4,
+                boAttr5
+            FROM
+                tb_order_relation_instance
+    </sql>
+
+    <!-- 基础查询 视图sql-->
+    <sql id="queryBaseSql2">
+        SELECT
+        uuid,
+        order_id,
+        product_instance_id,
+        customer_id,
+        if_primary,
+        product_id,
+        STATUS,
+        acct_id,
+        serv_id,
+        create_status,
+        vm_id,
+        vm_name,
+        vm_login_name,
+        vm_login_password,
+        Public_Ip_address,
+        Ip_address,
+        is_sendsms,
+        is_sendshop,
+        v_center_code,
+        create_date,
+        return_shop_date,
+        last_update_date,
+        change_status,
+        service_begin_time,
+        service_end_time,
+        boAttr1,
+        boAttr2,
+        boAttr3,
+        boAttr4,
+        boAttr5
+        FROM
+        tb_order_relation_instance_vm
+    </sql>
+
+    <!-- 简单条件查询-->
+    <select id="selectByExample" resultMap="baseResultMap" parameterClass="orderRelationInstanceExample" >
+        <include refid="queryBaseSql"/>
+        <isParameterPresent >
+            <include refid="tb_order_relation_instance.example_Where_Clause" />
+            <isNotNull property="orderByClause" >
+                order by $orderByClause$
+            </isNotNull>
+        </isParameterPresent>
+    </select>
+    
+	<!-- 分页条件查询-->
+    <select id="selectByExamplePage" resultMap="baseResultMap" parameterClass="orderRelationInstanceExample" >
+        <include refid="queryBaseSql2"/>
+        <isParameterPresent >
+            <include refid="tb_order_relation_instance.example_Where_Clause" />
+            <isNotNull property="orderByClause" >
+                order by $orderByClause$
+            </isNotNull>
+        </isParameterPresent>
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+            <include refid="pagination" />
+        </isGreaterThan>
+    </select>
+
+    <!-- 主键查询-->
+    <select id="selectByPrimaryKey" resultMap="baseResultMap" parameterClass="java.lang.String" >
+        <include refid="queryBaseSql"/>
+            where uuid = #uuid:VARCHAR#
+  	</select>
+
+    <!-- 选择性插入-->
+    <insert id="insertSelective" parameterClass="orderRelationInstance" >
+        insert into tb_order_relation_instance
+        <dynamic prepend="(" >
+            <isNotNull prepend="," property="uuid" >
+                uuid
+            </isNotNull>
+            <isNotNull prepend="," property="orderId" >
+                order_id
+            </isNotNull>
+            <isNotNull prepend="," property="productInstanceId" >
+                product_instance_id
+            </isNotNull>
+            <isNotNull prepend="," property="customerId" >
+                customer_id
+            </isNotNull>
+            <isNotNull prepend="," property="ifPrimary" >
+                if_primary
+            </isNotNull>
+            <isNotNull prepend="," property="productId" >
+                product_id
+            </isNotNull>
+            <isNotNull prepend="," property="status" >
+                status
+            </isNotNull>
+            <isNotNull prepend="," property="acctId" >
+                acct_id
+            </isNotNull>
+            <isNotNull prepend="," property="servId" >
+                serv_id
+            </isNotNull>
+            <isNotNull prepend="," property="createStatus" >
+                create_status
+            </isNotNull>
+            <isNotNull prepend="," property="vmId" >
+                vm_id
+            </isNotNull>
+            <isNotNull prepend="," property="vmName" >
+                vm_name
+            </isNotNull>
+            <isNotNull prepend="," property="vmLoginName" >
+                vm_login_name
+            </isNotNull>
+            <isNotNull prepend="," property="vmLoginPassword" >
+                vm_login_password
+            </isNotNull>
+            <isNotNull prepend="," property="publicIpAddress" >
+                Public_Ip_address
+            </isNotNull>
+            <isNotNull prepend="," property="ipAddress" >
+                Ip_address
+            </isNotNull>
+            <isNotNull prepend="," property="isSendsms">
+                is_sendsms
+            </isNotNull>
+            <isNotNull prepend="," property="isSendshop">
+                is_sendshop
+            </isNotNull>
+            <isNotNull prepend="," property="vCenterCode">
+                v_center_code
+            </isNotNull>
+            <isNotNull prepend="," property="createDate">
+                create_date
+            </isNotNull>
+            <isNotNull prepend="," property="returnShopDate">
+                return_shop_date
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate">
+                last_update_date
+            </isNotNull>
+            <isNotNull prepend="," property="changeStatus" >
+        		change_status
+            </isNotNull>
+      		<isNotNull prepend="," property="serviceBeginTime" >
+        		service_begin_time
+      		</isNotNull>
+      		<isNotNull prepend="," property="serviceEndTime" >
+        		service_end_time
+      		</isNotNull>            
+            <isNotNull prepend="," property="boattr1" >
+                boAttr1
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                boAttr2
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                boAttr3
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                boAttr4
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                boAttr5
+            </isNotNull>
+            )
+        </dynamic>
+        values
+        <dynamic prepend="(" >
+            <isNotNull prepend="," property="uuid" >
+                #uuid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="orderId" >
+                #orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="productInstanceId" >
+                #productInstanceId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="customerId" >
+                #customerId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="ifPrimary" >
+                #ifPrimary:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="productId" >
+                #productId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="status" >
+                #status:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="acctId" >
+                #acctId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="servId" >
+                #servId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="createStatus" >
+                #createStatus:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmId" >
+                #vmId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmName" >
+                #vmName:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmLoginName" >
+                #vmLoginName:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmLoginPassword" >
+                #vmLoginPassword:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="publicIpAddress" >
+                #publicIpAddress:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="ipAddress" >
+                #ipAddress:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="isSendsms">
+                #isSendsms:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="isSendshop">
+                #isSendshop:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vCenterCode">
+                #vCenterCode:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="createDate">
+                #createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="returnShopDate">
+                #returnShopDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate">
+                #lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="changeStatus" >
+                #changeStatus:VARCHAR#
+            </isNotNull>
+      		<isNotNull prepend="," property="serviceBeginTime" >
+        		#serviceBeginTime:TIMESTAMP#
+      		</isNotNull>
+      		<isNotNull prepend="," property="serviceEndTime" >
+        		#serviceEndTime:TIMESTAMP#
+      		</isNotNull>            
+            <isNotNull prepend="," property="boattr1" >
+                #boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                #boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                #boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                #boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                #boattr5:VARCHAR#
+            </isNotNull>
+            )
+        </dynamic>
+    </insert>
+
+    <!-- 主键删除-->
+    <delete id="deleteByPrimaryKey"  parameterClass="java.lang.String" >
+        delete from tb_order_relation_instance
+        where uuid = #uuid:VARCHAR#
+    </delete>
+
+    <!-- 条件删除-->
+    <delete id="deleteByExample" parameterClass="orderRelationInstanceExample" >
+        delete from tb_order_relation_instance
+        <include refid="tb_order_relation_instance.example_Where_Clause" />
+    </delete>
+
+    <!-- 记录数量-->
+    <select id="countByExample" parameterClass="orderRelationInstanceExample" resultClass="java.lang.Integer" >
+        select count(1) from tb_order_relation_instance
+        <include refid="tb_order_relation_instance.example_Where_Clause" />
+    </select>
+
+    <!-- 根据条件选择更新-->
+    <update id="updateByExampleSelective" >
+        update tb_order_relation_instance
+        <dynamic prepend="set" >
+            <isNotNull prepend="," property="record.uuid" >
+                uuid = #record.uuid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.orderId" >
+                order_id = #record.orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.productInstanceId" >
+                product_instance_id = #record.productInstanceId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.customerId" >
+                customer_id = #record.customerId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.ifPrimary" >
+                if_primary = #record.ifPrimary:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.productId" >
+                product_id = #record.productId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.status" >
+                status = #record.status:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.acctId" >
+                acct_id = #record.acctId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.servId" >
+                serv_id = #record.servId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.createStatus" >
+                create_status = #record.createStatus:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.vmId" >
+                vm_id = #record.vmId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.vmName" >
+                vm_name = #record.vmName:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.vmLoginName" >
+                vm_login_name = #record.vmLoginName:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.vmLoginPassword" >
+                vm_login_password = #record.vmLoginPassword:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.publicIpAddress" >
+                Public_Ip_address = #record.publicIpAddress:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.ipAddress" >
+                Ip_address = #record.ipAddress:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.isSendsms">
+                is_sendsms = #record.isSendsms:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.isSendshop">
+                is_sendshop = #record.isSendshop:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.vCenterCode">
+                v_center_code = #record.vCenterCode:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.createDate">
+                create_date = #record.createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.returnShopDate">
+                return_shop_date = #record.returnShopDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.lastUpdateDate">
+                last_update_date = #record.lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.changeStatus" >
+                change_status = #record.changeStatus:VARCHAR#
+            </isNotNull>
+      		<isNotNull prepend="," property="record.serviceBeginTime" >
+        		service_begin_time = #record.serviceBeginTime:TIMESTAMP#
+      		</isNotNull>
+      		<isNotNull prepend="," property="record.serviceEndTime" >
+        		service_end_time = #record.serviceEndTime:TIMESTAMP#
+      		</isNotNull>            
+            <isNotNull prepend="," property="record.boattr1" >
+                boAttr1 = #record.boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr2" >
+                boAttr2 = #record.boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr3" >
+                boAttr3 = #record.boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr4" >
+                boAttr4 = #record.boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr5" >
+                boAttr5 = #record.boattr5:VARCHAR#
+            </isNotNull>
+        </dynamic>
+        <isParameterPresent >
+            <include refid="tb_order_relation_instance.example_Where_Clause" />
+        </isParameterPresent>
+    </update>
+
+    <!-- 根据主键选择更新-->
+    <update id="updateByPrimaryKeySelective" parameterClass="orderRelationInstance" >
+        update tb_order_relation_instance
+        <dynamic prepend="set" >
+            <isNotNull prepend="," property="orderId" >
+                order_id = #orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="productInstanceId" >
+                product_instance_id = #productInstanceId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="customerId" >
+                customer_id = #customerId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="ifPrimary" >
+                if_primary = #ifPrimary:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="productId" >
+                product_id = #productId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="status" >
+                status = #status:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="acctId" >
+                acct_id = #acctId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="servId" >
+                serv_id = #servId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="createStatus" >
+                create_status = #createStatus:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmId" >
+                vm_id = #vmId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmName" >
+                vm_name = #vmName:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmLoginName" >
+                vm_login_name = #vmLoginName:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vmLoginPassword" >
+                vm_login_password = #vmLoginPassword:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="publicIpAddress" >
+                Public_Ip_address = #publicIpAddress:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="ipAddress" >
+                Ip_address = #ipAddress:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="ipAddress">
+                Ip_address = #ipAddress:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="isSendsms">
+                is_sendsms = #isSendsms:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="isSendshop">
+                is_sendshop = #isSendshop:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="vCenterCode">
+                v_center_code = #vCenterCode:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="createDate">
+                create_date = #createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="returnShopDate">
+                return_shop_date = #returnShopDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate">
+                last_update_date = #lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="changeStatus" >
+                change_status = #changeStatus:VARCHAR#
+            </isNotNull>
+      		<isNotNull prepend="," property="serviceBeginTime" >
+        		service_begin_time = #serviceBeginTime:TIMESTAMP#
+      		</isNotNull>
+      		<isNotNull prepend="," property="serviceEndTime" >
+        		service_end_time = #serviceEndTime:TIMESTAMP#
+      		</isNotNull>            
+            <isNotNull prepend="," property="boattr1" >
+                boAttr1 = #boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                boAttr2 = #boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                boAttr3 = #boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                boAttr4 = #boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                boAttr5 = #boattr5:VARCHAR#
+            </isNotNull>
+        </dynamic>
+        where uuid = #uuid:VARCHAR#
+    </update>
+</sqlMap>

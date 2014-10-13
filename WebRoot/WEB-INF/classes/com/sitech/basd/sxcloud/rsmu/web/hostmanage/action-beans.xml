@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!-- com.sitech.basd.rsmu.web.hostmanage.action.BusiHostAction -->   
+   <bean id="baseBusiHostAction" class="com.sitech.basd.sxcloud.rsmu.web.hostmanage.action.BusiHostAction" singleton="false" >
+   		<property name="busiHostService">
+            <ref bean="busiHostService"/>
+        </property>
+        <property name="busiHostHisService">
+            <ref bean="busiHostHisService"/>
+        </property>    
+        <property name="operationService">
+            <ref bean="operationService"/>
+        </property> 
+        <property name="appService">
+            <ref bean="appService"/>
+        </property> 
+        <property name="deployExampleService">
+            <ref bean="deployExampleService"/>
+        </property> 
+        <property name="busiHostConfigService">
+            <ref bean="busiHostConfigService"/>
+        </property>
+        <property name="dataExportService">
+            <ref bean="dataExportService"/>
+        </property> 
+    </bean> 
+    
+    <bean id="baseBusiHostConfigAction" class="com.sitech.basd.sxcloud.rsmu.web.hostmanage.action.BusiHostConfigAction" singleton="false" >
+   		<property name="busiHostService">
+            <ref bean="busiHostService"/>
+        </property>
+        <property name="busiHostConfigHisService">
+            <ref bean="busiHostConfigHisService"/>
+        </property>
+   		<property name="busiHostConfigService">
+            <ref bean="busiHostConfigService"/>
+        </property>    
+         <property name="operationService">
+            <ref bean="operationService"/>
+         </property> 
+        <property name="appService">
+            <ref bean="appService"/>
+        </property> 
+         <property name="deployExampleService">
+            <ref bean="deployExampleService"/>
+        </property> 
+    </bean>
+                  
+    <bean id="baseBusiHostHisAction" class="com.sitech.basd.sxcloud.rsmu.web.hostmanage.action.BusiHostHisAction" singleton="false" >
+   		<property name="busiHostHisService">
+            <ref bean="busiHostHisService"/>
+        </property>    
+         <property name="operationService">
+            <ref bean="operationService"/>
+         </property> 
+    </bean>
+     
+    <bean id="baseBusiHostConfigHisAction" class="com.sitech.basd.sxcloud.rsmu.web.hostmanage.action.BusiHostConfigHisAction" singleton="false" >
+   		<property name="busiHostConfigHisService">
+            <ref bean="busiHostConfigHisService"/>
+        </property>    
+         <property name="operationService">
+            <ref bean="operationService"/>
+         </property> 
+    </bean>
+     
+</beans>
+

@@ -1,0 +1,17 @@
+/** 
+ * 思特奇——UED
+ *
+ * 主样式文件，用于调试，使用@import引入其余样式表，同时作为build的配置文件
+ *
+ * CSS构建使用CSS Combo（node.js），构建命令 csscombo all-debug.css all.css
+ *
+ * @project  界面标准化
+ * @author  UED研发团队
+ *
+ */
+
+@import "base.css";
+@import "common.css";
+@import "colorbox.css";
+@import "button.css";
+@import "icon.css";

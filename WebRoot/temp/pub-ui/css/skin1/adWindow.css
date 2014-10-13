@@ -1,0 +1,51 @@
+/*
+ * @Filename: adWindow.css
+ * @Description: adWindow style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: wangchen
+*/
+.ued-adWindow{
+	width:256px;
+	height: 185px;
+    display:none;
+	overflow: hidden;
+    position: fixed;
+	_position: absolute;
+	right: 0;
+	bottom:0;
+	border: 1px solid #d1d1d1;
+    border-radius: 3px;
+    background: #ffffff;
+}
+.ued-adWindow h2{
+	font-size: 14px;
+	border-bottom: #d1d1d1 solid 1px;
+	padding-left: 10px;
+	color:#666;
+	height:28px;
+	line-height:28px;
+	margin:0;
+	background:#ececec url("images/panel-bg.jpg") 0 0 repeat-x;
+	position:relative
+}
+/*面板工具*/
+
+.adWindow-close{display: inline-block;
+    *display: inline;/*IE6、7下inline-block*/
+	width:9px;
+	height:10px;
+    overflow: hidden;
+	position:absolute;
+	right:10px;
+    _top:14px;
+	top:11px;
+	background:url("images/panel-tool.gif") -45px 0 repeat-x;
+}
+
+.adWindow-close:hover{
+    background:url("images/panel-tool.gif") -45px bottom repeat-x;
+}
+.ued-adWindow p{
+    clear:both;
+}

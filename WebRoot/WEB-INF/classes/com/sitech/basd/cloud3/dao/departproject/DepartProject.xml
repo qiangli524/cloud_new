@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DepartProject">
+
+	<typeAlias alias="DepartProjectObj"
+		type="com.sitech.basd.cloud3.domain.departproject.DepartProjectObj" />
+	<typeAlias alias="relationObj"
+		type="com.sitech.basd.cloud3.domain.departproject.RelationObj" />
+    <sql id="paginationStart">
+		<![CDATA[
+             select * from (select virtual_table.*, rownum rownum_ from (
+        ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 ) virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<select id="queryDepartProjectOne" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj"> 
+		select r.id,r.project_no,r.project_name ,r.cpu_count,r.memory_size,r.storage_size,r.ip_count,a.name as project_leader,
+		r.contact_phone,r.email,r.basis,b.name as network_domain, r.update_user,r.created_user,
+		to_char(r.update_time,'yyyy-mm-dd hh24:mi:ss') update_time,to_char(r.created_time,'yyyy-mm-dd hh24:mi:ss') created_time
+		from tb_project_info r
+		where r.id=#ID#
+	</select>
+	<delete id="deleteDepartProjectObj" parameterClass="DepartProjectObj">
+		delete from tb_project_info  where ID = #STRIDS#
+	</delete>
+	<update id="updateDepartProjectObj" parameterClass="DepartProjectObj">
+		update tb_project_info set project_no=#PROJECT_NO#,project_name=#PROJECT_NAME#,cpu_count=#CPU_COUNT#,memory_size=#MEMORY_SIZE#,storage_size=#STORAGE_SIZE#
+		,ip_count=#IP_COUNT#,project_leader=#PROJECT_LEADER#,contact_phone=#CONTACT_PHONE#,email=#EMAIL#,network_domain=#NETWORK_DOMAIN#,basis = #basis#,update_user=#UPDATE_USER#,
+		update_time=to_char(sysdate,'yyyy-mm-dd hh24:mi:ss')
+		where id=#ID#
+	</update>
+	<insert id="insertDepartProjectObj" parameterClass="DepartProjectObj">
+		insert into tb_project_info (id,project_no,project_name ,cpu_count,memory_size,storage_size,ip_count,project_leader,contact_phone,email,network_domain,basis,
+		update_user,created_user,update_time,created_time)
+		values(#ID#,#PROJECT_NO#,#PROJECT_NAME#,#CPU_COUNT#,#MEMORY_SIZE#,#STORAGE_SIZE#,#IP_COUNT#,#PROJECT_LEADER#,#CONTACT_PHONE#,#EMAIL#,#NETWORK_DOMAIN#,#basis#
+		#UPDATE_USER#,#CREATED_USER#,to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'),to_char(sysdate,'yyyy-mm-dd hh24:mi:ss'))
+	</insert>
+	<sql id="queryDepartProjectList"> 
+		select r.id,r.project_no,r.project_name ,r.cpu_count,r.memory_size,r.storage_size,r.ip_count,a.name as project_leader,
+		r.contact_phone,r.email,b.name as network_domain, r.update_user,r.created_user,
+		to_char(update_time,'yyyy-mm-dd hh24:mi:ss') update_time,to_char(created_time,'yyyy-mm-dd hh24:mi:ss') created_time
+		from tb_project_info r
+		left join tb_sys_userinfo a on r.project_leader = a.account
+		left join TB_CLOUD2_NET_INFO b on r.network_domain = b.net_id
+		<dynamic prepend="where">
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_name like  '%'||#PROJECT_NAME#||'%'
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_LEADER" prepend="and">
+						a.name like '%'||#PROJECT_LEADER#||'%'
+				</isNotEmpty>
+		</dynamic> 
+		order by to_char(r.update_time,'yyyy-mm-dd hh24:mi:ss') desc
+	</sql>
+	<select id="queryDepartProjectList" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryDepartProjectList" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryDepartProjectCount" parameterClass="DepartProjectObj"
+		resultClass="int">
+		select count(id) from tb_project_info r
+		<dynamic prepend="where">
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_name like '%'||#PROJECT_NAME#||'%'
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_leader like '%'||#PROJECT_NAME#||'%'
+				</isNotEmpty>
+		</dynamic> 
+	</select>
+	<!-- 项目管理历史信息操作 -->
+	<insert id="insertDepartProjectHisObj" parameterClass="DepartProjectObj">
+		insert into tb_project_info_his
+		select r.*,#DELETE_BY#,to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') FROM tb_project_info r where r.ID in ('$STRIDS$')
+	</insert>
+	<sql id="queryDepartProjectHisList"> 
+		select r.id,r.project_no,r.project_name ,r.cpu_count,r.memory_size,r.storage_size,r.ip_count,r.project_leader,r.contact_phone,r.email,r.network_domain,
+		r.update_user,r.created_user,to_char(r.update_time,'yyyy-mm-dd hh24:mi:ss') update_time,to_char(r.created_time,'yyyy-mm-dd hh24:mi:ss') created_time,
+		r.delete_by,to_char(r.delete_time,'yyyy-mm-dd hh24:mi:ss') delete_time
+		from tb_project_info_his r
+		left join tb_sys_userinfo a on r.project_leader = a.account
+		left join TB_CLOUD2_NET_INFO b on r.network_domain = b.net_id
+		<dynamic prepend="where">
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_name like '%'||#PROJECT_NAME#||'%'
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_LEADER" prepend="and">
+						a.name like '%'||#PROJECT_LEADER#||'%'
+				</isNotEmpty>
+		</dynamic> 
+		order by to_char(r.delete_time,'yyyy-mm-dd hh24:mi:ss') desc
+	</sql>
+	<select id="queryDepartProjectHisList" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryDepartProjectHisList" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryDepartProjectHisCount" parameterClass="DepartProjectObj"
+		resultClass="int">
+		select count(id) from tb_project_info_his r
+		<dynamic prepend="where">
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_name like '%'||#PROJECT_NAME#||'%'
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_leader like '%'||#PROJECT_NAME#||'%'
+				</isNotEmpty>
+		</dynamic> 
+	</select>
+	
+	<!-- 根据当前登录用户查询该用户对应的部门资源信息 -->
+	<select id="queryResourceByProject" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj"> 
+		SELECT
+			r.id,
+			r.project_no,
+			r.project_name,
+			r.cpu_count,
+			r.memory_size,
+			r.storage_size,
+			r.ip_count,
+			r.project_leader,
+			r.contact_phone,
+			r.email,
+			r.network_domain,
+			r.update_user,
+			r.created_user,
+			net.`NAME`
+		FROM
+			tb_project_info r LEFT JOIN
+			tb_cloud2_net_info net 
+			on r.network_domain = net.NET_ID
+		WHERE
+			r.project_leader = #PROJECT_LEADER#
+	</select>
+	
+	<select id="queryForList" parameterClass="DepartProjectObj" resultClass="DepartProjectObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		select t.ID,t.PROJECT_NO,t.PROJECT_NAME,t.PROJECT_LEADER,t.CPU_COUNT,t.MEMORY_SIZE,
+		t.STORAGE_SIZE,t.IP_COUNT,a.NAME NETNAME,c.NAME PROJECT_LEADERNAME from tb_project_info t left join tb_cloud2_net_info a
+		on t.NETWORK_DOMAIN = a.NET_ID left join tb_sys_userinfo c on t.PROJECT_LEADER = c.ACCOUNT
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="PROJECT_LEADER">
+				PROJECT_LEADER = #PROJECT_LEADER#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NO">
+				PROJECT_NO like '%'||#PROJECT_NO#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NAME">
+				PROJECT_NAME like '%'||#PROJECT_NAME#||'%'
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="countForList"  parameterClass="DepartProjectObj" resultClass="int">
+		select count(t.ID) from tb_project_info t left join tb_cloud2_net_info a
+		on t.NETWORK_DOMAIN = a.NET_ID left join tb_sys_userinfo c on t.PROJECT_LEADER = c.ACCOUNT
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="PROJECT_LEADER">
+				PROJECT_LEADER = #PROJECT_LEADER#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NO">
+				PROJECT_NO like '%'||#PROJECT_NO#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NAME">
+				PROJECT_NAME like '%'||#PROJECT_NAME#||'%'
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	 <select id="queryAllCountResource" parameterClass="DepartProjectObj"  resultClass="relationObj">
+		SELECT
+			cpu_count CPU_ALL_COUNT,
+			memory_size MEM_ALL_MB,
+			storage_size STORAGE_ALL_MB,
+			ip_count IP_ALL_COUNT,
+			(select count(c.project_id) from tb_project_vm_relation c where a.id = c.project_id) VM_ALL_COUNT
+		FROM
+			tb_project_info a
+		WHERE
+			a.id = #ID#
+	  </select>
+	  <select id="queryUsedCountResource" parameterClass="DepartProjectObj"  resultClass="relationObj">
+	      SELECT
+			SUM(a.VH_CPU) CPU_USED_COUNT,
+			SUM(a.VH_MEM) MEM_USED_MB,
+			SUM(a.VH_STORAGE) STORAGE_USED_MB,
+			COUNT(a.VH_IP) IP_USED_COUNT
+		FROM
+			tb_cloud2_vmhost_info a,
+			tb_project_vm_relation b,
+			tb_project_info c
+		WHERE
+			a.CONNECT_ID = b.connect_id
+			AND a.VH_UUID = b.vm_uuid
+			and c.id = b.project_id
+      		and c.id = #ID#
+	  </select>
+</sqlMap>

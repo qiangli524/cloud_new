@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasTab">
+<typeAlias alias="PaasEntityObj" type="com.sitech.ssd.ah.paas.domain.entity.PaasEntityObj" />
+<typeAlias alias="MapChartSet" type="com.sitech.ssd.ah.paas.domain.tab.MapChartSet"/>
+<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="queryNodeListBase">
+		select
+			e.entity_id,
+			e.entity_name,
+			e.host_address,
+			e.entity_type,
+			e.host_port,
+			e.insert_time
+		from
+			tb_paas_entity e left join tb_paas_resource_tree t on t.entity_id = e.entity_id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="entity_id">
+					e.entity_id = #entity_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="id">
+					t.id = #id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="parent_id">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</dynamic>
+	</sql>
+	<sql id="queryInstanceNodeListBase">
+		select
+			e.entity_id,
+			e.entity_name,
+			e.host_address,
+			e.entity_type,
+			e.host_port,
+			e.insert_time,
+			p.kpi_value_last,
+			p.kpi_name
+		from
+			tb_paas_entity e left join tb_paas_resource_tree t on t.entity_id = e.entity_id
+			LEFT JOIN tb_paas_resource_statistical p ON e.entity_id = p.entity_id 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="entity_id">
+				e.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_name">
+				e.entity_name like CONCAT('%',#entity_name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="id">
+				t.id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="parent_id">
+				t.parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="kpi_name">
+				p.kpi_name = #kpi_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_parent_id">
+				e.entity_parent_id = #entity_parent_id#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	 <select id="queryNodeList" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+	        <include refid="queryNodeListBase"/>
+	        order by e.entity_name
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryNodeListCount" parameterClass="PaasEntityObj" resultClass="int">
+	      select count(*) from (
+	        <include refid="queryNodeListBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	   <select id="queryInstanceNodeList" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+	        <include refid="queryInstanceNodeListBase"/>
+	        order by e.entity_name
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryInstanceNodeListCount" parameterClass="PaasEntityObj" resultClass="int">
+	      select count(*) from (
+	        <include refid="queryInstanceNodeListBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <select id="queryInstanceListForBusiNode" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+	  		SELECT DISTINCT
+				e.entity_id,
+				e.entity_name,
+				(
+					CASE
+					WHEN e.entity_type = '32' THEN
+						'数据库实例'
+					WHEN e.entity_type = '52' THEN
+						'实例'
+					END
+				) entity_type,
+				e.host_address,
+				e.host_port,
+				DATE_FORMAT(p.coll_time, '%Y-%m-%d %H:%i:%S') coll_time,
+				p.kpi_value kpi_value_last,
+				p.timeline
+			FROM
+				tb_paas_entity e,
+				$tableName$ p
+			WHERE
+				e.entity_id = p.entity_id
+			<isNotEmpty prepend="and" property="entity_id">
+				e.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="kpi_name">
+				p.kpi_name = #kpi_name#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="coll_time">
+				<![CDATA[
+					p.coll_time <= #coll_time#
+					]]>
+			</isNotEmpty>
+			limit 0,1
+	  </select>
+	  
+	  <select id="queryBusHealthyLimitForInstanceId" parameterClass="PaasEntityObj"  resultClass="java.lang.Double">
+	  		select
+				ifnull(round(sum(a.kpi_value_last)/count(*),2),0) 
+				from
+					tb_paas_resource_statistical a
+				left join tb_paas_kpi_monitor b on a.kpi_name = b.gid_kpi
+				<dynamic prepend="where">
+					<isNotEmpty prepend="and" property="kpi_name">
+						a.kpi_name = #kpi_name#
+					</isNotEmpty>
+					<isNotEmpty prepend="and" property="entityIdList">
+						a.entity_id in
+						<iterate close=")" conjunction="," open="(" property="entityIdList">
+							#entityIdList[]#
+						</iterate>
+					</isNotEmpty>
+				</dynamic>
+	  </select>
+	  
+	<select id="queryBusiListByEntityId" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+			SELECT t.parent_id id FROM tb_paas_resource_tree t
+				WHERE t.id IN ( 
+					SELECT a.parent_id FROM tb_paas_resource_tree a WHERE a.entity_id = #entity_id#
+					)
+	</select>
+	
+	<select id="queryParentEntityByEntityId" parameterClass="PaasEntityObj" resultClass="PaasEntityObj">
+			SELECT
+				a.entity_id,
+				a.entity_name
+			FROM
+				tb_paas_entity a,
+				tb_paas_entity b
+			WHERE
+				a.entity_id = b.entity_parent_id
+			AND b.entity_id = #entity_id#
+	</select>
+	
+	<!-- 	按照时间倒序，并查询固定点数 -->
+  	 <select id="queryChartDataByDate" parameterClass="MapChartSet" resultClass="Data">
+  	 <![CDATA[
+		    SELECT a.label,a.value,a.label2 from
+		    (SELECT DATE_FORMAT(COLL_TIME,  '%Y-%m-%d %H:%i:%S') label,ROUND(kpi_value,1) value,timeline label2
+				  FROM $tableName$ t
+				 WHERE kpi_name = #kpi_name#
+				   AND entity_id = #entity_id#
+				   AND t.coll_time >= DATE_SUB(now(), INTERVAL #time_inter# MINUTE)
+			   	   AND t.coll_time <= now()
+				 ORDER BY t.coll_time desc
+				 limit 0,#potCount#) a
+				 ORDER BY a.label
+		]]>
+	</select>
+	
+	<!-- 	按照时间倒序，并查询固定点数 -->
+  	 <select id="queryChartDataByMonth" parameterClass="MapChartSet" resultClass="Data">
+		    <![CDATA[
+		    SELECT a.label,a.value,a.label2 from
+		    (SELECT DATE_FORMAT(COLL_TIME,  '%Y-%m-%d %H:%i:%S') label,ROUND(kpi_value,1) value,timeline label2
+				  FROM $tableName$ t
+				  WHERE kpi_name = #kpi_name#
+				  AND entity_id = #entity_id#
+				 ORDER BY t.coll_time desc
+				 limit 0,#potCount#) a
+				 ORDER BY a.label
+		]]>
+	</select>
+	
+	<!-- 	按照时间倒序，并查询固定点数 -->
+  	 <select id="queryChartDataByDateBetween" parameterClass="MapChartSet" resultClass="Data">
+		    <![CDATA[
+		    SELECT a.label,a.value,a.label2 from
+		    (SELECT DATE_FORMAT(COLL_TIME,  '%Y-%m-%d %H:%i:%S') label,ROUND(kpi_value,1) value,timeline label2
+				  FROM $tableName$ t
+				  WHERE kpi_name = #kpi_name#
+				  AND entity_id = #entity_id#
+				  AND t.coll_time between #startData# and #endData#
+				 ORDER BY t.coll_time desc
+				 limit 0,#potCount#) a
+				 ORDER BY a.label
+		]]>
+	</select>
+	
+ </sqlMap>

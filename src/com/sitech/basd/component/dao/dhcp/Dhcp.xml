@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dhcp">
+	<typeAlias alias="dhcpObj" type="com.sitech.basd.component.domain.dhcp.DhcpObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+	<sql id="baseCloumn">
+		 ID,IP,MACADDRESS,IPSTATUS,DESCR,
+		 to_char(INSERTDATE,'yyyy-mm-dd HH24:mi:ss') INSERTDATE,
+		 to_char(UPDATEDATE,'yyyy-mm-dd HH24:mi:ss') UPDATEDATE
+	</sql>
+    
+    <insert id="insertDhcp" parameterClass="dhcpObj">
+    	insert into tb_cloud_dhcp
+    	<dynamic prepend="(">
+    		<isNotEmpty prepend="," property="ID">
+    			ID
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IP">
+    			IP
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="MACADDRESS">
+    			MACADDRESS
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IPSTATUS">
+    			IPSTATUS
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="DESCR">
+    			DESCR
+    		</isNotEmpty>
+    		,INSERTDATE,UPDATEDATE
+    	)
+    	</dynamic>
+    	values
+    	<dynamic prepend="(">
+	    	<isNotEmpty prepend="," property="ID">
+    			#ID#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IP">
+    			#IP#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="MACADDRESS">
+    			#MACADDRESS#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="IPSTATUS">
+    			#IPSTATUS#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="," property="DESCR">
+    			#DESCR#
+    		</isNotEmpty>
+    		,sysdate,sysdate
+    	)
+    	</dynamic>
+    </insert>
+    
+    <delete id="deleteDhcp" parameterClass="dhcpObj">
+    	delete from tb_cloud_dhcp where ID = #ID#
+    </delete>
+    
+    <update id="updateDhcp" parameterClass="dhcpObj">
+    	update TB_CLOUD_DHCP t 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="ID">
+				t.ID  = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="IP">
+				t.IP  = #IP#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="MACADDRESS">	
+				t.MACADDRESS  = #MACADDRESS#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="IPSTATUS">
+				t.IPSTATUS  = #IPSTATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="DESCR">
+				t.DESCR  = #DESCR#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="INSERTDATE">
+				t.INSERTDATE  = to_date(#INSERTDATE#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+				,t.UPDATEDATE  = sysdate
+		</dynamic>
+		where t.ID=#ID#
+    </update>
+    
+    <select id="queryForList" parameterClass="dhcpObj" resultClass="dhcpObj">
+    	<isGreaterThan compareValue="0" property="PAGESIZE">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+    	select 
+    	<include refid="baseCloumn"/>
+    	from tb_cloud_dhcp
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="ID">
+				ID  = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IP">
+				IP  like '%'||#IP#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MACADDRESS">	
+				MACADDRESS  like '%'||#MACADDRESS#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IPSTATUS">
+				IPSTATUS  = #IPSTATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DESCR">
+				DESCR  like '%'||#DESCR#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="INSERTDATE">
+				INSERTDATE  = to_date(#INSERTDATE#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="UPDATEDATE">
+				UPDATEDATE  = to_date(#UPDATEDATE#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+    	</dynamic>
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+    </select>
+    
+    <select id="countDhcp" parameterClass="dhcpObj" resultClass="int">
+    	select count(ID) from tb_cloud_dhcp
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="ID">
+				ID  = #ID#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IP">
+				IP  like '%'||#IP#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="MACADDRESS">	
+				MACADDRESS  like '%'||#MACADDRESS#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="IPSTATUS">
+				IPSTATUS  = #IPSTATUS#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="DESCR">
+				DESCR  like '%'||#DESCR#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="INSERTDATE">
+				INSERTDATE  = to_date(#INSERTDATE#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="UPDATEDATE">
+				UPDATEDATE  = to_date(#UPDATEDATE#,'yyyy-mm-dd HH24:mi:ss')
+			</isNotEmpty>
+    	</dynamic>
+    </select>
+    
+</sqlMap>

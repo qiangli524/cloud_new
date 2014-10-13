@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="LeaderViewBusiness">
+
+	<typeAlias alias="domainsInfoObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2DomainsInfoObj" />
+	<typeAlias alias="bizsysInfoObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2BizsysInfoObj" />
+	<typeAlias alias="distObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2DistObj" />
+	<typeAlias alias="mRoomInfoObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2MroomInfoObj" />
+	<typeAlias alias="cubinetInfoObj"
+		type="com.sitech.sxcloud.basd.cloud.domain.leader.TbCloud2CubinetInfoObj" />
+	<typeAlias alias="equipObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2EquipmentObj" />
+	<typeAlias alias="cabinetObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2CubinetInfoObj" />
+	<typeAlias alias="hostObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2HostInfoObj" />
+	<typeAlias alias="visualMachObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2VmhostInfoObj" />
+	<typeAlias alias="roomInfoObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.TbCloud2RoomInfoObj" />
+
+	<typeAlias alias="hostBusiSysObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.HostBusiSysObj" />
+	<typeAlias alias="monitoringObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.leader.MonitoringObj" />
+
+
+	<sql id="mroomListSql">
+		A.M_ID,A.M_NAME,A.M_ADDR,A.M_MAN,A.M_TEL,A.DIST_ID,A.M_EMAIL
+	</sql>
+
+	<!--  查询所有区域信息 2011.12.2 zhangwj -->
+	<select id="queryAllRegionList" resultClass="domainsInfoObj">
+		SELECT A.REGION_ID,A.REGION_NAME,A.REGION_DESC FROM
+		TB_CLOUD2_DOMAIN_INFO A
+	</select>
+
+	<!--  查询所有业务系统信息  2011.12.2 zhangwj -->
+	<select id="queryAllBizSysList" resultClass="bizsysInfoObj">
+		SELECT A.SYS_ID,A.SYS_NAME,A.REGION_ID,A.SYS_DESC,A.STATU STATU
+		FROM TB_CLOUD2_BIZSYS_INFO A ORDER BY A.REGION_ID,A.SYS_ID
+	</select>
+
+	<!--  查询所有的地区信息  2011.12.2 zhangwj -->
+	<select id="queryAllDistInfoList" resultClass="distObj">
+		SELECT A.DIST_ID,A.DIST_NAME FROM TB_CLOUD2_DIST A
+	</select>
+
+	<!--  查询所有的机房信息  2011.12.2 zhangwj -->
+	<select id="queryAllMroomList" resultClass="mRoomInfoObj">
+		SELECT
+		<include refid="mroomListSql" />
+		FROM TB_CLOUD2_MROOM_INFO A
+	</select>
+
+	<!--  根据房间编号查询机房信息  2011.12.2 zhangwj -->
+	<select id="queryMRoomInfoByObj" parameterClass="mRoomInfoObj"
+		resultClass="mRoomInfoObj">
+		SELECT
+		<include refid="mroomListSql" />
+		FROM TB_CLOUD2_MROOM_INFO A WHERE A.M_ID = #m_id#
+	</select>
+
+	<!-- 查询机柜中新添加主机序号 -->
+	<select id="queryHostIdByCid" parameterClass="java.lang.String"
+		resultClass="java.lang.String">
+		SELECT MAX(A.EQ_ID) AS EQ_ID FROM ( SELECT EQ_ID,CQ_ID FROM
+		TB_CLOUD2_HOST_INFO WHERE CQ_ID = #cq_id# UNION SELECT
+		EQ_ID,CQ_ID FROM TB_CLOUD2_HOST_HIS WHERE CQ_ID = #cq_id# ) A
+		GROUP BY A.CQ_ID
+	</select>
+	<!-- 获得设备所占比数据 -->
+	<select id="queryEquipmentPerctent" resultClass="equipObj">
+		select A.C_TYPE TYPE,count(A.C_ID) COUNT from
+		tb_cloud2_cubinet_info A
+		<dynamic prepend="where">
+			<isNotNull property="roomId">
+				<isNotEmpty property="roomId" prepend="and">
+					A.R_ID = #roomId#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		group by A.C_TYPE order by A.C_TYPE
+	</select>
+
+	<select id="queryCubListByRoomId" parameterClass="cabinetObj"
+		resultClass="cabinetObj">
+		SELECT
+		A.C_ID,A.C_NAME,A.C_ADDR,A.C_DESC,A.C_TYPE,A.R_ID,A.C_X,A.C_Y
+		FROM TB_CLOUD2_CUBINET_INFO A
+		<dynamic prepend="WHERE">
+			<isNotNull property="r_id">
+				<isNotEmpty property="r_id" prepend="AND">
+					A.R_ID like #r_id#||'%'
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		ORDER BY A.C_ID
+	</select>
+
+	<select id="querySysAssoCabListBySysId"
+		parameterClass="java.lang.String" resultClass="java.lang.String">
+		select SUBSTR(A.VH_ID,0,INSTR(A.VH_ID,'_',1,4)-1) C_ID from
+		tb_cloud2_apply_info A where A.SYS_ID = #sysId#
+	</select>
+
+
+	<!-- 查询机房机柜温控数据 -->
+	<select id="queryHpData"
+		parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		select to_char(round(kpi_value,0)) from (select *  from tb_cloud2_hp_data t where kpi_id = #kpiId# and kpi_coll = #kpiColl# order by kpi_date desc) where rownum = 1
+	</select>
+	
+
+
+	<select id="queryHostMachListByCid"
+		parameterClass="java.lang.String" resultClass="hostObj">
+		SELECT
+		A.EQ_ID,A.EQ_NAME,A.EQ_TYPE,A.EQ_IP,A.EQ_HOSTNAME,A.POSITION,A.SN,A.STATUS
+		FROM TB_CLOUD2_HOST_INFO A WHERE A.CQ_ID = #cid# ORDER BY
+		A.POSITION
+	</select>
+
+	<select id="queryVmhostListByCid" parameterClass="java.lang.String"
+		resultClass="visualMachObj">
+		SELECT
+		A.VH_ID,A.VH_NAME,A.EQ_ID,B.EQ_NAME,A.VH_SYSTEM,A.VH_IP,A.VH_STARTED,A.VH_COMPLETED,A.VH_DEPLOYETIME,A.VH_UPTIME,A.VH_STATUS
+		FROM TB_CLOUD2_VMHOST_INFO A JOIN TB_CLOUD2_HOST_INFO B ON
+		A.EQ_ID = B.EQ_ID WHERE B.CQ_ID = #cid#
+	</select>
+
+	<select id="queryRoomListByMid" parameterClass="java.lang.String"
+		resultClass="roomInfoObj">
+		select
+		A.R_ID,A.R_NAME,A.F_ID,A.CASE_NUM,A.HUMIDITY,A.TEMPERATURE,A.M_TOTAL,A.M_USED,A.DECTECTION
+		from TB_CLOUD2_ROOM_INFO A join TB_CLOUD2_FLOOR_INFO B on A.F_ID
+		= B.F_ID join TB_CLOUD2_MROOM_INFO C on B.M_ID = C.M_ID where
+		C.M_ID = #M_ID#
+	</select>
+
+	<!--  根据房间查询可以管控的机柜  -->
+	<select id="queryHostCabinetByRid" parameterClass="java.lang.String"
+		resultClass="hostObj">
+		select distinct A.CQ_ID,B.C_ADDR,A.EQ_TYPE,P.ID POOL_ID,P.ICON POOL_ICON,P.NAME POOL_NAME,P.POOL_DESC from
+		tb_cloud2_host_info A join tb_cloud2_cubinet_info B on A.CQ_ID =
+		B.C_ID join TB_HOST_POOL_RELATION R on A.ID = R.HOST_ID
+			join TB_CLOUD_HOST_POOL P on R.POOL_ID = P.ID  where A.CQ_ID like '%'||#roomId#||'%' and A.CONTROL = 1 and P.POOL_TYPE = 2
+	</select>
+	
+
+	<!--  获得机柜中主机对应的业务系统  -->
+	<select id="queryHostBusiSysByCid" parameterClass="java.lang.String"
+		resultClass="hostBusiSysObj">
+		select C.APP_ID,C.APP_NAME,C.PROCESS,C.MEM,C.APP_DESC ,B.ID
+		HOST_ID,B.IP HOST_IP,D.SYS_ID,D.SYS_NAME,A.EQ_ID from
+		TB_CLOUD2_HOST_INFO A join TB_BUSI_HOST B on A.EQ_IP = B.IP join
+		TB_CLOUD2_APPLY_INFO C on C.VH_ID LIKE B.ID join
+		tb_cloud2_bizsys_info D on C.SYS_ID = D.SYS_ID where A.CQ_ID =
+		#value# and C.APP_TYPE = 0
+	</select>
+
+	<!--  查询应用监控  -->
+	<select id="queryAppMonitoringByObj" parameterClass="monitoringObj"
+		resultClass="monitoringObj">
+		select A.KPI_ID,A.KPI_VALUE,to_char(A.COLL_TIME,'yyyy-MM-dd
+		hh24:mi:ss') COLL_TIME from TB_CLOUD2_APPLY_COLL A where
+		A.APP_ID = #id# and A.COLL_TIME >=
+		to_date(#coll_time#,'yyyy-MM-dd hh24:mi:ss')
+		<isNotNull property="kpi_id">
+			<isNotEmpty property="kpi_id" prepend="and">
+				A.KPI_ID = #kpi_id#
+			</isNotEmpty>
+		</isNotNull>
+		order by A.COLL_TIME
+	</select>
+
+	<!-- 查询主机监控 -->
+	<select id="queryHostMonitoringByObj" parameterClass="monitoringObj"
+		resultClass="monitoringObj">
+		select A.KPI_ID,A.KPI_VALUE,to_char(A.COLL_TIME,'yyyy-MM-dd
+		hh24:mi:ss') COLL_TIME 
+		from tb_cloud2_host_coll,tb_cloud2_host_info B
+		where B.EQ_ID = #id# 
+		and A.EQ_ID=(B.CONNECT_ID||'_'||B.H_UUID)
+		and A.COLL_TIME >= to_date(#coll_time#,'yyyy-MM-dd
+		hh24:mi:ss')
+		<isNotNull property="kpi_id">
+			<isNotEmpty property="kpi_id" prepend="and">
+				A.KPI_ID = #kpi_id#
+			</isNotEmpty>
+		</isNotNull>
+		order by A.COLL_TIME
+	</select>
+
+	<!-- 查询虚拟机监控 -->
+	<select id="queryVhostMonitoringByObj"
+		parameterClass="monitoringObj" resultClass="monitoringObj">
+		select A.KPI_ID,A.KPI_VALUE
+		KPI_VALUE,to_char(A.COLL_TIME,'yyyy-MM-dd hh24:mi:ss') COLL_TIME
+		from tb_cloud2_hy_coll,
+		tb_cloud2_vmhost_info B
+		where B.vh_id = #id#
+		AND (B.CONNECT_ID||'_'||"B.VH_UUID) = A.HY_ID
+		and A.COLL_TIME >=
+		to_date(#coll_time#,'yyyy-MM-dd hh24:mi:ss')
+		<isNotNull property="kpi_id">
+			<isNotEmpty property="kpi_id" prepend="and">
+				A.KPI_ID = #kpi_id#
+			</isNotEmpty>
+		</isNotNull>
+		order by A.COLL_TIME
+	</select>
+	<!-- 获取主机状态数量 -->
+	<select id="queryHostStatusNum" parameterClass="java.util.HashMap"
+		resultClass="int">
+		select count(status)
+  		from (select t.status
+          from tb_cloud2_host_info t
+         where t.cq_id = #CQ_ID#
+         and t.status=0
+         group by t.status) virtual_table
+	</select>
+</sqlMap>

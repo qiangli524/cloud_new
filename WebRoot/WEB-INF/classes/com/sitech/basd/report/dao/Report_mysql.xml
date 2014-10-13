@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbReport">
+	<typeAlias alias="ResourceStatisticsHisObj" type="com.sitech.basd.report.domain.ResourceStatisticsHisObj"/>
+	<typeAlias alias="fusionchartsVoData" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<resultMap id="getResourceOccupancyRate" class="java.util.HashMap">  
+            <result property="key" column="key"/>  
+            <result property="value" column="value" javaType="java.lang.Long"/>  
+	</resultMap>  
+	<resultMap id="getResourceTrendMap" class="java.util.HashMap">  
+            <result property="key" column="key"/>  
+            <result property="value" column="value" javaType="java.lang.Long"/>  
+            <result property="date" column="date"/>
+	</resultMap>
+	<parameterMap class="java.util.Map" id="paraMap">
+		<parameter property="domain" javaType="java.lang.String"/>
+		<parameter property="key"  javaType="java.lang.String"/>
+		<parameter property="startDate"  javaType="java.lang.String"/>
+		<parameter property="endDate"  javaType="java.lang.String"/>
+	</parameterMap>
+	<select id="getResourceOccupancyRate" parameterClass="string" resultMap="getResourceOccupancyRate">
+		SELECT `key`,`value` FROM `tb_resource_statistics` WHERE domain = #userDomain#
+	</select>
+	<select id="getResourceTrend" parameterClass="ResourceStatisticsHisObj" resultClass="ResourceStatisticsHisObj">
+		SELECT t.`KEY` as "key",ROUND(AVG(t.`value`)) as "value",DATE_FORMAT(t.`coll_time`,'%Y-%m') as "date"
+			FROM tb_resource_statistics_history as t
+			where t.`domain`=#domain#
+			<isNotEmpty prepend="AND" property="key">
+				t.`KEY` = #key#
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="startDate">
+				<![CDATA[DATE_FORMAT(t.`coll_time`,'%Y-%m') >= #startDate#]]>  
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="endDate">
+				<![CDATA[DATE_FORMAT(t.`coll_time`,'%Y-%m')  <= #endDate#]]>  
+			</isNotEmpty>
+			GROUP BY t.`KEY`,DATE_FORMAT(t.`coll_time`,'%Y-%m')
+			ORDER BY t.`KEY`,t.`coll_time`
+	</select>
+	<select id="getResourceAlarmCount" resultMap="getResourceOccupancyRate">
+			SELECT t.`event_class` AS "key",COUNT(t.`event_id`) AS "value"
+			FROM bnms.`tb_ato_event_final` AS t
+			WHERE t.`event_class` IN ('1','2','3')
+			GROUP BY t.`event_class`;
+	</select>
+	
+	<!-- 查询首页摘要信息 -->
+	<select id="queryStatisticsHistory" parameterClass="ResourceStatisticsHisObj" resultClass="ResourceStatisticsHisObj">
+		select  `key`,ROUND(AVG(`value`)) as `value`,DATE_FORMAT(`coll_time`,'%m') as month from tb_resource_statistics_history 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="key">
+				`key` = #key#
+			</isNotEmpty>
+			<isNotEmpty property="domain" prepend="and">
+               	  <isNotEqual compareValue="null" property="domain">
+		               	domain =#domain#	
+	             </isNotEqual>
+           </isNotEmpty>
+           <isGreaterThan compareProperty="interval" compareValue="-1" prepend="and">
+               	`coll_time` > DATE_SUB(NOW(), INTERVAL #interval# MONTH)
+           </isGreaterThan>
+		</dynamic>
+		group by `key`,DATE_FORMAT(`coll_time`,'%Y-%m') 
+	</select>
+	
+	<select id="getAlarmHistoryCount" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT COUNT(*) as counter,DATE_FORMAT(`ins_date`,'%Y-%m') as month,event_level as level 
+		FROM `tb_cloud2_monitor_alarm_his` 
+		WHERE 1=1
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+								`domain`=#domain#
+		             </isNotEqual>
+	             </isNotEqual>
+    		</isNotEmpty>
+		GROUP BY DATE_FORMAT(`ins_date`,'%Y-%m'),event_level
+	</select>
+	
+	<!-- add by wangjl_cmi_jl 20140807 查询虚拟机性能top情况信息 -->
+	<select id="getVmHostPfmcSummarySumInfo" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			hyColl.HY_ID,
+			vmHostInfo.VH_NAME,
+			ROUND(AVG((hyColl.KPI_VALUE)))AS KPI_VALUE,
+			vmHostInfo.domain
+		FROM
+			tb_cloud2_hy_coll hyColl,
+			tb_cloud2_vmhost_info vmHostInfo
+		WHERE
+			hyColl.HY_ID = CONCAT(
+				vmHostInfo.CONNECT_ID,
+				'_',
+				vmHostInfo.VH_UUID
+			)
+		<isNotNull prepend="and" property="KPI_ID">
+			hyColl.KPI_ID = #KPI_ID#
+		</isNotNull>
+		<isNotEmpty property="domain">
+			<isNotEqual compareValue="null" property="domain">
+				<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				 	vmHostInfo.domain =#domain#	
+				</isNotEqual>
+		    </isNotEqual>
+   		</isNotEmpty>
+		GROUP BY hyColl.HY_ID,vmHostInfo.VH_NAME
+		ORDER BY KPI_VALUE DESC
+		LIMIT 5
+	</select>
+	
+	<!-- add by wangjl_cmi_jl 20140807 查询虚拟机性能情况信息 -->
+	<select id="getVmHostPfmcSummaryInfo" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	SELECT
+		*
+	FROM(
+			SELECT
+				CASE WHEN hyColl.KPI_ID = 'PM-V-01-010-11' THEN 'cpu' 
+					 WHEN hyColl.KPI_ID = 'PM-V-01-010-12' THEN 'memory' 
+					 WHEN hyColl.KPI_ID = 'PM-V-01-010-13' THEN 'diskRead' 
+					 WHEN hyColl.KPI_ID = 'PM-V-01-010-14' THEN 'diskWrite' 
+					 END AS TYPE,
+				hyColl.HY_ID,
+				hyColl.KPI_ID,
+				vmHostInfo.VH_NAME,
+				hyColl.KPI_VALUE,
+				hyColl.COLL_TIME AS FULL_COLL_TIME,
+				DATE_FORMAT(hyColl.COLL_TIME,'%H:%i') AS COLL_TIME
+			FROM
+				tb_cloud2_hy_coll hyColl,
+				tb_cloud2_vmhost_info vmHostInfo
+			WHERE
+				hyColl.HY_ID = CONCAT(
+					vmHostInfo.CONNECT_ID,
+					'_',
+					vmHostInfo.VH_UUID
+				)
+			<isNotNull prepend="and" property="KPI_ID">
+				hyColl.KPI_ID = #KPI_ID#
+			</isNotNull>
+			<isNotNull prepend="and" property="HY_ID">
+				hyColl.HY_ID = #HY_ID#
+			</isNotNull>
+			ORDER BY hyColl.COLL_TIME DESC
+			LIMIT 5
+		) TAB
+ 		ORDER BY FULL_COLL_TIME ASC
+	</select>
+	
+	<!-- add by wangjl_cmi_jl 20140807 虚拟机详细信息页面进程占用top查询 -->
+	<select id="getVmHostDetailInfo" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			hyColl.HY_ID,
+			hyColl.KPI_ID,
+			vmHostInfo.VH_NAME,
+			hyColl.KPI_VALUE,
+			DATE_FORMAT(hyColl.COLL_TIME, '%H:%i')AS COLL_TIME,
+			vmHostInfo.domain
+		FROM
+			tb_cloud2_hy_coll hyColl,
+			tb_cloud2_vmhost_info vmHostInfo
+		WHERE
+			hyColl.HY_ID = CONCAT(
+				vmHostInfo.CONNECT_ID,
+				'_',
+				vmHostInfo.VH_UUID
+			)
+		<isNotNull prepend="and" property="HY_ID">
+			HY_ID = #HY_ID#
+		</isNotNull>
+		<isNotNull prepend="and" property="KPI_ID">
+			KPI_ID = #KPI_ID#
+		</isNotNull>
+		<isNotEmpty property="domain">
+			<isNotEqual compareValue="null" property="domain">
+				<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				 	vmHostInfo.domain =#domain#	
+				</isNotEqual>
+		    </isNotEqual>
+   		</isNotEmpty>
+		AND
+			hyColl.COLL_TIME > DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') - interval '60000' MINUTE 
+		AND 
+		  hyColl.COLL_TIME <![CDATA[ <= ]]> DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')
+		ORDER BY 
+			hyColl.COLL_TIME DESC
+		LIMIT 5	
+	</select>
+	
+	<!-- add by wangjl_cmi_jl 20140807 查询虚拟机详细信息的方法 -->
+	<select id="queryVmHostDetailInfo" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			unitedTree.`name` AS BLG_CENTER_NAME,
+			hostInfo.EQ_HOSTNAME AS BLG_HOST_NAME,
+			vmHostInfo.VH_NAME AS VM_HOST_NAME,
+			vmHostInfo.VH_IP AS VM_HOST_IP,
+			t1.`name` as busiSysName5,
+			t2.`name` as busiSysName4,
+			t3.`name` as busiSysName3,
+			t4.`name` as busiSysName2,
+			t5.`name` as busiSysName1,
+			vmHostInfo.CONNECT_ID,
+			vmHostInfo.VH_UUID,
+			vmHostInfo.domain
+		FROM
+			tb_cloud2_vmhost_info vmHostInfo
+		LEFT JOIN tb_cloud2_host_info hostInfo ON vmHostInfo.EQ_ID = hostInfo.EQ_ID
+		LEFT JOIN tb_united_tree unitedTree ON unitedTree.uuid = hostInfo.H_UUID
+		LEFT JOIN tb_busi_system_tree t1 ON vmHostInfo.VH_UUID = t1.entity_id
+		LEFT JOIN tb_busi_system_tree t2 ON t1.parent_id = t2.id
+		LEFT JOIN tb_busi_system_tree t3 ON t2.parent_id = t3.id
+		LEFT JOIN tb_busi_system_tree t4 ON t3.parent_id = t4.id
+		LEFT JOIN tb_busi_system_tree t5 ON t4.parent_id = t5.id
+		WHERE
+			1 = 1
+		AND 
+			CONCAT(vmHostInfo.CONNECT_ID,'_',vmHostInfo.VH_UUID) = #HY_ID#
+		<isNotEmpty property="domain">
+			<isNotEqual compareValue="null" property="domain">
+				<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				 	vmHostInfo.domain =#domain#	
+				</isNotEqual>
+		    </isNotEqual>
+   		</isNotEmpty>
+	</select>
+	
+	<!-- add by wangjl_cmi_jl 20140818 查询设备监控信息的sql语句 -->
+	<select id="queryOtherCollInfo" parameterClass="java.util.HashMap" resultClass="fusionchartsVoData">
+		SELECT
+			otherColl.EQ_ID AS label,
+			MAX(
+				CAST(
+					otherColl.KPI_VALUE AS DECIMAL
+				)
+			)AS value
+		FROM
+			tb_cloud2_other_coll otherColl,
+			tb_united_tree unitedTree
+		WHERE otherColl.EQ_ID = CONCAT(unitedTree.CONNECT_ID,'_',unitedTree.uuid)
+		<isNotEmpty property="KPI_ID" prepend="and">
+	         <isNotNull property="KPI_ID">
+	         	 otherColl.KPI_ID = #KPI_ID#
+	         </isNotNull>
+      	</isNotEmpty>
+      	<isNotEmpty property="domain">
+			<isNotEqual compareValue="null" property="domain">
+				<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				 	unitedTree.domain =#domain#	
+				</isNotEqual>
+		    </isNotEqual>
+   		</isNotEmpty>
+		AND otherColl.COLL_TIME > DATE_FORMAT(now(), '%Y-%m-%d %H:%i:%S')- INTERVAL '10' MINUTE
+		AND otherColl.COLL_TIME <![CDATA[ <= ]]> DATE_FORMAT(now(), '%Y-%m-%d %H:%i:%S')
+		GROUP BY
+			otherColl.EQ_ID,
+			otherColl.KPI_ID
+		ORDER BY
+			KPI_VALUE DESC
+		LIMIT 5
+	</select>
+	
+</sqlMap>

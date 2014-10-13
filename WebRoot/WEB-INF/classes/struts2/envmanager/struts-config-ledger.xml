@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="ledger"
+			 extends="global_package">
+		<action name="ledger_*"
+				class="ledgerAction" method="{1}">
+			<result name="success">/envmanager/ledger/listLedger.jsp</result>
+			<result name="add">/envmanager/ledger/editLedger.jsp</result>
+			<result name="update">/envmanager/ledger/editLedger.jsp</result>
+			<result name="save" type="redirect">ledger_queryLedgerList.do</result>
+			<result name="del" type="redirect">ledger_queryLedgerList.do</result>
+		
+		</action>
+			
+	</package>
+</struts>

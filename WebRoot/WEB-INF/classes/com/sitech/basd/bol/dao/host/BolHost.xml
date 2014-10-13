@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BolHost">
+	<typeAlias alias="BolHostVO"
+		type="com.sitech.basd.bol.domain.host.BolHostVO" />
+
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+	<insert id="insertByBolHostVO" parameterClass="BolHostVO">
+		insert into HOST
+		(HOST_ID,PARAM_SERVER,HOST_NAME,HOST_DESC,IP,STATE,STATE_DATE,HOST_TYPE,ISACTIVE,CAPABILITY)
+		values
+		(#id#,0,#name#,#descrip#,#ipaddress#,#status#,sysdate,#hostType#,#isActive#,#capability#)
+	</insert>
+	
+	<sql id="Columns">
+		HOST_ID id,PARAM_SERVER paramServer,HOST_NAME name,HOST_DESC descrip,
+		IP ipaddress,STATE status,to_char(STATE_DATE,'yyyy-mm-dd hh24:mi:ss') lastUpdate,
+		ISACTIVE isActive,HOST_TYPE hostType,nvl(CAPABILITY,0) capability,nvl(HOST_CODE,'') hostCode
+	</sql>
+	
+	<sql id="querySqlBase">
+		select
+		<include refid="Columns" />
+		from HOST
+		<dynamic prepend="where">
+			<isGreaterThan property="id" compareValue="0" prepend="and">
+				HOST_ID =#id#
+			</isGreaterThan>
+			<isNotEmpty property="name" prepend="and">
+				HOST_NAME like '%'||#name#||'%'
+			</isNotEmpty>
+			<isNotEmpty property="ipaddress" prepend="and">
+				IP like '%'||#ipaddress#||'%'
+			</isNotEmpty>
+			<isGreaterThan property="status" compareValue="-1" prepend="and">
+				STATE =#status#
+			</isGreaterThan>
+			<isNotNull property="hostCode" prepend="and">
+				HOST_CODE = #hostCode#
+			</isNotNull>
+		</dynamic>
+		order by id asc
+	</sql>
+	
+	<select id="queryID" resultClass="java.lang.Integer">
+		select max(HOST_ID) from HOST
+	</select>
+	
+	<select id="queryForListByObj" parameterClass="BolHostVO"
+		resultClass="BolHostVO">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="querySqlBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+
+	<select id="queryForCount" parameterClass="BolHostVO"
+		resultClass="int">
+		select count(id) from (
+		<include refid="querySqlBase" />
+		) virtual_table
+	</select>
+	
+	<!-- 更新一条交换机记录 -->
+	 <update id="updateByBolHostVO" parameterClass="BolHostVO">
+	 	UPDATE HOST 
+	 	<dynamic prepend="set">
+	 		<isNotEmpty prepend="," property="name">
+	 			HOST_NAME=#name#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="ipaddress">
+	 			IP=#ipaddress#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="descrip">
+	 			HOST_DESC=#descrip#
+	 		</isNotEmpty>
+	 		<isGreaterThan prepend="," property="status"  compareValue="-1">
+	 			STATE=#status#
+	 		</isGreaterThan>
+	 		<isNotEmpty prepend="," property="lastUpdate">
+	 			STATE_DATE=sysdate
+	 		</isNotEmpty>
+	 		<isGreaterThan prepend="," property="isActive" compareValue="-1">
+	 			ISACTIVE=#isActive#
+	 		</isGreaterThan>
+	 		<isGreaterThan prepend="," property="hostType" compareValue="-1">
+	 			HOST_TYPE=#hostType#
+	 		</isGreaterThan>
+	 		<isGreaterThan prepend="," property="capability" compareValue="0">
+	 			CAPABILITY=#capability#
+	 		</isGreaterThan>
+	 	</dynamic>
+        where HOST_ID=#id#
+	 </update>
+	 <!-- 删除数据 -->
+	 <delete id="deleteByBolHostVO" parameterClass="BolHostVO">
+	 	delete HOST
+	 	<dynamic prepend="where">
+	 		<isNotEmpty prepend="," property="id">
+	 			HOST_ID=#id#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="ipaddress">
+	 			IP=#ipaddress#
+	 		</isNotEmpty>
+	 	</dynamic>
+	 </delete>
+</sqlMap>

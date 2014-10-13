@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="proAndVMrelation">
+
+	<typeAlias alias="RelationObj"
+		type="com.sitech.basd.cloud3.domain.departproject.RelationObj" />
+	<typeAlias alias="VMHostObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj" />
+    <sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	 <!-- 查询组已选的虚拟机列表 -->
+	 <sql id="querySelectedVMBase">
+	 	SELECT
+				v.VH_ID VH_ID,
+				v.VH_NAME VH_NAME,
+				v.VH_TYPE VH_TYPE,
+				v.VH_IP VH_IP,
+				v.VH_CPU VH_CPU,
+				v.VH_MEM VH_MEM,
+				v.VH_STORAGE VH_STORAGE,
+				v.VH_SYSTEM VH_SYSTEM,
+				v.VH_STAT VH_STAT,
+				v.VH_UUID VH_UUID,
+				v.CONNECT_ID connectId
+		from tb_cloud2_vmhost_info v
+			where v.VH_UUID in (select b.vm_uuid from tb_project_vm_relation b where b.project_id = #PROJECT_ID#)
+			and v.CONNECT_ID in (select b.connect_id from tb_project_vm_relation b where b.project_id = #PROJECT_ID#)
+				<isNotEmpty property="VH_NAME" prepend="and">
+                	v.VH_NAME like '%'||#VH_NAME#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="VH_IP" prepend="and">
+               	 VH_IP like '%'||#VH_IP#||'%'
+               </isNotEmpty>
+                <isNotEmpty property="VH_TYPE" prepend="and">
+               	 VH_TYPE = #VH_TYPE#
+               </isNotEmpty>
+	 </sql>
+	  <select id="querySelectedVMList" parameterClass="VMHostObj" resultClass="VMHostObj">
+	  		<include refid="querySelectedVMBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	</select>
+	 <select id="querySelectedVMListCount" parameterClass="VMHostObj"  resultClass="int">
+	      select count(VH_ID) from (
+	        <include refid="querySelectedVMBase"/>
+	       ) virtual_table
+	  </select>
+	
+	 <!-- 查询备选虚拟机 查询备选虚拟机,project_id变为动态参数，在虚拟机关联时，查询待关联的虚拟机时，查询未关联的虚拟机 -->
+	 <sql id="queryRemainVMBase">
+		 SELECT
+				v.VH_ID VH_ID,
+				v.VH_NAME VH_NAME,
+				v.VH_TYPE VH_TYPE,
+				v.VH_IP VH_IP,
+				v.VH_CPU VH_CPU,
+				v.VH_MEM VH_MEM,
+				v.VH_STORAGE VH_STORAGE,
+				v.VH_SYSTEM VH_SYSTEM,
+				v.VH_STAT VH_STAT,
+				v.VH_UUID VH_UUID,
+				v.CONNECT_ID connectId
+		from tb_cloud2_vmhost_info v
+			where v.VH_UUID not in (select b.vm_uuid from tb_project_vm_relation b 
+				<dynamic prepend="where">
+					<isNotEmpty property="PROJECT_ID">
+						b.project_id = #PROJECT_ID#
+					</isNotEmpty>
+				</dynamic>
+			)
+			<isNotEmpty property="VH_NAME" prepend="and">
+                	v.VH_NAME like CONCAT('%',#VH_NAME#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="VH_IP" prepend="and">
+               	 VH_IP like CONCAT('%',#VH_IP#,'%')
+               </isNotEmpty>
+                <isNotEmpty property="VH_TYPE" prepend="and">
+               	 VH_TYPE = #VH_TYPE#
+               </isNotEmpty>
+	 </sql>
+	<select id="queryRemainVMList" parameterClass="VMHostObj" resultClass="VMHostObj">
+			<include refid="queryRemainVMBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	</select>
+	 <select id="queryRemainVMListCount" parameterClass="VMHostObj"  resultClass="int">
+	      select count(VH_ID) from (
+	        <include refid="queryRemainVMBase"/>
+	       ) virtual_table
+	  </select>
+	
+	
+	<!-- 删除虚拟机与项目的关系 -->
+	 <delete id="deleteRelation" parameterClass="RelationObj">
+	 	delete from tb_project_vm_relation 
+	 	<dynamic prepend="where">
+	 			<isNotEmpty property="vmuuId" prepend="and">
+	 				vm_uuid = #vmuuId#
+	 			</isNotEmpty>
+	 			<isNotEmpty property="connectId" prepend="and">
+	 				connect_id = #connectId#
+	 			</isNotEmpty>
+	 			<isNotEmpty property="projectId" prepend="and">
+	 				project_id = #projectId#
+	 			</isNotEmpty>
+	 	</dynamic>
+	 </delete>
+	 <!-- 插入虚拟机和项目关系表中 -->
+	  <insert id="insertRelation" parameterClass="RelationObj">
+	 	insert into tb_project_vm_relation (id,project_id,vm_uuid,connect_id) values(#relatonId#,#projectId#,#vmuuId#,#connectId#)
+	 </insert>
+	 <!-- 根据用户项目查询对应的虚拟机列表 -->
+	 <sql id ="queryVMByObjBase">
+	  	 SELECT
+				v.VH_ID VH_ID,
+				v.VH_NAME VH_NAME,
+				v.VH_TYPE VH_TYPE,
+				v.VH_IP VH_IP,
+				v.VH_CPU VH_CPU,
+				v.VH_MEM VH_MEM,
+				v.VH_STORAGE VH_STORAGE,
+				v.VH_SYSTEM VH_SYSTEM
+		from tb_cloud2_vmhost_info v,tb_project_vm_relation a where v.VH_UUID = a.vm_uuid 
+			and v.CONNECT_ID = a.connect_id 
+				<isNotEmpty prepend="and" property="PROJECT_ID">
+		  			a.project_id = #PROJECT_ID#
+		  		</isNotEmpty>
+               <isNotEmpty property="VH_NAME" prepend="and">
+                	v.VH_NAME like CONCAT('%',#VH_NAME#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="VH_IP" prepend="and">
+               		 v.VH_IP like CONCAT('%',#VH_IP#,'%')
+               </isNotEmpty>
+                <isNotEmpty property="VH_TYPE" prepend="and">
+               	 	v.VH_TYPE = #VH_TYPE#
+               </isNotEmpty>
+	  </sql>
+	  <select id="queryVMByProjectId" parameterClass="VMHostObj" resultClass="VMHostObj">
+	  		<include refid="queryVMByObjBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	   <select id="queryVMByProjectIdCount" parameterClass="VMHostObj"  resultClass="int">
+	      select count(VH_ID) from (
+	        <include refid="queryVMByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <select id="queryForListByPro" parameterClass="RelationObj" resultClass="RelationObj">
+	  		select ID relatonId,PROJECT_ID projectId,VM_UUID vmuuId,CONNECT_ID connectId from tb_project_vm_relation where PROJECT_ID = #projectId#
+	  </select>
+	  
+</sqlMap>

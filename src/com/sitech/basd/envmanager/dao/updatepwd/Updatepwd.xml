@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Updatepwd">
+	<typeAlias alias="UpdatepwdObj" type="com.sitech.basd.envmanager.domain.updatepwd.UpdatepwdObj"/>
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<select id="queryPwdOne" parameterClass="UpdatepwdObj" resultClass="UpdatepwdObj">
+	 	select  PWD_ID, IPADDRESS ,PWD_USER,PWD_NEW ,DEVICE_ID  
+		 from  ENV_PWD 
+	     where  PWD_ID =#pwd_id#
+	</select>
+	<delete id="deletePwdObj">
+		delete ENV_PWD where PWD_ID =#pwd_id#
+	</delete>
+	<update id="updatePwdObj" parameterClass="UpdatepwdObj">
+	update ENV_PWD set IPADDRESS=#IPADDRESS# ,PWD_USER=#PWD_USER#,PWD_NEW=#PWD_NEW# where  PWD_ID=#pwd_id#
+	</update>
+	<insert id="insertPwdObj" parameterClass="UpdatepwdObj">
+		<selectKey  resultClass="int"  keyProperty="pwd_id">
+	 	  	select ID_Updatepwd.nextval as pwd_id from dual
+	 	</selectKey>
+		insert into ENV_PWD(PWD_ID, IPADDRESS ,PWD_USER,PWD_NEW ,DEVICE_ID)
+			values(#pwd_id#, #IPADDRESS# ,#PWD_USER#,#PWD_NEW# ,#DEVICE_ID#)
+	</insert>
+	 <sql id="queryUpdatepwdObj">
+		 select  PWD_ID, IPADDRESS ,PWD_USER,PWD_NEW ,DEVICE_ID  
+		 from  ENV_PWD 
+	     where  DEVICE_ID =#DEVICE_ID#
+	     <isNotNull property="PWD_USER">
+		 <isNotEmpty property="PWD_USER" prepend="and">
+               PWD_USER like '%'||#PWD_USER#||'%'
+            </isNotEmpty>
+         </isNotNull>
+          <isNotNull property="IPADDRESS">
+		 <isNotEmpty property="IPADDRESS" prepend="and">
+               IPADDRESS like '%'||#IPADDRESS#||'%'
+            </isNotEmpty>
+         </isNotNull>
+	       
+	 </sql>
+ 	<select id="queryUpdatepwdObj" parameterClass="UpdatepwdObj"
+		resultClass="UpdatepwdObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryUpdatepwdObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryPwdObjCount" parameterClass="UpdatepwdObj"
+		resultClass="int">
+		select count(PWD_ID) from (
+		<include refid="queryUpdatepwdObj" />
+		) virtual_table
+	</select>
+</sqlMap>

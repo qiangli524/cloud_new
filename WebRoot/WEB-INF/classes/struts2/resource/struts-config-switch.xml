@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="switch" extends="global_package">
+		<action name="switchAction_*"
+				class="switchAction" method="{1}">
+			<result name="list">/resource/switch/switchList.jsp</result>
+			<result name="ah_list">/ah/switch/ah_switchList.jsp</result>
+			<result name="detail">/resource/switch/switchDetail.jsp</result>
+			<result name="mod">/resource/switch/switchEdit.jsp</result>
+			<result name="ah_mod">/ah/switch/ah_switchEdit.jsp</result>
+			<result name="insert" type="json"></result>
+			<result name="update" type="json"></result>
+			<result name="del" type="redirectAction">switchAction_list</result>
+		</action>
+		<action name="switchPerformanceAction_*"
+				class="switchPerformanceAction" method="{1}">
+			<result name="list">/resource/switch/switchPerformanceList.jsp</result>		
+		</action>
+		<action name="vlanAction_*" class="vlanAction" method="{1}">
+			<result name="list">/resource/switch/vlanList.jsp</result>
+			<result name="mod">/resource/switch/vlanEdit.jsp</result>
+			<result name="add">/resource/switch/vlanAdd.jsp</result>
+			<result name="save" type="json"></result>
+			<result name="del" type="json"></result>
+		</action>
+		<action name="switchInterfaceAction_*" class="switchInterfaceAction" method="{1}">
+			<result name="list">/resource/switch/interfaceList.jsp</result>
+			<result name="ah_list">/ah/switch/ah_interfaceList.jsp</result>
+			<result name="mod">/resource/switch/interfaceEdit.jsp</result>
+			<result name="add">/resource/switch/interfaceEdit.jsp</result>
+			<result name="ah_save" type="json"></result>
+			<result name="save" type="json"></result>
+			<result name="del" type="json"></result>
+			<result name="ah_del" type="json"></result>
+			<result name="static_config">/resource/switch/staticRouterConfig.jsp</result>
+		</action>
+		<action name="staticRouterAction_*" class="staticRouterAction" method="{1}">
+			<result name="list">/resource/switch/staticRouterList.jsp</result>
+			<result name="mod">/resource/switch/staticRouterConfig.jsp</result>
+			<result name="add">/resource/switch/staticRouterConfig.jsp</result>
+			<result name="save" type="json"></result>
+			<result name="del" type="json"></result>
+		</action>
+ </package>
+</struts>

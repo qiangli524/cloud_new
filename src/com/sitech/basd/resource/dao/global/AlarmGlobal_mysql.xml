@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AlarmGlobal">
+
+<!-- 查询告警topN Y轴值-->
+	<select id="queryTopAlarm" parameterClass="java.util.HashMap" resultClass="java.lang.Double">
+		<![CDATA[
+			select t.EVENT_LEVEL y from tb_cloud2_monitor_alarm t
+			where EVENT_STAT = 0
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	t.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[ 
+			order by EVENT_LEVEL asc,EVENT_COUNT desc,ALARM_TIME desc limit 0,#top_num#
+		]]>
+	</select>
+	
+<!-- 查询告警topN X轴值-->
+	<select id="queryAlarmXData" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		<![CDATA[
+			select t.EVENT_LOCATION x from tb_cloud2_monitor_alarm t
+			where EVENT_STAT = 0 
+		]]>
+				<isNotEmpty property="domain">
+	               	  <isNotEqual compareValue="null" property="domain">
+			             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+			               	t.domain =#domain#	
+			             </isNotEqual>
+		             </isNotEqual>
+	    		</isNotEmpty>
+		<![CDATA[
+			order by EVENT_LEVEL asc,EVENT_COUNT desc,ALARM_TIME desc limit 0,#top_num#
+		]]>
+	</select>
+</sqlMap>

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="VirtualDisk">
+<typeAlias alias="VirtualDiskObj" type="com.sitech.shop.domain.disk.VirtualDiskObj"/>
+	<sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+         ]]>
+	</sql>
+	
+	<sql id="baseColoums">
+		 a.id,
+		 a.`name`,
+		 a.connectCode,
+		 a.datacenterCode,
+		 a.datastoreCode,
+		 a.capacityInMB,
+		 a.path,
+		 a.user_id,
+		 a.label,
+		 DATE_FORMAT(a.create_time,'%Y-%m-%d %H:%i:%s') create_time,
+		 a.disk_type,
+		 a.state
+		 
+	</sql>
+	
+	<sql id="whereClause">
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="id" prepend="and">
+				a.id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				a.`name` = #name#
+			</isNotEmpty>
+			<isNotEmpty property="connectCode" prepend="and">
+				a.connectCode = #connectCode#
+			</isNotEmpty>
+			<isNotEmpty property="datacenterCode" prepend="and">
+				a.datacenterCode = #datacenterCode#
+			</isNotEmpty>
+			<isNotEmpty property="datastoreCode" prepend="and">
+				a.datastoreCode = #datastoreCode#
+			</isNotEmpty>
+			<isNotEmpty property="capacityInMB" prepend="and">
+				a.capacityInMB = #capacityInMB#
+			</isNotEmpty>
+			<isNotEmpty property="path" prepend="and">
+				a.path = #path#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				a.user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="label" prepend="and">
+				a.label = #label#
+			</isNotEmpty>
+			<isNotEmpty property="disk_type" prepend="and">
+				a.disk_type = #disk_type#
+			</isNotEmpty>
+			<isNotEmpty property="connectCodeList" prepend="and">
+				a.connectCode in
+				<iterate close=")" conjunction="," open="(" property="connectCodeList">
+					#connectCodeList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<sql id="baseQuerySql">
+		select
+		<include refid="baseColoums"/>
+		from tb_virtual_disk a
+		<include refid="whereClause"/>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="VirtualDiskObj" resultClass="VirtualDiskObj">
+		select
+		<include refid="baseColoums"/>,count(b.id) vmNum,c.VH_NAME vm_name
+		from tb_virtual_disk a 
+		LEFT JOIN tb_vm_disk_relation b ON a.id = b.virdisk_id
+		LEFT JOIN tb_cloud2_vmhost_info c ON b.connect_id = c.connect_id and b.vm_uuid = c.vh_uuid
+		<include refid="whereClause"/>
+		GROUP BY a.id
+		ORDER BY a.create_time DESC
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd"/> 
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCountByObj" parameterClass="VirtualDiskObj" resultClass="int">
+		select count(b.id) from (
+			<include refid="baseQuerySql"/>
+		) b
+	</select>
+	
+	<insert id="insertByObj" parameterClass="VirtualDiskObj">
+		insert into tb_virtual_disk (
+			id,name,connectCode,datacenterCode,datastoreCode,capacityInMB,path,user_id,label,create_time,disk_type,state,service_status
+		) values (
+			#id#,#name#,#connectCode#,#datacenterCode#,#datastoreCode#,#capacityInMB#,#path#,#user_id#,#label#,#create_time#,#disk_type#,#state#,#service_status#
+		)
+	</insert>
+	 
+	<delete id="deleteByObj" parameterClass="VirtualDiskObj">
+		delete from tb_virtual_disk where id = #id#
+	</delete>
+	
+	<select id="queryForListDetail" parameterClass="VirtualDiskObj" resultClass="VirtualDiskObj">
+		select 
+		<include refid="baseColoums"/>,b.vm_uuid
+		from tb_virtual_disk a
+		LEFT JOIN tb_vm_disk_relation b ON a.id = b.virdisk_id
+		<include refid="whereClause"/>
+	</select>
+	
+	<update id="updateByObj" parameterClass="VirtualDiskObj">
+		update tb_virtual_disk
+		<dynamic prepend="set">
+			<isNotEmpty property="id" prepend=",">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend=",">
+				`name` = #name#
+			</isNotEmpty>
+			<isNotEmpty property="connectCode" prepend=",">
+				connectCode = #connectCode#
+			</isNotEmpty>
+			<isNotEmpty property="datacenterCode" prepend=",">
+				datacenterCode = #datacenterCode#
+			</isNotEmpty>
+			<isNotEmpty property="datastoreCode" prepend=",">
+				datastoreCode = #datastoreCode#
+			</isNotEmpty>
+			<isNotEmpty property="capacityInMB" prepend=",">
+				capacityInMB = #capacityInMB#
+			</isNotEmpty>
+			<isNotEmpty property="path" prepend=",">
+				path = #path#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend=",">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="label" prepend=",">
+				label = #label#
+			</isNotEmpty>
+			<isNotEmpty property="disk_type" prepend=",">
+				disk_type = #disk_type#
+			</isNotEmpty>
+			<isNotEmpty property="create_time" prepend=",">
+				create_time = #create_time#
+			</isNotEmpty>
+			<isNotEmpty property="end_time" prepend=",">
+				end_time = #end_time#
+			</isNotEmpty>
+			<isNotEmpty property="service_status" prepend=",">
+				service_status = #service_status#
+			</isNotEmpty>
+		</dynamic>
+		where id = #id#
+	</update>
+	
+	<update id="updateByPath" parameterClass="VirtualDiskObj">
+		update tb_virtual_disk
+		<dynamic prepend="set">
+			<isNotEmpty property="name" prepend=",">
+				`name` = #name#
+			</isNotEmpty>
+			<isNotEmpty property="datastoreCode" prepend=",">
+				datastoreCode = #datastoreCode#
+			</isNotEmpty>
+			<isNotEmpty property="connectCode" prepend=",">
+				connectCode = #connectCode#
+			</isNotEmpty>
+			<isNotEmpty property="datacenterCode" prepend=",">
+				datacenterCode = #datacenterCode#
+			</isNotEmpty>
+			<isNotEmpty property="capacityInMB" prepend=",">
+				capacityInMB = #capacityInMB#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend=",">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty property="path" prepend=",">
+				path = #path#
+			</isNotEmpty>
+			<isNotEmpty property="label" prepend=",">
+				label = #label#
+			</isNotEmpty>
+			<isNotEmpty property="disk_type" prepend=",">
+				disk_type = #disk_type#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="path">
+				path = #path#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="datacenterCode">
+				datacenterCode = #datacenterCode#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="connectCode">
+				connectCode = #connectCode#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+</sqlMap>

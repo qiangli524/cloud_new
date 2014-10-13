@@ -1,0 +1,12 @@
+/*
+ * @Filename: scrollText.css
+ * @Description: scrollText style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: wangchen
+*/
+.ued-scrollText{
+	width:100%;
+	height: 60px;
+	overflow:hidden;
+}

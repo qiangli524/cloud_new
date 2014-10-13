@@ -1,0 +1,35 @@
+/*
+ * @Filename: list.css
+ * @Description: list style
+ * @Version: 1.0.0
+ * @Author: dujj
+ * @Update: yangpl
+*/
+.ued-plist{ width:100%; } 
+.ued-plist dl{ float:left; padding:10px; margin:0; width:102px;}
+.ued-plist dt img{ padding:1px; border:1px solid #d1d1d1; width:100px; height:100px;}
+.ued-plist dd{ text-align:center; margin:0; line-height:1.5em;}
+.ued-plist a{ color:#666;}
+.ued-plist a.title{ font-weight:bold; color:#3366ff;}
+.ued-plist span.line{ display:inline-block; font-size:10px; color:#999;padding:0 4px;}
+
+
+.ued-plist-hz{ width:100%; color:#666666} 
+.ued-plist-hz dl{ float:left; width:300px;  padding:10px; margin:0;}
+.ued-plist-hz dt{ width:100px; float:left; font-weight:normal;}
+.ued-plist-hz dt p{ text-align:center;}
+.ued-plist-hz dt img{ padding:1px; border:1px solid #ddd;}
+.ued-plist-hz dd{ margin-left:110px; line-height:1.5em;}
+.ued-plist-hz a.title{ font-weight:bold; color:#3366ff;}
+.ued-plist-hz a.more{ float:right; margin-right:10px; color:#3366ff;}
+
+.ued-list-vt{ width:100%;} 
+.ued-list-vt dl{padding:10px; margin:0 150px 0 0;}
+.ued-list-vt dt{ width:100px; float:left; font-weight:normal;}
+.ued-list-vt dt p{ text-align:center;}
+.ued-list-vt dt img{ width:100px; height:100px; padding:1px; border:1px solid #ddd;}
+.ued-list-vt dd{ margin-left:110px; line-height:1.5em;}
+.ued-list-vt dd a{color:#3366ff; font-weight:bold; font-size:14px;}
+.ued-list-vt .hot{ color:#F30; margin-top:6px; font-size:12px;}
+.ued-list-vt b.hot{ font-size:18px;}
+.ued-list-vt .extra-part{ float:right; padding:20px; text-align:center;}

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Scriptmanage">
+    <typeAlias alias="ScriptmanageObj" type="com.sitech.basd.envmanager.domain.scriptmanage.ScriptmanageObj"/>
+	 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<update id="updateScriptmanageObj" parameterClass="ScriptmanageObj">
+		update tb_script_info set s_id = #s_id#,config_id = #config_id#,SCRIPT_CONTENT= #SCRIPT_CONTENT#,SCRIPT_USE = #SCRIPT_USE# where s_id = #s_id#
+	</update>
+	<insert id="insertScriptmanageObj">
+		insert into tb_script_info(s_id,config_id,script_content,script_use,create_time)
+		values(#s_id#,#config_id#,#SCRIPT_CONTENT#,#SCRIPT_USE#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'))
+	</insert>
+	<delete id="deleteScriptmanageObj">
+		delete from tb_script_info where s_id = #s_id#
+	</delete> 
+	<sql id="queryScriptmanageObj">
+		select s.s_id,s.script_content,s.script_use ,DATE_FORMAT(s.create_time,'%Y-%m-%d %H:%i:%S')  create_time ,c.hostusername,c.hosrpwd ,h.eq_ip
+			from tb_script_info s ,tb_cloud2_host_config  c,tb_cloud2_host_info h
+			where s.config_id=c.id and c.hostid= h.id
+			 <isNotEmpty property="HOSTUSERNAME" prepend="and">
+               c.hostusername =#HOSTUSERNAME#
+            </isNotEmpty>
+             <isNotEmpty property="EQ_IP" prepend="and">
+               h.eq_ip =#EQ_IP#
+            </isNotEmpty>
+	</sql>
+	<select id="queryScriptmanageObj" parameterClass="ScriptmanageObj"
+		resultClass="ScriptmanageObj"> 
+		<include refid="queryScriptmanageObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryScriptmanageObjCount" parameterClass="ScriptmanageObj" resultClass="int">
+		select count(s_id) from (
+		<include refid="queryScriptmanageObj" />
+		) virtual_table
+	</select>
+	<select id="queryHostipObj" parameterClass="ScriptmanageObj" resultClass="ScriptmanageObj">
+		select eq_ip,id from tb_cloud2_host_info
+	</select>
+	<select id="queryConfigObj" parameterClass="ScriptmanageObj" resultClass="ScriptmanageObj">
+		select  id, hostusername from tb_cloud2_host_config where hostid = #host_id#
+	</select>
+	<select id="queryScriptmanageOne" parameterClass="ScriptmanageObj" resultClass="ScriptmanageObj">
+		select h.eq_ip,h.id ,f.s_id,f.hostusername ,f.hosrpwd ,f.script_content,f.script_use ,f.id,f.config_id from tb_cloud2_host_info h
+		,(select c.hostid ,c.hostusername,c.hosrpwd ,g.s_id,g.script_content,g.script_use ,c.id,g.config_id from tb_cloud2_host_config c 
+		,(select s.s_id, s.config_id, s.script_content,s.script_use from tb_script_info s where s_id=#s_id#) g
+		where c.id=g.config_id ) f
+		where f.hostid= h.id
+	</select>
+	
+</sqlMap>

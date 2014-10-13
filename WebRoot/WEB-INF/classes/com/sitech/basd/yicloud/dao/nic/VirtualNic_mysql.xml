@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="vmwareVirtualNic">
+	<typeAlias alias="VirtualNicObj"
+		type="com.sitech.basd.yicloud.domain.nic.VirtualNicObj" /> 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	 <insert id="insertByObj" parameterClass="VirtualNicObj">
+		insert into TB_CLOUD2_VIRTUALNIC(
+			NAME,IPADDRESS,UUID
+		)
+		values(#name#,#ipAddress#,#uuid#)
+	  </insert>
+	  
+	  <select id="queryForListByObj" parameterClass="VirtualNicObj" resultClass="VirtualNicObj">
+		select ID,NAME,IPADDRESS,UUID from TB_CLOUD2_VIRTUALNIC
+		<dynamic prepend="where">
+			<isNotNull property="uuid" prepend="and">
+				UUID=#uuid#
+			</isNotNull>
+		</dynamic>
+	 </select>
+	 
+	 <delete id="deleteByObj" parameterClass="VirtualNicObj">
+		delete from TB_CLOUD2_VIRTUALNIC 
+		<dynamic prepend="where">
+			<isGreaterThan property="id" prepend="and" compareValue="0">
+				ID = #id#
+			</isGreaterThan>
+			<isNotNull property="uuid" prepend="and">
+				UUID = #uuid#
+			</isNotNull>
+		</dynamic>
+	</delete>
+</sqlMap>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="DepartInfo">
+
+	<typeAlias alias="departInfoObj"
+		type="com.sitech.basd.cloud3.domain.departproject.DepartInfoObj" />
+	  
+	  <sql id="baseCloumns">
+	  	id,`name`,leader,type,parent_id
+	  </sql>
+	  
+	  <select id="queryForList" parameterClass="departInfoObj" resultClass="departInfoObj">
+	  		select 
+	  		<include refid="baseCloumns"/>
+	  		from tb_depart_info 
+	  		<dynamic prepend="where">
+	  			<isNotEmpty prepend="and" property="id">
+	  				id = #id#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="name">
+	  				name = #name#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="leader">
+	  				leader = #leader#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="parent_id">
+	  				parent_id = #parent_id#
+	  			</isNotEmpty>
+	  			<isNotEmpty prepend="and" property="type">
+	  				type = #type#
+	  			</isNotEmpty>
+	  		</dynamic>
+	  </select>
+	  
+</sqlMap>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsUser">
+
+	<typeAlias alias="_userModel" type="com.sitech.ssd.sc.os.domain.OsUserModel" />
+
+	<sql id="incompleteTableColumns">
+		os_host_id,user_name,pass_word,primary_group,home_dir,user_id,user_desc
+	</sql>
+
+	<sql id="tableColumns">
+		id,
+		<include refid="incompleteTableColumns" />
+	</sql>
+
+	<insert id="insertUser" parameterClass="_userModel">
+		insert into tb_os_user(
+		<include refid="incompleteTableColumns" />
+		)
+		values(#os_host_id#,#user_name#,#pass_word#,#primary_group#,#home_dir#,#user_id#,#user_desc#)
+	</insert>
+	
+	<insert id="copyOsTemplateUser" parameterClass="_userModel">
+		<!-- 
+		INSERT INTO tb_os_user(os_host_id,user_name,pass_word,primary_group,home_dir,flag)
+		SELECT #os_host_id# os_host_id,user_name,pass_word,primary_group,home_dir,'1' flag 
+		FROM tb_os_template_user WHERE template_id  = #id#
+		-->
+		INSERT INTO tb_os_user(os_host_id,user_name,pass_word,primary_group,home_dir,flag,user_id,user_desc)
+		SELECT p.os_host_id,tu.user_name,tu.pass_word,p.id primary_group,home_dir,p.flag,tu.user_id,tu.user_desc
+		FROM tb_os_template_user tu, tb_os_template_group tp,tb_os_group p
+		WHERE tu.primary_group = tp.id AND tp.group_name = p.group_name 
+		  AND tu.template_id = #id# AND p.os_host_id = #os_host_id# AND p.flag = #flag#  
+	</insert>
+
+	<delete id="deleteUser" parameterClass="_userModel">
+		delete from tb_os_user
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="flag" prepend="and">
+				flag = #flag#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateUser" parameterClass="_userModel">
+		update tb_os_user
+		set
+			os_host_id = #os_host_id#, user_name = #user_name#,
+		    pass_word = #pass_word#,primary_group = #primary_group#,
+		    home_dir = #home_dir#,user_id = #user_id#,user_desc = #user_desc#
+		where id = #id#
+	</update>
+
+	<select id="queryForList" parameterClass="_userModel"
+		resultClass="_userModel">
+		select
+		<include refid="tableColumns" />,flag
+		from tb_os_user
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="user_name" prepend="and">
+				user_name = #user_name#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="showOsUserList" parameterClass="_userModel"
+		resultClass="_userModel">
+		SELECT
+			u.id,
+			u.os_host_id,
+			u.user_name,
+			u.pass_word,
+			u.home_dir,
+			u.flag,
+			u.user_id,
+			u.user_desc,
+			g.group_name primary_group
+		FROM
+			tb_os_user u,
+			tb_os_group g
+		WHERE u.primary_group = g.id
+		  AND u.os_host_id = #os_host_id#
+	</select>
+	
+	<select id="unionOsUserList" parameterClass="_userModel"
+		resultClass="_userModel">
+		SELECT u.user_name,u.pass_word,u.home_dir,
+		       u.flag,u.user_id,u.user_desc,g.group_name primary_group
+		FROM tb_os_user u,tb_os_group g
+		WHERE u.primary_group = g.id AND u.os_host_id = #os_host_id#
+		UNION
+		SELECT u.user_name,u.pass_word,u.home_dir,
+		       '1' flag,u.user_id,u.user_desc,g.group_name primary_group
+		FROM tb_os_template_user u,tb_os_template_group g
+		WHERE u.primary_group = g.id AND u.template_id = #id#
+	</select>	
+</sqlMap>

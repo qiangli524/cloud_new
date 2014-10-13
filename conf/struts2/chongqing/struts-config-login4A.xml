@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="login4A" extends="global_package">
+		<action name="login4A_*" class="login4AAction" method="{1}">
+			<result name="success"  type="redirect">home_main.do</result>
+			<result name="login" type="redirect">/chongqing/login4A/login4A.jsp</result>
+<!-- 			<result name="ugoupsuccess"  type="redirect">ugroup_listUsergroup.do</result> -->
+			<result name="ugoupsuccess">/sxcloud/system/listUsergroup.jsp</result>
+		</action>
+		
+		<action name="loginCT4A_*" class="loginCT4AAction" method="{1}">
+			<result name="success"  type="redirect">home_main.do</result>
+			<result name="login" >/chongqing/login4A/login4A.jsp</result>
+			<result name="fail4a">/chongqing/login4A/loginfail.jsp</result>
+<!-- 			<result name="ugoupsuccess"  type="redirect">ugroup_listUsergroup.do</result> -->
+			<result name="ugoupsuccess">/sxcloud/system/listUsergroup.jsp</result>
+		</action>
+		
+	</package>
+ </struts>

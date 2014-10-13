@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="softmanage"
+			 extends="global_package">
+		<action name="app_*"
+				class="baseAppAction" method="{1}"> 
+				
+			<result name="list">/sxcloud/softmanage/listApp.jsp</result>
+			<result name="add">/sxcloud/softmanage/editApp.jsp</result> 
+			<result name="modify">/sxcloud/softmanage/editApp.jsp</result>
+			<result name="redirect" type="redirect">/app_listApp.do?sys_id=${sysId}</result> 
+			<result name="listAppImage" >/sxcloud/softmanage/listAppImage.jsp</result>
+			<result name="remark" >/sxcloud/softmanage/remarkPage.jsp</result>
+			<result name="version" >/sxcloud/softmanage/historyVersion.jsp</result>
+			<result name="CatchImage" type="redirect">/app_listAppImage.do</result>
+			
+			<result name="validateBasepath" type="json">
+				<param name="root">basepathEnabled</param>
+			</result>
+			
+			<result name="result" type="json">
+				<param name="root">depNum</param>
+			</result>
+		</action>
+		
+		<action name="appport_*"
+				class="baseAppPortAction" method="{1}"> 
+		</action>
+		
+		<action name="software_*"
+				class="com.sitech.basd.sxcloud.rsmu.web.softmanage.action.SoftwareInfoAction" method="{1}"> 
+			<result name="listSoftware">/sxcloud/softmanage/listSoftwareInfo.jsp</result> 
+			<result name="modSoftwareInfo">/sxcloud/softmanage/editSoftwareInfo.jsp</result>
+			<result name="upload">/sxcloud/softmanage/addSoftwareRAR.jsp</result>
+			<result name="saveSoftwareRAR" type="redirect">software_listSoftwareInfo.do</result>
+			<result name="catchSoftware">/sxcloud/softmanage/catchSoftware.jsp</result>
+			<result name="fastCreateVersion">/sxcloud/softmanage/fastCreateVersion.jsp</result>
+			<result name="catchResult" type="json"></result>
+			<result name="listSoftwareInfoForSel">/sxcloud/softmanage/listSoftwareInfoForSel.jsp</result> 
+		</action>
+		
+		<action name="softwarehis_*"
+				class="softwareInfoHisAction" method="{1}"> 
+				
+			<result name="listSoftwareInfohis">/sxcloud/softmanage/listSoftwareInfoHis.jsp</result> 
+			<result name="delSoftwareInfohis" type="redirect">/softwarehis_listSoftwareInfohis.do</result> 
+		</action>
+		
+		<!-- 文件下载 -->
+		<action name="download" class="downloaFileAction">
+			 <result type="stream">
+                  <param name="contentType">application/octet-stream</param>
+                  <param name="inputName">inputStream</param>
+                  <param name="contentDisposition">attachment;filename="${fileName}"</param>
+                  <param name="bufferSize">4096</param>
+           	 </result>
+		</action>
+	</package>
+
+</struts>

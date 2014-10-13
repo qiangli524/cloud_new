@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbIp">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbCloud2IpInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.net.TbCloud2IpInfoObj"/>
+    <typeAlias alias="TbCloud2NetInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.net.TbCloud2NetInfoObj"/>
+    <typeAlias alias="AlarmAll" type="com.sitech.basd.sxcloud.cloud.web.showresource.form.AlarmHostStatistics"></typeAlias>
+    
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+    <sql id="TB_CLOUD2_IP_INFOColumns">
+		m.IP_ID,m.ISUSED,m.ISBLOCKED,m.IPADDRESS,m.IP_TYPE,to_char(m.INS_DATE,'yyyy-mm-dd hh24:mi:ss') INS_DATE,n.NAME,n.NET_ID
+    </sql>
+     <sql id="queryByObjBase">
+        select
+        <include refid="TB_CLOUD2_IP_INFOColumns"/>
+        from
+        	TB_CLOUD2_IP_INFO m  left join TB_CLOUD2_NET_INFO n
+        on  m.NET_ID = n.NET_ID
+        	<dynamic prepend="where">
+               <isNotEmpty property="IP_ID" prepend="and">
+                m.IP_ID =#IP_ID#
+               </isNotEmpty>
+                <isNotEmpty property="IP_TYPE" prepend="and">
+                m.IP_TYPE =#IP_TYPE#
+               </isNotEmpty>
+               <isNotEmpty property="ISUSED" prepend="and">
+                m.ISUSED =#ISUSED#
+               </isNotEmpty>
+                <isNotEmpty property="ISBLOCKED" prepend="and">
+                m.ISBLOCKED =#ISBLOCKED#
+               </isNotEmpty>
+               <isNotEmpty property="IPADDRESS" prepend="and">
+                m.IPADDRESS like '%'||#IPADDRESS#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="NET_ID" prepend="and">
+                m.NET_ID = #NET_ID#
+               </isNotEmpty>
+          </dynamic>
+           order by IPADDRESS asc
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="TbCloud2IpInfoObj" resultClass="TbCloud2IpInfoObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryByObjBase"/>
+	        
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  
+	 <select id="queryForListByIPObj" parameterClass="TbCloud2IpInfoObj" resultClass="TbCloud2IpInfoObj">
+	   	 select
+        <include refid="TB_CLOUD2_IP_INFOColumns"/>
+        from
+        	TB_CLOUD2_IP_INFO m,TB_CLOUD2_NET_INFO n
+        where m.NET_ID = n.NET_ID
+               <isNotEmpty property="IP_ID" prepend="and">
+                m.IP_ID =#IP_ID#
+               </isNotEmpty>
+                <isNotEmpty property="IP_TYPE" prepend="and">
+                m.IP_TYPE =#IP_TYPE#
+               </isNotEmpty>
+               <isNotEmpty property="ISUSED" prepend="and">
+                m.ISUSED =#ISUSED#
+               </isNotEmpty>
+                <isNotEmpty property="ISBLOCKED" prepend="and">
+                m.ISBLOCKED =#ISBLOCKED#
+               </isNotEmpty>
+               <isNotEmpty property="IPADDRESS" prepend="and">
+                m.IPADDRESS like '%'||#IPADDRESS#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="NET_ID" prepend="and">
+                m.NET_ID = #NET_ID#
+               </isNotEmpty>
+                order by IP_ID asc
+	  </select>
+	  
+	  <select id="queryByObjForCount" parameterClass="TbCloud2IpInfoObj" resultClass="int">
+	      select count(IP_ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <insert id="insertByObj" parameterClass="TbCloud2IpInfoObj">
+	  <selectKey resultClass="String" keyProperty="IP_ID" >
+	  	select IP_INFO_SEQ.nextval as IP_ID from dual
+	  	</selectKey>
+		insert into TB_CLOUD2_IP_INFO(
+		IP_ID,ISUSED,ISBLOCKED,IPADDRESS,INS_DATE,NET_ID,IP_TYPE
+		)
+		values(#IP_ID#,'0','0',#IPADDRESS#,sysdate,#NET_ID#,#IP_TYPE#)
+	  </insert>
+	  
+	  <update id="updateByObj" parameterClass="TbCloud2IpInfoObj">
+		update TB_CLOUD2_IP_INFO set ISUSED=#ISUSED#,ISBLOCKED=#ISBLOCKED#,IPADDRESS=#IPADDRESS#,INS_DATE=sysdate,NET_ID=#NET_ID# ,IP_TYPE=#IP_TYPE#
+		where IP_ID=#IP_ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="TbCloud2IpInfoObj">
+		delete from TB_CLOUD2_IP_INFO
+		<dynamic prepend="where">
+			<isNotNull property="IP_ID">
+				<isNotEmpty property="IP_ID" prepend="and">
+					IP_ID=#IP_ID#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="and" property="NET_ID">
+				NET_ID=#NET_ID#
+			</isNotNull>
+			<isNotNull prepend="and" property="IPADDRESS">
+				IPADDRESS=#IPADDRESS#
+			</isNotNull>
+		</dynamic>
+	  </delete>
+	  <select id="queryForListByNetObj" parameterClass="TbCloud2NetInfoObj" resultClass="TbCloud2NetInfoObj">
+		select NET_ID,NAME from TB_CLOUD2_NET_INFO
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="NET_ID">
+				NET_ID = #NET_ID#
+			</isNotNull>
+		</dynamic>
+	</select>
+	 <update id="backupByObj" parameterClass="TbCloud2IpInfoObj">
+		update TB_CLOUD2_IP_INFO set ISBLOCKED='1'
+		where IPADDRESS=#IPADDRESS#
+	  </update>
+	   <update id="issuanceByObj" parameterClass="TbCloud2IpInfoObj">
+		update TB_CLOUD2_IP_INFO set ISBLOCKED='0'
+		where IPADDRESS=#IPADDRESS#
+	  </update>
+	  
+	  <!-- lipp -->
+	  <select id="queryAchivableIpList" resultClass="TbCloud2IpInfoObj" parameterClass="TbCloud2IpInfoObj">
+	  	select t.ip_id,t.isused,t.isblocked,t.ipaddress,t.ins_date,t.net_id,t.ip_type from TB_CLOUD2_IP_INFO t
+	  	where t.isused = 0 
+	  	<dynamic>
+	  		<isNotEmpty prepend="and" property="NET_ID">
+	  			t.net_id = #NET_ID#
+	  		</isNotEmpty>
+	  	</dynamic>
+	  </select>
+	  
+     <select id="queryIpAddressById" parameterClass="string" resultClass="string">
+     	select t.ipAddress from TB_CLOUD2_IP_INFO t where t.ip_id = #id#
+     </select>
+     
+     <select id="findIdByIpAddress" parameterClass="string" resultClass="string">
+     	select t.ip_id from TB_CLOUD2_IP_INFO t where t.ipAddress = #ip#
+     </select>
+     
+     <update id="updateIPByObj" parameterClass="TbCloud2IpInfoObj" >
+		  update TB_CLOUD2_IP_INFO t 
+			 <dynamic prepend="set"  >
+	      		<isNotNull prepend="," property="IP_ID" >
+	       		 t.IP_ID=#IP_ID#
+	     		</isNotNull>
+	      		<isNotNull prepend="," property="ISUSED" >
+	       		 t.ISUSED= #ISUSED#
+	     		</isNotNull>
+	      		<isNotNull prepend="," property="ISBLOCKED" >
+	       		 t.ISBLOCKED=#ISBLOCKED#
+	     		</isNotNull>
+	      		<isNotNull prepend="," property="IPADDRESS" >
+	       		 t.IPADDRESS=#IPADDRESS#
+	     		</isNotNull>
+	      		<isNotNull prepend="," property="INS_DATE" >
+	       		 t.INS_DATE=#INS_DATE#
+	     		</isNotNull>
+	      		<isNotNull prepend="," property="NET_ID" >
+	       		 t.NET_ID=#NET_ID#
+	     		</isNotNull>
+	      		<isNotNull prepend="," property="IP_TYPE" >
+	       		 t.IP_TYPE=#IP_TYPE#
+	     		</isNotNull>
+	     	 </dynamic>
+	     	where t.IPADDRESS=#IPADDRESS#
+	  </update>
+     
+       <update id="updateIPStat" parameterClass="TbCloud2IpInfoObj">
+     		update TB_CLOUD2_IP_INFO t set t.isused=#ISUSED#,t.ISBLOCKED=#ISBLOCKED# where t.ipaddress=#IPADDRESS#
+       </update>
+     
+     <select id="queryByIpAddress" parameterClass="TbCloud2IpInfoObj" resultClass="TbCloud2IpInfoObj">
+     	select IP_ID,ISUSED,ISBLOCKED,IPADDRESS,IP_TYPE,to_char(INS_DATE,'yyyy-mm-dd HH24:mi:ss') INS_DATE from 
+     	tb_cloud2_ip_info where IPADDRESS = #IPADDRESS#
+     </select>
+     
+     <select id="queryForListUseNetIn" parameterClass="TbCloud2IpInfoObj" resultClass="TbCloud2IpInfoObj">
+     	select IP_ID,ISUSED,ISBLOCKED,IPADDRESS,IP_TYPE,DATE_FORMAT(INS_DATE,'%Y-%m-%d %H:%i:%S') INS_DATE from 
+     	tb_cloud2_ip_info where NET_ID in
+     	<iterate close=")" conjunction="," open="(" property="netList">
+    		#netList[]#
+    	</iterate>
+    	<dynamic>
+    		<isNotEmpty property="ISUSED" prepend="and">
+    			ISUSED=#ISUSED#
+    		</isNotEmpty>
+    	</dynamic>
+    	<isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	    </isGreaterThan>
+     </select>
+     
+      <select id="countByUseIn" parameterClass="TbCloud2IpInfoObj" resultClass="int">
+     	select count(IP_ID) from 
+     	tb_cloud2_ip_info where NET_ID in
+     	<iterate close=")" conjunction="," open="(" property="netList">
+    		#netList[]#
+    	</iterate>
+    	<dynamic>
+    		<isNotEmpty property="ISUSED" prepend="and">
+    			ISUSED=#ISUSED#
+    		</isNotEmpty>
+    	</dynamic>
+     </select>
+     
+     <select id="queryIpUsageByVlanId" parameterClass="TbCloud2IpInfoObj" resultClass="AlarmAll">
+		SELECT s.NET_ID netId,s. NAME netName,
+		  	  (select count(b.NET_ID) from TB_CLOUD2_IP_INFO b where s.net_id = b.net_id and b.ISUSED = 1) usedCount,
+		      (select count(b.NET_ID) from TB_CLOUD2_IP_INFO b where s.net_id = b.net_id and b.ISUSED = 0 ) freeCount,
+			  count(a.net_id) allCount  
+	    FROM TB_CLOUD2_IP_INFO a,TB_CLOUD2_NET_INFO s where s.NET_ID = a.NET_ID AND a.net_id in
+	    <iterate close=")" conjunction="," open="(" property="netList">
+    		#netList[]#
+    	</iterate>
+	    GROUP BY a.NET_ID
+     </select>
+     
+</sqlMap>

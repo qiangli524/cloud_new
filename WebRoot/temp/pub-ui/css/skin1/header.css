@@ -1,0 +1,54 @@
+/*
+ * @Filename: header.css
+ * @Description: header style
+ * @Version: 1.0.0
+ * @Author: yangpl
+ * @Update: yangpl
+ * @skin:{
+        "ued-header":"#6ac314",
+		"ued-header-1":"#5094d4",
+        "ued-header-2":"#fb8e09",
+        "ued-header-3":"#f74b43"
+    }@skin
+*/
+
+/*默认皮肤*/
+.ued-header{
+    background:#f7f7f7;
+	height:24px;
+	line-height:24px;
+	border-bottom:1px solid #ededed;
+}
+
+
+/*头部皮肤1*/
+.ued-header-1{
+    background:#f7f7f7;
+	height:24px;
+	line-height:24px;
+	border-bottom:1px solid #ededed;
+}
+.ued-header-1 a{
+	color:#090
+}
+/*头部皮肤2*/
+.ued-header-2{
+    background:#f7f7f7;
+	height:24px;
+	line-height:24px;
+	border-bottom:1px solid #ededed;
+}
+.ued-header-2 a{
+	color:#ff6600
+}
+
+/*头部皮肤3*/
+.ued-header-3{
+    background:#f7f7f7;
+	height:24px;
+	line-height:24px;
+	border-bottom:1px solid #ededed;
+}
+.ued-header-3 a{
+	color:#c42f28
+}

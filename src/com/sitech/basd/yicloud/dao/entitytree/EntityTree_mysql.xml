@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Tree">
+	<typeAlias alias="TreeObj"
+		type="com.sitech.basd.yicloud.domain.entitytree.EntityTreeObj" />
+	<typeAlias alias="ConObj"
+		type="com.sitech.basd.yicloud.domain.entitytree.EntityConObj" />
+	<typeAlias alias="SolutionObj"
+		type="com.sitech.basd.yicloud.domain.entitytree.SolutionObj" /> 
+	<sql id="paginationEnd">
+		<![CDATA[
+        	  limit #FIRSTROWNUM# , #PAGESIZE#
+        ]]>
+	</sql>
+	<select id="queryForTree" parameterClass="TreeObj" resultClass="TreeObj">
+	
+	select a.id,a.name,a.type,a.parent_id parentId,a.entity_id entityId,b.name typeName  from TB_CLOUD_ENTITY_TREE a, TB_CLOUD_ENTITY_TYPE b where a.type=b.id
+	 
+	 <!-- 
+	 select a.id,
+       a.name,
+       a.type,
+       a.parent_id parentId,
+       a.entity_id entityId,
+       c.operauthority authority
+  from TB_CLOUD_ENTITY_TREE a, TB_CLOUD_ENTITY_TYPE b,tb_cloud_entityuser c 
+ where a.type = b.id 
+       and a.entity_id=c.entity_id
+        and a.type = c.type
+        and c.userid=#userId#  
+      --> 
+		<isNotEmpty property="type" prepend="and">
+			a.TYPE=#type#
+		</isNotEmpty>
+		<isNotNull>
+		<isNotEqual property="parentId" compareValue="0" prepend="and" >
+			a.parent_id=#parentId#
+		</isNotEqual>
+		</isNotNull>
+		<isNotEqual property="id" compareValue="0" prepend="and" >
+			a.id=#id#
+		</isNotEqual>
+		<isNotNull property="name" prepend="and">
+			a.NAME=#name#
+		</isNotNull>
+		<isNotNull property="entityId" prepend="and">
+			a.entity_id=#entityId#
+		</isNotNull>
+		<isNotNull property="userId">
+			<isNotEqual property="userId" prepend="and" compareValue="1">
+			a.name in 
+			(select c.ENTITY_NAME from TB_CLOUD_ENTITYUSER c where c.USERID = #userId#)
+		</isNotEqual>
+		</isNotNull>
+		order by type asc
+	</select>
+	
+	<select id="queryVMForTree" parameterClass="TreeObj" resultClass="TreeObj">
+		select a.id,a.name,a.type,a.parent_id parentId,a.entity_id entityId,b.name typeName  from TB_CLOUD_ENTITY_TREE a, TB_CLOUD_ENTITY_TYPE b where a.type=b.id
+		<isNotEmpty property="type" prepend="and">
+			a.TYPE=#type#
+		</isNotEmpty>
+		<isNotEqual property="parentId" compareValue="0" prepend="and" >
+			a.parent_id=#parentId#
+		</isNotEqual>
+		<isNotEqual property="id" compareValue="0" prepend="and" >
+			a.id=#id#
+		</isNotEqual>
+		<isNotNull property="name" prepend="and">
+			a.NAME=#name#
+		</isNotNull>
+		<isNotNull property="userId">
+			<isNotEqual property="userId" prepend="and" compareValue="1">
+			a.name in 
+			(select c.ENTITY_NAME from TB_CLOUD_ENTITYUSER c where c.USERID = #userId#)
+		</isNotEqual>
+		</isNotNull>
+		order by type asc
+	</select>
+	
+	<!-- 查询树（供划定虚拟机权限使用） -->
+	<select id="queryVMForAuth" parameterClass="TreeObj" resultClass="TreeObj">
+select a.id,
+       a.name,
+       a.type,
+       a.parent_id parentId,
+       a.entity_id entityId,
+       b.name typeName
+ 	 from TB_CLOUD_ENTITY_TREE a, TB_CLOUD_ENTITY_TYPE b
+ 		where a.type = b.id 
+ 		<isNotEmpty property="type" prepend="and">
+			a.TYPE=#type#
+		</isNotEmpty>
+		<isNotEqual property="parentId" compareValue="0" prepend="and" >
+			a.parent_id=#parentId#
+		</isNotEqual>
+		<isNotEqual property="id" compareValue="0" prepend="and" >
+			a.id=#id#
+		</isNotEqual>
+		<isNotNull property="name" prepend="and">
+			a.NAME=#name#
+		</isNotNull>
+		<isNotNull property="userId">
+			<isNotEqual property="userId" prepend="and" compareValue="1">
+			a.name in 
+			(select c.ENTITY_NAME from TB_CLOUD_ENTITYUSER c where c.USERID = #userId#)
+		</isNotEqual>
+		</isNotNull>
+		<isNotEmpty property="flag" prepend="and">
+			b.table_name in ('1','2')
+		</isNotEmpty>
+		union all
+select c.id,
+       c.name,
+       c.type,
+       c.parent_id parentId,
+       c.entity_id entityId,
+       d.name typeName
+  	from TB_XEN_ENTITY_TREE c, TB_CLOUD_ENTITY_TYPE d
+ 		where c.type = d.id 
+		<isNotEmpty property="temp" prepend="and">
+			c.TYPE=#temp#
+		</isNotEmpty>
+		<isNotEqual property="parentId" compareValue="0" prepend="and" >
+			c.parent_id=#parentId#
+		</isNotEqual>
+		order by type asc
+	</select>
+	
+	<!-- 在树中插入节点 -->
+	<insert id="insertTreeNode" parameterClass="TreeObj">
+		insert into
+		TB_CLOUD_ENTITY_TREE(NAME,TYPE,PARENT_ID,ENTITY_ID)
+		values(#name#,#type#,#parentId#,#entityId#)
+	</insert>
+	<!-- 更新树节点 -->
+	<update id="updateTreeNode"  parameterClass="TreeObj"> 
+		update TB_CLOUD_ENTITY_TREE set NAME=#name#,TYPE=#type#,PARENT_ID=#parentId# where ID=#id#
+	</update>
+	<!-- 只更新树的父节点id -->
+	<update id="updateNodeParentId"  parameterClass="TreeObj"> 
+		update TB_CLOUD_ENTITY_TREE set PARENT_ID=#parentId# where ID=#id#
+	</update>
+	<!-- 更新树节点 -->
+	<update id="updateTreeNodeByUuid"  parameterClass="TreeObj"> 
+		update TB_CLOUD_ENTITY_TREE set NAME=#name#,PARENT_ID=#parentId# where ENTITY_ID=#entityId#
+	</update>
+	<!-- 删除树节点 -->
+	<delete id="delTreeNode" parameterClass="TreeObj">
+		delete  from TB_CLOUD_ENTITY_TREE where ID=#id#
+	</delete>
+	<!-- 删除树节点 -->
+	<delete id="delTreeNodeByEntity" parameterClass="TreeObj">
+		delete  from TB_CLOUD_ENTITY_TREE where ENTITY_ID=#entityId#
+	</delete>
+	<delete id="delSubNode" parameterClass="TreeObj">
+		delete  from TB_CLOUD_ENTITY_TREE where PARENT_ID=#parentId#
+	</delete>
+	<!-- 查询树节点信息 -->
+	<select id="queryTreeNode" parameterClass="TreeObj"
+		resultClass="TreeObj">
+		select a.ID id,a.NAME name,a.PARENT_ID parentId,a.ENTITY_ID
+		entityId,a.type from TB_CLOUD_ENTITY_TREE a where 1=1
+		<isNotEmpty property="entityId" prepend="and">
+			a.ENTITY_ID=#entityId#
+		</isNotEmpty>
+		<isNotNull property="type" prepend="and">
+			a.type = #type#
+		</isNotNull>
+		<isNotEmpty property="name" prepend="and">
+			a.NAME=#name#
+		</isNotEmpty>
+		<isGreaterThan property="id" compareValue="0" prepend="and">
+			a.ID=#id#
+		</isGreaterThan>
+	</select>
+	<!-- 查询主机个数 -->
+	<!-- <select id="queryHostCount" parameterClass="ConObj" resultClass="int">
+		select count(ENTITY_ID)  from TB_CLOUD_ENTITY_CON  where (type =  1 or type = 25 or type=26)
+		<isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+		DATACENTER_ID = #dataCenterId#
+		</isNotEqual>
+		<isNotEqual property="clusterId" prepend="and" compareValue="-1">
+			CLUSTER_ID = #clusterId#
+		</isNotEqual>
+	 </select>
+	  -->
+	  <select id="queryHostCount" parameterClass="ConObj" resultClass="int">
+ 		select (id1 + id2) id
+  	from (select count(c.id) id1
+          from TB_CLOUD_ENTITY_TREE a,
+               TB_CLOUD_ENTITY_TREE b,
+               TB_CLOUD_ENTITY_TREE c
+         where a.id = b.parent_id
+           and b.id = c.parent_id
+           and c.type = 1
+           <isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+			a.id = #dataCenterId#
+		</isNotEqual>
+		<isNotEmpty property="entityId" prepend="and">
+			b.ENTITY_ID = #entityId#
+		</isNotEmpty>
+           ) m,
+       (select count(b.entity_id) id2
+          from TB_CLOUD_ENTITY_TREE a, TB_CLOUD_ENTITY_TREE b
+         where a.id = b.parent_id
+           and b.type = 1
+           <isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+			a.id = #dataCenterId#
+		</isNotEqual>
+		<isNotEmpty property="entityId" prepend="and">
+			b.ENTITY_ID = #entityId#
+		</isNotEmpty>
+           ) n
+	  </select>
+	 <!-- 查询虚拟机的个数 -->
+	<!--   <select id="queryVmCount" parameterClass="ConObj" resultClass="int">
+	   select count(ENTITY_ID)  from TB_CLOUD_ENTITY_CON  where type in (0,24,27)
+		<isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+		DATACENTER_ID = #dataCenterId#
+		</isNotEqual>
+		<isNotEqual property="clusterId" prepend="and" compareValue="-1">
+			CLUSTER_ID = #clusterId#
+		</isNotEqual>
+	 </select>
+	 -->
+	 <select id="queryVmCount" parameterClass="ConObj" resultClass="int">
+  			select (id1 + id2) id
+  	from (select count(d.id) id1
+          from TB_CLOUD_ENTITY_TREE a,
+               TB_CLOUD_ENTITY_TREE b,
+               TB_CLOUD_ENTITY_TREE c,
+               TB_CLOUD_ENTITY_TREE d
+         where a.id = b.parent_id
+           and b.id = c.parent_id
+           and c.id = d.parent_id
+           and d.type = 0
+          <isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+				a.id = #dataCenterId#
+			</isNotEqual>
+			<isNotEmpty property="entityId" prepend="and">
+				b.ENTITY_ID = #entityId#
+			</isNotEmpty>
+           ) m,
+       (select count(c.entity_id) id2
+          from TB_CLOUD_ENTITY_TREE a,
+               TB_CLOUD_ENTITY_TREE b,
+               TB_CLOUD_ENTITY_TREE c
+         where a.id = b.parent_id
+           and b.id = c.parent_id
+           and c.type = 0
+         <isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+				a.id = #dataCenterId#
+			</isNotEqual>
+			<isNotEmpty property="entityId" prepend="and">
+				b.ENTITY_ID = #entityId#
+			</isNotEmpty>
+           ) n
+	 </select>
+	 <!-- 查询集群的个数 -->
+	<!--  	<select id="queryClusterCount" parameterClass="ConObj" resultClass="int">
+		select count(ENTITY_ID)  from TB_CLOUD_ENTITY_CON  where (type =  3 or type = 21 or type=29)
+		<isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+		DATACENTER_ID = #dataCenterId#
+		</isNotEqual>
+		<isNotEqual property="clusterId" prepend="and" compareValue="-1">
+			CLUSTER_ID = #clusterId#
+		</isNotEqual>
+	 </select>
+	 -->
+	 <select id="queryClusterCount" parameterClass="ConObj" resultClass="int">
+	 	select count(b.id)
+ 		 from TB_CLOUD_ENTITY_TREE a, TB_CLOUD_ENTITY_TREE b 
+ 		where a.id = b.parent_id and b.type = 3
+ 		<isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+			a.id = #dataCenterId#
+		</isNotEqual>
+<!--  	<isNotEqual property="clusterId" prepend="and" compareValue="-1">
+			b.ENTITY_ID = #clusterId#
+		</isNotEqual>  -->
+	 </select>
+	 <!-- 查询网络或存储个数 -->
+	<select id="queryNetOrStoreCount" parameterClass="ConObj" resultClass="int">
+	<!-- 	select count(ENTITY_ID)  from TB_CLOUD_ENTITY_CON
+	<dynamic prepend="where">
+		<isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+			DATACENTER_ID = #dataCenterId#
+		</isNotEqual>
+		<isNotEqual	property="type" compareValue="-1" prepend="and">
+		TYPE = #type#
+		</isNotEqual>
+		<isNotEqual property="clusterId" prepend="and" compareValue="-1">
+			CLUSTER_ID = #clusterId#
+		</isNotEqual>
+	</dynamic>
+	 -->
+	 	<isEqual property="type" compareValue="18"> <!-- datastore -->
+	 		select count(distinct m.name) from TB_YICLOUD_DATASTORE m , TB_CLOUD_ENTITY_TREE n where m.datacenter_id = n.id
+	 		<isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+				n.id = #dataCenterId#
+			</isNotEqual>
+	 	</isEqual>
+	 	<isEqual property="type" compareValue="19"> <!-- network -->
+	 		
+	 	</isEqual>
+	 </select>
+	 <!-- 查询主机虚拟机等实体信息 -->
+	 <select id="queryEntityInfo" parameterClass="ConObj" resultClass="ConObj">
+	 	select DATACENTER_ID dataCenterId,CLUSTER_ID clusterId,name ,type,ENTITY_ID entityId ,
+	 	STATUS status,IFOPEN ifOpen,CPU cpu, MEMORY mem,STORAGE storage, USEDSTOR usedStor,HOST host
+	 	 from TB_CLOUD_ENTITY_CON 
+	 	<dynamic prepend="where">
+	 		<isNotEqual property="type" compareValue="-1" prepend="and">
+	 			TYPE = #type#
+	 		</isNotEqual>
+	 		<isNotEqual property="temp" compareValue="-1" prepend="or">
+	 			TYPE = #temp#
+	 		</isNotEqual>
+	 		<isNotEqual property="temp_type" compareValue="-1" prepend="or">
+	 			TYPE = #temp_type#
+	 		</isNotEqual>
+	 		<isNotEqual property="dataCenterId" prepend="and" compareValue="-1">
+				DATACENTER_ID = #dataCenterId#
+			</isNotEqual>
+			<isNotEqual property="clusterId" prepend="and" compareValue="-1">
+				CLUSTER_ID = #clusterId#
+			</isNotEqual>
+			<isNotNull property="entityId" prepend="and">
+				ENTITY_ID = #entityId#
+			</isNotNull>
+	 	</dynamic>
+	 </select>
+	 <!--  -->
+	 <update id="updateEntityConInfo" parameterClass="ConObj">
+	 	update TB_CLOUD_ENTITY_CON set 
+	 	STATUS=#status#,IFOPEN=#ifOpen#,CPU=#cpu#, MEMORY=#mem#,STORAGE=#storage#
+	 	<dynamic prepend="where">
+		 	<isNotEmpty property="name" prepend="and">
+				NAME=#name#
+			</isNotEmpty>
+	 		<isNotEqual property="type" compareValue="-1" prepend="and">
+	 			TYPE = #type#
+	 		</isNotEqual>
+	 		<isNotEqual property="temp" compareValue="-1" prepend="or">
+	 			TYPE = #temp#
+	 		</isNotEqual>
+	 	</dynamic>
+	 </update>
+	 
+	  <!-- 查询主机在哪个数据中心和集群下 -->
+	 <select id="queryEntityData" parameterClass="ConObj" resultClass="ConObj">
+		select a.DATACENTER_ID dataCenterId,a.CLUSTER_ID clusterId, b.name from TB_CLOUD_ENTITY_CON a,TB_CLOUD_ENTITY_TREE b  where a.datacenter_id=b.id
+			<isNotNull property="entityId" prepend="and">
+				a.ENTITY_ID = #entityId#
+			</isNotNull>
+			<isNotEqual property="type" compareValue="-1" prepend="and">
+	 			a.TYPE = #type#
+	 		</isNotEqual>
+	 		<isNotNull property="name" prepend="and">
+	 			a.name = #name#
+	 		</isNotNull>
+	 </select>
+	<!-- 获取主机列表 -->
+	<select id="queryForHostList" parameterClass="TreeObj" resultClass="TreeObj">
+		select NAME,ID,TYPE,ENTITY_ID entityId from TB_CLOUD_ENTITY_TREE where PARENT_ID=#parentId# and TYPE='1'
+	</select>
+	<select id="queryForMigHostList" parameterClass="TreeObj" resultClass="TreeObj">
+		select NAME,ID,TYPE,ENTITY_ID entityId from TB_CLOUD_ENTITY_TREE where ID!=#id# and TYPE='1'
+	</select>
+	<!-- 向TB_CLOUD_ENTITY_CON表中插入数据 -->
+	<insert id="insertConObj" parameterClass="ConObj">
+		insert into TB_CLOUD_ENTITY_CON(DATACENTER_ID,CLUSTER_ID,NAME,TYPE,ENTITY_ID)
+		values (#dataCenterId#,#clusterId#,#name#,#type#,#entityId#)
+	</insert>
+	<!-- 删除TB_CLOUD_ENTITY_CON表数据 -->
+	<delete id="deleteConObj" parameterClass="ConObj">
+		delete from TB_CLOUD_ENTITY_CON where TYPE = #type# and ENTITY_ID = #entityId#
+	</delete>
+	<!-- 更新TB_CLOUD_ENTITY_CON表中的名称 -->
+	<update id="updateConObj" parameterClass="ConObj">
+		update TB_CLOUD_ENTITY_CON set NAME = #name# where TYPE= #type# and ENTITY_ID = #entityId#
+	</update>
+	<!-- 查询所有修复模板列表 -->
+	<select id="querySolutionList" parameterClass="SolutionObj" resultClass="SolutionObj">
+		select TEM_ID,TEM_NAME,TEM_DESC,CPU,MEM,STORAGE,TYPE,CLONE_NUM,VIDEOID from TB_YICLOUD_SOLUTION where 1=1
+		<isNotNull property="TEM_ID" prepend="and" >
+			TEM_ID = #TEM_ID#
+		</isNotNull>
+		<isNotNull property="TYPE" prepend="and">
+			TYPE = #TYPE#
+		</isNotNull>
+		<isNotEqual prepend="and" property="VIDEOID" compareValue="0">
+			VIDEOID = #VIDEOID#
+		</isNotEqual>
+	</select>
+	<insert id="insertSolutionByObj" parameterClass="SolutionObj">
+		insert into TB_YICLOUD_SOLUTION(TEM_ID,TEM_NAME,TEM_DESC,CPU,MEM,STORAGE,TYPE,CLONE_NUM,VIDEOID)
+		values (#TEM_ID#,#TEM_NAME#,#TEM_DESC#,#CPU#,#MEM#,#STORAGE#,#TYPE#,#CLONE_NUM#,#VIDEOID#)
+	</insert>
+	
+	<!-- 查询vmware集群列表 -->
+	<select id="queryClusterList" parameterClass="TreeObj" resultClass="TreeObj">
+	select ID,NAME,TYPE,PARENT_ID parentId,ENTITY_ID entityId from TB_CLOUD_ENTITY_TREE where 1=1
+		<isNotNull property="type" prepend="and">
+			TYPE = #type#
+		</isNotNull>
+	</select>
+	<select id="queryForConn" parameterClass="TreeObj" resultClass="TreeObj">
+		select vm.vh_uuid,host.h_uuid,clus.c_uuid
+ 		 from TB_CLOUD_ENTITY_TREE  vmt,
+       		  TB_CLOUD_ENTITY_TREE  hostt,
+       		  TB_CLOUD_ENTITY_TREE  clust,
+              TB_CLOUD2_HOST_INFO   host,
+              TB_CLOUD2_VMHOST_INFO vm,
+              TB_CLOUD_CLUSTER_INFO clus
+ 		where vmt.parent_id = hostt.id
+   			and vmt.entity_id = vm.id
+  			 and hostt.entity_id = host.id
+   			and hostt.parent_id = clust.id
+  			 and clust.entity_id = clus.id
+   			and vmt.type='27'
+   			and vmt.entity_id=#entityId#
+	</select>
+	<select id="queryForXenHost" parameterClass="TreeObj" resultClass="TreeObj">
+		select NAME,ID,TYPE,ENTITY_ID entityId from TB_CLOUD_ENTITY_TREE where  TYPE='26' and ID!=#id#
+	</select>
+	
+	<delete id="deleteTbCloudEntityTree">
+		delete from TB_CLOUD_ENTITY_TREE 
+	</delete>
+	<delete id="deleteTbCloudEntityCon">
+		delete from TB_CLOUD_ENTITY_CON
+	</delete>
+	<delete id="deleteTbCloud2VmhostInfo">
+		delete from TB_CLOUD2_VMHOST_INFO where vh_type ='1' or vh_type ='5'
+	</delete>
+	<delete id="deleteTbYicloudDatastore">
+		delete from TB_YICLOUD_DATASTORE
+	</delete>
+	<delete id="deleteTbCloud2HostInfo">
+		delete from TB_CLOUD2_HOST_INFO where hasvertual ='4' 
+	</delete>
+	<delete id="deleteTbCloudClusterInfo">
+		delete from TB_CLOUD_CLUSTER_INFO
+	</delete>
+	<delete id="deleteTbCloudVSwitch">
+		delete from TB_CLOUD_VSWITCH
+	</delete>
+	<delete id="deleteTbCloudPortgroup">
+		delete from TB_CLOUD_PORTGROUP
+	</delete>
+	<delete id="deleteTbCloudNicRelation">
+		delete from TB_CLOUD2_NIC_RELATION 
+	</delete><delete id="deleteTbCloudNic">
+		delete from TB_CLOUD2_NIC
+	</delete><delete id="deleteTbCloudVirtualnic">
+		delete from TB_CLOUD2_VIRTUALNIC
+	</delete>
+	
+	<delete id="deleteTbCloudTempletTree">
+	<![CDATA[ delete from TB_CLOUD_TEMPLET_TREE where name != 'windows' and name != 'linux' ]]>
+	</delete>
+	<!-- 查询主机的节点Id和所在的集群和数据中心的id -->
+	<resultMap class="java.util.HashMap" id="hostcldcmap">
+		<result property="hostId" column="hostId" javaType="java.lang.Integer"/>
+		<result property="clusterId" column="clusterId" javaType="java.lang.Integer"/>
+		<result property="dcId" column="dcId" javaType="java.lang.Integer"/>
+	</resultMap>
+	<select id="queryHostClDcId" parameterClass="TreeObj" resultMap="hostcldcmap">
+	select hostt.id hostId, clus.id clusterId,dct.id dcId
+	 from     TB_CLOUD_ENTITY_TREE  hostt,
+             TB_CLOUD_ENTITY_TREE  clust,
+              TB_CLOUD_ENTITY_TREE   dct,
+              TB_CLOUD_CLUSTER_INFO clus
+              where hostt.parent_id = clust.id
+              and clust.parent_id = dct.id
+           and  clus.c_uuid = clust.entity_id
+              and hostt.type = '1'
+           and hostt.entity_id = #entityId#
+	</select>
+	
+	<!-- 查询VMware-dc-cl关系 -->
+	<select id="queryDcClRelat" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	select dc.entity_id VDC_CODE,
+       dc.name      VDC,
+       cl.entity_id CL_CODE,
+       cl.name      CL
+	  from TB_CLOUD_ENTITY_TREE dc, TB_CLOUD_ENTITY_TREE cl
+	 where cl.parent_id = dc.id
+	   and dc.type = 8
+	   and cl.type = 3
+	    <isNotEmpty property="cl_code" prepend="and">
+			cl.entity_id = #cl_code#
+	   </isNotEmpty>
+	    <isNotEmpty property="cl_id" prepend="and">
+			cl.id = #cl_id#
+	   </isNotEmpty>
+	</select>
+	
+	<!-- 查询VMware-dc-cl-host关系 -->
+	<select id="queryDcClHostRelat" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	select dc.entity_id VDC_CODE,
+       dc.name      VDC,
+       cl.entity_id CL_CODE,
+       cl.name      CL,
+       host.entity_id HOST_CODE,
+       host.name HOST
+	  from TB_CLOUD_ENTITY_TREE dc, TB_CLOUD_ENTITY_TREE cl
+	  ,TB_CLOUD_ENTITY_TREE host
+	 where cl.parent_id = dc.id
+	 and host.parent_id = cl.id
+	   and dc.type = 8
+	   and cl.type = 3
+	   and host.type = 1
+	    <isNotEmpty property="host_code" prepend="and">
+			host.entity_id = #host_code#
+	   </isNotEmpty>
+	</select>
+	
+	<!-- 查询VMware-dc-cl-host关系 -->
+	<select id="queryDcClHostVMRelat" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	select dc.entity_id VDC_CODE,
+       dc.name      VDC,
+       cl.entity_id CL_CODE,
+       cl.name      CL,
+       host.entity_id HOST_CODE,
+       host.name HOST,
+       vm.entity_id VM_CODE,
+       vm.name VM
+	  from TB_CLOUD_ENTITY_TREE dc, TB_CLOUD_ENTITY_TREE cl
+	  ,TB_CLOUD_ENTITY_TREE host,TB_CLOUD_ENTITY_TREE vm
+	 where cl.parent_id = dc.id
+	 and host.parent_id = cl.id
+   	and vm.parent_id = host.id
+	   and dc.type = 8
+	   and cl.type = 3
+	   and host.type = 1
+	   and vm.type=0
+	   <isNotEmpty property="vm_code" prepend="and">
+			vm.entity_id = #vm_code#
+	   </isNotEmpty>
+	</select>
+	<select id="searchNodes" parameterClass="java.util.HashMap">
+		select distinct a.name
+  			from TB_CLOUD_ENTITY_TREE a, TB_CLOUD2_VMHOST_INFO b
+		where a.type = 0
+   		and a.entity_id = b.vh_uuid
+   		and (a.name like CONCAT('%',#params#,'%') or b.vh_ip like CONCAT('%',#params#,'%'))	
+			union
+		select distinct m.name
+  			from TB_CLOUD_ENTITY_TREE m, TB_CLOUD2_HOST_INFO n
+ 		where m.type = 1
+   		and m.entity_id = n.h_uuid
+   		and (m.name like CONCAT('%',#params#,'%') or n.eq_ip like CONCAT('%',#params#,'%'))
+	</select>
+	
+	<!-- 集群配置 -->
+	<select id="getClusterFailHost" parameterClass="TreeObj" resultClass="TreeObj">
+		select a.id,
+       a.name,
+       a.type,
+       a.parent_id parentId,
+       a.entity_id entityId,
+       b.name typeName
+ 		 from TB_CLOUD_ENTITY_TREE a, TB_CLOUD_ENTITY_TYPE b
+			where a.type = b.id
+   			and a.entity_id  not in (select tb.entity_id from TB_CLUSTER_GROUP_DETAIL tb where tb.group_id=#group_id#)
+  			and a.type = #type#
+	</select>
+</sqlMap>

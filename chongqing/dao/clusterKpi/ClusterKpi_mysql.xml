@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="ClusterKpi">
+	<typeAlias alias="ClusterKpiObj" type="domain.clusterKpi.ClusterKpiObj" />
+
+	<!-- FusionCharts集群kpi -->
+	<sql id="allColumns">
+		b.kpi_value `value` ,c.name `label`
+	</sql>
+	<!-- 查询类型 -->
+	<select id="queryForList" parameterClass="ClusterKpiObj"
+		resultClass="data">
+		select
+		<include refid="allColumns" />
+		FROM ( SELECT eq_id,kpi_id,MAX(coll_time) AS maxtime FROM
+		tb_cloud2_other_coll GROUP BY eq_id,kpi_id ) a
+		JOIN tb_cloud2_other_coll b JOIN tb_united_tree c
+		ON a.eq_id=b.eq_id
+		AND a.kpi_id=b.kpi_id
+		AND a.maxtime=b.coll_time
+		AND CONCAT(c.connect_id,"_",UUID) = b.eq_id
+		<dynamic prepend="where">
+			<isNotEmpty property="kpiid" prepend="and">a.kpi_id=#kpiid#</isNotEmpty>
+			<isNotEmpty property="domain">
+				<isNotEqual compareValue="null" property="domain">
+					<isNotEqual compareValue="domain.type.all" property="domain"
+						prepend="and">
+						c.domain =#domain#
+					</isNotEqual>
+				</isNotEqual>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+
+
+</sqlMap>

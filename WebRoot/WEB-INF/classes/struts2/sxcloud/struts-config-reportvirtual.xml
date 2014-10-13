@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="reportvir"
+			 extends="global_package">
+		<action name="reportvir_*"
+				class="reportVirtualAction" method="{1}">
+			<result name="getCurrentReportView">/sxcloud/cloud/reportvirtual/currentReportView.jsp</result>
+			<result name="getMonthReportView">/sxcloud/cloud/reportvirtual/monthReportView.jsp</result>
+			<result name="listVirtualReport">/sxcloud/cloud/reportvirtual/listVirtualReport.jsp</result>
+			<result name="getWeekReportView">/sxcloud/cloud/reportvirtual/weekReportView.jsp</result>
+			<result name="getVirtualListReport">/sxcloud/cloud/reportvirtual/virtualListReport.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="newuiAction" class="com.sitech.basd.cloud3.web.newui.action.NewUIAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="newUIFuncService">
+			<ref bean="newUIFuncService"/>
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

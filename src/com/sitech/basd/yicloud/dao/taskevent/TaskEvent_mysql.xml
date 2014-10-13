@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TaskEvent">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TaskObj" type="com.sitech.basd.yicloud.domain.taskevent.TaskObj"/>
+    <typeAlias alias="EventObj" type="com.sitech.basd.yicloud.domain.taskevent.EventObj"/>
+	  <insert id="insertByTaskObj" parameterClass="TaskObj">
+		<selectKey resultClass="Integer" keyProperty="id">
+       		SELECT @@IDENTITY AS ID
+		</selectKey>
+	  	insert into TB_XEN_TASK_INFO(
+		NAME,      
+  		TYPE,               
+  		TASK_UUID,  
+  		TASK_NAME,  
+  		TASK_STATE, 
+  		START_TIME,
+  		END_TIME)
+		values(#name#,#type#,#task_uuid#,#task_name#,#task_state#,#start_time#,#end_time#)
+	  </insert>
+	  <select id="queryForTaskList" parameterClass="TaskObj" resultClass="TaskObj">
+	  <![CDATA[
+	  	select  NAME,TYPE,ID,TASK_UUID,TASK_NAME,TASK_STATE,START_TIME,END_TIME from TB_XEN_TASK_INFO where 1=1 and rownum <=10
+	  	]]>
+			<isNotNull property="name" prepend="and">
+				NAME =#name#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE =#type#
+			</isNotNull>
+			<isNotNull property="task_uuid" prepend="and">
+				TASK_UUID =#task_uuid#
+			</isNotNull>
+	  </select>
+	  
+	  <insert id="insertByEventObj" parameterClass="EventObj">
+			<selectKey resultClass="Integer" keyProperty="id">
+       			SELECT @@IDENTITY AS ID
+			</selectKey>
+			insert into TB_XEN_EVENT_INFO(    
+  			NAME ,      
+  			TYPE ,     
+  			EVENT_UUID ,
+  			EVENT_TIME ,
+  			EVENT_USER ,
+ 			EVENT_DESC)values(#name#,#type#,#event_uuid#,#event_time#,#event_user#,#event_user#,#event_desc#)
+	  </insert>
+	  
+	   <select id="queryForEventList" parameterClass="EventObj" resultClass="EventObj">
+	  	select ID,      
+  			NAME,       
+  			TYPE ,     
+  			EVENT_UUID ,
+  			EVENT_TIME ,
+  			EVENT_USER ,
+ 			EVENT_DESC from TB_XEN_EVENT_INFO
+	  	<dynamic prepend="where">
+			<isNotNull property="name" prepend="and">
+				NAME =#name#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE =#type#
+			</isNotNull>
+			<isNotNull property="event_uuid" prepend="and">
+				EVENT_UUID =#event_uuid#
+			</isNotNull>
+		</dynamic>
+	  </select>
+</sqlMap>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.appmessage.action.AppMessageAction -->
+	<bean id="resWorkflowAction" class="com.sitech.basd.sxcloud.workflow.web.resworkflow.action.ResourceWorkflowAction"
+		singleton="false" >
+		<property name="resourceWorkflowService">
+			<ref bean="resourceWorkflowService" />
+		</property>
+		<property name="workflowEngineService">
+			<ref bean="workflowEngineService" />
+		</property> 
+		<property name="templetInfoService">
+			<ref bean="templetInfoService" />
+		</property> 
+		<property name="templetService">
+			<ref bean="templetService" />
+		</property> 
+		<property name="virtualService">
+			<ref bean="virtualService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

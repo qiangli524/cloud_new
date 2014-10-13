@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="IBMManagerTree">
+<typeAlias alias="IBMManagerTreeObj" type="com.sitech.basd.ibmmanager.domain.IBMManagerTreeObj"/>
+<typeAlias alias="LogicalPartitionObj" type="com.sitech.basd.ibmmanager.domain.LogicalPartitionObj"/>  
+<typeAlias alias="power" type="com.sitech.basd.ibmmanager.domain.PowerObj"/> 
+	<!-- 查询树节点 -->
+	<select id="queryForTree" parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTreeObj">	
+		SELECT
+			t.id,
+			t.name,
+			t.parent_id,
+			t.uuid,
+			t.vtype,
+			t.type
+		FROM
+		tb_ibm_hmc_tree t
+		<dynamic prepend="where">
+			<isNotNull property="id" >
+				<isNotEmpty property="id" prepend="and">
+					t.id=#id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="parent_id" prepend="and">
+				<isNotEmpty property="parent_id">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="vtype" prepend="and">
+				t.vtype = #vtype#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				t.type = #type#
+			</isNotNull>
+			<isNotNull property="uuid" prepend="and">
+				<isNotEmpty property="uuid">
+					t.uuid = #uuid#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="name" prepend="and">
+				<isNotNull property="name">
+					t.name = #name#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+		order by t.name
+	</select>
+	<!-- 插入操作 -->
+	<insert id="insertForTree" parameterClass="IBMManagerTreeObj">
+		insert into tb_ibm_hmc_tree(id,name,parent_id,uuid,vtype,type)
+		values(#id#,#name#,#parent_id#,#uuid#,#vtype#,#type#)
+	</insert>
+	<!-- 修改操作 -->
+	<update id="updateForTree" parameterClass="IBMManagerTreeObj">
+		update tb_ibm_hmc_tree t
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="name">
+				<isNotEmpty property="name">
+					t.name=#name#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="id">
+				<isNotEmpty property="id">
+					t.id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="and" property="parent_id">
+				<isNotEmpty property="parent_id">
+					t.parent_id = #parent_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="and" property="uuid">
+				<isNotEmpty property="uuid">
+					t.uuid = #uuid#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</update>
+	<!-- 删除操作 -->
+	<delete id="deleteForTree">
+		delete from tb_ibm_hmc_tree
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="id">
+				<isNotEmpty property="id">
+					id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="and" property="uuid">
+				<isNotEmpty property="uuid">
+					uuid = #uuid#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</delete>
+	<!-- 查询整机要展开的节点集合 -->
+	<select id="queryExpandNodesForPower" parameterClass="IBMManagerTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',h.id,',',cl.id,',',dc.id)
+		FROM
+			tb_ibm_hmc_tree v,
+			tb_ibm_hmc_tree h,
+			tb_ibm_hmc_tree cl,
+			tb_ibm_hmc_tree dc
+		WHERE
+			v.parent_id = h.id
+			AND h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND h.name = #name#
+			AND h.type= #type#
+	</select>
+	
+	<!-- 查询逻辑分区要展开的节点集合 -->
+	<select id="queryExpandNodesForLP" parameterClass="IBMManagerTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',h.id,',',cl.id,',',dc.id,',',fz.id)
+		FROM
+			tb_ibm_hmc_tree v,
+			tb_ibm_hmc_tree h,
+			tb_ibm_hmc_tree cl,
+			tb_ibm_hmc_tree dc,
+			tb_ibm_hmc_tree fz
+		WHERE
+			v.parent_id = h.id
+			AND h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND dc.parent_id = fz.id
+			AND v.name = #name#
+			AND v.type= #type#
+	</select>
+	<!-- 通过名字查询树节点 -->
+	<select id="queryForTreeByName" parameterClass="IBMManagerTreeObj" resultClass="IBMManagerTreeObj">	
+		SELECT
+			t.id,
+			t.name,
+			t.parent_id,
+			t.uuid,
+			t.vtype,
+			t.type
+		FROM
+		tb_ibm_hmc_tree t
+		<dynamic prepend="where">
+			<isNotNull property="type" prepend="and">
+				t.type = #type#
+			</isNotNull>
+			<isNotEmpty property="name" prepend="and">
+				<isNotNull property="name">
+					t.name like CONCAT('%',#name#,'%')
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+		order by t.name
+	</select>
+</sqlMap>

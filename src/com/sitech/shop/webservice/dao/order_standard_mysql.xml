@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="tb_order_standard" >
+
+    <!-- 订购规格对象-->
+    <typeAlias alias="orderStandard" type="com.sitech.shop.webservice.domain.TbOrderStandard"/>
+
+    <!-- 订购规格例子对象-->
+    <typeAlias alias="orderStandardExample" type="com.sitech.shop.webservice.domain.TbOrderStandardExample"/>
+
+    <!-- 订购规格结果集-->
+    <resultMap id="baseResultMap" class="com.sitech.shop.webservice.domain.TbOrderStandard">
+        <result column="uuid" property="uuid" jdbcType="VARCHAR"/>
+        <result column="order_id" property="orderId" jdbcType="VARCHAR"/>
+        <result column="prdct_spec_id" property="prdctSpecId" jdbcType="VARCHAR"/>
+        <result column="product_instance_id" property="productInstanceId" jdbcType="VARCHAR"/>
+        <result column="spec_id" property="specId" jdbcType="VARCHAR"/>
+        <result column="spec_value" property="specValue" jdbcType="VARCHAR"/>
+        <result column="spec_value_desc" property="specValueDesc" jdbcType="VARCHAR"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR" />
+        <result column="book_id" property="bookId" jdbcType="VARCHAR" />
+        <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+        <result column="last_update_date" property="lastUpdateDate" jdbcType="TIMESTAMP" />
+        <result column="duration_unit" property="durationUnit" jdbcType="VARCHAR" />
+        <result column="pay_duration" property="payDuration" jdbcType="VARCHAR" />
+        <result column="expiring_date" property="expiringDate" jdbcType="TIMESTAMP" />
+        <result column="boAttr1" property="boattr1" jdbcType="VARCHAR"/>
+        <result column="boAttr2" property="boattr2" jdbcType="VARCHAR"/>
+        <result column="boAttr3" property="boattr3" jdbcType="VARCHAR"/>
+        <result column="boAttr4" property="boattr4" jdbcType="VARCHAR"/>
+        <result column="boAttr5" property="boattr5" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 条件解析-->
+    <sql id="example_Where_Clause">
+        <iterate property="oredCriteria" conjunction="or" prepend="where" removeFirstPrepend="iterate">
+            <isEqual property="oredCriteria[].valid" compareValue="true">
+                (
+                <iterate prepend="and" property="oredCriteria[].criteriaWithoutValue" conjunction="and">
+                    $oredCriteria[].criteriaWithoutValue[]$
+                </iterate>
+                <iterate prepend="and" property="oredCriteria[].criteriaWithSingleValue" conjunction="and">
+                    $oredCriteria[].criteriaWithSingleValue[].condition$
+                    #oredCriteria[].criteriaWithSingleValue[].value#
+                </iterate>
+                <iterate prepend="and" property="oredCriteria[].criteriaWithListValue" conjunction="and">
+                    $oredCriteria[].criteriaWithListValue[].condition$
+                    <iterate property="oredCriteria[].criteriaWithListValue[].values" open="(" close=")"
+                             conjunction=",">
+                        #oredCriteria[].criteriaWithListValue[].values[]#
+                    </iterate>
+                </iterate>
+                <iterate prepend="and" property="oredCriteria[].criteriaWithBetweenValue" conjunction="and">
+                    $oredCriteria[].criteriaWithBetweenValue[].condition$
+                    #oredCriteria[].criteriaWithBetweenValue[].values[0]# and
+                    #oredCriteria[].criteriaWithBetweenValue[].values[1]#
+                </iterate>
+                )
+            </isEqual>
+        </iterate>
+    </sql>
+
+    <!-- 基础查询sql -->
+    <sql id="queryBaseSql">
+            SELECT
+                uuid,
+                order_id,
+                prdct_spec_id,
+                product_instance_id,
+                spec_id,
+                spec_value,
+                spec_value_desc,
+                user_id,
+                book_id,
+                create_date,
+                last_update_date,
+                duration_unit,
+                pay_duration,
+                expiring_date,
+                boAttr1,
+                boAttr2,
+                boAttr3,
+                boAttr4,
+                boAttr5
+            FROM
+                tb_order_standard
+    </sql>
+
+     <!-- -简单条件查询-->
+    <select id="selectByExample" resultMap="baseResultMap" parameterClass="orderStandardExample" >
+        <include refid="queryBaseSql"/>
+        <isParameterPresent >
+            <include refid="tb_order_standard.example_Where_Clause" />
+            <isNotNull property="orderByClause" >
+                order by $orderByClause$
+            </isNotNull>
+        </isParameterPresent>
+    </select>
+
+    <!-- 主键查询-->
+    <select id="selectByPrimaryKey" resultMap="baseResultMap" parameterClass="java.lang.String" >
+        <include refid="queryBaseSql"/>
+         where uuid = #uuid:VARCHAR#
+  </select>
+
+    <!-- 选择性插入-->
+    <insert id="insertSelective" parameterClass="orderStandard" >
+        insert into tb_order_standard
+        <dynamic prepend="(" >
+            <isNotNull prepend="," property="uuid" >
+                uuid
+            </isNotNull>
+            <isNotNull prepend="," property="orderId" >
+                order_id
+            </isNotNull>
+            <isNotNull prepend="," property="prdctSpecId" >
+                prdct_spec_id
+            </isNotNull>
+            <isNotNull prepend="," property="productInstanceId" >
+                product_instance_id
+            </isNotNull>
+            <isNotNull prepend="," property="specId" >
+                spec_id
+            </isNotNull>
+            <isNotNull prepend="," property="specValue" >
+                spec_value
+            </isNotNull>
+            <isNotNull prepend="," property="specValueDesc" >
+                spec_value_desc
+            </isNotNull>
+            <isNotNull prepend="," property="userId" >
+                user_id
+            </isNotNull>
+            <isNotNull prepend="," property="bookId" >
+                book_id
+            </isNotNull>
+            <isNotNull prepend="," property="createDate" >
+                create_date
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate" >
+                last_update_date
+            </isNotNull>
+            <isNotNull prepend="," property="durationUnit" >
+                duration_unit
+            </isNotNull>
+            <isNotNull prepend="," property="payDuration" >
+                pay_duration
+            </isNotNull>
+            <isNotNull prepend="," property="expiringDate" >
+                expiring_date
+            </isNotNull>
+            <isNotNull prepend="," property="boattr1" >
+                boAttr1
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                boAttr2
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                boAttr3
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                boAttr4
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                boAttr5
+            </isNotNull>
+            )
+        </dynamic>
+        values
+        <dynamic prepend="(" >
+            <isNotNull prepend="," property="uuid" >
+                #uuid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="orderId" >
+                #orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="prdctSpecId" >
+                #prdctSpecId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="productInstanceId" >
+                #productInstanceId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="specId" >
+                #specId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="specValue" >
+                #specValue:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="specValueDesc" >
+                #specValueDesc:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="userId" >
+                #userId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="bookId" >
+                #bookId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="createDate" >
+                #createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="lastUpdateDate" >
+                #lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="durationUnit" >
+                #durationUnit:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="payDuration" >
+                #payDuration:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="expiringDate" >
+                #expiringDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr1" >
+                #boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr2" >
+                #boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr3" >
+                #boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr4" >
+                #boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="boattr5" >
+                #boattr5:VARCHAR#
+            </isNotNull>
+            )
+        </dynamic>
+    </insert>
+
+    <!-- 主键删除-->
+    <delete id="deleteByPrimaryKey" parameterClass="java.lang.String" >
+    delete from tb_order_standard
+    where uuid = #uuid:VARCHAR#
+  </delete>
+
+    <!-- 条件删除-->
+    <delete id="deleteByExample" parameterClass="orderStandardExample" >
+        delete from tb_order_standard
+        <include refid="tb_order_standard.example_Where_Clause" />
+    </delete>
+
+    <!-- 记录数量-->
+    <select id="countByExample" parameterClass="orderStandardExample" resultClass="java.lang.Integer" >
+        select count(1) from tb_order_standard
+        <include refid="tb_order_standard.example_Where_Clause" />
+    </select>
+
+    <!-- 根据条件选择更新-->
+    <update id="updateByExampleSelective" >
+        update tb_order_standard
+        <dynamic prepend="set" >
+            <isNotNull prepend="," property="record.uuid" >
+                uuid = #record.uuid:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.orderId" >
+                order_id = #record.orderId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.prdctSpecId" >
+                prdct_spec_id = #record.prdctSpecId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.productInstanceId" >
+                product_instance_id = #record.productInstanceId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.specId" >
+                spec_id = #record.specId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.specValue" >
+                spec_value = #record.specValue:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.specValueDesc" >
+                spec_value_desc = #record.specValueDesc:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.userId" >
+                user_id = #record.userId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.bookId" >
+                book_id = #record.bookId:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.createDate" >
+                create_date = #record.createDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.lastUpdateDate" >
+                last_update_date = #record.lastUpdateDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.durationUnit" >
+                duration_unit = #record.durationUnit:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.payDuration" >
+                pay_duration = #record.payDuration:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.expiringDate" >
+                expiring_date = #record.expiringDate:TIMESTAMP#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr1" >
+                boAttr1 = #record.boattr1:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr2" >
+                boAttr2 = #record.boattr2:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr3" >
+                boAttr3 = #record.boattr3:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr4" >
+                boAttr4 = #record.boattr4:VARCHAR#
+            </isNotNull>
+            <isNotNull prepend="," property="record.boattr5" >
+                boAttr5 = #record.boattr5:VARCHAR#
+            </isNotNull>
+        </dynamic>
+        <isParameterPresent >
+            <include refid="tb_order_standard.example_Where_Clause" />
+        </isParameterPresent>
+    </update>
+
+    <!-- 根据主键选择更新-->
+  <update id="updateByPrimaryKeySelective" parameterClass="orderStandard" >
+    update tb_order_standard
+    <dynamic prepend="set" >
+      <isNotNull prepend="," property="orderId" >
+        order_id = #orderId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="prdctSpecId" >
+        prdct_spec_id = #prdctSpecId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="productInstanceId" >
+        product_instance_id = #productInstanceId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="specId" >
+        spec_id = #specId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="specValue" >
+        spec_value = #specValue:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="specValueDesc" >
+        spec_value_desc = #specValueDesc:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="userId">
+          user_id = #userId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="bookId">
+          book_id = #bookId:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="createDate">
+          create_date = #createDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="lastUpdateDate">
+          last_update_date = #lastUpdateDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="durationUnit">
+          duration_unit = #durationUnit:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="payDuration">
+          pay_duration = #payDuration:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="expiringDate">
+          expiring_date = #expiringDate:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr1">
+         boAttr1 = #boattr1:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr2" >
+        boAttr2 = #boattr2:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr3" >
+        boAttr3 = #boattr3:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr4" >
+        boAttr4 = #boattr4:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="boattr5" >
+        boAttr5 = #boattr5:VARCHAR#
+      </isNotNull>
+    </dynamic>
+    where uuid = #uuid:VARCHAR#
+  </update>
+
+</sqlMap>

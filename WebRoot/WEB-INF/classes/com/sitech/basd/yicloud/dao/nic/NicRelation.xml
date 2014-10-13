@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="nicRelation">
+	<typeAlias alias="NicRelationObj"
+		type="com.sitech.basd.yicloud.domain.nic.NicRelationObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+	  <insert id="insertByObj" parameterClass="NicRelationObj">
+		  <selectKey resultClass="Integer" keyProperty="id" >
+		  	select ID_TB_CLOUD2_NIC_RELATION.nextval as id from dual
+		  </selectKey>
+		insert into TB_CLOUD2_NIC_RELATION(
+			ID,TYPE,TO_UUID,FROM_UUID
+		)
+		values(#id#,#type#,#toUuid#,#fromUuid#)
+	  </insert>
+	  
+	  <select id="queryForListByObj" parameterClass="NicRelationObj" resultClass="NicRelationObj">
+		select ID,TYPE,TO_UUID toUuid,FROM_UUID fromUuid from TB_CLOUD2_NIC_RELATION
+		<dynamic prepend="where">
+			<isNotNull property="toUuid" prepend="and">
+				TO_UUID=#toUuid#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE = #type#
+			</isNotNull>
+			<isNotNull property="fromUuid" prepend="and">
+				FROM_UUID=#fromUuid#
+			</isNotNull>
+		</dynamic>
+	</select>
+	
+	<delete id="deleteByObj" parameterClass="NicRelationObj">
+		delete from TB_CLOUD2_NIC_RELATION 
+		<dynamic prepend="where">
+			<isNotNull property="toUuid" prepend="and">
+				TO_UUID=#toUuid#
+			</isNotNull>
+			<isNotNull property="type" prepend="and">
+				TYPE = #type#
+			</isNotNull>
+			<isNotNull property="fromUuid" prepend="and">
+				FROM_UUID=#fromUuid#
+			</isNotNull>
+		</dynamic>
+	</delete>
+	  
+</sqlMap>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbNet">
+
+    <typeAlias alias="TbCloud2NetInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.net.TbCloud2NetInfoObj"/>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+    <sql id="TB_CLOUD2_NET_INFOColumnsNoKey">
+          NAME, DESCRIPTION ,DOMAIN,FREECOUNT ,USEDCOUNT ,ISDEFAULT,GATEWAY1,GATEWAY2 , DNS1,DNS2,NETWORKID,WINS1,
+          WINS2,HOSTNAMEPREFIX ,SUBNET,USEDHCP,WORKGROUP ,DOMAINSUFFIXES,COMPUTERNAMEPREFIX,PROJECT_ID,VLAN_ID
+    </sql>
+    <sql id="TB_CLOUD2_NET_INFOColumns">
+        NET_ID,
+        <include refid="TB_CLOUD2_NET_INFOColumnsNoKey"/>
+    </sql>
+     <sql id="queryByObjBase">
+      select s.net_id,s.NAME,s.DESCRIPTION,
+       count(a.net_id) FREECOUNT,
+       (select count(b.NET_ID) from TB_CLOUD2_IP_INFO b where s.net_id = b.net_id and b.ISUSED = 1 )  USEDCOUNT,s.ISDEFAULT,s.DOMAIN,
+       s.GATEWAY1,s.GATEWAY2,s.DNS1,s.DNS2,s.NETWORKID,s.WINS1,s.WINS2,s.HOSTNAMEPREFIX,s.SUBNET,s.USEDHCP,s.WORKGROUP,s.DOMAINSUFFIXES,
+       s.COMPUTERNAMEPREFIX,s.PROJECT_ID,s.NET_TYPE,s.VLAN_ID
+       from  TB_CLOUD2_NET_INFO s 
+   	   left join  TB_CLOUD2_IP_INFO a on a.ISUSED=0 and s.net_id = a.net_id 
+        <dynamic prepend="where">
+			<isNotEmpty property="NET_ID" prepend="and">
+				s.NET_ID = #NET_ID#
+			</isNotEmpty>
+			<isNotEmpty property="NAME" prepend="and">
+				s.NAME like CONCAT('%',#NAME#,'%')
+			</isNotEmpty>
+			<isNotNull property="NET_TYPE" prepend="and">
+				s.NET_TYPE = #NET_TYPE#
+			</isNotNull>
+			<isNotEmpty property="VLAN_ID" prepend="and">
+				s.VLAN_ID = #VLAN_ID#
+			</isNotEmpty>
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	s.user_domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+        </dynamic>  
+        group by s.net_id
+     </sql>
+	 <select id="queryForListByObj" parameterClass="TbCloud2NetInfoObj" resultClass="TbCloud2NetInfoObj">
+	        <include refid="queryByObjBase"/>
+	         order by NET_ID asc
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="TbCloud2NetInfoObj" resultClass="int">
+	      select count(NET_ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <insert id="insertByObj" parameterClass="TbCloud2NetInfoObj">
+		insert into TB_CLOUD2_NET_INFO(
+		NET_ID,NAME,DESCRIPTION,DOMAIN,FREECOUNT,USEDCOUNT,ISDEFAULT,GATEWAY1,GATEWAY2,DNS1,DNS2,NETWORKID,
+		WINS1,WINS2,HOSTNAMEPREFIX,SUBNET,USEDHCP,WORKGROUP,DOMAINSUFFIXES,COMPUTERNAMEPREFIX,PROJECT_ID,NET_TYPE,VLAN_ID
+		)
+		values(#NET_ID#,#NAME#,#DESCRIPTION#,#DOMAIN#,#FREECOUNT#,#USEDCOUNT#,#ISDEFAULT#,#GATEWAY1#,#GATEWAY2#,#DNS1#,#DNS2#,#NETWORKID#,#WINS1#
+		,#WINS2#,#HOSTNAMEPREFIX#,#SUBNET#,#USEDHCP#,#WORKGROUP#,#DOMAINSUFFIXES#,#COMPUTERNAMEPREFIX#,#PROJECT_ID#,#NET_TYPE#,#VLAN_ID#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="TbCloud2NetInfoObj">
+	  	update TB_CLOUD2_NET_INFO 
+	  	set NAME=#NAME#,DESCRIPTION=#DESCRIPTION#,DOMAIN=#DOMAIN#,FREECOUNT=#FREECOUNT#,USEDCOUNT=#USEDCOUNT#,
+	  		ISDEFAULT=#ISDEFAULT#,GATEWAY1=#GATEWAY1#,GATEWAY2=#GATEWAY2#,DNS1=#DNS1#,DNS2=#DNS2#,NETWORKID=#NETWORKID#,
+	  		WINS1=#WINS1#,WINS2=#WINS2#,HOSTNAMEPREFIX=#HOSTNAMEPREFIX#,SUBNET=#SUBNET#,USEDHCP=#USEDHCP#,WORKGROUP=#WORKGROUP#,
+	  		DOMAINSUFFIXES=#DOMAINSUFFIXES#,COMPUTERNAMEPREFIX=#COMPUTERNAMEPREFIX#,PROJECT_ID=#PROJECT_ID#,NET_TYPE=#NET_TYPE#,VLAN_ID=#VLAN_ID#
+	  	where NET_ID=#NET_ID#
+	  </update> 
+	  <delete id="deleteByObj" parameterClass="TbCloud2NetInfoObj">
+	    delete from TB_CLOUD2_NET_INFO where NET_ID=#NET_ID#
+	  </delete>
+
+		 <!-- 查询网络资源信息 -->
+	  <select id="netResourceByType" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+	  		select a.isused,a.alls,tb.name
+			from(select sum(t.isused) as isused, count(t.isused) as  alls, t.net_id as net_id
+  			from TB_CLOUD2_IP_INFO t 
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	t.domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+		    	group by t.net_id) a,TB_CLOUD2_NET_INFO tb where a.net_id=tb.net_id 
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	tb.user_domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+	  </select>
+	  
+	  
+	  <select id="queryByNetObjForList" parameterClass="TbCloud2NetInfoObj" resultClass="TbCloud2NetInfoObj">
+    	select * from TB_CLOUD2_NET_INFO 
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="NET_ID">
+    			NET_ID = #NET_ID#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="NAME">
+    			NAME = #NAME#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="DESCRIPTION">
+    			DESCRIPTION = #DESCRIPTION#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="DOMAIN">
+    			DOMAIN = #DOMAIN#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="FREECOUNT">
+    			FREECOUNT = #FREECOUNT#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="USEDCOUNT">
+    			USEDCOUNT = #USEDCOUNT#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="ISDEFAULT">
+    			ISDEFAULT = #ISDEFAULT#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="GATEWAY1">
+    			GATEWAY1 = #GATEWAY1#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="GATEWAY2">
+    			GATEWAY2 = #GATEWAY2#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="DNS1">
+    			DNS1 = #DNS1#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="DNS2">
+    			DNS2 = #DNS2#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="NETWORKID">
+    			NETWORKID = #NETWORKID#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="WINS1">
+    			WINS1 = #WINS1#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="WINS2">
+    			WINS2 = #WINS2#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="HOSTNAMEPREFIX">
+    			HOSTNAMEPREFIX = #HOSTNAMEPREFIX#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="SUBNET">
+    			SUBNET = #SUBNET#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="USEDHCP">
+    			USEDHCP = #USEDHCP#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="WORKGROUP">
+    			WORKGROUP = #WORKGROUP#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="DOMAINSUFFIXES">
+    			DOMAINSUFFIXES = #DOMAINSUFFIXES#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="COMPUTERNAMEPREFIX">
+    			COMPUTERNAMEPREFIX = #COMPUTERNAMEPREFIX#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="PROJECT_ID">
+    			PROJECT_ID = #PROJECT_ID#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="IBM_NET_ID">
+    			IBM_NET_ID = #IBM_NET_ID#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="NET_TYPE">
+    			NET_TYPE = #NET_TYPE#
+    		</isNotEmpty>
+    		<isNotNull prepend="and" property="VLAN_ID">
+    			<isNotEmpty prepend="and" property="VLAN_ID">
+    				VLAN_ID = #VLAN_ID#
+    			</isNotEmpty>
+    		</isNotNull>
+				<isNotEmpty property="domain">
+		              	  <isNotEqual compareValue="null" property="domain">
+				            <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				              	user_domain =#domain#	
+				            </isNotEqual>
+			            </isNotEqual>
+		    	</isNotEmpty>
+    	</dynamic>
+    </select>
+	
+	<select id="queryForListByDomainId" parameterClass="string" resultClass="TbCloud2NetInfoObj">
+		select * from tb_cloud2_net_info where NET_ID in 
+		(select uuid from (select * from tb_united_tree where parent_id = #domainid#)a)
+	</select>
+	
+</sqlMap>

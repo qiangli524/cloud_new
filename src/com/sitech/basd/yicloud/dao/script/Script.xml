@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Scipt">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="ScriptObj" type="com.sitech.basd.yicloud.domain.script.ScriptObj"/>    
+    <typeAlias alias="ScriptConObj" type="com.sitech.basd.yicloud.domain.script.ScriptConObj"/>    
+  
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+   <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	 <sql id="queryByObjBase">
+	 	select ID,NAME,CONTENT,DES from TB_CLOUD2_SCRIPT
+	 	<dynamic prepend="where">
+	 		<isNotEqual property="id" compareValue="0" prepend="and" >
+				ID=#id#
+			</isNotEqual>
+			<isNotEmpty property="name" prepend="and">
+				NAME like '%'||#name#||'%'
+			</isNotEmpty>
+		</dynamic> 
+	 </sql>
+	   <select id="queryForListByObj" parameterClass="ScriptObj" resultClass="ScriptObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryByObjBase"/>
+	        
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="ScriptObj" resultClass="int">
+	       select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  
+	  <insert id="insertByObj" parameterClass="ScriptObj">
+	  		<selectKey resultClass="Integer" keyProperty="id" >
+       			 SELECT ID_TB_CLOUD2_SCRIPT.NEXTVAL AS id FROM DUAL 
+      		 </selectKey>
+	  		insert into TB_CLOUD2_SCRIPT(ID,NAME,CONTENT,DES) values(#id#,#name#,#content#,#des#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="ScriptObj">
+	    update TB_CLOUD2_SCRIPT set NAME=#name#,CONTENT=#content#,DES=#des# where ID = #id#
+	  </update>
+	  
+	  <delete id="deleteByObj" parameterClass="ScriptObj">
+	    delete from TB_CLOUD2_SCRIPT where ID =#id#
+	  </delete>
+	  
+	  <select id="queryScriptListByTempletObj" parameterClass="ScriptConObj" resultClass="ScriptConObj">
+	       select ID,SCRIPTID,TEMPLETID,TYPE from tb_cloud2_script_con where TEMPLETID =#templetId# AND TYPE=#type#
+	  </select>
+	   <delete id="deleteRelation" parameterClass="ScriptConObj">
+	   	 delete from TB_CLOUD2_SCRIPT_CON where SCRIPTID IN (#id1#,#id2#,#id3#,#id4#,#id5#,#id6#,#id7#,#id8#,#id9#,#id10#) and
+	   	 TEMPLETID = #templetId#
+	  </delete>
+	  <insert id="addRelation" parameterClass="ScriptConObj">
+	  		<selectKey resultClass="Integer" keyProperty="id" >
+       			 SELECT ID_TB_CLOUD2_SCRIPT_CON.NEXTVAL AS id FROM DUAL 
+      		 </selectKey>
+	  		insert into TB_CLOUD2_SCRIPT_CON(ID,SCRIPTID,TEMPLETID,TYPE) values(#id#,#scriptId#,#templetId#,#type#) 
+	  </insert>
+	  
+	 <delete id="deleteScriptRelation" parameterClass="ScriptConObj">
+	   	 delete from TB_CLOUD2_SCRIPT_CON
+	   	 <dynamic prepend="where">
+			<isNotEmpty property="scriptId" prepend="and">
+				SCRIPTID = #scriptId#
+			</isNotEmpty>
+			<isNotEmpty property="templetId" prepend="and">
+				TEMPLETID = #templetId#
+			</isNotEmpty>
+		</dynamic> 
+	  </delete>
+</sqlMap>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="busiTreeAction" class="com.sitech.basd.yicloud.web.busicenter.action.BusiTreeAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="busiTreeService">
+			<ref bean="busiTreeService" />
+		</property>
+		<property name="softwareInfoService">
+			<ref bean="softwareInfoService" />
+		</property>
+		<property name="leaderViewBusinessService">
+			<ref bean="leaderViewBusinessService" />
+		</property>
+		<property name="tbCloudAppInfoService">
+			<ref bean="tbCloudAppInfoService" />
+		</property>
+		<property name="busiHostService">
+			<ref bean="busiHostService" />
+		</property>
+		<property name="deployExampleService">
+			<ref bean="deployExampleService" />
+		</property>
+		<property name="appService">
+            <ref bean="appService"/>
+        </property>
+		<property name="tbBusiSysTreeService">
+            <ref bean="tbBusiSysTreeService"/>
+        </property>
+		<property name="bizSystemService">
+            <ref bean="bizSystemService"/>
+        </property>
+		<property name="appDatabaseService">
+            <ref bean="appDatabaseService"/>
+        </property>
+		<property name="busiHostConfigService">
+            <ref bean="busiHostConfigService"/>
+        </property>
+		<property name="processService">
+            <ref bean="processService"/>
+        </property>
+		<property name="scriptsService">
+            <ref bean="scriptsService"/>
+        </property>
+		<property name="exampleRelationService">
+            <ref bean="exampleRelationService"/>
+        </property>
+		<property name="deployAlarmService">
+            <ref bean="deployAlarmService"/>
+        </property>
+		<property name="userService">
+            <ref bean="userService"/>
+        </property>
+	</bean>
+
+</beans>

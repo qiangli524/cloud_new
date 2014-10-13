@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="AppExcel">
+	<typeAlias alias="DeployAppVO" type="com.sitech.basd.component.domain.excel.DeployAppVO" />
+	<typeAlias alias="StandardAppVO" type="com.sitech.basd.component.domain.excel.StandardAppVO" />
+    <select id="queryDeployAppInfo" parameterClass="DeployAppVO" resultClass="DeployAppVO">
+		SELECT t.id deployExampleId,
+		 t.EXAMPLE_NAME deployExampleName,
+         h.ip hostIp,
+         c.sshport sshPort,
+         c.CREDITUSER creditUser,
+         c.basepath basePath,
+         c.deploypath deployPath,
+         c.startshell startShell,
+         c.shutdownshell shutdownShell,
+         t.isrestart isRestart,
+         t.isbackup isBackup,
+         u.username hostUsername,
+         u.password sshPwd,
+         c.id hostConfigId,
+         t.EXAMPLE_NAME appName,
+         t.id  appId,
+         '否'   ifStandardApp
+    FROM tb_busi_deploy_example t,
+         tb_busi_host_config    c,
+         tb_busi_host           h,
+         tb_user_manage         u,
+       	 tb_sys_app             a
+   WHERE 
+     t.hostid = h.ID
+     AND t.hostid = c.hostid
+     and t.host_config_id=c.hostconfigid
+     and u.id=c.user_manage_id
+     and t.appid = a.id
+  	 and a.id = #appId#
+	</select>
+	
+	<!-- deploy_flag:正在部署或者升级 -->
+	<select id="queryDeployAppInfoByExample" parameterClass="DeployAppVO" resultClass="DeployAppVO">
+		SELECT t.id deployExampleId,
+		t.EXAMPLE_NAME deployExampleName,
+         h.ip hostIp,
+         c.sshport sshPort,
+         c.CREDITUSER creditUser,
+         c.basepath basePath,
+         c.deploypath deployPath,
+         c.startshell startShell,
+         c.shutdownshell shutdownShell,
+         t.isrestart isRestart,
+         t.isbackup isBackup,
+         u.username hostUsername,
+         u.password sshPwd,
+         c.id hostConfigId,
+         u.id userId
+    FROM tb_busi_deploy_example t,
+         tb_busi_host_config    c,
+         tb_busi_host           h,
+         tb_user_manage         u
+   WHERE 
+     T.ID = #deployExampleId#
+      AND t.hostid = h.ID
+     AND t.hostid = c.hostid
+     and t.host_config_id=c.hostconfigid
+     and u.id=c.user_manage_id
+	</select>
+	
+	<select id="queryStandardAppInfo" parameterClass="StandardAppVO" resultClass="StandardAppVO">
+       SELECT a.strategy standardAppId,
+           a.app_identify appIdentify,
+           u.username hostUsername,
+           u.password sshPwd,
+           c.sshport sshPort,
+           c.CREDITUSER creditUser,
+           c.apppath basePath,
+           h.ip hostIp,
+           h.id,
+           a.host_config_id,
+           c.id,
+           a.appname appName,
+           a.id  appId,
+           '是'   ifStandardApp
+      FROM tb_busi_host_config    c,
+           tb_busi_host           h,
+           tb_sys_app             a,
+           tb_user_manage         u
+     WHERE a.strategy=h.id
+       AND a.strategy = h.id
+       and c.user_manage_id=u.id
+       and a.host_config_id=c.hostconfigid
+       and a.id = #appId#
+	</select>
+	
+	<select id="queryExampleNameList" parameterClass="String" resultClass="String">
+       select (e.example_name ||'@'|| e.id) example_name from tb_busi_deploy_example e where e.appid = #appId#
+	</select>
+	
+	<select id="queryScriptIdByProcess" parameterClass="String" resultClass="String">
+       select wm_concat(t.id) from (select b.id
+		  from TB_BUSI_APP_PROCESS a, tb_script_manage b
+		 where  ((b.path || ' ' || b.params) like (a.start_script || '%')
+            or (b.path || ' ' || b.params) like (a.stop_script || '%'))
+		   and a.id=#processId#
+		   and a.user_id = b.user_id
+		   order by b.type) t
+	</select>
+</sqlMap>

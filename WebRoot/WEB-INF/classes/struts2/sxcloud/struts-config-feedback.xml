@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="feedback"
+			 extends="global_package">
+		<action name="feedback_*"
+				class="publishFeedBackAction" method="{1}"> 
+			<result name="list">/sxcloud/cloud/feedback/loadListFeedBackType.jsp</result>
+			<result name="add">/sxcloud/cloud/feedback/editFeedBackType.jsp</result> 
+			<result name="modify">/sxcloud/cloud/feedback/editFeedBackType.jsp</result> 
+			<result name="del" type="redirect">feedback_loadListFeedBackType.do</result> 
+			<result name="save" type="redirect">feedback_loadListFeedBackType.do</result>
+			<result name="error">/common/error.jsp</result>
+			<result name="success">/sxcloud/cloud/feedback/addFeedBackInfo.jsp</result>
+			<result name="save_info" type="redirect">feedback_loadListMyFeedBackInfo.do</result>
+			<result name="my_feedback">/sxcloud/cloud/feedback/loadListMyFeedBackInfo.jsp</result>
+			<result name="wait_list">/sxcloud/cloud/feedback/loadListFeedBackInfo.jsp</result>
+			<result name="confirm">/sxcloud/cloud/feedback/confirmFeedBackInfo.jsp</result>
+			<result name="update" type="redirect">feedback_loadListFeedBackInfo.do</result>
+			<result name="examine_his">/sxcloud/cloud/feedback/examineHisInfo.jsp</result>
+			<result name="examine_info">/sxcloud/cloud/feedback/examineInfo.jsp</result>
+			<result name="his_list">/sxcloud/cloud/feedback/loadListHisFeedBackInfo.jsp</result>
+		</action>
+		 
+ 
+	</package>
+
+</struts>

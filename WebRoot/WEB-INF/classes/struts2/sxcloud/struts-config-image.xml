@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="image"
+			 extends="global_package">
+		<action name="image_*"
+				class="imageAction" method="{1}">
+			<result name="success">/sxcloud/cloud/image/listImages.jsp</result>
+			<result name="deploysuccess" type="redirect">image_listImageInfo.do</result>
+			<result name="basicDeploy">/sxcloud/cloud/image/basicDeploy.jsp</result>
+			<result name="advancedDeploy">/sxcloud/cloud/image/advancedDeploy.jsp</result>
+			<result name="config">/sxcloud/cloud/image/virtualImagesConfig.jsp</result>
+			<result name="moveImageInfo">/sxcloud/cloud/image/moveImageInfo.jsp</result>
+			<result name="saveMvImageInfo" type="redirect">image_listImageInfo.do</result>
+			<result name="error">/yicloud/vmman/exception.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopHostInfo">
+	<typeAlias alias="hadoopHostInfoObj" type="domain.host.HadoopHostInfoObj" />
+		<typeAlias alias="hadoopTreeObj" type="domain.tree.HadoopTreeObj"/>
+
+	<sql id="baseCloumns">
+		id,host_name,host_type,service_type,os,service,cpu_ghz,mem_size,local_disk_size,swap_size,ip,cpu_num,cluster_id,label_name
+	</sql>
+	
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="queryForHostListBase">
+	SELECT DISTINCT
+				a.ID,
+				a.HOST_NAME,
+				a.HOST_TYPE,
+				a.SERVICE_TYPE,
+				a.OS,
+				a.SERVICE,
+				a.CPU_GHZ,
+				a.MEM_SIZE,
+				t6.swap_size,
+				t7.local_disk_size,
+				a.IP,
+				a.CPU_NUM,
+				a.CLUSTER_ID,
+				a.LABEL_NAME,
+				c.CLUSTER_NAME
+			FROM
+				tb_hadoop_host_info a
+			LEFT JOIN tb_hadoop_cluster_info c ON a.CLUSTER_ID = c.ID
+			LEFT JOIN tb_hadoop_resource_tree b ON b.UUID = a.ID
+			LEFT JOIN (
+				SELECT
+								t5.KPI_VALUE swap_size,
+					t5.CLUSTER_NAME,
+					t5.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t5
+				WHERE t5.KPI_ID ='swap_total'
+			) t6 ON a.HOST_NAME = t6.HOST_NAME
+			AND c.CLUSTER_ID = t6.CLUSTER_NAME
+			LEFT JOIN (
+				SELECT
+			   	t4.KPI_VALUE local_disk_size,
+					t4.CLUSTER_NAME,
+					t4.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t4
+				WHERE t4.KPI_ID = 'disk_total'
+			) t7 ON a.HOST_NAME = t7.HOST_NAME
+			AND c.CLUSTER_ID = t7.CLUSTER_NAME
+	<dynamic prepend="WHERE">
+		<isNotNull property="host_name" prepend="and">
+			<isNotEmpty property="host_name">
+				a.HOST_NAME = #host_name#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="label_name" prepend="and">
+			<isNotEmpty property="label_name">
+				a.LABEL_NAME = #label_name#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="host_type" prepend="and">
+			<isNotEmpty property="host_type">
+					a.HOST_TYPE = #host_type#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="service_type" prepend="and">
+				<isNotEmpty property="service_type">
+					a.SERVICE_TYPE = #service_type#
+				</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="service" prepend="and">
+				<isNotEmpty property="service">
+					a.SERVICE = #service#
+				</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="ip" prepend="and">
+				<isNotEmpty property="ip">
+					a.IP LIKE CONCAT('%',#ip#,'%')
+				</isNotEmpty>
+		</isNotNull>
+	</dynamic>
+	ORDER BY INET_NTOA(a.IP),a.LABEL_NAME
+	</sql>
+
+	<!-- 查询所有主机 -->
+	<select id="queryForHostList" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		<include refid ="queryForHostListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForHostListCount" parameterClass="hadoopHostInfoObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForHostListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 
+	<select id="queryForListUnderServiceNode" parameterClass="hadoopHostInfoObj"
+		resultClass="hadoopHostInfoObj">
+		select
+		<include refid="baseCloumns" />
+		from tb_hadoop_host_info
+		where id in (
+		select uuid from tb_hadoop_resource_tree
+		<dynamic prepend="where">
+			parent_id = #id#
+		</dynamic>
+		)
+	</select>
+	<insert id="insertByObj" parameterClass="hadoopHostInfoObj">
+		insert into tb_hadoop_host_info(id,host_name,host_type,service_type,os,service,cpu_ghz,mem_size,local_disk_size,swap_size,ip,cpu_num,cluster_id,label_name)
+			values(#id#,#host_name#,#host_type#,#service_type#,#os#,#service#,#cpu_ghz#,#mem_size#,#local_disk_size#,#swap_size#,#ip#,#cpu_num#,#cluster_id#,#label_name#)
+	</insert>
+	<select id="queryByObj" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_hadoop_host_info
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForHadoopHostLists" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		select 
+		<include refid="baseCloumns"/>,`status`
+		from tb_hadoop_host_info
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+			    id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="serviceId" prepend="and">
+			    id in (
+			    	select uuid from tb_hadoop_resource_tree where parent_id = #serviceId#
+			    )
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForHadoopHostCount" parameterClass="hadoopHostInfoObj" resultClass="int">
+		select 
+		count(ID)
+		from tb_hadoop_host_info
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+			    id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="serviceId" prepend="and">
+			    id in (
+			    	select uuid from tb_hadoop_resource_tree where parent_id = #serviceId#
+			    )
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForHadoopHostAndClusterInfoObj" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		select 
+		t.id,t.host_name,t1.cluster_id
+		from tb_hadoop_host_info t LEFT JOIN tb_hadoop_cluster_info t1 on t.CLUSTER_ID=t1.ID
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+			    t.id=#id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<update id="updateByObj" parameterClass="hadoopHostInfoObj">
+		update tb_hadoop_host_info set cluster_id=#cluster_id#
+	  	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<update id="updHostInfoByObj" parameterClass="hadoopHostInfoObj">
+		update tb_hadoop_host_info set 
+		host_name=#host_name#,host_type=#host_type#,service_type=#service_type#,os=#os#,
+		cpu_ghz=#cpu_ghz#,mem_size=#mem_size#,local_disk_size=#local_disk_size#,
+		swap_size=#swap_size#,ip=#ip#,cpu_num=#cpu_num#
+	  	<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<delete id="deleteByObj" parameterClass="hadoopHostInfoObj">
+		delete from tb_hadoop_host_info 
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				<isNotNull property="id">
+					id = #id#
+				</isNotNull>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+	<sql id="queryHostInfoByHostNodeBase">
+		SELECT
+			DISTINCT
+			a.ID,
+			a.HOST_NAME,
+			a.HOST_TYPE,
+			a.SERVICE_TYPE,
+			a.OS,
+			a.SERVICE,
+			a.CPU_GHZ,
+			a.MEM_SIZE,
+			t7.local_disk_size,
+			t6.SWAP_SIZE,
+			a.IP,
+			a.CPU_NUM,
+			a.CLUSTER_ID,
+			a.LABEL_NAME,
+			c.CLUSTER_NAME
+		FROM
+				tb_hadoop_host_info a
+			LEFT JOIN tb_hadoop_cluster_info c ON a.CLUSTER_ID = c.ID
+			LEFT JOIN tb_hadoop_resource_tree b ON b.UUID = a.ID
+			LEFT JOIN (
+				SELECT
+					t5.KPI_VALUE swap_size,
+					t5.CLUSTER_NAME,
+					t5.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t5
+				WHERE t5.KPI_ID ='swap_total'
+			) t6 ON a.HOST_NAME = t6.HOST_NAME
+			AND c.CLUSTER_ID = t6.CLUSTER_NAME
+			LEFT JOIN (
+				SELECT
+			   	t4.KPI_VALUE local_disk_size,
+					t4.CLUSTER_NAME,
+					t4.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t4
+				WHERE t4.KPI_ID = 'disk_total'
+			) t7 ON a.HOST_NAME = t7.HOST_NAME
+			AND c.CLUSTER_ID = t7.CLUSTER_NAME
+			where a.id = b.uuid
+			<isNotNull property="host_name" prepend="and">
+				<isNotEmpty property="host_name">
+					a.HOST_NAME LIKE CONCAT('%',#host_name#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="host_type" prepend="and">
+				<isNotEmpty property="host_type">
+						a.HOST_TYPE = #host_type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="service_type" prepend="and">
+					<isNotEmpty property="service_type">
+						a.SERVICE_TYPE = #service_type#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="ip" prepend="and">
+					<isNotEmpty property="ip">
+						a.IP LIKE CONCAT('%',#ip#,'%')
+					</isNotEmpty>
+			</isNotNull>
+	</sql>
+	<select id="queryHostInfoByHostNodeCount" parameterClass="hadoopHostInfoObj" resultClass="java.lang.Integer">
+		select count(*)  from (
+		<include refid="queryHostInfoByHostNodeBase" />
+		<isNotNull property="id" prepend="and">
+				<isNotEmpty property="id">
+					a.ID = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="node_id" prepend="and">
+				<isNotEmpty property="node_id">
+					b.ID = #node_id#
+				</isNotEmpty>
+			</isNotNull>
+		 ) virtual_table
+	 </select>
+	<select id="queryHostInfoByHostNode" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		<include refid ="queryHostInfoByHostNodeBase" />
+		<isNotNull property="id" prepend="and">
+				<isNotEmpty property="id">
+					a.ID = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="node_id" prepend="and">
+				<isNotEmpty property="node_id">
+					b.ID = #node_id#
+				</isNotEmpty>
+			</isNotNull>
+		    order by a.LABEL_NAME
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryHostInfoByOtherNodeCount" parameterClass="hadoopHostInfoObj" resultClass="int">
+	 	select count(*) from (
+		 <include refid="queryHostInfoByHostNodeBase" />
+		 	AND b.id in 
+		 	<iterate close=")" conjunction="," open="(" property="nodeIdList" >
+		 		#nodeIdList[]#
+		 	</iterate>
+		 ) virtual_table
+	 </select>
+	 <select id="queryHostInfoByOtherNode" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		<include refid="queryHostInfoByHostNodeBase" />
+		AND b.id in 
+			<iterate close=")" conjunction="," open="(" property="nodeIdList" >
+		 		#nodeIdList[]#
+		 	</iterate>
+		 	order by a.LABEL_NAME
+	    <isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	 
+	 <sql id="queryHostInfoByDCNodeBase">
+		SELECT
+			DISTINCT
+			a.ID,
+			a.HOST_NAME,
+			a.HOST_TYPE,
+			a.SERVICE_TYPE,
+			a.OS,
+			a.SERVICE,
+			a.CPU_GHZ,
+			a.MEM_SIZE,
+			t7.local_disk_size,
+			t6.SWAP_SIZE,
+			a.IP,
+			a.CPU_NUM,
+			a.CLUSTER_ID,
+			a.LABEL_NAME,
+			c.CLUSTER_NAME
+		FROM
+				tb_hadoop_host_info a
+			LEFT JOIN tb_hadoop_cluster_info c ON a.CLUSTER_ID = c.ID
+			LEFT JOIN tb_hadoop_resource_tree b ON b.UUID = a.ID
+			LEFT JOIN (
+				SELECT
+								t5.KPI_VALUE swap_size,
+					t5.CLUSTER_NAME,
+					t5.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t5
+				WHERE t5.KPI_ID ='swap_total'
+			) t6 ON a.HOST_NAME = t6.HOST_NAME
+			AND c.CLUSTER_ID = t6.CLUSTER_NAME
+			LEFT JOIN (
+				SELECT
+			   	t4.KPI_VALUE local_disk_size,
+					t4.CLUSTER_NAME,
+					t4.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t4
+				WHERE t4.KPI_ID = 'disk_total'
+			) t7 ON a.HOST_NAME = t7.HOST_NAME
+			AND c.CLUSTER_ID = t7.CLUSTER_NAME
+			<isNotNull property="cluster_id" prepend="and">
+				<isNotEmpty property="cluster_id">
+					a.cluster_id = #cluster_id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="host_name" prepend="and">
+				<isNotEmpty property="host_name">
+					a.HOST_NAME LIKE CONCAT('%',#host_name#,'%')
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="host_type" prepend="and">
+				<isNotEmpty property="host_type">
+						a.HOST_TYPE = #host_type#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="service_type" prepend="and">
+					<isNotEmpty property="service_type">
+						a.SERVICE_TYPE = #service_type#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="ip" prepend="and">
+					<isNotEmpty property="ip">
+						a.IP LIKE CONCAT('%',#ip#,'%')
+					</isNotEmpty>
+			</isNotNull>
+			order by a.LABEL_NAME
+	</sql>
+	 <select id="queryHostInfoByDCNodeCount" parameterClass="hadoopHostInfoObj" resultClass="int">
+	 	select count(*) from (
+		 <include refid="queryHostInfoByDCNodeBase" />
+		 ) virtual_table
+	 </select>
+	 <select id="queryHostInfoByDCNode" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		<include refid="queryHostInfoByDCNodeBase" />
+	    <isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	 
+	 <sql id="queryLogHostInfoListBase">
+	SELECT
+		a.ID,
+		a.HOST_NAME,
+		a.HOST_TYPE,
+		a.SERVICE_TYPE,
+		a.OS,
+		a.SERVICE,
+		a.CPU_GHZ,
+		a.MEM_SIZE,
+		a.local_disk_size,
+		a.SWAP_SIZE,
+		a.IP,
+		a.CPU_NUM,
+		a.CLUSTER_ID,
+		a.LABEL_NAME,
+		b.CLUSTER_NAME
+	FROM
+		tb_hadoop_host_info a
+	LEFT JOIN tb_hadoop_cluster_info b ON  a.CLUSTER_ID = b.ID
+	<dynamic prepend="WHERE">
+		<isNotNull property="cluster_id" prepend="and">
+			<isNotEmpty property="cluster_id">
+				b.cluster_id = #cluster_id#
+			</isNotEmpty>
+		</isNotNull>
+		and a.HOST_NAME in 
+		<iterate close=")" conjunction="," open="(" property="hostNameList">
+			#hostNameList[]#
+		</iterate>
+	</dynamic>
+	ORDER BY IP,LABEL_NAME
+	</sql>
+
+	<select id="queryLogHostInfoList" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		<include refid ="queryLogHostInfoListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryLogHostInfoListCount" parameterClass="hadoopHostInfoObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryLogHostInfoListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <select id="queryForExampleList" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+	 	select a.ID,a.host_name,a.host_type,a.service_type,a.os,a.service,a.cpu_ghz,a.mem_size,t7.local_disk_size,a.ip,a.cpu_num,a.cluster_id,
+	 	a.label_name,a.`status`,c.allcount,c.normalcount,ROUND(f.kpi_value/1024,3) swap_size from tb_hadoop_host_info a INNER JOIN 
+		(
+			select id,uuid from tb_hadoop_resource_tree
+			<dynamic prepend="where">
+				<isNotEmpty property="id" prepend="and">
+				    id=#id#
+				</isNotEmpty>
+				<isNotEmpty property="serviceId" prepend="and">
+				   	parent_id = #serviceId#
+				</isNotEmpty>
+			</dynamic>
+		) b ON a.ID = b.uuid
+		LEFT JOIN tb_hadoop_cluster_info cc ON a.cluster_id = cc.id
+		LEFT JOIN (
+			SELECT
+				t4.KPI_VALUE local_disk_size,
+				t4.CLUSTER_NAME,
+				t4.HOST_NAME
+			FROM
+				tb_hadoop_coll_last t4
+			WHERE
+				t4.KPI_ID = 'disk_total'
+		) t7 ON a.HOST_NAME = t7.HOST_NAME AND cc.CLUSTER_ID = t7.CLUSTER_NAME
+		LEFT JOIN 
+		(
+			select count(CASE WHEN d.PROCESS_STATE = 2 THEN 'normal' END) normalcount,count(d.ID) allcount,	e.EXAMPLE_ID from 
+			tb_busi_app_process d
+			INNER JOIN tb_example_relation e ON d.ID = e.ENTITY_ID 
+			where e.EXAMPLE_ID in
+			(
+				select id from tb_hadoop_resource_tree
+				<dynamic prepend="where">
+					<isNotEmpty property="id" prepend="and">
+						id=#id#
+					</isNotEmpty>
+					<isNotEmpty property="serviceId" prepend="and">
+						parent_id = #serviceId#
+					</isNotEmpty>
+				</dynamic>
+			)
+			GROUP BY e.EXAMPLE_ID
+		) c ON b.id = c.EXAMPLE_ID
+		LEFT JOIN tb_hadoop_coll_last f on a.HOST_NAME = f.HOST_NAME
+		<dynamic prepend="where">
+			<isNotEmpty property="kpi_id" prepend="and">
+				f.kpi_id = #kpi_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="cluster_name">
+				f.cluster_name = #cluster_name#
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	 </select>
+	 
+	 <select id="queryForExampleCount" parameterClass="hadoopHostInfoObj" resultClass="int">
+	 	select count(a.ID) from tb_hadoop_host_info a INNER JOIN 
+		(
+			select id,uuid from tb_hadoop_resource_tree
+			<dynamic prepend="where">
+				<isNotEmpty property="id" prepend="and">
+				    id=#id#
+				</isNotEmpty>
+				<isNotEmpty property="serviceId" prepend="and">
+				    parent_id = #serviceId#
+				</isNotEmpty>
+			</dynamic>
+		) b ON a.ID = b.uuid
+		LEFT JOIN 
+		(
+			select count(CASE WHEN d.PROCESS_STATE = 2 THEN 'normal' END) normalcount,count(d.ID) allcount,	e.EXAMPLE_ID from 
+			tb_busi_app_process d
+			INNER JOIN tb_example_relation e ON d.ID = e.ENTITY_ID 
+			where e.EXAMPLE_ID in
+			(
+				select id from tb_hadoop_resource_tree
+				<dynamic prepend="where">
+					<isNotEmpty property="id" prepend="and">
+						id=#id#
+					</isNotEmpty>
+					<isNotEmpty property="serviceId" prepend="and">
+						parent_id = #serviceId#
+					</isNotEmpty>
+				</dynamic>
+			)
+			GROUP BY e.EXAMPLE_ID
+		) c ON b.id = c.EXAMPLE_ID
+	 </select>
+	 
+	 <select id="queryForHostListJoinColl" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+	 	select a.ID,a.host_name,a.host_type,a.service_type,a.os,a.service,a.cpu_ghz,a.mem_size,a.ip,a.cpu_num,a.cluster_id,
+	 	a.label_name,a.`status`,t6.swap_size,t7.local_disk_size,c.cluster_name 
+	 	from tb_hadoop_host_info a left join tb_hadoop_cluster_info c on a.cluster_id = c.id
+	 	LEFT JOIN (
+				SELECT
+					t5.KPI_VALUE swap_size,
+					t5.CLUSTER_NAME,
+					t5.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t5
+				WHERE t5.KPI_ID ='swap_total'
+			) t6 ON a.HOST_NAME = t6.HOST_NAME
+			AND c.CLUSTER_ID = t6.CLUSTER_NAME
+			LEFT JOIN (
+				SELECT
+			   		t4.KPI_VALUE local_disk_size,
+					t4.CLUSTER_NAME,
+					t4.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t4
+				WHERE t4.KPI_ID = 'disk_total'
+			) t7 ON a.HOST_NAME = t7.HOST_NAME
+			AND c.CLUSTER_ID = t7.CLUSTER_NAME
+	 	<dynamic prepend="where">
+	 		<isNotEmpty prepend="and" property="host_name">
+	 			a.host_name like CONCAT('%',#host_name#,'%') 
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="host_type">
+	 			a.host_type = #host_type#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="ip">
+	 			a.ip like CONCAT('%',#ip#,'%') 
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="nodeIdList">
+	 			 a.id in
+	 			 <iterate close=")" conjunction="," open="(" property="nodeIdList">
+	 			 	#nodeIdList[]#
+	 			 </iterate>
+	 		</isNotEmpty>
+	 		<isNotEmpty property="cluster_name" prepend="and">
+	 			c.cluster_id = #cluster_name#
+	 		</isNotEmpty>
+	 	</dynamic>
+	 </select>
+	 
+	  <select id="countForHostListJoinColl" parameterClass="hadoopHostInfoObj" resultClass="int">
+	 	select count(a.ID)
+	 	from tb_hadoop_host_info a left join tb_hadoop_cluster_info c on a.cluster_id = c.id
+	 	LEFT JOIN (
+				SELECT
+					t5.KPI_VALUE swap_size,
+					t5.CLUSTER_NAME,
+					t5.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t5
+				WHERE t5.KPI_ID ='swap_total'
+			) t6 ON a.HOST_NAME = t6.HOST_NAME
+			AND c.CLUSTER_ID = t6.CLUSTER_NAME
+			LEFT JOIN (
+				SELECT
+			   		t4.KPI_VALUE local_disk_size,
+					t4.CLUSTER_NAME,
+					t4.HOST_NAME
+				FROM
+					tb_hadoop_coll_last t4
+				WHERE t4.KPI_ID = 'disk_total'
+			) t7 ON a.HOST_NAME = t7.HOST_NAME
+			AND c.CLUSTER_ID = t7.CLUSTER_NAME
+	 	<dynamic prepend="where">
+	 		<isNotEmpty prepend="and" property="host_name">
+	 			a.host_name like CONCAT('%',#host_name#,'%') 
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="host_type">
+	 			a.host_type = #host_type#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="ip">
+	 			a.ip like CONCAT('%',#ip#,'%') 
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="and" property="nodeIdList">
+	 			 a.id in
+	 			 <iterate close=")" conjunction="," open="(" property="nodeIdList">
+	 			 	#nodeIdList[]#
+	 			 </iterate>
+	 		</isNotEmpty>
+	 		<isNotEmpty property="cluster_name" prepend="and">
+	 			c.cluster_id = #cluster_name#
+	 		</isNotEmpty>
+	 	</dynamic>
+	 </select>
+	 
+	 <sql id="queryHostListBase">
+		SELECT <include refid="baseCloumns"/>
+				FROM tb_hadoop_host_info 
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="host_name" prepend="and">
+					HOST_NAME = #host_name#
+			</isNotEmpty>
+			<isNotEmpty property="label_name" prepend="and">
+					LABEL_NAME = #label_name#
+			</isNotEmpty>
+			<isNotEmpty property="ip" prepend="and">
+					IP LIKE CONCAT('%',#ip#,'%')
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY LABEL_NAME
+	</sql>
+	 <!-- 查询主机 信息-->
+	<select id="queryHostList" parameterClass="hadoopHostInfoObj" resultClass="hadoopHostInfoObj">
+		<include refid ="queryHostListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryHostListCount" parameterClass="hadoopHostInfoObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryForHostListBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 查询hadoop树上主机的全部 信息-->
+	 <select id="queryAllHostForTree" parameterClass="hadoopTreeObj" resultClass="hadoopHostInfoObj">
+	 	SELECT <include refid="baseCloumns"/>
+		FROM tb_hadoop_host_info h 
+		WHERE h.ID IN ( SELECT t.UUID FROM tb_hadoop_resource_tree t WHERE t.NODE_TYPE = #node_type# )
+	 </select>
+</sqlMap>

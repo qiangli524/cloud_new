@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围  -->
+<sqlMap namespace="TbCloud3AppRollbackInfo">
+	<typeAlias alias="TbCloud3AppRollbackInfoVO"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.version.TbCloud3AppRollbackInfoVO" />
+	
+	<select id="queryVOByID" parameterClass="TbCloud3AppRollbackInfoVO" resultClass="TbCloud3AppRollbackInfoVO">
+		SELECT T.ID,T.APPID,T.STATUS,T.INSERTTIME,T.ROLLBACKTIME,t.EXECUTE_FLAG,t.EXECUTE_PERCENT,T.DEPLOYIDS,T.DAY_VERSION,T.RESUME_TYPE FROM TB_CLOUD3_APP_ROLLBACK_INFO T WHERE T.ID=#id#
+	</select>
+	
+	<insert id="insertByVO" parameterClass="TbCloud3AppRollbackInfoVO">
+		insert into TB_CLOUD3_APP_ROLLBACK_INFO(ID,APPID,STATUS,INSERTTIME,ROLLBACKTIME,EXECUTE_FLAG,EXECUTE_PERCENT,DEPLOYIDS,DAY_VERSION,RESUME_TYPE)
+		values(#id#,#appId#,#status#,SYSDATE(),#rollbackTime#,#executeFlag#,#executePercent#,#deployIds#,#day_version#,#resume_type#)
+	</insert>
+	
+	<select id="queryVOList" parameterClass="TbCloud3AppRollbackInfoVO" resultClass="TbCloud3AppRollbackInfoVO">
+		SELECT T.ID,T.APPID,T.STATUS,T.INSERTTIME,T.ROLLBACKTIME,t.EXECUTE_FLAG,t.EXECUTE_PERCENT,T.DEPLOYIDS,T.DAY_VERSION,T.RESUME_TYPE FROM TB_CLOUD3_APP_ROLLBACK_INFO T 
+		<dynamic prepend="where">
+			<isNotEmpty property="appId" prepend="AND">
+                	T.APPID = #appId#
+            </isNotEmpty>
+            <isNotEmpty property="id" prepend="AND">
+                	T.ID = #id#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

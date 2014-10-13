@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="exportConfigAction" class="com.sitech.basd.sxcloud.cloud.web.exportconfig.action.ExportConfigAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="exportConfigService">
+			<ref bean="exportConfigService" />
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

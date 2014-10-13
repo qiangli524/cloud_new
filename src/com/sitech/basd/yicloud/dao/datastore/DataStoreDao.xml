@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DataStore">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="DataStoreObj"
+		type="com.sitech.basd.yicloud.domain.datastore.DataStoreObj" />
+	<typeAlias alias="DataStoreInfoObj"
+		type="com.sitech.basd.yicloud.domain.datastore.DataStoreInfoObj" />
+		<typeAlias alias="cmsObj" type="com.sitech.basd.resource.domain.united.CMSObj"/>
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="TB_YICLOUD_DATASTOREColumnsNoKey">
+		NAME,CAPACITY,FREE_SPACE,TYPE,STORAGE_URL,DATACENTER_ID,CLUSTER_ID,CONNECT_ID,
+		IORM_ENABLED,STORE_UUID,DEVICE_ID,STATE
+	</sql>
+	<sql id="TB_YICLOUD_DATASTOREColumns">
+		ID,
+		<include refid="TB_YICLOUD_DATASTOREColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		a.ID,a.NAME,a.CAPACITY,a.FREE_SPACE,a.TYPE,a.STORAGE_URL,a.DATACENTER_ID,a.CLUSTER_ID,a.CONNECT_ID,
+		a.IORM_ENABLED,a.STORE_UUID,a.STATE,b.NAME deviceName,b.TYPE deviceType
+		from TB_STORE_DEVICE b 
+		RIGHT JOIN(
+		select
+		<include refid="TB_YICLOUD_DATASTOREColumns" />
+		from TB_YICLOUD_DATASTORE where 1=1
+		<isNotEqual property="ID" compareValue="0" prepend="and">
+			ID = #ID#
+		</isNotEqual>
+		<isNotNull property="HOST_ID" prepend="and">
+			HOST_ID = #HOST_ID#
+		</isNotNull>
+		<isNotNull property="store_uuid" prepend="and">
+			STORE_UUID =#store_uuid#
+		</isNotNull>
+		<isNotNull prepend="and" property="STATE">
+			STATE = #STATE#
+		</isNotNull>
+		<isNotNull prepend="and" property="TYPE">
+			TYPE = #TYPE#
+		</isNotNull>
+		<isNotNull property="connectId" prepend="and">
+			CONNECT_ID =#connectId#
+		</isNotNull>
+		<isNotNull prepend="and" property="NAME">
+			NAME like '%'||#NAME#||'%'
+		</isNotNull>
+		)a
+		ON b.id = a.DEVICE_ID
+		order by ID asc
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj" parameterClass="DataStoreObj"
+		resultClass="DataStoreObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="DataStoreObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	
+	<!-- 从TB_YICLOUD_DATASTORE_INFO中查询存储列表 -->
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByDataStoreInfoObj" parameterClass="DataStoreInfoObj" resultClass="DataStoreInfoObj">	
+		select ID,NAME,FREE_SPACE,VMFS_CAPACITY from TB_YICLOUD_DATASTORE_INFO  where 1=1
+		<isNotEqual property="ID" compareValue="0" prepend="and">
+			ID = #ID#
+		</isNotEqual>
+		order by ID asc
+	</select>
+	<!-- 向TB_YICLOUD_DATASTORE表插入信息 -->
+	<insert id="insertDatastore" parameterClass="DataStoreObj">
+		<selectKey keyProperty="ID" resultClass="Integer">
+			select ID_YICLOUD_DATASTORE.nextval as ID from dual
+		</selectKey>
+		insert into TB_YICLOUD_DATASTORE
+		(ID,NAME,STORAGE_URL,CAPACITY,FREE_SPACE,TYPE,INFO,CAPABILITY,DATACENTER_ID,IORM_ENABLED,IORM_CONGESTION_THRESHOLD,
+		MAINTENANCE_MODE,HOST_ID,COLL_TIME,CLUSTER_ID,REMOTE_HOST,REMOTE_PATH,STORE_UUID,CONNECT_ID,STATE)
+		values
+		(#ID#,#NAME#,#STORAGE_URL#,#CAPACITY#,#FREE_SPACE#,#TYPE#,#INFO#,#CAPABILITY#,#DATACENTER_ID#,#IORM_ENABLED#,#IORM_CONGESTION_THRESHOLD#,#MAINTENANCE_MODE#,#HOST_ID#,sysdate,#CLUSTER_ID#,
+		#REMOTE_HOST#,#REMOTE_PATH#,#store_uuid#,#connectId#,#STATE#)
+	</insert>
+	<!-- 更新TB_YICLOUD_DATASTORE表信息 -->
+	<update id="updateByObj" parameterClass="DataStoreObj">
+		update TB_YICLOUD_DATASTORE set NAME=#NAME#,STORAGE_URL=#STORAGE_URL#,CAPACITY=#CAPACITY#,FREE_SPACE=#FREE_SPACE#,TYPE=#TYPE#,DATACENTER_ID=#DATACENTER_ID#,HOST_ID=#HOST_ID#,CLUSTER_ID=#CLUSTER_ID#,COLL_TIME=sysdate,STORE_UUID=#store_uuid#
+		where NAME = #NAME# and HOST_ID=#HOST_ID#
+	</update>
+	<!-- 删除TB_YICLOUD_DATASTORE表信息 -->
+	<delete id="deleteByObj" parameterClass="DataStoreObj">
+		delete from TB_YICLOUD_DATASTORE where NAME = #NAME# and HOST_ID=#HOST_ID#
+	</delete>
+	<!-- 查询集群下的存储 -->
+	<select id="queryClusterds" parameterClass="DataStoreObj" resultClass="DataStoreObj">
+		select NAME, min(ID) ID FROM  TB_YICLOUD_DATASTORE where 1=1
+		<isNotEqual prepend="and" property="CLUSTER_ID" compareValue="0">
+			CLUSTER_ID = #CLUSTER_ID#
+		</isNotEqual>
+		group by NAME
+	</select>
+	<!-- 查询所有的不重复的存储 -->
+	<sql id="queryAllDateStoreBase">
+	<!-- 
+		select c.NAME,c.STORAGE_URL,c.CAPACITY,c.FREE_SPACE,c.TYPE,c.STATE,d.CONHOSTNUM
+		  from
+		  (select a.NAME,a.STORAGE_URL,a.CAPACITY,a.FREE_SPACE,a.TYPE,a.STATE,count(distinct a.name)
+		 		 from TB_YICLOUD_DATASTORE a group by a.name) c
+		  right join (select name,count(HOST_ID) CONHOSTNUM from TB_YICLOUD_DATASTORE group by NAME) d 
+		  on c.name=d.name 
+	 -->
+	 SELECT 
+		a.name deviceName,a.type deviceType,b.NAME,b.CAPACITY,b.FREE_SPACE,b.STORAGE_URL,b.STORE_UUID,b.TYPE,b.STATE,b.deviceId,
+		decode(b.CAPACITY,0,0,(b.CAPACITY-b.FREE_SPACE)/b.CAPACITY) use_per
+		from tb_store_device a
+		RIGHT JOIN(
+	  SELECT DISTINCT
+		v.NAME,
+		v.CAPACITY CAPACITY,
+		v.FREE_SPACE FREE_SPACE,
+		v.STORAGE_URL STORAGE_URL,
+		v.STORE_UUID STORE_UUID,
+		v.TYPE TYPE,
+		v.STATE STATE,
+		v.DEVICE_ID deviceId,
+		v.CONNECT_ID connectId
+	FROM
+	TB_YICLOUD_DATASTORE v 
+	inner join (select max(id) tempid from TB_YICLOUD_DATASTORE group by CONNECT_ID,name) v1 on v1.tempid=v.id
+	<dynamic prepend="where">
+			<isNotNull prepend="and" property="TYPE">
+				TYPE = #TYPE#
+			</isNotNull>
+			<isNotNull prepend="and" property="STATE">
+				STATE = #STATE#
+			</isNotNull>
+			<isNotNull prepend="and" property="deviceId">
+				DEVICE_ID = #deviceId#
+			</isNotNull>
+			<isNotNull prepend="and" property="NAME">
+				NAME like '%'||#NAME#||'%'
+			</isNotNull>
+		</dynamic>
+	UNION ALL
+	SELECT DISTINCT
+		x.NAME,
+		x.SR_SIZE CAPACITY,
+		x.FREE_SIZE FREE_SPACE,
+		x.SR_URL STORAGE_URL,
+		x.STORE_UUID STORE_UUID,
+		x.TYPE TYPE,
+		x.STATE STATE,
+		x.DEVICE_ID deviceId,
+		x.CONNECT_ID connectId
+	FROM
+		tb_xen_storage_info x
+		inner join (select max(id) tempid from tb_xen_storage_info  group by CONNECT_ID,STORE_UUID) x1 on x1.tempid = x.id
+		  <dynamic prepend="where">
+			<isNotNull prepend="and" property="STATE">
+				STATE = #STATE#
+			</isNotNull>
+			<isNotNull prepend="and" property="TYPE">
+				TYPE = #TYPE#
+			</isNotNull>
+			<isNotNull prepend="and" property="deviceId">
+				DEVICE_ID = #deviceId#
+			</isNotNull>
+			<isNotNull prepend="and" property="NAME">
+				NAME like '%'||#NAME#||'%'
+			</isNotNull>
+		</dynamic>
+		)b
+	on b.deviceId=a.id
+	ORDER BY use_per DESC
+	</sql>
+	<select id="queryAllDateStore" parameterClass="DataStoreObj"
+		resultClass="DataStoreObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		
+		<include refid="queryAllDateStoreBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryAllDateStoreForCount" parameterClass="DataStoreObj"
+		resultClass="int">
+		select count(NAME) from (
+		<include refid="queryAllDateStoreBase" />
+		) virtual_table
+	</select>
+	<select id="queryForDateStoreList" parameterClass="DataStoreObj"
+		resultClass="DataStoreObj">
+		select a.NAME,a.STORAGE_URL,a.CAPACITY,a.FREE_SPACE,a.TYPE,a.STATE
+		  from TB_YICLOUD_DATASTORE a
+		  where rowid =
+		       (select max(rowid) from TB_YICLOUD_DATASTORE b where a.name = b.name)
+	</select>
+	<!-- 查询存储关联的主机数 -->
+	<select id="queryForCountByObj" parameterClass="DataStoreObj"
+		resultClass="int">
+		SELECT count(HOST_ID) from TB_YICLOUD_DATASTORE
+		  where STORAGE_URL = #STORAGE_URL#
+	</select>
+	<!-- 查询所有存储-->
+	<select id="queryForHostIdsList" parameterClass="DataStoreObj"
+		resultClass="DataStoreObj">
+		SELECT
+		<include refid="TB_YICLOUD_DATASTOREColumns" />
+		from TB_YICLOUD_DATASTORE
+		<dynamic prepend="where">
+			<isNotNull property="NAME" prepend="and">
+					<isNotEmpty property="NAME">
+						NAME = #NAME#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="deviceId" prepend="and">
+					<isNotEmpty property="deviceId">
+						DEVICE_ID = #deviceId#
+					</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="DATACENTER_ID" prepend="and">
+				DATACENTER_ID = #DATACENTER_ID#
+			</isNotEmpty>
+			<isNotEmpty property="store_uuid" prepend="and">
+				STORE_UUID = #store_uuid#
+			</isNotEmpty>
+			<isNotEmpty property="connectId" prepend="and">
+				CONNECT_ID = #connectId#
+			</isNotEmpty>
+			<isNotEmpty property="HOST_ID" prepend="and">
+				HOST_ID = #HOST_ID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- 统计存储总量和余量信息 -->
+	<resultMap class="java.util.HashMap" id="dsAllFree">
+		<result property="CAPACITY" column="CAPACITY" javaType="java.lang.Double"/>
+		<result property="FREESPACE" column="FREESPACE" javaType="java.lang.Double"/>
+	</resultMap>
+	<select id="queryVmwareDataStoreAllAndFree" resultClass="java.util.HashMap" resultMap="dsAllFree">
+		SELECT
+			sum(c.CAPACITY) CAPACITY,
+			sum(c.FREE_SPACE) FREESPACE
+		FROM
+			(
+				SELECT DISTINCT
+					a.DATACENTER_ID,
+					a.store_uuid,
+					a.CAPACITY,
+					a.FREE_SPACE,
+					a.connect_id
+				FROM
+					tb_yicloud_datastore a
+				INNER JOIN tb_store_device b ON a.DEVICE_ID = b.id
+				where b.type
+				<![CDATA[
+					<> 0
+				]]>
+			) c
+		
+		<!-- select sum(capacity) CAPACITY,sum(free_space) FREESPACE FROM
+			(select DISTINCT datacenter_id,store_uuid,CAPACITY,FREE_SPACE from tb_yicloud_datastore) a -->
+	</select>
+	
+	<select id="queryXenDSAllAndFree" resultClass="java.util.HashMap" resultMap="dsAllFree">
+	 <!-- 原树，未统一树 -->
+<!-- 		SELECT SUM(T.SR_SIZE)/1024/1024 CAPACITY, SUM(T.FREE_SIZE)/1024/1024 FREESPACE -->
+<!--   FROM (SELECT * -->
+<!--           FROM tb_xen_storage_info A -->
+<!--          WHERE ROWID = (SELECT MAX(ROWID) -->
+<!--                           FROM tb_xen_storage_info B -->
+<!--                          WHERE A.NAME = B.NAME)) T -->
+                         
+	<!-- 统一树 -->
+		SELECT
+			sum(c.SR_SIZE)/1024 CAPACITY,
+			SUM(c.FREE_SIZE)/1024 FREESPACE
+		FROM
+			(
+				SELECT DISTINCT
+					a.STORE_UUID,
+					a.CONNECT_ID,
+					a.SR_SIZE,
+					a.FREE_SIZE
+				FROM
+					tb_xen_storage_info a
+				INNER JOIN tb_store_device b ON a.DEVICE_ID = b.id
+				where b.type 
+				<![CDATA[
+					<> 0
+				]]>
+			) c
+	</select>
+	
+	<!-- 获取所有唯一实体列表（用于数据比对） -->
+	<select id="getAllDatastoreEntity" parameterClass="DataStoreObj" resultClass="java.lang.String">
+		select (t.STORE_UUID || '@' ||t.host_id || '@' ||t.connect_id||
+		    '@' ||
+		    'Datastore'
+		  ) unique_mark from tb_yicloud_datastore t 
+	</select>
+	
+	<!-- 更新TB_YICLOUD_DATASTORE表信息 -->
+	<update id="updateDatastoreByObj" parameterClass="DataStoreObj">
+		update TB_YICLOUD_DATASTORE set NAME=#NAME#,STORAGE_URL=#STORAGE_URL#,CAPACITY=#CAPACITY#,
+		FREE_SPACE=#FREE_SPACE#,TYPE=#TYPE#,DATACENTER_ID=#DATACENTER_ID#,
+		HOST_ID=#HOST_ID#,CLUSTER_ID=#CLUSTER_ID#,COLL_TIME=sysdate,STATE=#STATE#,
+		purchaseSpace=#purchaseSpace#
+		where STORE_UUID=#store_uuid# and CONNECT_ID=#connectId#  and HOST_ID=#HOST_ID#
+	</update>
+	
+	<!-- 删除TB_YICLOUD_DATASTORE表信息 -->
+	<delete id="deleteByUuid" parameterClass="DataStoreObj">
+		delete from TB_YICLOUD_DATASTORE where STORE_UUID = #store_uuid# and CONNECT_ID=#connectId#
+	</delete>
+	
+	<select id="queryByObj" parameterClass="DataStoreObj" resultClass="DataStoreObj">
+    	select DISTINCT DATACENTER_ID,store_uuid,CAPACITY,FREE_SPACE,connect_id from tb_yicloud_datastore
+    	<dynamic prepend="where">
+    		<isNotEmpty prepend="and" property="HOST_ID">
+    			HOST_ID = #HOST_ID#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="connectId">
+    			CONNECT_ID = #connectId#
+    		</isNotEmpty>
+    		<isNotEmpty prepend="and" property="store_uuid">
+    			STORE_UUID = #store_uuid#
+    		</isNotEmpty>
+    	</dynamic>
+    </select>
+	
+	<select id="countResource" parameterClass="DataStoreObj" resultClass="cmsObj">
+		SELECT
+			sum(a.CAPACITY) allsr,
+			SUM(a.FREE_SPACE) usedsr,
+			SUM(a.purchaseSpace) allosr
+		FROM
+			(
+				SELECT DISTINCT
+					b.DATACENTER_ID,
+					b.STORE_UUID,
+					b.CAPACITY,
+					b.FREE_SPACE,
+					b.purchaseSpace,
+					b.connect_id
+				FROM
+					tb_yicloud_datastore b
+					inner join tb_store_device c
+					on b.device_id = c.id
+					where c.type 
+					<![CDATA[
+						<> 0
+					]]>
+				and b.HOST_ID in
+				<iterate close=")" conjunction="," open="(" property="hostidlist">
+					#hostidlist[]#
+				</iterate>
+				<dynamic>
+					<isNotEmpty prepend="and" property="connectId">
+						b.CONNECT_ID = #connectId#
+					</isNotEmpty>
+				</dynamic>
+			) a
+	</select>
+	
+	<sql id="queryNoRelevanceStoreDeviceBase">
+	select 
+      NAME,TO_NUMBER(CAPACITY) CAPACITY,FREE_SPACE,STORAGE_URL,STORE_UUID,TYPE,STATE,deviceId,dataStoreType
+    from(
+		select
+			a. NAME,a.CAPACITY CAPACITY,a.FREE_SPACE FREE_SPACE,a.STORAGE_URL STORAGE_URL,a.STORE_UUID STORE_UUID,
+			a.TYPE TYPE,a.STATE STATE,a.DEVICE_ID deviceId,a.CONNECT_ID connectId,'vmware' as dataStoreType
+		from tb_yicloud_datastore a 
+		inner join (select max(id) tempid from tb_yicloud_datastore where (DEVICE_ID is null or DEVICE_ID='')  group by connect_id,name) a1 on a1.tempid =a.id
+		where (DEVICE_ID is null or DEVICE_ID='') 
+		<isNotNull prepend="and" property="TYPE">
+				TYPE = #TYPE#
+			</isNotNull>
+			<isNotNull prepend="and" property="STATE">
+				STATE = #STATE#
+			</isNotNull>
+			<isNotNull prepend="and" property="NAME">
+				NAME like '%'||#NAME#||'%'
+			</isNotNull>
+		UNION ALL
+		SELECT
+			c.NAME,c.SR_SIZE CAPACITY,c.FREE_SIZE FREE_SPACE,c.SR_URL STORAGE_URL,c.STORE_UUID STORE_UUID,c.TYPE TYPE,
+			c.STATE STATE,c.DEVICE_ID deviceId,c.CONNECT_ID connectId,'xen' as dataStoreType
+ 		from tb_xen_storage_info c 
+ 		inner join (SELECT max(id) tempid from tb_xen_storage_info where (DEVICE_ID is null or DEVICE_ID='')  group by connect_id,STORE_UUID) c1 on c1.tempid = c.id
+ 		where (DEVICE_ID is null or DEVICE_ID='') 
+ 		<isNotNull prepend="and" property="TYPE">
+				TYPE = #TYPE#
+			</isNotNull>
+			<isNotNull prepend="and" property="STATE">
+				STATE = #STATE#
+			</isNotNull>
+			<isNotNull prepend="and" property="NAME">
+				NAME like '%'||#NAME#||'%'
+			</isNotNull>
+		)e ORDER BY CAPACITY DESC
+	</sql>
+	<select id="queryNoRelevanceStoreDevice" parameterClass="DataStoreObj"
+		resultClass="DataStoreObj"> 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryNoRelevanceStoreDeviceBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryNoRelevanceStoreDeviceForCount" parameterClass="DataStoreObj"
+		resultClass="int">
+		select count(STORE_UUID) from (
+		<include refid="queryNoRelevanceStoreDeviceBase" />
+		) virtual_table
+	</select>
+	
+	<update id="relevanceDataStore" parameterClass="DataStoreObj">
+		update TB_YICLOUD_DATASTORE set DEVICE_ID=#deviceId#
+		where STORE_UUID = #store_uuid#
+	</update>
+	
+	
+	<sql id="queryRelevanceStoreDeviceBase">
+	select 
+      NAME,TO_NUMBER(CAPACITY) CAPACITY,FREE_SPACE,STORAGE_URL,STORE_UUID,TYPE,STATE,deviceId,dataStoreType
+    from(
+		select
+			DISTINCT 
+			a. NAME,a.CAPACITY CAPACITY,a.FREE_SPACE FREE_SPACE,a.STORAGE_URL STORAGE_URL,a.STORE_UUID STORE_UUID,
+			a.TYPE TYPE,a.STATE STATE,a.DEVICE_ID deviceId,a.CONNECT_ID connectId,'vmware' as dataStoreType
+		from tb_yicloud_datastore a 
+		inner join (select max(id) tempid from tb_yicloud_datastore where DEVICE_ID=#deviceId#  group by connect_id,name) a1 on a1.tempid = a.id
+		where  DEVICE_ID=#deviceId#
+		<isNotNull prepend="and" property="TYPE">
+				TYPE = #TYPE#
+			</isNotNull>
+			<isNotNull prepend="and" property="STATE">
+				STATE = #STATE#
+			</isNotNull>
+			<isNotNull prepend="and" property="NAME">
+				NAME like '%'||#NAME#||'%'
+			</isNotNull>
+			GROUP BY a. NAME,a.CAPACITY,a.FREE_SPACE,a.STORAGE_URL,a.STORE_UUID, a.TYPE,a.STATE,a.DEVICE_ID,a.CONNECT_ID
+		UNION ALL
+		SELECT
+			DISTINCT
+			c.NAME,c.SR_SIZE CAPACITY,c.FREE_SIZE FREE_SPACE,c.SR_URL STORAGE_URL,c.STORE_UUID STORE_UUID,
+			c.TYPE TYPE,c.STATE STATE,c.DEVICE_ID deviceId,c.CONNECT_ID connectId,'xen' as dataStoreType
+ 		from tb_xen_storage_info c 
+ 		inner join (SELECT max(id) tempid from tb_xen_storage_info where DEVICE_ID=#deviceId#   group by connect_id,STORE_UUID) c1 on c1.tempid = c.id
+ 		where DEVICE_ID=#deviceId#
+ 		<isNotNull prepend="and" property="TYPE">
+				TYPE = #TYPE#
+			</isNotNull>
+			<isNotNull prepend="and" property="STATE">
+				STATE = #STATE#
+			</isNotNull>
+			<isNotNull prepend="and" property="NAME">
+				NAME like '%'||#NAME#||'%'
+			</isNotNull>
+			)e ORDER BY CAPACITY DESC
+	</sql>
+	<select id="queryRelevanceStoreDevice" parameterClass="DataStoreObj"
+		resultClass="DataStoreObj"> 
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryRelevanceStoreDeviceBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryRelevanceStoreDeviceForCount" parameterClass="DataStoreObj"
+		resultClass="int">
+		select count(STORE_UUID) from (
+		<include refid="queryRelevanceStoreDeviceBase" />
+		) virtual_table
+	</select>
+	
+	<select id="queryForListByDeviceId" parameterClass="DataStoreObj" resultClass="DataStoreObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		select distinct t.STORE_UUID,t.DATACENTER_ID,t.CAPACITY,t.FREE_SPACE,t.STORAGE_URL,t.STATE,t.`NAME`,t.TYPE,a.`name` deviceName,a.type deviceType
+		from tb_yicloud_datastore t
+		left join tb_store_device a on t.DEVICE_ID = a.id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="deviceId">
+				t.DEVICE_ID = #deviceId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="NAME">
+				t.NAME like '%'||#NAME#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="TYPE">
+				t.TYPE = #TYPE#
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="countByDeviceId" parameterClass="DataStoreObj" resultClass="int">
+		select count(STORE_UUID) from 
+		(
+			select distinct t.STORE_UUID,t.DATACENTER_ID,t.CAPACITY,t.FREE_SPACE,t.STORAGE_URL,t.STATE,t.`NAME`,t.TYPE,a.`name` deviceName,a.type deviceType
+			from tb_yicloud_datastore t
+			left join tb_store_device a on t.DEVICE_ID = a.id
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="deviceId">
+					t.DEVICE_ID = #deviceId#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="NAME">
+					t.NAME like '%'||#NAME#||'%'
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="TYPE">
+					t.TYPE = #TYPE#
+				</isNotEmpty>
+			</dynamic>
+		) b
+	</select>
+	
+</sqlMap>

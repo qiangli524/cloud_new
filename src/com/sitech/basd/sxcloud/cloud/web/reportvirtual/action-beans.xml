@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.reportvirtual.action.ReportVirtualAction -->
+	<bean id="reportVirtualAction" class="com.sitech.basd.sxcloud.cloud.web.reportvirtual.action.ReportVirtualAction"
+		singleton="false">
+		<property name="reportVirtualService">
+			<ref bean="reportVirtualService" />
+		</property> 
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="virtualService">
+			<ref bean="virtualService" />
+		</property> 
+		<property name="cubinetService">
+			<ref bean="cubinetService" />
+		</property> 
+		<property name="virtualPoolService">
+			<ref bean="virtualPoolService" />
+		</property> 
+	</bean>
+</beans>  
+
+
+
+
+
+
+	
+
+
+

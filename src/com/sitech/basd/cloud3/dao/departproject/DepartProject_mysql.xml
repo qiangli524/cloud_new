@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="DepartProject">
+
+	<typeAlias alias="DepartProjectObj"
+		type="com.sitech.basd.cloud3.domain.departproject.DepartProjectObj" />
+	<typeAlias alias="relationObj"
+		type="com.sitech.basd.cloud3.domain.departproject.RelationObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	<select id="queryDepartProjectOne" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj"> 
+		select r.id,r.project_no,r.project_name ,r.cpu_count,r.memory_size,r.storage_size,r.ip_count,a.name as project_leader,r.contact_phone,r.email,b.name as network_domain,
+		r.project_leader account,r.network_domain netid,r.basis basis,r.update_user,r.created_user,DATE_FORMAT(r.update_time,'%Y-%m-%d %H:%i:%S') update_time,DATE_FORMAT(r.created_time,'%Y-%m-%d %H:%i:%S') created_time
+		from tb_project_info r
+		left join tb_sys_userinfo a on r.project_leader = a.account
+		left join TB_CLOUD2_NET_INFO b on r.network_domain = b.net_id
+		where r.id=#ID#
+		<!-- 分域管理 -->
+		<isNotEmpty property="domain">
+		     <isNotEqual compareValue="null" property="domain">
+				  <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				      r.domain =#domain#	
+				  </isNotEqual>
+			 </isNotEqual>
+		</isNotEmpty>
+	</select>
+	<delete id="deleteDepartProjectObj" parameterClass="DepartProjectObj">
+		delete from tb_project_info  where ID = #STRIDS#
+	</delete>
+	<update id="updateDepartProjectObj" parameterClass="DepartProjectObj">
+		update tb_project_info set project_no=#PROJECT_NO#,project_name=#PROJECT_NAME#,DEPART_ID = #DEPART_ID#,cpu_count=#CPU_COUNT#,memory_size=#MEMORY_SIZE#,storage_size=#STORAGE_SIZE#
+		,ip_count=#IP_COUNT#,project_leader=#PROJECT_LEADER#,contact_phone=#CONTACT_PHONE#,email=#EMAIL#,network_domain=#NETWORK_DOMAIN#,basis = #basis#,update_user=#UPDATE_USER#,
+		update_time=DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S')
+		where id=#ID#
+	</update>
+	<insert id="insertDepartProjectObj" parameterClass="DepartProjectObj">
+		insert into tb_project_info (id,project_no,project_name ,DEPART_ID,cpu_count,memory_size,storage_size,ip_count,project_leader,contact_phone,email,network_domain,basis,
+		update_user,created_user,update_time,created_time,domain)
+		values(#ID#,#PROJECT_NO#,#PROJECT_NAME#,#DEPART_ID#,#CPU_COUNT#,#MEMORY_SIZE#,#STORAGE_SIZE#,#IP_COUNT#,#PROJECT_LEADER#,#CONTACT_PHONE#,#EMAIL#,#NETWORK_DOMAIN#,#basis#,
+		#UPDATE_USER#,#CREATED_USER#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),#domain#)
+	</insert>
+	<sql id="queryDepartProjectListBase"> 
+		<!-- select r.id,r.project_no,r.project_name ,r.DEPART_ID,r.cpu_count,r.memory_size,r.storage_size,r.ip_count,r.project_leader as project_leader,r.contact_phone,r.email,b.name as network_domain,r.basis basis,
+		r.update_user,r.created_user,DATE_FORMAT(r.update_time,'%Y-%m-%d %H:%i:%S') update_time,DATE_FORMAT(r.created_time,'%Y-%m-%d %H:%i:%S') created_time,
+		(select count(c.project_id) from tb_project_vm_relation c where r.id = c.project_id) vmCount
+		from tb_project_info r
+		left join tb_sys_userinfo a on r.project_leader = a.account
+		left join TB_CLOUD2_NET_INFO b on r.network_domain = b.net_id -->
+		SELECT
+			r.id,
+			r.project_no,
+			r.project_name,
+			r.DEPART_ID,
+			IFNULL(d.`name`, '-') AS DEPART_NAME,
+			r.cpu_count,
+			r.memory_size,
+			r.storage_size,
+			r.ip_count,
+			r.project_leader AS project_leader,
+			e.name AS PROJECT_LEADERNAME,
+			r.contact_phone,
+			r.email,
+			b. NAME AS network_domain,
+			r.basis basis,
+			r.update_user,
+			r.created_user,
+			DATE_FORMAT(
+				r.update_time,
+				'%Y-%m-%d %H:%i:%S'
+			) update_time,
+			DATE_FORMAT(
+				r.created_time,
+				'%Y-%m-%d %H:%i:%S'
+			) created_time,
+			(
+				SELECT
+					count(c.project_id)
+				FROM
+					tb_project_vm_relation c
+				WHERE
+					r.id = c.project_id
+			) vmCount
+		FROM
+			tb_project_info r
+		LEFT JOIN TB_CLOUD2_NET_INFO b ON r.network_domain = b.net_id
+		LEFT JOIN tb_depart_info d ON d.id = r.DEPART_ID
+		LEFT JOIN tb_sys_userinfo e ON e.account = r.project_leader
+		<dynamic prepend="where">
+				<isNotEmpty property="PROJECT_LEADER" prepend="and">
+						r.project_leader like CONCAT('%',#PROJECT_LEADER#,'%')
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_name like CONCAT('%',#PROJECT_NAME#,'%')
+				</isNotEmpty>
+				<isNotNull property="PROJECT_LEADERNAME" prepend="and">
+					<isNotEmpty property="PROJECT_LEADERNAME">
+						e.name like CONCAT('%',#PROJECT_LEADERNAME#,'%')
+					</isNotEmpty>
+				</isNotNull>
+				<isNotNull prepend="and" property="DEPART_ID">
+					<isNotEmpty property="DEPART_ID">
+						r.DEPART_ID = #DEPART_ID#
+					</isNotEmpty>
+				</isNotNull>
+				<!-- 分域管理 -->
+				<isNotEmpty property="domain">
+				     <isNotEqual compareValue="null" property="domain">
+						  <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						      r.domain =#domain#	
+						  </isNotEqual>
+					 </isNotEqual>
+				</isNotEmpty>
+				<!--<isNotEmpty property="PROJECT_LEADER" prepend="and">
+						a.name like CONCAT('%',#PROJECT_LEADER#,'%')
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_LEADER" prepend="or">
+						a.account like CONCAT('%',#PROJECT_LEADER#,'%')
+				</isNotEmpty> -->
+		</dynamic> 
+		order by r.project_no
+	</sql>
+	<select id="queryDepartProjectList" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj">
+		<include refid="queryDepartProjectListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryDepartProjectCount" parameterClass="DepartProjectObj"
+		resultClass="int">
+		 select count(id) from (
+	        <include refid="queryDepartProjectListBase"/>
+	       ) virtual_table
+	</select>
+	<!-- 项目管理历史信息操作 -->
+	<insert id="insertDepartProjectHisObj" parameterClass="DepartProjectObj">
+		insert into tb_project_info_his
+		select r.*,#DELETE_BY#,DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S') FROM tb_project_info r where r.ID in ('$STRIDS$')
+	</insert>
+	<sql id="queryDepartProjectHisList"> 
+		select r.id,r.project_no,r.project_name ,r.DEPART_ID ,r.cpu_count,r.memory_size,r.storage_size,r.ip_count,a.name as project_leader,r.contact_phone,
+		r.email,b.name as network_domain,r.update_user,r.created_user,DATE_FORMAT(r.update_time,'%Y-%m-%d %H:%i:%S') update_time,
+		DATE_FORMAT(r.created_time,'%Y-%m-%d %H:%i:%S') created_time,
+		r.delete_by,DATE_FORMAT(r.delete_time,'%Y-%m-%d %H:%i:%S') delete_time
+		from tb_project_info_his r
+		left join tb_sys_userinfo a on r.project_leader = a.account
+		left join TB_CLOUD2_NET_INFO b on r.network_domain = b.net_id
+		<dynamic prepend="where">
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_name like CONCAT('%',#PROJECT_NAME#,'%')
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_LEADER" prepend="and">
+						a.name like CONCAT('%',#PROJECT_LEADER#,'%')
+				</isNotEmpty>
+				<!-- 分域管理 -->
+				<isNotEmpty property="domain">
+				     <isNotEqual compareValue="null" property="domain">
+						  <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						      r.domain =#domain#	
+						  </isNotEqual>
+					 </isNotEqual>
+				</isNotEmpty>
+		</dynamic> 
+		order by DATE_FORMAT(r.delete_time,'%Y-%m-%d %H:%i:%S') desc
+	</sql>
+	<select id="queryDepartProjectHisList" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj">
+		<include refid="queryDepartProjectHisList" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryDepartProjectHisCount" parameterClass="DepartProjectObj"
+		resultClass="int">
+		select count(id) from tb_project_info_his r
+		<dynamic prepend="where">
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_name like CONCAT('%',#PROJECT_NAME#,'%')
+				</isNotEmpty>
+				<isNotEmpty property="PROJECT_NAME" prepend="and">
+						r.project_leader like CONCAT('%',#PROJECT_NAME#,'%')
+				</isNotEmpty>
+				<!-- 分域管理 -->
+				<isNotEmpty property="domain">
+				     <isNotEqual compareValue="null" property="domain">
+						  <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						      r.domain =#domain#	
+						  </isNotEqual>
+					 </isNotEqual>
+				</isNotEmpty>
+		</dynamic> 
+	</select>
+	<!-- 根据当前登录用户查询该用户对应的部门资源信息 -->
+	<select id="queryResourceByProject" parameterClass="DepartProjectObj"
+		resultClass="DepartProjectObj"> 
+		SELECT
+			r.id,
+			r.project_no,
+			r.project_name,
+			r.cpu_count,
+			r.memory_size,
+			r.storage_size,
+			r.ip_count,
+			r.project_leader,
+			r.contact_phone,
+			r.email,
+			r.network_domain,
+			r.basis,
+			r.update_user,
+			r.created_user,
+			net.`NAME`
+		FROM
+			tb_project_info r LEFT JOIN
+			tb_cloud2_net_info net 
+			on r.network_domain = net.NET_ID
+		WHERE
+			r.project_leader = #PROJECT_LEADER#
+		<!-- 分域管理 -->
+		<isNotEmpty property="domain">
+			<isNotEqual compareValue="null" property="domain">
+				<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+					r.domain =#domain#	
+				</isNotEqual>
+			</isNotEqual>
+		</isNotEmpty>
+	</select>
+	
+	<select id="queryForList" parameterClass="DepartProjectObj" resultClass="DepartProjectObj">
+		select t.ID,t.PROJECT_NO,t.PROJECT_NAME,t.DEPART_ID,t.PROJECT_LEADER,t.CPU_COUNT,t.MEMORY_SIZE,
+		t.STORAGE_SIZE,t.IP_COUNT,a.NAME NETNAME,c.NAME PROJECT_LEADERNAME from tb_project_info t left join tb_cloud2_net_info a
+		on t.NETWORK_DOMAIN = a.NET_ID left join tb_sys_userinfo c on t.PROJECT_LEADER = c.ACCOUNT
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="PROJECT_LEADER">
+				PROJECT_LEADER = #PROJECT_LEADER#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NO">
+				PROJECT_NO like CONCAT('%',#PROJECT_NO#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NAME">
+				PROJECT_NAME like CONCAT('%',#PROJECT_NAME#,'%')
+			</isNotEmpty>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+				<isNotEqual compareValue="null" property="domain">
+					<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						c.domain =#domain#	
+					</isNotEqual>
+				</isNotEqual>
+			</isNotEmpty>
+		</dynamic>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="countForList"  parameterClass="DepartProjectObj" resultClass="int">
+		select count(t.ID) from tb_project_info t left join tb_cloud2_net_info a
+		on t.NETWORK_DOMAIN = a.NET_ID left join tb_sys_userinfo c on t.PROJECT_LEADER = c.ACCOUNT
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="PROJECT_LEADER">
+				PROJECT_LEADER = #PROJECT_LEADER#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NO">
+				PROJECT_NO like CONCAT('%',#PROJECT_NO#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="PROJECT_NAME">
+				PROJECT_NAME like CONCAT('%',#PROJECT_NAME#,'%')
+			</isNotEmpty>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+				  <isNotEqual compareValue="null" property="domain">
+					<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						   c.domain =#domain#	
+					</isNotEqual>
+				 </isNotEqual>
+		   </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	 <!-- 总使用 -->
+	 <select id="queryAllCountResource" parameterClass="DepartProjectObj"  resultClass="relationObj">
+		SELECT
+			cpu_count CPU_ALL_COUNT,
+			memory_size MEM_ALL_MB,
+			storage_size STORAGE_ALL_MB,
+			ip_count IP_ALL_COUNT,
+			(select count(c.project_id) from tb_project_vm_relation c where a.id = c.project_id) VM_ALL_COUNT
+		FROM
+			tb_project_info a
+		WHERE
+			a.id = #ID#
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+				  <isNotEqual compareValue="null" property="domain">
+					<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						   a.domain =#domain#	
+					</isNotEqual>
+				 </isNotEqual>
+		   </isNotEmpty>
+	  </select>
+	  <!-- 已使用 -->
+	  <select id="queryUsedCountResource" parameterClass="DepartProjectObj"  resultClass="relationObj">
+	      SELECT
+			SUM(a.VH_CPU) CPU_USED_COUNT,
+			SUM(a.VH_MEM) MEM_USED_MB,
+			SUM(a.VH_STORAGE) STORAGE_USED_MB,
+			COUNT(a.VH_IP) IP_USED_COUNT
+		FROM
+			tb_cloud2_vmhost_info a,
+			tb_project_vm_relation b,
+			tb_project_info c
+		WHERE
+			a.CONNECT_ID = b.connect_id
+			AND a.VH_UUID = b.vm_uuid
+			and c.id = b.project_id
+      		and c.id = #ID#
+      		<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+				  <isNotEqual compareValue="null" property="domain">
+					<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						   c.domain =#domain#	
+					</isNotEqual>
+				 </isNotEqual>
+		   </isNotEmpty>
+	  </select>
+	  <!-- 统计科室下项目预分配的资源 -->
+	  <select id="queryUsedResource" parameterClass="DepartProjectObj"  resultClass="relationObj">
+		SELECT
+			c.project_name PROJECT_NAME,
+			SUM(a.VH_CPU) CPU_USED_COUNT,
+			SUM(a.VH_MEM) MEM_USED_MB,
+			SUM(a.VH_STORAGE) STORAGE_USED_MB,
+			COUNT(a.VH_IP) IP_USED_COUNT
+		FROM tb_cloud2_vmhost_info a
+		LEFT JOIN tb_project_vm_relation b ON a.CONNECT_ID =b.connect_id AND a.VH_UUID = b.vm_uuid
+		LEFT JOIN tb_project_info c ON c.id = b.project_id
+		
+		<dynamic prepend="WHERE">
+			<isNotNull property="ID">
+				<isNotEmpty property="ID">
+					c.id = #ID#
+				</isNotEmpty>
+			</isNotNull>
+			
+			<isNotNull property="DEPART_ID" prepend="and">
+				<isNotEmpty property="DEPART_ID">
+					c.depart_id = #DEPART_ID#
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+				  <isNotEqual compareValue="null" property="domain">
+					<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						   c.domain =#domain#	
+					</isNotEqual>
+				 </isNotEqual>
+		   </isNotEmpty>
+		</dynamic>
+		GROUP BY c.id
+		ORDER BY c.created_time ASC
+	  </select>
+	  <!-- 统计科室下所有的资源-->
+	  <select id="queryAllResource" parameterClass="DepartProjectObj"  resultClass="relationObj">
+	  	SELECT
+	  		a.project_no PROJECT_NO,
+	  	    a.project_name PROJECT_NAME,
+	  	    IFNULL(d.`name`, '-') AS DEPART_NAME,
+			cpu_count CPU_ALL_COUNT,
+			memory_size MEM_ALL_MB,
+			storage_size STORAGE_ALL_MB,
+			a.project_leader AS project_leader,
+			ip_count IP_ALL_COUNT,
+			e.name AS PROJECT_LEADERNAME,
+			(select count(c.project_id) from tb_project_vm_relation c where a.id = c.project_id) VM_ALL_COUNT
+		FROM
+			tb_project_info a
+			LEFT JOIN tb_depart_info d ON d.id = a.DEPART_ID
+			LEFT JOIN tb_sys_userinfo e ON e.account = a.project_leader
+		<dynamic prepend="where">
+			<isNotNull property="ID">
+				<isNotEmpty property="ID">
+					a.id = #ID#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotEmpty property="PROJECT_NAME" prepend="and">
+						a.project_name like CONCAT('%',#PROJECT_NAME#,'%')
+				</isNotEmpty>
+				<isNotNull property="PROJECT_LEADERNAME" prepend="and">
+					<isNotEmpty property="PROJECT_LEADERNAME">
+						e.name like CONCAT('%',#PROJECT_LEADERNAME#,'%')
+					</isNotEmpty>
+				</isNotNull>
+			<isNotNull property="DEPART_ID">
+				<isNotEmpty property="DEPART_ID" prepend="and">
+					a.DEPART_ID = #DEPART_ID#
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+				  <isNotEqual compareValue="null" property="domain">
+					<isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+						   a.domain =#domain#	
+					</isNotEqual>
+				 </isNotEqual>
+		   </isNotEmpty>
+		</dynamic>
+		ORDER BY a.created_time ASC
+	  </select>
+</sqlMap>

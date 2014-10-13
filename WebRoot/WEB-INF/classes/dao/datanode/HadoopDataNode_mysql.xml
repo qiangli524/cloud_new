@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="hadoopDataNode">
+	<typeAlias alias="hadoopDataNodeObj" type="domain.datanode.HadoopDataNodeObj"/>
+	
+	<sql id="baseCloumns">
+		a.id,a.last_contact,a.admin_state,a.configured_capacity,a.dfs_used,a.non_dfs_used,a.remaining,a.dfs_used_percent,a.remaining_percent,
+		a.blocks,a.block_pool_used,a.blocks_pool_used_percent,a.failed_volumes,a.host_id,a.cluster_id
+	</sql>
+	
+	<select id="queryForListJoinHostTable" parameterClass="hadoopDataNodeObj" resultClass="hadoopDataNodeObj">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_hadoop_datanode a
+		inner join tb_hadoop_host_info b
+		on a.host_name = b.host_id
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="cluster_id">
+				a.cluster_id = #cluster_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="treeClusterId">
+				b.cluster_id = #treeClusterId#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="queryForStatisticsList" parameterClass="hadoopDataNodeObj" resultClass="hadoopDataNodeObj">
+		select 
+		<include refid="baseCloumns"/>
+		from tb_hadoop_datanode a
+		inner join 
+		(
+			select cluster_id from tb_hadoop_cluster_info 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="hdfsUuidList">
+					id in
+					<iterate close=")" conjunction="," open="(" property="hdfsUuidList">
+						#hdfsUuidList[]#
+					</iterate>
+				</isNotEmpty>
+			</dynamic>
+		) b
+		on a.cluster_id = b.cluster_id
+		inner join 
+		(
+			select host_name from tb_hadoop_host_info 
+			<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="hostUuidList">
+					id in
+					<iterate close=")" conjunction="," open="(" property="hostUuidList">
+						#hostUuidList[]#
+					</iterate>
+				</isNotEmpty>
+			</dynamic>
+		) c
+		on a.host_id = c.host_name
+	</select>
+	<select id="queryClusterIdByNodeId" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT 
+			c.CLUSTER_ID
+		FROM
+			tb_hadoop_cluster_info c,
+			tb_hadoop_resource_tree t1,
+			tb_hadoop_resource_tree t2
+		WHERE
+			c.ID = t1.UUID
+		AND t1.ID = t2.PARENT_ID
+		AND t2.ID = #nodeId#
+	</select>
+</sqlMap>

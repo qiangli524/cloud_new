@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="tbCloud2DepFileService"
+		  class="com.sitech.basd.yicloud.service.deploy.TbCloud2DepFileServiceImpl"
+		  singleton="true">
+		<property name="tbCloud2DepFileDao">
+			<ref bean="tbCloud2DepFileDao"/>
+		</property>
+	</bean>
+	
+	<bean id="ipinfoService"
+		class="com.sitech.basd.yicloud.service.ipinfo.IpinfoServiceImpl"
+		singleton="true">
+		<property name="ipinfoDao">
+			<ref bean="ipinfoDao" />
+		</property>
+	</bean>
+	
+	<bean id="deviceService"
+		class="com.sitech.basd.yicloud.service.device.DeviceServiceImpl"
+		singleton="true">
+		<property name="deviceDao">
+			<ref bean="deviceDao" />
+		</property>
+	</bean>
+ 
+    <bean id="interfaceService"
+		class="com.sitech.basd.yicloud.service.interfaces.InterfaceServiceImpl"
+		singleton="true">
+		<property name="interfaceDao">
+			<ref bean="interfaceDao" />
+		</property>
+	</bean>
+	
+	<bean id="connectService"
+		class="com.sitech.basd.yicloud.service.connect.ConnectServiceImpl"
+		singleton="true">
+		<property name="connectDao">
+			<ref bean="connectDao" />
+		</property>
+	</bean>
+	
+	<bean id="vmManagerService"
+		class="com.sitech.basd.yicloud.service.vmman.VMManagerServiceImpl"
+		singleton="true">
+		<property name="vmManagerDao">
+			<ref bean="vmManagerDao"/>
+		</property>
+		<property name="tbImageInfoDao">
+			<ref bean="tbImageInfoDao"/>
+		</property>
+		<property name="tbIpDao">
+			<ref bean="tbIpDao"/>
+		</property>
+		<property name="vmHostDao">
+			<ref bean="vmHostDao"/>
+		</property>
+		<property name="tbBusiHostObjDao">
+			<ref bean="tbBusiHostObjDao"/>
+		</property>
+		<property name="tbBusiHostConfigDao">
+			<ref bean="tbBusiHostConfigDao"/>
+		</property>
+	</bean>
+	<!-- 获取MysqlTable信息 -->
+	<bean id="mysqlTableStatusService"
+		class="com.sitech.basd.yicloud.service.mytstat.MysqlTableStatusServiceImpl"
+		singleton="true">
+		<property name="mysqlTableStatusDao">
+			<ref bean="mysqlTableStatusDao"/>
+		</property>
+	</bean>
+	<bean id="yiDataDictionaryService"
+		class="com.sitech.basd.yicloud.service.dictionary.YiDataDictionaryServiceImpl"
+		singleton="true">
+		<property name="yiDataDictionaryDao">
+			<ref bean="yiDataDictionaryDao"/>
+		</property>
+	</bean>
+	<bean id="tbYicloudBusinessAppService"
+		class="com.sitech.basd.yicloud.service.business.TbYicloudBusinessAppServiceImpl"
+		singleton="true">
+		<property name="tbYicloudBusinessAppDao">
+			<ref bean="tbYicloudBusinessAppDao"/>
+		</property>
+	</bean>
+	<bean id="appDatabaseService"
+		class="com.sitech.basd.yicloud.service.database.AppDatabaseServiceImpl"
+		singleton="true">
+		<property name="appDatabaseDao">
+			<ref bean="appDatabaseDao"/>
+		</property>
+	</bean>
+	<bean id="tbYicloudAppStorageService"
+		class="com.sitech.basd.yicloud.service.storage.TbYicloudAppStorageServiceImpl"
+		singleton="true">
+		<property name="tbYicloudAppStorageDao">
+			<ref bean="tbYicloudAppStorageDao"/>
+		</property>
+	</bean>
+	<bean id="tbYicloudAppIpService"
+		class="com.sitech.basd.yicloud.service.ip.TbYicloudAppIpServiceImpl"
+		singleton="true">
+		<property name="tbYicloudAppIpDao">
+			<ref bean="tbYicloudAppIpDao"/>
+		</property>
+	</bean>
+	<bean id="middlewareService"
+		class="com.sitech.basd.yicloud.service.middleware.MiddlewareServiceImpl"
+		singleton="true">
+		<property name="middlewareDao">
+			<ref bean="middlewareDao" />
+		</property>
+	</bean>
+	<bean id="operSystemService"
+		class="com.sitech.basd.yicloud.service.opersystem.OperSystemServiceImpl"
+		singleton="true">
+		<property name="operSystemDao">
+			<ref bean="operSystemDao" />
+		</property>
+	</bean>
+	<bean id="dataStoreService"
+		class="com.sitech.basd.yicloud.service.datastore.DataStoreServiceImpl"
+		singleton="true">
+		<property name="dataStoreDao">
+			<ref bean="dataStoreDao" />
+		</property>
+		<property name="entityTreeDao">
+			<ref bean="entityTreeDao" />
+		</property>
+	</bean>
+	<bean id="kvmManService"
+		class="com.sitech.basd.yicloud.service.kvm.KvmManServiceImpl"
+		singleton="true">
+		<property name="kvmManDao">
+			<ref bean="kvmManDao" />
+		</property>
+		<property name="tbImageInfoDao">
+			<ref bean="tbImageInfoDao"/>
+		</property>
+		<property name="tbIpDao">
+			<ref bean="tbIpDao"/>
+		</property>
+		<property name="vmHostDao">
+			<ref bean="vmHostDao"/>
+		</property>
+		<property name="tbBusiHostObjDao">
+			<ref bean="tbBusiHostObjDao"/>
+		</property>
+		<property name="tbBusiHostConfigDao">
+			<ref bean="tbBusiHostConfigDao"/>
+		</property>
+		<property name="entityTreeDao">
+			<ref bean="entityTreeDao" />
+		</property>
+		<property name="scriptDao">
+			<ref bean="scriptDao" />
+		</property>
+	</bean>
+	<bean id="vmwManService"
+		class="com.sitech.basd.yicloud.service.vmware.VmwManServiceImpl"
+		singleton="true">
+		<property name="kvmManDao">
+			<ref bean="kvmManDao" />
+		</property>
+		<property name="tbImageInfoDao">
+			<ref bean="tbImageInfoDao"/>
+		</property>
+		<property name="tbIpDao">
+			<ref bean="tbIpDao"/>
+		</property>
+		<property name="vmHostDao">
+			<ref bean="vmHostDao"/>
+		</property>
+		<property name="tbBusiHostObjDao">
+			<ref bean="tbBusiHostObjDao"/>
+		</property>
+		<property name="tbBusiHostConfigDao">
+			<ref bean="tbBusiHostConfigDao"/>
+		</property>
+		<property name="entityTreeDao">
+			<ref bean="entityTreeDao" />
+		</property>
+		<property name="templetTreeDao">
+			<ref bean="templetTreeDao" />
+		</property>
+		<property name="scriptDao">
+			<ref bean="scriptDao" />
+		</property>
+		<property name="imageService">
+			<ref bean="imageService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="virtualNicDao">
+			<ref bean="virtualNicDao" />
+		</property>
+		<property name="nicRelationDao">
+			<ref bean="nicRelationDao" />
+		</property>
+	</bean>
+	<bean id="entityTreeService"
+		class="com.sitech.basd.yicloud.service.entitytree.EntityTreeServiceImpl"
+		singleton="true">
+		<property name="entityTreeDao">
+			<ref bean="entityTreeDao" />
+		</property>
+		<property name="templetTreeDao">
+			<ref bean="templetTreeDao" />
+		</property>
+		<property name="vmHostDao">
+			<ref bean="vmHostDao" />
+		</property>
+	</bean>
+	<bean id="healthyManagerService"
+		class="com.sitech.basd.yicloud.service.healthy.HealthyManagerServiceImpl"
+		singleton="true">
+		<property name="entityTreeDao">
+			<ref bean="entityTreeDao"/>
+		</property>
+		<property name="tbHyDao">
+			<ref bean="tbHyDao"/>
+		</property>
+		<property name="tbHostDao">
+			<ref bean="tbHostDao"/>
+		</property>
+	</bean>
+	<bean id="operateVMHostInfoImpl" class="com.sitech.basd.yicloud.service.vmware.OperateVMHostInfoImpl" singleton="true">
+	    <property name="vmHostDao">
+	        <ref bean="vmHostDaoYi"/>
+	    </property>
+	</bean>
+	<bean id="busiTreeService" class="com.sitech.basd.yicloud.service.busitree.BusiTreeServiceImpl" singleton="true">
+	    <property name="busiTreeDao">
+	        <ref bean="busiTreeDao"/>
+	    </property>
+	</bean>
+	<bean id="switchesService" class="com.sitech.basd.yicloud.service.switches.SwitchesServiceImpl" singleton="true">
+	    <property name="switchesDao">
+	        <ref bean="switchesDao"/>
+	    </property>
+	</bean>
+	<bean id="snapshotService" class="com.sitech.basd.yicloud.service.snapshot.SnapshotServiceImpl" singleton="true">
+	</bean>
+	<bean id="xenManService" class="com.sitech.basd.yicloud.service.xen.XenManServiceImpl" singleton="true">
+		<property name="kvmManDao">
+			<ref bean="kvmManDao" />
+		</property>
+		<property name="vmHostDao">
+			<ref bean="vmHostDao" />
+		</property>
+		<property name="xenEntityTreeDao">
+			<ref bean="xenEntityTreeDao" />
+		</property>
+		<property name="hostInfoDao">
+			<ref bean="hostInfoDao" />
+		</property>
+		<property name="xenStoreDao">
+			<ref bean="xenStoreDao" />
+		</property>
+		 <property name="xenClusterDao">
+	        <ref bean="xenClusterDao"/>
+	    </property>
+	     <property name="connInfoDao">
+	        <ref bean="connInfoDao"/>
+	    </property>
+	    <property name="tbIpDao">
+	        <ref bean="tbIpDao"/>
+	    </property>
+	</bean>
+	<bean id="clusterService" class="com.sitech.basd.yicloud.service.cluster.ClusterServiceImpl" singleton="true">
+	    <property name="clusterDao">
+	        <ref bean="clusterDao"/>
+	    </property>
+	    <property name="entityTreeDao">
+	        <ref bean="entityTreeDao"/>
+	    </property>
+	</bean>
+	<bean id="portGroupService" class="com.sitech.basd.yicloud.service.portgroup.PortGroupServiceImpl" singleton="true">
+	    <property name="portGroupDao">
+	        <ref bean="portGroupDao"/>
+	    </property>
+	    <property name="entityTreeDao">
+	        <ref bean="entityTreeDao"/>
+	    </property>
+	     <property name="virtualSwitchDao">
+	        <ref bean="virtualSwitchDao"/>
+	    </property>
+	     <property name="nicRelationDao">
+	        <ref bean="nicRelationDao"/>
+	    </property>
+	</bean>
+	<bean id="virtualSwitchService" class="com.sitech.basd.yicloud.service.switches.VirtualSwitchServiceImpl" singleton="true">
+	    <property name="virtualSwitchDao">
+	        <ref bean="virtualSwitchDao"/>
+	    </property>
+	</bean>
+	<bean id="taskEventService" class="com.sitech.basd.yicloud.service.taskevent.TaskEventServiceImpl" singleton="true">
+	    <property name="taskEventDao">
+	        <ref bean="taskEventDao"/>
+	    </property>
+	</bean>
+	<bean id="vmAuthorityService" class="com.sitech.basd.yicloud.service.vmauthority.VmAuthorityServiceImpl" singleton="true">
+	    <property name="vmAuthorityDao">
+	        <ref bean="vmAuthorityDao"/>
+	    </property>
+	</bean>
+	<bean id="templetTreeService" class="com.sitech.basd.yicloud.service.templettree.TempletTreeServiceImpl" singleton="true">
+	    <property name="templetTreeDao">
+	        <ref bean="templetTreeDao"/>
+	    </property>
+	</bean>
+	<bean id="scriptService" class="com.sitech.basd.yicloud.service.script.ScriptServiceImpl" singleton="true">
+	    <property name="scriptDao">
+	        <ref bean="scriptDao"/>
+	    </property>
+	</bean>
+	<bean id="entityRefService" class="com.sitech.basd.yicloud.service.entityreference.EntityRefServiceImpl" singleton="true">
+	    <property name="entityRefDao">
+	        <ref bean="entityRefDao"/>
+	    </property>
+	</bean>
+	<bean id="strategyService" class="com.sitech.basd.yicloud.service.scheduler.StrategyServiceImpl" singleton="true">
+	    <property name="strategyDao">
+	        <ref bean="strategyDao"/>
+	    </property>
+	</bean>
+	<bean id="triggerDefService" class="com.sitech.basd.yicloud.service.scheduler.TriggerDefServiceImpl" singleton="true">
+	    <property name="triggerDefDao">
+	        <ref bean="triggerDefDao"/>
+	    </property>
+	</bean>
+	<bean id="xenEntityTreeService" class="com.sitech.basd.yicloud.service.xentree.XenEntityTreeServiceImpl" singleton="true">
+	    <property name="xenEntityTreeDao">
+	        <ref bean="xenEntityTreeDao"/>
+	    </property>
+	</bean>
+	<bean id="xenClusterService" class="com.sitech.basd.yicloud.service.xencluster.XenClusterServiceImpl" singleton="true">
+	    <property name="xenEntityTreeDao">
+	        <ref bean="xenEntityTreeDao"/>
+	    </property>
+	     <property name="xenClusterDao">
+	        <ref bean="xenClusterDao"/>
+	    </property>
+	</bean>
+	<bean id="kpiService" class="com.sitech.basd.yicloud.service.scheduler.KPIServiceImpl" singleton="true">
+	    <property name="kpiDao">
+	        <ref bean="kpiDao"/>
+	    </property>
+	</bean>
+	<bean id="xenStoreService" class="com.sitech.basd.yicloud.service.xenstore.XenStoreServiceImpl" singleton="true">
+	    <property name="xenStoreDao">
+	        <ref bean="xenStoreDao"/>
+	    </property>
+	     <property name="hostInfoService">
+	        <ref bean="hostInfoService"/>
+	    </property>
+	</bean>
+	<bean id="nicService" class="com.sitech.basd.yicloud.service.nic.NicServiceImpl" singleton="true">
+	    <property name="nicDao">
+	        <ref bean="nicDao"/>
+	    </property>
+	</bean>
+	<bean id="virtualNicService" class="com.sitech.basd.yicloud.service.nic.VirtualNicServiceImpl" singleton="true">
+	    <property name="virtualNicDao">
+	        <ref bean="virtualNicDao"/>
+	    </property>
+	</bean>
+	<bean id="nicRelationService" class="com.sitech.basd.yicloud.service.nic.NicRelationServiceImpl" singleton="true">
+	    <property name="nicRelationDao">
+	        <ref bean="nicRelationDao"/>
+	    </property>
+	</bean>
+	<bean id="storeDeviceService" class="com.sitech.basd.yicloud.service.datastore.StoreDeviceServiceImpl" singleton="true">
+	    <property name="storeDeviceDao">
+	        <ref bean="storeDeviceDao"/>
+	    </property>
+	</bean>
+</beans>
+

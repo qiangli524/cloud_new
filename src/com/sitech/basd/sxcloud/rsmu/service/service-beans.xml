@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!--
+		<bean id="leaderViewBusinessService"
+			class="com.sitech.basd.cloud.service.leader.LeaderViewBusinessServiceImpl"
+			singleton="true">
+			<property name="leaderViewBusinessDao">
+				<ref bean="leaderViewBusinessDao"/>
+			</property>
+		</bean>
+	<bean id="userInfoService"
+		  class="com.sitech.basd.sxcloud.service.system.UserInfoServiceImpl"
+		  singleton="true">
+		<property name="tbSysUserinfoDao">
+			<ref bean="tbSysUserinfoDao"/>
+		</property>
+	</bean> -->
+	<bean id="loginService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.LoginServiceImpl"
+		  singleton="true">
+		<!--只产生一个实例[zengls 样例]-->
+		<property name="tbSysFunctionsDao">
+			<ref bean="tbSysFunctionsDao"/>
+		</property>
+		<property name="tbSysUserShortcutDao">
+			<ref bean="tbSysUserShortcutDao"/>
+		</property>
+		<property name="tbSysUserinfoDao">
+			<ref bean="tbSysUserinfoDao"/>
+		</property>
+		<property name="tbSysLoginLogDao">
+			<ref bean="tbSysLoginLogDao"/>
+		</property>
+	</bean>
+	<bean id="userInfoService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.UserInfoServiceImpl"
+		  singleton="true">
+		<property name="tbSysUserinfoDao">
+			<ref bean="tbSysUserinfoDao"/>
+		</property>
+	</bean>
+	<bean id="operationService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.OperationServiceImpl"
+		  singleton="true">
+		<property name="tbSysOperationLogDao">
+			<ref bean="tbSysOperationLogDao"/>
+		</property>
+	</bean>
+	<bean id="loginLogService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.LoginLogServiceImpl"
+		  singleton="true">
+		<property name="tbSysLoginLogDao">
+			<ref bean="tbSysLoginLogDao"/>
+		</property>
+	</bean>
+	<bean id="operationLogService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.OperationLogServiceImpl"
+		  singleton="true">
+		<property name="tbSysOperationLogDao">
+			<ref bean="tbSysOperationLogDao"/>
+		</property>
+	</bean>
+	<bean id="usergroupService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.UsergroupServiceImpl"
+		  singleton="true">
+		<property name="tbSysUsergroupDao">
+			<ref bean="tbSysUsergroupDao"/>
+		</property>
+		<property name="tbSysGrpmemberDao">
+			<ref bean="tbSysGrpmemberDao"/>
+		</property>
+	</bean>
+	<bean id="functionsService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.FunctionsServiceImpl"
+		  singleton="true">
+		<property name="tbSysFunctionsDao">
+			<ref bean="tbSysFunctionsDao"/>
+		</property>
+		<property name="tbSysGroupfuncDao">
+			<ref bean="tbSysGroupfuncDao"/>
+		</property>
+	</bean>
+	<bean id="securityConfigService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.system.TbCloud2SecurityConfigServiceImpl"
+		  singleton="true">
+		<property name="securityConfigDao">
+			<ref bean="securityConfigDao"/>
+		</property>
+	</bean>
+	<bean id="busiHostService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.hostmanage.BusiHostServiceImpl"
+		  singleton="true">
+		<property name="tbBusiHostObjDao">
+			<ref bean="tbBusiHostObjDao"/>
+		</property>
+	</bean>
+	<bean id="busiHostHisService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.hostmanage.BusiHostHisServiceImpl"
+		  singleton="true">
+		<property name="tbBusiHostHisObjDao">
+			<ref bean="tbBusiHostHisObjDao"/>
+		</property>
+	</bean>
+	<bean id="appService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.softmanage.AppServiceImpl"
+		  singleton="true">
+		<property name="tbSysAppDao">
+			<ref bean="tbSysAppDao"/>
+		</property>
+		<property name="tbBusiAppPortDao">
+			<ref bean="tbBusiAppPortDao"/>
+		</property>
+		
+	</bean>
+	<bean id="appHisService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.softmanage.AppHisServiceImpl"
+		  singleton="true">
+		<property name="tbSysAppHisDao">
+			<ref bean="tbSysAppHisDao"/>
+		</property>
+	</bean>
+	
+	<bean id="deployExampleService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.deploy.DeployExampleServiceImpl"
+		  singleton="true">
+		<property name="tbBusiDeployExampleDao">
+			<ref bean="tbBusiDeployExampleDao"/>
+		</property>
+	</bean>
+	<bean id="deployStrategyService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.deploy.DeployStrategyServiceImpl"
+		  singleton="true">
+		<property name="tbBusiDeployStrategyDao">
+			<ref bean="tbBusiDeployStrategyDao"/>
+		</property>
+	</bean>
+	<bean id="deployExampleHisService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.deploy.DeployExampleHisServiceImpl"
+		  singleton="true">
+		<property name="tbBusiDeployExampleHisDao">
+			<ref bean="tbBusiDeployExampleHisDao"/>
+		</property>
+	</bean>
+	<bean id="deployAlarmService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.deploy.DeployAlarmServiceImpl"
+		  singleton="true">
+		<property name="tbBusiDeployAlarmDao">
+			<ref bean="tbBusiDeployAlarmDao"/>
+		</property>
+	</bean>
+	<bean id="taskService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.deploy.TaskServiceImpl"
+		  singleton="true">
+		<property name="tbBusiDoTaskDao">
+			<ref bean="tbBusiDoTaskDao"/>
+		</property>
+	</bean>
+	<bean id="busiHostConfigService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.hostmanage.BusiHostConfigServiceImpl"
+		  singleton="true">
+		<property name="tbBusiHostConfigDao">
+			<ref bean="tbBusiHostConfigDao"/>
+		</property>
+	</bean>
+	<bean id="busiHostConfigHisService"
+		  class="com.sitech.basd.sxcloud.rsmu.service.hostmanage.BusiHostConfigHisServiceImpl"
+		  singleton="true">
+		<property name="tbBusiHostConfigHisDao">
+			<ref bean="tbBusiHostConfigHisDao"/>
+		</property>
+	</bean>
+	<bean id="dataExportService"
+		  class="com.sitech.basd.util.data.DataExportService"
+		  singleton="true">
+		<property name="dataExportDao">
+			<ref bean="dataExportDao"/>
+		</property>
+	</bean>
+	<bean id="appPortService"
+		class="com.sitech.basd.sxcloud.rsmu.service.softmanage.AppPortServiceImpl"
+		singleton="true">
+		<property name="tbBusiAppPortDao">
+			<ref bean="tbBusiAppPortDao" />
+		</property>
+	</bean>
+	
+	<bean id="exampleResumeService"
+		class="com.sitech.basd.sxcloud.rsmu.service.deploy.ExampleResumeServiceImpl"
+		singleton="true">
+		<property name="exampleResumeDao">
+			<ref bean="exampleResumeDao" />
+		</property>
+	</bean>
+	<bean id="virtualServerService"
+		class="com.sitech.basd.sxcloud.rsmu.service.cloudschedu.VirtualServerServiceImpl"
+		singleton="true">
+		<property name="virtualServerDao">
+			<ref bean="virtualServerDao" />
+		</property>
+	</bean>
+	<bean id="realServerService"
+		class="com.sitech.basd.sxcloud.rsmu.service.cloudschedu.RealServerServiceImpl"
+		singleton="true">
+		<property name="virtualServerDao">
+			<ref bean="virtualServerDao" />
+		</property>
+		<property name="realServerDao">
+			<ref bean="realServerDao" />
+		</property>
+	</bean>
+	<bean id="softwareInfoService"
+		class="com.sitech.basd.sxcloud.rsmu.service.softmanage.SoftwareInfoServiceImpl"
+		singleton="true">
+		<property name="tbBusiSoftwareInfoDao">
+			<ref bean="tbBusiSoftwareInfoDao" />
+		</property>
+	</bean>
+	<bean id="softwareInfohisService"
+		class="com.sitech.basd.sxcloud.rsmu.service.softmanage.SoftwareInfohisServiceImpl"
+		singleton="true">
+		<property name="tbBusiSoftwareInfoHisDao">
+			<ref bean="tbBusiSoftwareInfoHisDao" />
+		</property>
+	</bean>
+	<bean id="upgradeAlarmService"
+		class="com.sitech.basd.sxcloud.rsmu.service.upgrade.UpgradeAlarmServiceImpl"
+		singleton="true">
+		<property name="upgradeAlarmDao">
+			<ref bean="upgradeAlarmDao" />
+		</property>
+	</bean>
+	
+	<bean id="upgradeExampleService"
+		class="com.sitech.basd.sxcloud.rsmu.service.upgrade.UpgradeExampleServiceImpl"
+		singleton="true">
+		<property name="upgradeExampleDao">
+			<ref bean="upgradeExampleDao" />
+		</property>
+	</bean>
+	<bean id="upgradeStrategyService"
+		class="com.sitech.basd.sxcloud.rsmu.service.upgrade.UpgradeStrategyServiceImpl"
+		singleton="true">
+		<property name="upgradeStrategyDao">
+			<ref bean="upgradeStrategyDao" />
+		</property>
+	</bean>
+	<bean id="upgradeExampleResumeService"
+		class="com.sitech.basd.sxcloud.rsmu.service.upgrade.UpgradeExampleResumeServiceImpl"
+		singleton="true">
+		<property name="upgradeExampleResumeDao">
+			<ref bean="upgradeExampleResumeDao" />
+		</property>
+	</bean>
+	<bean id="shellService"
+		class="com.sitech.basd.sxcloud.rsmu.service.deploy.ShellServiceImpl"
+		singleton="true">
+		<property name="tbBusiDeployVideorecordDao">
+			<ref bean="tbBusiDeployVideorecordDao" />
+		</property>
+		<property name="tbBusiDeployVideoCommandsetDao">
+			<ref bean="tbBusiDeployVideoCommandsetDao" />
+		</property>
+	</bean>
+		<bean id="videoExampleService"
+		class="com.sitech.basd.sxcloud.rsmu.service.deploy.VideoExampleServiceImpl"
+		singleton="true">
+		<property name="tbBusiVideoExampleDao">
+			<ref bean="tbBusiVideoExampleDao" />
+		</property>
+		<property name="tbBusiDeployVideorecordDao">
+			<ref bean="tbBusiDeployVideorecordDao" />
+		</property>
+		<property name="tbBusiDeployVideoCommandsetDao">
+			<ref bean="tbBusiDeployVideoCommandsetDao" />
+		</property>
+	</bean>
+	
+	<bean id="deployConfigFileServerImpl"
+		class="com.sitech.basd.sxcloud.rsmu.service.deploy.configfile.DeployConfigFileServerImpl" singleton="true">
+		<property name="deployConfigFileDao">
+			<ref bean="deployConfigFileDao" />
+		</property>
+	</bean>
+	
+	<bean id="versionResumeService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.version.VersionResumeServiceImpl" singleton="true">
+		<property name="tbCloud3AppVersionDao">
+			<ref bean="tbCloud3AppVersionDao" />
+		</property>
+	</bean>
+	<bean id="fileVersionService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.version.FileVersionServiceImpl" singleton="true">
+		<property name="tbCloud3AppFileVersionDao">
+			<ref bean="tbCloud3AppFileVersionDao" />
+		</property>
+	</bean>
+	<bean id="rollbackFileService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.version.RollbackFileServiceImpl" singleton="true">
+		<property name="tbCloud3AppRollbackFileDao">
+			<ref bean="tbCloud3AppRollbackFileDao" />
+		</property>
+	</bean>
+	<bean id="rollbackInfoService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.version.RollbackInfoServiceImpl" singleton="true">
+		<property name="tbCloud3AppRollbackInfoDao">
+			<ref bean="tbCloud3AppRollbackInfoDao" />
+		</property>
+	</bean>
+	<bean id="onlineFilepathService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.version.OnlineFilepathServiceImpl" singleton="true">
+		<property name="tbCloud3AppOnlineFilepathDao">
+			<ref bean="tbCloud3AppOnlineFilepathDao" />
+		</property>
+	</bean>
+	<bean id="appVersionService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.version.AppVersionServiceImpl" singleton="true">
+		<property name="tbCloud3AppVersionDao">
+			<ref bean="tbCloud3AppVersionDao" />
+		</property>
+	</bean>
+	<bean id="onlineHistoryService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.version.OnlineHistoryServiceImpl" singleton="true">
+		<property name="tbCloud3OnlineHistoryDao">
+			<ref bean="tbCloud3OnlineHistoryDao" />
+		</property>
+	</bean>
+	<bean id="deployFileVersionService"
+		class=" com.sitech.basd.sxcloud.rsmu.service.deploy.deployfileversion.DeployFileVersionServiceImpl" singleton="true">
+		<property name="deployFileVersionDao">
+			<ref bean="deployFileVersionDao" />
+		</property>
+	</bean>
+</beans>
+

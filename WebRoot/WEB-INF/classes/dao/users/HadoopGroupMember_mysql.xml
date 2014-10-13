@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="HadoopGroupMember">
+	<typeAlias alias="hadoopGroupMember" type="domain.users.HadoopGroupMember"/>
+	
+	<select id="queryForListByObj" parameterClass="hadoopGroupMember" resultClass="hadoopGroupMember">
+		select id,group_id,user_id,service_type,`status` from tb_hadoop_group_member 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id = #user_id#	
+			</isNotEmpty>
+			<isNotEmpty property="service_type" prepend="and">
+				service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				`status` = #status#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertByObj" parameterClass="hadoopGroupMember">
+		insert into tb_hadoop_group_member (id,group_id,user_id,service_type,`status`)
+		values(#id#,#group_id#,#user_id#,#service_type#,#status#)
+	</insert>
+	
+	<delete id="deleteByObj" parameterClass="hadoopGroupMember">
+		delete from tb_hadoop_group_member
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="group_id">
+				group_id = #group_id#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="user_id">
+				user_id = #user_id#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="service_type">
+				service_type = #service_type#
+ 			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				`status` = #status#
+ 			</isNotEmpty>
+		</dynamic>	
+	</delete>
+	
+	<update id="updateByObj" parameterClass="hadoopGroupMember">
+		update tb_hadoop_group_member
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="group_id">
+				group_id = #group_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="user_id">
+				user_id = #user_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="service_type">
+				service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="status">
+				`status` = #status#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="idList">
+				id in
+				<iterate close=")" conjunction="," open="(" property="idList">
+					#idList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	
+	<select id="queryUnDoneList" parameterClass="hadoopGroupMember" resultClass="hadoopGroupMember">
+		select id,group_id,user_id,service_type,`status` from tb_hadoop_group_member 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id = #user_id#	
+			</isNotEmpty>
+			<isNotEmpty property="service_type" prepend="and">
+				service_type = #service_type#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="and">
+				`status` 
+				<![CDATA[
+					<>
+				]]>
+				 #status#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+</sqlMap>

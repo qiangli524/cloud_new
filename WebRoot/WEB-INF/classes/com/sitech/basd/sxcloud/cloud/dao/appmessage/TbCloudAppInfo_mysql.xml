@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbCloudAppInfo">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbCloudAppInfoObj" type="com.sitech.basd.sxcloud.cloud.domain.appmessage.TbCloudAppInfoObj"/>
+	  <!-- 查询业务系统下的应用 -->
+	  <select id="queryAppListBizsys" parameterClass="TbCloudAppInfoObj" resultClass="TbCloudAppInfoObj">
+	  	select m.name ,m.app_desc ,m.sys_id ,n.sys_name sysName
+			from TB_CLOUD_APP_INFO m,TB_CLOUD2_BIZSYS_INFO n
+		where m.sys_id = n.sys_id
+ 		<isNotEmpty prepend="and" property="sys_id">
+ 			m.sys_id = #sys_id#
+ 		</isNotEmpty>
+	  </select>
+	  <insert id="insertByObj" parameterClass="TbCloudAppInfoObj">
+	  	insert into TB_CLOUD_APP_INFO(NAME,APP_DESC,SYS_ID,SOFT_ID,BASE_ID,DATABASE_ID)
+	  	values(#name#,#app_desc#,#sys_id#,#soft_id#,#base_id#,#database_id#)
+	  </insert>
+	  <!-- 查询和应用关联的基准应用信息 -->
+	  <select id="queryAppListBase" parameterClass="TbCloudAppInfoObj" resultClass="TbCloudAppInfoObj">
+		select m.name,m.app_desc , m.base_id,m.sys_id,m.soft_id,m.database_id,n.APPNAME base_name,n.status,n.type,n.remark,n.deploypath,n.basepath,n.operationname
+		from TB_CLOUD_APP_INFO m ,TB_SYS_APP n
+		where m.BASE_ID = n.ID
+ 		<isNotEqual prepend="and" property="id" compareValue="0">
+ 			m.id = #id#
+ 		</isNotEqual>
+	  </select>
+	 
+	  <!-- 根据业务系统ID，查询应用 -->
+	  <select id="getAppByBusi" parameterClass="TbCloudAppInfoObj" resultClass="TbCloudAppInfoObj">
+	  		select ID id ,APPNAME base_name ,STATUS status ,STRATEGYTYPE stategy_type,DEPLOYPATH deploypath ,BASEPATH basepath,HOSEUSERNAME hostusername from TB_SYS_APP where SYS_ID=#sys_id#
+	  </select>
+	 
+</sqlMap>

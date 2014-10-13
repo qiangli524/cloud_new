@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="console" extends="global_package">
+		<action name="console_*" class="consoleAction" method="{1}">
+			<result name="success">/noVnc/vnc_auto.jsp</result>
+<!-- 			<result name="success" type="redirect">http://${websockify_host}:${websockify_port}/vnc_auto.html?vmCode=${vmCode}&amperror_msg=${error_msg}</result> -->
+		</action>
+ </package>
+</struts>

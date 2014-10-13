@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="virtualswitch">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="VirtualSwitch"
+		type="com.sitech.basd.yicloud.domain.switches.VirtualSwitch" /> 
+	<sql id="paginationEnd">
+		<![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<insert id="insertByObj" parameterClass="VirtualSwitch">
+		insert into TB_CLOUD_VSWITCH(
+			NAME,NUMPORTS,NUMPORTSAVAILABLE,HOSTNAME,VSSUUID,TYPE
+		)
+		values(#name#,#numPorts#,#numPortsAvailable#,#hostName#,#vssuuid#,#type#)
+	</insert>
+	<sql id="queryVirtualSwitchListBase">
+		select a.ID,a.NAME,a.NUMPORTS,a.NUMPORTSAVAILABLE,a.HOSTNAME,a.VSSUUID,a.TYPE,b.entity_id hostCode
+  		from TB_CLOUD_VSWITCH a, Tb_Cloud_Entity_Tree b
+ 		where a.HOSTNAME = b.name
+		<isNotNull>
+		<isNotEmpty property="name" prepend="and">
+			a.NAME like CONCAT('%',#name#,'%')
+		</isNotEmpty>
+		</isNotNull> 
+		<isNotNull property="hostCode" prepend="and">
+			b.entity_id = #hostCode#
+		</isNotNull>
+	</sql>
+	<select id="queryVirtualSwitch" parameterClass="VirtualSwitch" resultClass="VirtualSwitch">
+		<include refid="queryVirtualSwitchListBase" />
+		order by HOSTNAME
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryVirtualSwitchCount" parameterClass="VirtualSwitch" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryVirtualSwitchListBase" />
+		 ) virtual_table
+	 </select>
+	 
+	 <select id="queryByObj" parameterClass="VirtualSwitch" resultClass="VirtualSwitch">
+	 	select ID,NAME,HOSTNAME,VSSUUID from TB_CLOUD_VSWITCH t 
+	 	<dynamic prepend="where">
+			<isGreaterThan property="id" compareValue="0" prepend="and">
+			t.ID =#id#
+		   </isGreaterThan>
+			<isNotNull prepend="and" property="name">
+			t.NAME=#name#
+		   </isNotNull>
+		   <isNotNull prepend="and" property="hostName">
+			t.HOSTNAME=#hostName#
+		   </isNotNull>
+		</dynamic>
+	 </select>
+</sqlMap>

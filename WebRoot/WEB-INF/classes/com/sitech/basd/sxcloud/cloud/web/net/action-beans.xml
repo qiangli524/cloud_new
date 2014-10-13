@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="netMangAction" class="com.sitech.basd.sxcloud.cloud.web.net.action.NetAction"
+		singleton="false"><!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="netService">
+			<ref bean="netService" />
+		</property> 
+		<property name="ipService">
+			<ref bean="ipService" />
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

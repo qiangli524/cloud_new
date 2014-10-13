@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="AppDatabase">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="AppDatabaseObj"
+		type="com.sitech.basd.yicloud.domain.database.AppDatabaseObj" />
+	<typeAlias alias="TbCloudAppInfoObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.appmessage.TbCloudAppInfoObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="TB_CLOUD_APP_DATABASEColumnsNoKey">
+		USRNAME,PASSWORD,TABALE_SPACE,IPADDR,PORT,SERVICE_NAME
+	</sql>
+	<sql id="TB_CLOUD_APP_DATABASEColumns">
+		ID,
+		<include refid="TB_CLOUD_APP_DATABASEColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_CLOUD_APP_DATABASEColumns" />
+		from TB_CLOUD_APP_DATABASE
+		<dynamic prepend="where">
+			<isNotNull property="id" prepend="and">
+				ID = #id#
+			</isNotNull>
+		</dynamic>
+		order by ID asc
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj" parameterClass="AppDatabaseObj"
+		resultClass="AppDatabaseObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryByObjBase" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryByObjForCount" parameterClass="AppDatabaseObj"
+		resultClass="int">
+		select count(ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<insert id="insertByObj" parameterClass="AppDatabaseObj">
+		insert into TB_CLOUD_APP_DATABASE(
+		ID,USRNAME,PASSWORD,TABALE_SPACE,IPADDR,PORT,SERVICE_NAME)
+		values(#id#,#usrname#,#password#,#tabale_space#,#ipaddr#,#port#,#service_name#)
+	</insert>
+	<update id="updateByObj" parameterClass="AppDatabaseObj">
+		update TB_CLOUD_APP_DATABASE set
+		USRNAME=#usrname#,PASSWORD=#password#,TABALE_SPACE=#tabale_space#,IPADDR=#ipaddr#,
+		PORT=#port#,SERVICE_NAME=#service_name#
+		where ID=#id#
+	</update>
+	<delete id="deleteByObj" parameterClass="AppDatabaseObj">
+		delete from TB_CLOUD_APP_DATABASE where ID=#id#
+	</delete>
+	<select id="queryBizSysDataBase" parameterClass="TbCloudAppInfoObj" resultClass="AppDatabaseObj">
+		 select a.USRNAME,a.PASSWORD,a.TABALE_SPACE,a.IPADDR,a.PORT,a.SERVICE_NAME from TB_CLOUD_APP_DATABASE a, TB_CLOUD_APP_INFO b
+  			where a.ID = b.DATABASE_ID 
+  			<isNotEqual prepend="and" property="id" compareValue="0">
+  				b.id = #id#
+  			</isNotEqual>
+	</select>
+</sqlMap>

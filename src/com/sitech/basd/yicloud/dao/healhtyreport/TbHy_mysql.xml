@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbHy">
+<!--	三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbHyObj"
+		type="com.sitech.basd.cloud.domain.reportvirtual.TbHyObj" />
+	<typeAlias alias="TbCloud2VirtualInfoObj"
+		type="com.sitech.basd.cloud.domain.virtual.TbCloud2VirtualInfoObj" />
+	<sql id="tableTbHyColumnsNoKey">KPI_ID , KPI_VALUE ,COLL_TIME</sql>
+	<sql id="tableTbHyColumns">
+		HY_ID ,
+		<include refid="tableTbHyColumnsNoKey" />
+	</sql>
+
+<!--		取得虚拟机当天的监控信息 --> 
+	<select id="queryTbHyForToday" resultClass="TbHyObj"
+		parameterClass="TbHyObj">
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM TB_CLOUD2_HY_COLL
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id" prepend="and">
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+			<isNotEmpty property="hy_id" >
+				<isEqual property="kpi_id" compareValue="PM-V-01-010-11" prepend="and">
+					COLL_TIME >= sysdate() - 6/24  AND
+					COLL_TIME <![CDATA[ <= ]]> sysdate()
+				</isEqual>
+				<isEqual property="kpi_id" compareValue="PM-V-01-010-12" prepend="and">
+					COLL_TIME >= sysdate() - 12/24  AND
+					COLL_TIME <![CDATA[ <= ]]> sysdate()
+				</isEqual>
+				<isEqual property="kpi_id" compareValue="PM-V-01-010-13" prepend="and">
+					COLL_TIME >= sysdate() - 24/24  AND
+					COLL_TIME <![CDATA[ <= ]]> sysdate()
+				</isEqual>
+				<isEqual property="kpi_id" compareValue="PM-V-01-010-14" prepend="and">
+					COLL_TIME >= sysdate() - 24/24  AND
+					COLL_TIME <![CDATA[ <= ]]> sysdate()
+				</isEqual>
+			</isNotEmpty>
+		</dynamic>
+		order by COLL_TIME
+	</select>
+
+<!--		在当前表取得虚拟机本周的监控信息 -->
+	<select id="queryTbHyForWeek" resultClass="TbHyObj"
+		parameterClass="TbHyObj">
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM TB_CLOUD2_HY_COLL
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id"  prepend="and">
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+			<isNotEmpty property="hy_id"   prepend="and">
+					COLL_TIME > sysdate() - interval '7' day AND COLL_TIME
+					<![CDATA[ <= ]]>
+					sysdate()
+			</isNotEmpty>
+		</dynamic>
+		order by COLL_TIME
+	</select>
+	
+	<!--		跨表取得虚拟机本周的监控信息 -->
+	<select id="queryUnionTbHyForWeek" resultClass="TbHyObj"
+		parameterClass="TbHyObj">
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM 
+       		<isNotEmpty property="table_name" >
+				$table_name$
+			</isNotEmpty>
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id"  prepend="and">
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+			<isNotEmpty property="hy_id"   prepend="and">
+					COLL_TIME > sysdate() - interval '7' day AND COLL_TIME
+					<![CDATA[ <= ]]>
+					sysdate()
+			</isNotEmpty>
+		</dynamic>
+	union
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM TB_CLOUD2_HY_COLL
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id"  prepend="and" >
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+			<isNotEmpty property="hy_id" prepend="and">
+					COLL_TIME > sysdate() - interval '7' day AND COLL_TIME
+					<![CDATA[ <= ]]>
+					sysdate()
+			</isNotEmpty>
+		</dynamic>
+		order by COLL_TIME
+	</select>
+	
+	<!--		在当前表取得虚拟机上周的监控信息 -->
+	<select id="queryTbHyForLastWeek" resultClass="TbHyObj"
+		parameterClass="TbHyObj">
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM  TB_CLOUD2_HY_COLL
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id" prepend="and">
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+			<isNotEmpty property="hy_id"  prepend="and">
+					COLL_TIME > sysdate() - interval '14' day AND COLL_TIME
+					<![CDATA[ <= ]]>
+					sysdate() - interval '7' day
+			</isNotEmpty>
+		</dynamic>
+		order by COLL_TIME
+	</select>
+	
+	<!--		跨表取得虚拟机上周的监控信息 -->
+	<select id="queryUnionTbHyForLastWeek" resultClass="TbHyObj"
+		parameterClass="TbHyObj">
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM  
+       		<isNotEmpty property="table_name" >
+				$table_name$
+			</isNotEmpty>
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id" prepend="and">
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+			<isNotEmpty property="hy_id"  prepend="and"> 
+					COLL_TIME > sysdate() - interval '14' day AND COLL_TIME
+					<![CDATA[ <= ]]>
+					sysdate() - interval '7' day 
+			</isNotEmpty>
+		</dynamic>
+	union
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM  TB_CLOUD2_HY_COLL
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id" prepend="and">
+				HY_ID =#hy_id#
+			</isNotEmpty> 
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+			<isNotEmpty property="hy_id"  prepend="and"> 
+					COLL_TIME > sysdate() - interval '14' day AND COLL_TIME
+					<![CDATA[ <= ]]>
+					sysdate() - interval '7' day 
+			</isNotEmpty>
+		</dynamic>
+		order by COLL_TIME
+	</select>
+
+<!--		取得虚拟机本月的监控信息 -->
+	<select id="queryTbHyForMonth" resultClass="TbHyObj"
+		parameterClass="TbHyObj">
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM TB_CLOUD2_HY_COLL
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id"  prepend="and" >
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+		</dynamic>
+		order by COLL_TIME
+	</select>
+	
+	<!--		取得虚拟机上月的监控信息 -->
+	<select id="queryTbHyForLastMonth" resultClass="TbHyObj"
+		parameterClass="TbHyObj">
+		SELECT
+		<include refid="tableTbHyColumnsNoKey" />
+		FROM  
+       		<isNotEmpty property="table_name" >
+				$table_name$
+			</isNotEmpty>
+		<dynamic prepend="where">
+			<isNotEmpty property="hy_id" prepend="and" >
+				HY_ID =#hy_id#
+			</isNotEmpty>
+			<isNotEmpty property="kpi_id" prepend="and">
+				KPI_ID =#kpi_id#
+			</isNotEmpty>
+		</dynamic>
+		order by COLL_TIME
+	</select>
+	<!-- 查询已经监控的虚拟机 -->
+	<select id="queryMonitorVirtualCount" parameterClass="TbCloud2VirtualInfoObj" resultClass="int">
+		  select count(VH_ID)
+          from TB_CLOUD2_VH_POOL m
+         where m.VH_ID in (select distinct n.hy_id as vh_id
+                             from TB_CLOUD2_HY_COLL n
+                            where n.coll_time >= sysdate() - interval '6'
+                            hour
+                              and n.coll_time <![CDATA[ <= ]]> sysdate())
+		
+		<isNotEmpty property="EQ_ID" prepend="AND">
+				EQ_ID =#EQ_ID#
+		</isNotEmpty>
+	</select>
+	<!-- 查询所有可以监控的虚拟机 -->
+	<select id="queryAllVirtualCount" parameterClass="TbCloud2VirtualInfoObj" resultClass="int">
+		select count(VH_ID) from TB_CLOUD2_VH_POOL
+		<dynamic prepend="where">
+			<isNotEmpty property="EQ_ID" prepend="AND">
+				EQ_ID =#EQ_ID#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

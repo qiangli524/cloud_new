@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BusiTree">
+	<typeAlias alias="BusiTreeObj"
+		type="com.sitech.basd.yicloud.domain.busitree.BusiTreeObj" />
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<select id="queryForTree" parameterClass="BusiTreeObj" resultClass="BusiTreeObj">
+		select id,name,type,parent_id parentId,busi_id busiId from TB_CLOUD_BUSI_TREE
+		<dynamic prepend="where">
+			<isNotEqual property="parentId" compareValue="0" prepend="and" >
+				parent_id=#parentId#
+			</isNotEqual>
+			<isNotEmpty property="type" prepend="and">
+				TYPE=#type#
+			</isNotEmpty>
+			<isNotEqual property="id" compareValue="0" prepend="and" >
+				id=#id#
+			</isNotEqual>
+			<isNotEmpty property="BUSI_ID" prepend="and" >
+				BUSI_ID=#BUSI_ID#
+			</isNotEmpty>
+		</dynamic>
+		order by type asc
+	</select>
+	
+	<select id="queryExampleListByAppBustID" parameterClass="BusiTreeObj" resultClass="BusiTreeObj">
+	 select id,name,type,parent_id parentId,busi_id busiId from TB_CLOUD_BUSI_TREE where parent_id in (select a.id from TB_CLOUD_BUSI_TREE a 
+	 where a.BUSI_ID=#busiId#)
+	</select>
+	
+	<insert id="insertByobj" parameterClass="BusiTreeObj">
+		<selectKey keyProperty="id" resultClass="int">
+			select ID_TB_CLOUD_BUSI_TREE.nextval as ID from dual
+		</selectKey>
+		insert into TB_CLOUD_BUSI_TREE(id,name,type,parent_id,busi_id)
+		values(#id#,#name#,#type#,#parentId#,#busiId#)
+	</insert>
+</sqlMap>

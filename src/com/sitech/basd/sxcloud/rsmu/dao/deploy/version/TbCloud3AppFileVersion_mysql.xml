@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbCloud3AppFileVersion">
+	<typeAlias alias="TbCloud3AppFileVersionVO"
+		type="com.sitech.basd.sxcloud.rsmu.domain.deploy.version.TbCloud3AppFileVersionVO" />
+
+	<select id="queryVOByObj" parameterClass="TbCloud3AppFileVersionVO"
+		resultClass="TbCloud3AppFileVersionVO">
+		SELECT
+		T.ID,T.FILENAME,T.FILEPATH,T.VERSION,T.APPVERSION,t.APPID,t.INSERTDATE,t.FILEFULLPATH
+		FROM TB_CLOUD3_APP_FILE_VERSION T
+		<dynamic prepend="WHERE">
+			<isNotEmpty property="id" prepend="AND">
+				T.ID=#id#
+			</isNotEmpty>
+			<isNotEmpty property="filePath" prepend="AND">
+				T.FILEPATH=#filePath#
+			</isNotEmpty>
+			<isNotEmpty property="appVersion" prepend="AND">
+				T.APPVERSION=#appVersion#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="queryListByObj" parameterClass="TbCloud3AppFileVersionVO"
+		resultClass="TbCloud3AppFileVersionVO">
+		SELECT
+		T.ID,T.FILENAME,T.FILEPATH,T.VERSION,T.APPVERSION,t.APPID,t.INSERTDATE,t.FILEFULLPATH
+		FROM TB_CLOUD3_APP_FILE_VERSION T
+		<dynamic prepend="WHERE">
+			<isGreaterThan property="appId" prepend="AND"
+				compareValue="0">
+				T.APPID=#appId#
+			</isGreaterThan>
+			<isNotEmpty property="appVersion" prepend="AND">
+				T.APPVERSION=#appVersion#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="queryFileVersionForResumeByObj" parameterClass="TbCloud3AppFileVersionVO"
+		resultClass="TbCloud3AppFileVersionVO">
+	<![CDATA[	select t.*
+          from TB_CLOUD3_APP_FILE_VERSION t
+         where t.filepath = #filePath#
+           and t.version =
+               (select max(version) appversion
+                  from (select t.*, t.rowid
+                          from TB_CLOUD3_APP_FILE_VERSION t
+                         where t.filepath = #filePath#
+                           and t.insertdate <=
+                               STR_TO_DATE(#insertDate#,
+                                       '%Y-%m-%d %H:%i:%S')) ) ]]>
+
+	</select>
+
+	<insert id="insertByVO" parameterClass="TbCloud3AppFileVersionVO">
+		insert into
+		TB_CLOUD3_APP_FILE_VERSION(ID,FILEPATH,FILENAME,VERSION,APPVERSION,APPID,INSERTDATE,FILEFULLPATH)
+		values(#id#,#filePath#,#fileName#,#version#,#appVersion#,#appId#,sysdate,#fileFullPath#)
+	</insert>
+</sqlMap>

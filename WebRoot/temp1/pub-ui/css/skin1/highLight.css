@@ -1,0 +1,9 @@
+/*
+ * @Filename: highLight.css
+ * @Description: highLight style
+ * @Version: 1.0.0
+ * @Author: wanggq
+ * @Update: wanggq 2013/1/17
+*/
+.ued-highlight { background-color: yellow }
+.ued-highlight2 { padding:0 5px;border-radius:3px;background-color: yellow }

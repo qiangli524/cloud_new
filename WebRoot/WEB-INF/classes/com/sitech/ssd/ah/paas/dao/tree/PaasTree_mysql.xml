@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasTree">
+<typeAlias alias="PaasTreeObj" type="com.sitech.ssd.ah.paas.domain.tree.PaasTreeObj"/>
+<typeAlias alias="PaasEntityObj" type="com.sitech.ssd.ah.paas.domain.entity.PaasEntityObj"/>
+	<!-- 查询资源树 -->
+	<select id="queryForPaasTree" parameterClass="PaasTreeObj" resultClass="PaasTreeObj">
+		select
+			t.id,
+			t.`name`,
+			t.entity_id,
+			t.parent_id,
+			t.node_type,
+			t.server_type
+		from
+			tb_paas_resource_tree t
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				t.id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				t.name like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				t.entity_id = #entity_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="parent_id">
+				t.parent_id = #parent_id#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="node_type">
+				t.node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="server_type">
+				t.server_type = #server_type#
+			</isNotEmpty>
+		</dynamic>
+		ORDER BY t.name,t.node_type
+	</select>
+	<insert id="insertByObj" parameterClass="PaasTreeObj">
+		insert into tb_paas_resource_tree(id,name,entity_id,parent_id,node_type,server_type,busi_id) 
+			values (#id#,#name#,#entity_id#,#parent_id#,#node_type#,#server_type#,#busi_id#)
+	</insert>
+	<update id="updateByObj" parameterClass="PaasTreeObj">
+		update tb_paas_resource_tree
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="name">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="server_type">
+				server_type = #server_type#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="," property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+	<delete id="deleteByObj">
+		delete from tb_paas_resource_tree
+		<dynamic prepend="where">
+			<isNotEmpty prepend="," property="id">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="node_type">
+				node_type = #node_type#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	<!-- 查询资源池要展开的节点集合 -->
+	<select id="queryNodesForResourcePool" parameterClass="PaasTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(a.id,',',b.id)
+		FROM
+			tb_paas_resource_tree a,
+			tb_paas_resource_tree b
+		WHERE
+			a.parent_id = b.id
+			AND a.name = #name#
+			AND a.node_type = #node_type#
+	</select>
+	<!-- 查询实例要展开的节点集合 -->
+	<select id="queryNodesForExamples" parameterClass="PaasTreeObj" resultClass="java.lang.String">
+		SELECT
+			CONCAT(a.id,',',b.id,',',c.id)
+		FROM
+			tb_paas_resource_tree a,
+			tb_paas_resource_tree b,
+			tb_paas_resource_tree c
+		WHERE
+			a.parent_id = b.id
+			AND b.parent_id = c.id
+			AND a.name = #name#
+			AND a.node_type = #node_type#
+	</select>
+	
+	<insert id="insertByEntityObj" parameterClass="PaasEntityObj">
+		insert into tb_paas_entity(id,entity_name,host_address,host_port,entity_type,entity_id,insert_time) 
+			values (#id#,#entity_name#,#host_address#,#host_port#,#entity_type#,#entity_id#,NOW())
+	</insert>
+</sqlMap>

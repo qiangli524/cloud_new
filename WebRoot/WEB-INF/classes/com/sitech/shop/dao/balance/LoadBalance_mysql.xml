@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+   -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--  名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="LoadBalance">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="LoadBalanceObj" type="com.sitech.shop.domain.balance.LoadBalanceObj"/>    
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+    <sql id="paginationEnd">
+		<![CDATA[
+                       limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	 <sql id="queryByObjBase">
+	 	SELECT
+			a.id,			
+			a.name,		
+			a.type,		
+			a.purchase_way,
+			DATE_FORMAT(a.begin_time,'%Y-%m-%d %H:%i:%s') begin_time,	
+			DATE_FORMAT(a.end_time,'%Y-%m-%d %H:%i:%s') end_time,	
+			a.state,		
+			a.user_id,     
+			a.area_id     
+		FROM
+			tb_loadbalance_info a
+	 	<dynamic prepend="where">
+	 		<isNotNull property="area_id"  prepend="and" >
+				a.area_id=#area_id#
+			</isNotNull> 
+			<isNotNull property="user_id"  prepend="and" >
+				a.user_id=#user_id#
+			</isNotNull> 
+			<isNotNull property="id"  prepend="and" >
+				a.id=#id#
+			</isNotNull> 
+			<isNotEmpty property="name" prepend="and">
+				a.name like CONCAT('%',#name#,'%')
+			</isNotEmpty>
+		</dynamic>
+		order by a.name
+	 </sql>
+	 
+	 <!-- 查询镜像列表 -->
+	 <select id="queryForList" parameterClass="LoadBalanceObj" resultClass="LoadBalanceObj">
+        <include refid="queryByObjBase"/> 
+        	<isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	 </select>
+	  <select id="queryByObjForCount" parameterClass="LoadBalanceObj" resultClass="int">
+	       select count(id) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+	  <!-- 更新一条记录 -->
+	  <update id="updateByObj" parameterClass="LoadBalanceObj">
+	  	update tb_loadbalance_info 
+	  	<dynamic prepend="set">
+			<isNotEmpty prepend="," property="name">
+				name=#name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="begin_time">
+				begin_time=#begin_time#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="end_time">
+				end_time=#end_time#
+			</isNotEmpty>
+			<!-- 服务状态 -->
+			<isNotEmpty prepend="," property="service_status">
+				service_status=#service_status#
+			</isNotEmpty>
+		</dynamic>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">
+				id=#id#
+			</isNotEmpty>
+		</dynamic>
+	  </update>
+	  <!-- 插入一条记录 -->
+	  <insert id="insertByObj" parameterClass="LoadBalanceObj">
+	  	insert into tb_loadbalance_info 
+	  	(
+	  		id,			
+			name,		
+			type,		
+			purchase_way,
+			state,		
+			user_id,     
+			area_id 
+	  	) 
+	  	values (
+			#id#,			
+			#name#,		
+			#type#,		
+			#purchase_way#,
+			#state#,		
+			#user_id#,     
+			#area_id#)
+	  </insert>
+	  <!-- 更新负载均衡服务开始及到期时间 -->
+	  <update id="updateServiceTime" parameterClass="PhysicalVlanObj">
+	  	UPDATE tb_loadbalance_info 
+	  	<dynamic prepend="set">
+			     <isNotEmpty prepend="," property="begin_time">     
+				         begin_time=#begin_time# 
+				</isNotEmpty> 
+				 <isNotEmpty prepend="," property="end_time">     
+				         end_time=#end_time# 
+				</isNotEmpty>
+		</dynamic>
+		WHERE
+			id=#id#
+	  </update>
+	  <!-- 删除一条记录 -->
+	  <delete id="deleteByObj" parameterClass="LoadBalanceObj">
+	  	delete from tb_loadbalance_info
+	  	<dynamic prepend="where">
+	 		<isNotNull property="id"  prepend="and" >
+				id= #id#
+			</isNotNull>
+		</dynamic> 
+	  </delete>
+</sqlMap>

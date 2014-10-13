@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="MachineRoom">
+
+	<typeAlias alias="MachineRoomObj"
+		type="com.sitech.basd.cloud3.domain.machineroom.MachineRoomObj" />
+
+	<sql id="paginationStart">
+		<![CDATA[
+             select * from (select virtual_table.*, rownum rownum_ from (
+        ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+		<select id="queryRoomOne" parameterClass="MachineRoomObj"
+		resultClass="MachineRoomObj"> 
+		select r.room_id,r.room_name,r.room_code ,r.room_city,r.room_address,r.link_man,r.phone,r.room_type,r.room_size,to_char(r.ins_date,'yyyy-mm-dd hh24:mi:ss') INS_DATE
+		from tb_cloud_machine_room r
+		where r.room_id=#ROOM_ID#
+	</select>
+	<select id="queryRoomObj"> 
+		select ROOM_ID,ROOM_NAME
+		from tb_cloud_machine_room 
+	</select>
+	<delete id="deleteRoomObj" parameterClass="MachineRoomObj">
+	delete tb_cloud_machine_room  where ROOM_ID=#ROOM_ID#
+	</delete>
+	<update id="updateRoomObj" parameterClass="MachineRoomObj">
+	update tb_cloud_machine_room set room_name=#ROOM_NAME#,room_code=#ROOM_CODE#,room_city=#ROOM_CITY#,room_address=#ROOM_ADDRESS#,link_man=#LINK_MAN#
+	,phone=#PHONE#,room_type=#ROOM_TYPE#,room_size=#ROOM_SIZE#
+	where room_id=#ROOM_ID#
+	</update>
+	<insert id="insertRoomObj" parameterClass="MachineRoomObj">
+	insert into tb_cloud_machine_room (room_id,room_name,room_code,room_city,room_address,link_man,phone,room_type,room_size,ins_date)
+	values(#ROOM_ID#,#ROOM_NAME#,#ROOM_CODE#,#ROOM_CITY#,#ROOM_ADDRESS#,#LINK_MAN#,#PHONE#,#ROOM_TYPE#,#ROOM_SIZE#,sysdate)
+	</insert>
+	<sql id="queryRoomList"> 
+		select r.room_id,r.room_name,r.room_code ,r.room_city,r.room_address,r.link_man,r.phone,r.room_type,r.room_size,to_char(r.ins_date,'yyyy-mm-dd hh24:mi:ss') INS_DATE
+		,count(a.area_id) shu from tb_cloud_machine_room r left join tb_cloud_machine_roomarea a on r.room_id=a.room_id
+		<dynamic prepend="where">
+				<isNotEmpty property="ROOM_NAME" prepend="and">
+						r.room_name like '%'||#ROOM_NAME#||'%'
+				</isNotEmpty>
+		</dynamic>
+		group by  r.room_id,r.room_name,r.room_code ,r.room_city,r.room_address,r.link_man,r.phone,r.room_type,r.room_size,to_char(r.ins_date,'yyyy-mm-dd hh24:mi:ss') 
+		order by to_char(r.ins_date,'yyyy-mm-dd hh24:mi:ss') desc
+	</sql>
+	<select id="queryRoomList" parameterClass="MachineRoomObj"
+		resultClass="MachineRoomObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryRoomList" />
+
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryRoomCount" parameterClass="MachineRoomObj"
+		resultClass="int">
+		select count(room_id) from (
+		<include refid="queryRoomList" />
+		) virtual_table
+	</select>
+	
+	
+</sqlMap>

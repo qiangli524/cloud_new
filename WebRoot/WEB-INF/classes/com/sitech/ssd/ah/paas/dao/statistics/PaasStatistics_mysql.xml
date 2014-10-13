@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="PaasStatistics">
+<typeAlias alias="PaasKpiMonitorObj" type="com.sitech.ssd.ah.paas.domain.statistics.PaasKpiMonitorObj"/>
+<typeAlias alias="Data" type="com.sitech.basd.fusioncharts.vo.Data" />
+<typeAlias alias="PaasEntityObj" type="com.sitech.ssd.ah.paas.domain.entity.PaasEntityObj"/>
+<typeAlias alias="PaasTreeObj" type="com.sitech.ssd.ah.paas.domain.tree.PaasTreeObj"/>
+	<select id="queryKpiNameAndValue" parameterClass="PaasKpiMonitorObj" resultClass="PaasKpiMonitorObj">
+		SELECT
+			a.id,
+			a.name_kpi,
+			a.desc_kpi,
+			a.type_kpi,
+			a.server_kpi,
+			b.kpi_name,
+			b.kpi_value_last,
+			b.kpi_type
+		FROM
+			tb_paas_kpi_monitor a
+		LEFT JOIN tb_paas_resource_statistical b ON a.name_kpi = b.kpi_name
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="type_kpi">
+				a.type_kpi = #type_kpi#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="server_kpi">
+				a.server_kpi = #server_kpi#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="kpi_type">
+				b.kpi_type = #kpi_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				b.entity_id = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="showHitsAndMisses" parameterClass="PaasKpiMonitorObj" resultClass="Data">
+		SELECT
+			a.desc_kpi label,
+			b.kpi_value_last value
+		FROM
+			tb_paas_kpi_monitor a
+		LEFT JOIN tb_paas_resource_statistical b ON a.name_kpi = b.kpi_name
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name_kpi">
+				a.name_kpi = #name_kpi#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="server_kpi">
+				a.server_kpi = #server_kpi#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="kpi_type">
+				b.kpi_type = #kpi_type#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="entity_id">
+				b.entity_id = #entity_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="showHitsAndMissesForPool" parameterClass="PaasKpiMonitorObj" resultClass="Data">
+		SELECT
+			a.desc_kpi label,
+			b.kpi_value_last value
+		FROM tb_paas_kpi_monitor a
+		LEFT JOIN (
+			SELECT SUM(s.kpi_value_last) kpi_value_last,s.kpi_name
+				FROM tb_paas_resource_statistical s
+			WHERE s.entity_id IN (
+					SELECT t.entity_id FROM tb_paas_resource_tree t
+						<dynamic prepend="where">
+							<isNotEmpty prepend="and" property="parent_id">
+								t.parent_id = #parent_id#
+							</isNotEmpty>
+						</dynamic>
+					)
+			GROUP BY s.kpi_name
+		) b ON a.name_kpi = b.kpi_name
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="name_kpi">
+				a.name_kpi = #name_kpi#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryMemcacheExamples" parameterClass="PaasTreeObj" resultClass="PaasEntityObj">
+			SELECT a.`name` entity_name, b.host_address, b.host_port, b.insert_time
+			FROM 
+				(SELECT t.`name`, t.entity_id FROM tb_paas_resource_tree t 
+					<dynamic prepend="where">
+						<isNotEmpty prepend="and" property="parent_id">
+							t.parent_id = #parent_id#
+						</isNotEmpty>
+					</dynamic>
+				) a
+			LEFT JOIN tb_paas_entity b ON a.entity_id = b.entity_id
+	</select>
+	
+	<select id="queryKpiNameAndValueForPool" parameterClass="PaasTreeObj" resultClass="PaasKpiMonitorObj">
+		SELECT a.id, a.name_kpi, a.desc_kpi, a.type_kpi, a.server_kpi, b.kpi_name, b.kpi_value_last
+			FROM tb_paas_kpi_monitor a
+		LEFT JOIN (
+			SELECT SUM(s.kpi_value_last) kpi_value_last,s.kpi_name
+				FROM tb_paas_resource_statistical s
+			WHERE s.entity_id IN (
+					SELECT t.entity_id FROM tb_paas_resource_tree t
+						<dynamic prepend="where">
+							<isNotEmpty prepend="and" property="parent_id">
+								t.parent_id = #parent_id#
+							</isNotEmpty>
+						</dynamic>
+					)
+			GROUP BY s.kpi_name
+		) b ON a.name_kpi = b.kpi_name
+	</select>
+	
+	<select id="queryForLastStatisticsList" parameterClass="PaasKpiMonitorObj" resultClass="PaasKpiMonitorObj">
+		SELECT
+			a.kpi_name,
+			a.kpi_value_last,
+			b.type_kpi kpi_type,
+			b.desc_kpi
+		FROM
+			tb_paas_resource_statistical a left
+		JOIN tb_paas_kpi_monitor b ON a.kpi_name = b.name_kpi
+		<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="entity_id">
+						a.entity_id = #entity_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="kpi_name">
+						a.kpi_name = #kpi_name#
+				</isNotEmpty>
+		</dynamic>
+		group by a.kpi_name
+	</select>
+	<select id="queryForLastValue" parameterClass="PaasKpiMonitorObj" resultClass="PaasKpiMonitorObj">
+		SELECT
+			a.entity_id,
+			a.kpi_name,
+			(
+				CASE
+				WHEN a.kpi_name = 'PS-05-01-002'
+				OR a.kpi_name = 'PS-05-01-001'
+				OR a.kpi_name = 'PS-03-01-001'
+				OR a.kpi_name = 'PS-03-01-002' THEN
+					a.kpi_value_last
+				WHEN a.kpi_name != 'PS-05-01-002'
+				AND a.kpi_name != 'PS-05-01-001'
+				AND a.kpi_name != 'PS-03-01-001'
+				AND a.kpi_name != 'PS-03-01-002' THEN
+					ROUND(a.kpi_value_last, 1)
+				END
+			) kpi_value_last,
+			a.ext_val
+		FROM
+			tb_paas_resource_statistical a left
+		JOIN tb_paas_kpi_monitor b ON a.kpi_name = b.gid_kpi
+		<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="entity_id">
+						a.entity_id = #entity_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="kpi_name">
+						a.kpi_name = #kpi_name#
+				</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryRealTimeKpi" parameterClass="PaasKpiMonitorObj" resultClass="PaasKpiMonitorObj">
+		SELECT
+			a.entity_id,
+			a.kpi_name,
+			(
+				CASE
+				WHEN a.kpi_name = 'PS-05-01-002'
+				OR a.kpi_name = 'PS-05-01-001'
+				OR a.kpi_name = 'PS-03-01-001'
+				OR a.kpi_name = 'PS-03-01-002' THEN
+					a.kpi_value
+				WHEN a.kpi_name != 'PS-05-01-002'
+				AND a.kpi_name != 'PS-05-01-001'
+				AND a.kpi_name != 'PS-03-01-001'
+				AND a.kpi_name != 'PS-03-01-002' THEN
+					ROUND(a.kpi_value, 1)
+				END
+			) kpi_value_last,
+			a.ext_val,
+			a.timeline
+		FROM
+			$tableName$ a
+		<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="entity_id">
+						a.entity_id = #entity_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="kpi_name">
+						a.kpi_name = #kpi_name#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="timeline">
+						a.timeline = #timeline#
+				</isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="queryForLastValueNoHandle" parameterClass="PaasKpiMonitorObj" resultClass="PaasKpiMonitorObj">
+		SELECT
+			a.entity_id,
+			a.kpi_name,
+			a.kpi_value_last,
+			a.ext_val
+		FROM
+			tb_paas_resource_statistical a left
+		JOIN tb_paas_kpi_monitor b ON a.kpi_name = b.gid_kpi
+		<dynamic prepend="where">
+				<isNotEmpty prepend="and" property="entity_id">
+						a.entity_id = #entity_id#
+				</isNotEmpty>
+				<isNotEmpty prepend="and" property="kpi_name">
+						a.kpi_name = #kpi_name#
+				</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

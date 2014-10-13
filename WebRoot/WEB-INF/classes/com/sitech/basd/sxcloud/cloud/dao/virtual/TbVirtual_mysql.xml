@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbVirtual">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbCloud2VirtualInfoObj"
+		type="com.sitech.basd.sxcloud.cloud.domain.virtual.TbCloud2VirtualInfoObj" />
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="TB_CLOUD2_VMHOST_INFOColumnsNoKey">
+		VH_NAME,VH_MEM,VH_CPU,VH_STORAGE,VH_SYSTEM,VH_IP,VH_NETWORK,VH_RUNTIME,EQ_ID,VH_STAT,VH_DESC,PROJECT_ID,
+		VH_MIN_CPU,VH_MAX_CPU,VH_MIN_MEM,VH_MAX_MEM,VH_STARTED,VH_COMPLETED,VH_DEPLOYETIME,VH_UPTIME,VH_LOG,VH_USER,VH_PASS,
+		VH_PROCESS_UNIT,VH_MAX_PROCESS_UNIT,VH_MIN_PROCESS_UNIT,VH_CPU_MODE,VH_PROCESS_UNIT_MODE,VH_ID_IBM
+	</sql>
+	<sql id="TB_CLOUD2_VMHOST_INFOColumns">
+		VH_ID,
+		<include refid="TB_CLOUD2_VMHOST_INFOColumnsNoKey" />
+	</sql>
+
+	<sql id="queryByObjBase">
+		select
+		<include refid="TB_CLOUD2_VMHOST_INFOColumns" />
+		from TB_CLOUD2_VMHOST_INFO
+		<dynamic prepend="where">
+			<isNotEmpty property="VH_ID_IBM" prepend="and">
+				VH_ID_IBM =#VH_ID_IBM#
+			</isNotEmpty>
+			<isNotEmpty property="VH_ID" prepend="and">
+				VH_ID =#VH_ID#
+			</isNotEmpty>
+			<isNotEmpty property="VH_NAME" prepend="and">
+				VH_NAME like CONCAT('%',#VH_NAME#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="VH_STAT" prepend="and">
+				VH_STAT =#VH_STAT#
+			</isNotEmpty>
+			<isNotEmpty property="EQ_ID" prepend="and">
+				EQ_ID =#EQ_ID#
+			</isNotEmpty>
+			<isNull property="VH_NULL" prepend="and">
+				<![CDATA[
+	        	VH_NAME is not null and ( VH_STAT <> 'NEW' or   VH_STAT is null ) 
+	        	]]>
+			</isNull>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+	</sql>
+	<!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	<select id="queryForListByObj"
+		parameterClass="TbCloud2VirtualInfoObj"
+		resultClass="TbCloud2VirtualInfoObj"> 
+		<include refid="queryByObjBase" />
+		order by VH_ID asc
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 获取所有虚拟机列表 -->
+	<select id="queryVirtualList"
+		parameterClass="java.lang.String"
+		resultClass="TbCloud2VirtualInfoObj">
+		select VH_NAME,VH_DESC,VH_STAT from TB_CLOUD2_VMHOST_INFO where VH_ID_IBM in ($VH_ID_IBM$)
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	</select>
+	<select id="queryForAllListByObj"
+		parameterClass="TbCloud2VirtualInfoObj"
+		resultClass="TbCloud2VirtualInfoObj">
+		select VH_ID,VH_NAME,VH_ID_IBM from TB_CLOUD2_VMHOST_INFO where VH_STAT='OK' 
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		 order by VH_ID asc
+	</select>
+	<select id="queryByObjForCount"
+		parameterClass="TbCloud2VirtualInfoObj" resultClass="int">
+		select count(VH_ID) from (
+		<include refid="queryByObjBase" />
+		) virtual_table
+	</select>
+	<select id="queryListIDByObj"
+		parameterClass="TbCloud2VirtualInfoObj"
+		resultClass="TbCloud2VirtualInfoObj">
+		select VH_ID_IBM,VH_STAT from TB_CLOUD2_VMHOST_INFO where VH_ID_IBM in
+		(#VH_ID_IBM#) 
+		<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		order by VH_ID desc
+	</select>
+	<insert id="insertByObj" parameterClass="TbCloud2VirtualInfoObj">
+		insert into TB_CLOUD2_VMHOST_INFO(
+		VH_ID,VH_NAME,VH_MEM,VH_CPU,VH_STORAGE,VH_SYSTEM,VH_IP,VH_NETWORK,VH_RUNTIME,EQ_ID,VH_STAT,VH_DESC,PROJECT_ID,VH_MIN_CPU,
+		VH_MAX_CPU,VH_MIN_MEM,VH_MAX_MEM,VH_STARTED,VH_COMPLETED,VH_DEPLOYETIME,VH_UPTIME,VH_LOG,VH_USER,VH_PASS,VH_PROCESS_UNIT,VH_MAX_PROCESS_UNIT
+		,VH_MIN_PROCESS_UNIT,VH_CPU_MODE,VH_PROCESS_UNIT_MODE,VH_ID_IBM,domain)
+		values(
+		#VH_ID#,#VH_NAME#,#VH_MEM#,#VH_CPU#,#VH_STORAGE#,#VH_SYSTEM#,#VH_IP#,#VH_NETWORK#,STR_TO_DATE(#VH_RUNTIME#,'%Y-%m-%d %H:%i:%S'),
+		#EQ_ID#,#VH_STAT#,#VH_DESC#,#PROJECT_ID#,#VH_MIN_CPU#,#VH_MAX_CPU#,#VH_MIN_MEM#,#VH_MAX_MEM#,STR_TO_DATE(#VH_STARTED#,'%Y-%m-%d %H:%i:%S'),
+		STR_TO_DATE(#VH_COMPLETED#,'%Y-%m-%d %H:%i:%S'),STR_TO_DATE(#VH_DEPLOYETIME#,'%Y-%m-%d %H:%i:%S'),STR_TO_DATE(#VH_UPTIME#,'%Y-%m-%d %H:%i:%S')
+		,#VH_LOG#,#VH_USER#,#VH_PASS#,#VH_PROCESS_UNIT#,#VH_MAX_PROCESS_UNIT#,#VH_MIN_PROCESS_UNIT#
+		,#VH_CPU_MODE#,#VH_PROCESS_UNIT_MODE#,#VH_ID_IBM#,#domain#)
+	</insert>
+	<update id="updateByObj" parameterClass="TbCloud2VirtualInfoObj">
+		update TB_CLOUD2_VMHOST_INFO set VH_NULL=''
+		<isNotNull property="VH_NAME">,VH_NAME=#VH_NAME#</isNotNull>
+		<isNotNull property="VH_DESC">,VH_DESC=#VH_DESC#</isNotNull>
+		<isNotNull property="VH_MEM">,VH_MEM=#VH_MEM#</isNotNull>
+		<isNotNull property="VH_CPU">,VH_CPU=#VH_CPU#</isNotNull>
+		<isNotNull property="VH_STORAGE">
+			,VH_STORAGE=#VH_STORAGE#
+		</isNotNull>
+		<isNotNull property="VH_SYSTEM">
+			,VH_SYSTEM=#VH_SYSTEM#
+		</isNotNull>
+		<isNotNull property="VH_IP">,VH_IP=#VH_IP#</isNotNull>
+		<isNotNull property="VH_NETWORK">
+			,VH_NETWORK=#VH_NETWORK#
+		</isNotNull>
+		<isNotNull property="VH_RUNTIME">
+			,VH_RUNTIME=#VH_RUNTIME#
+		</isNotNull>
+		<isNotNull property="VH_ID">,VH_ID=#VH_ID#</isNotNull>
+		<isNotNull property="EQ_ID">,EQ_ID=#EQ_ID#</isNotNull>
+		<isNotNull property="VH_STAT">,VH_STAT=#VH_STAT#</isNotNull>
+		<isNotNull property="PROJECT_ID">
+			,PROJECT_ID=#PROJECT_ID#
+		</isNotNull>
+		<isNotNull property="VH_MIN_CPU">
+			,VH_MIN_CPU=#VH_MIN_CPU#
+		</isNotNull>
+		<isNotNull property="VH_MAX_CPU">
+			,VH_MAX_CPU=#VH_MAX_CPU#
+		</isNotNull>
+		<isNotNull property="VH_MIN_MEM">
+			,VH_MIN_MEM=#VH_MIN_MEM#
+		</isNotNull>
+		<isNotNull property="VH_MAX_MEM">
+			,VH_MAX_MEM=#VH_MAX_MEM#
+		</isNotNull>
+		<isNotNull property="VH_STARTED">
+			,VH_STARTED=#VH_STARTED#
+		</isNotNull>
+		<isNotNull property="VH_COMPLETED">
+			,VH_COMPLETED=#VH_COMPLETED#
+		</isNotNull>
+		<isNotNull property="VH_DEPLOYETIME">
+			,VH_DEPLOYETIME=#VH_DEPLOYETIME#
+		</isNotNull>
+		<isNotNull property="VH_UPTIME">
+			,VH_UPTIME=#VH_UPTIME#
+		</isNotNull>
+		<isNotNull property="VH_LOG">,VH_LOG=#VH_LOG#</isNotNull>
+		<isNotNull property="VH_USER">,VH_USER=#VH_USER#</isNotNull>
+		<isNotNull property="VH_PASS">,VH_PASS=#VH_PASS#</isNotNull>
+		<isNotNull property="VH_PROCESS_UNIT">
+			,VH_PROCESS_UNIT=#VH_PROCESS_UNIT#
+		</isNotNull>
+		<isNotNull property="VH_MAX_PROCESS_UNIT">
+			,VH_MAX_PROCESS_UNIT=#VH_MAX_PROCESS_UNIT#
+		</isNotNull>
+		<isNotNull property="VH_MIN_PROCESS_UNIT">
+			,VH_MIN_PROCESS_UNIT=#VH_MIN_PROCESS_UNIT#
+		</isNotNull>
+		<isNotNull property="VH_CPU_MODE">
+			,VH_CPU_MODE=#VH_CPU_MODE#
+		</isNotNull>
+		<isNotNull property="VH_PROCESS_UNIT_MODE">
+			,VH_PROCESS_UNIT_MODE=#VH_PROCESS_UNIT_MODE#
+		</isNotNull>
+		where VH_ID_IBM=#VH_ID_IBM#
+	</update>
+	<update id="startAndStopByObj"
+		parameterClass="TbCloud2VirtualInfoObj">
+		update TB_CLOUD2_VMHOST_INFO set VH_STAT=#VH_STAT# where
+		VH_ID_IBM=#VH_ID_IBM#
+	</update>
+	<delete id="deleteByObj" parameterClass="TbCloud2VirtualInfoObj">
+		delete from TB_CLOUD2_VMHOST_INFO where VH_ID_IBM=#VH_ID_IBM#
+	</delete>
+	<update id="updateByProjectIdObj"
+		parameterClass="TbCloud2VirtualInfoObj">
+		update TB_CLOUD2_VMHOST_INFO set PROJECT_ID=#PROJECT_ID# where
+		VH_ID_IBM=#VH_ID_IBM#
+	</update>
+</sqlMap>

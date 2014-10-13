@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="HostAdapter">
+	<typeAlias alias="hostAdapter" type="com.sitech.ssd.sc.os.domain.HostAdapter"/>
+
+	<sql id="incompleteTableColumns">
+		os_host_id,nic_order,mac,ip_address,subnet_mask,default_gateway,prederred_dns,alternate_dns,nic_type,purpose
+	</sql>
+	
+	<sql id="tableColumns">
+		id,<include refid="incompleteTableColumns"/>
+	</sql>
+	
+	<insert id="insertHostAdapter" parameterClass="hostAdapter">
+		INSERT INTO tb_os_host_adapter(
+			<include refid="incompleteTableColumns"/>
+		) 
+		VALUES(#os_host_id#,#nic_order#,#mac#,#ip_address#,#subnet_mask#,
+		#default_gateway#,#prederred_dns#,#alternate_dns#,#nic_type#,#purpose#)
+	</insert>
+	  
+	<delete id="deleteHostAdapter" parameterClass="hostAdapter">
+		DELETE FROM tb_os_host_adapter
+		<dynamic prepend="where">
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	   
+	<update id="updateHostAdapter" parameterClass="hostAdapter">
+		UPDATE tb_os_host_adapter 
+		SET os_host_id=#os_host_id#,nic_order=#nic_order#,mac=#mac#,
+		ip_address=#ip_address#,subnet_mask=#subnet_mask#,default_gateway=#default_gateway#,
+		prederred_dns=#prederred_dns#,alternate_dns=#alternate_dns#,nic_type=#nic_type#,purpose=#purpose#
+		WHERE id = #id#
+	</update>
+	
+	<select id="selectHostAdapterList" parameterClass="hostAdapter" resultClass="hostAdapter">
+		SELECT <include refid="tableColumns"/> FROM tb_os_host_adapter
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="nic_order" prepend="and">
+				nic_order = #nic_order#
+			</isNotEmpty>
+			<isNotEmpty property="os_host_id" prepend="and">
+				os_host_id = #os_host_id#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="Scriptmanage">
+    <typeAlias alias="ScriptmanageObj" type="com.sitech.basd.envmanager.domain.scriptmanage.ScriptmanageObj"/>
+	<sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql> 
+	<update id="updateScriptmanageObj" parameterClass="ScriptmanageObj">
+		update tb_script_info set script_ip=#SCRIPT_IP#,script_username=#SCRIPT_USERNAME#,
+		script_password=#SCRIPT_PASSWORD#,script_content=#SCRIPT_CONTENT#,script_use=#SCRIPT_USE#
+		where s_id=#s_id#
+	</update>
+	<insert id="insertScriptmanageObj">
+		insert into tb_script_info(s_id,script_ip,script_username,script_password,script_content,script_use,create_time)
+		values(#s_id#,#SCRIPT_IP#,#SCRIPT_USERNAME#,#SCRIPT_PASSWORD#,#SCRIPT_CONTENT#,#SCRIPT_USE#,sysdate)
+	</insert>
+	<delete id="deleteScriptmanageObj">
+		delete from tb_script_info where s_id = #s_id#
+	</delete> 
+	<sql id="queryScriptmanageObj">
+		 select s.s_id,s.script_ip,s.script_username,s.script_password,s.script_content,s.script_use,to_char(s.create_time ,'yyyy-mm-dd hh24:mi:ss') create_time
+     	 from tb_script_info s
+     	 <dynamic prepend="where">
+			 <isNotEmpty property="SCRIPT_IP" prepend="and">
+               s.script_ip =#SCRIPT_IP#
+            </isNotEmpty>
+             <isNotEmpty property="SCRIPT_USERNAME" prepend="and">
+               s.script_username =#SCRIPT_USERNAME#
+            </isNotEmpty>
+          </dynamic>
+	</sql>
+	<select id="queryScriptmanageObj" parameterClass="ScriptmanageObj"
+		resultClass="ScriptmanageObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryScriptmanageObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryScriptmanageObjCount" parameterClass="ScriptmanageObj" resultClass="int">
+		select count(s_id) from (
+		<include refid="queryScriptmanageObj" />
+		) virtual_table
+	</select>
+	<sql id="queryHostipObj" >
+		select  c.id,c.hostusername ,c.hosrpwd, i.eq_ip from tb_cloud2_host_config c ,tb_cloud2_host_info i where i.id = c.hostid
+			<isNotEmpty property="EQ_IP" prepend="and">
+		     i.eq_ip =#EQ_IP#
+		    </isNotEmpty>
+	</sql>
+		<select id="queryHostipObj" parameterClass="ScriptmanageObj"
+		resultClass="ScriptmanageObj">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryHostipObj" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryHostipCount" parameterClass="ScriptmanageObj" resultClass="int">
+		select count(1) from (
+		<include refid="queryHostipObj" />
+		) virtual_table
+	</select>
+
+	
+	<select id="queryConfigObj" parameterClass="ScriptmanageObj" resultClass="ScriptmanageObj">
+		select  id, hostusername from tb_cloud2_host_config where hostid = #host_id#
+	</select>
+	<select id="queryScriptmanageOne" parameterClass="ScriptmanageObj" resultClass="ScriptmanageObj">
+		 select s.s_id,s.script_ip,s.script_username,s.script_password,s.script_content,s.script_use,to_char(s.create_time ,'yyyy-mm-dd hh24:mi:ss') create_time
+     	 from tb_script_info s
+     	 where s.s_id=#s_id#
+	</select>
+	<insert id="insertHostipObj"  parameterClass="ScriptmanageObj" >
+		insert into tb_cloud2_host_info(eq_id,eq_ip,id)values(#EQ_ID#,#EQ_IP#,#id#)
+	</insert>
+	<insert id="insertByConfigObj" parameterClass="ScriptmanageObj">
+     insert into TB_CLOUD2_HOST_CONFIG(id ,HOSTID,HOSTUSERNAME,HOSRPWD ,SPACE,STATUS,UPDATETTIME,TYPE)
+     values(#config_id#,#host_id#,#HOSTUSERNAME#,#HOSRPWD#,'3G',0,SYSDATE,1)
+    </insert>
+	<select id="getConfigId" resultClass="int">
+		  SELECT ID_TB_CLOUD2_HOST_CONFIG.NEXTVAL AS ID FROM DUAL
+	</select>
+	<select id="queryHostipOne" parameterClass="ScriptmanageObj" resultClass="ScriptmanageObj">
+		select eq_ip,id from tb_cloud2_host_info
+			<dynamic prepend="where">
+				<isNotEmpty property="EQ_IP" prepend="and">
+		          eq_ip =#EQ_IP#
+		        </isNotEmpty>
+	        </dynamic>
+	</select>
+	<select id="queryHostNameOne" parameterClass="ScriptmanageObj" resultClass="ScriptmanageObj">
+	 select id,hostid,hostusername,hosrpwd from tb_cloud2_host_config
+		<dynamic prepend="where">
+			<isNotEmpty property="HOSTUSERNAME" prepend="and">
+			hostusername =#HOSTUSERNAME#
+			</isNotEmpty>
+		 </dynamic>
+	</select>
+</sqlMap>

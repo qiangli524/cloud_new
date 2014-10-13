@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="defend"
+			 extends="global_package">
+		<action name="defend_*"
+				class="defendAction" method="{1}">
+			<result name="list">/sxcloud/cloud/defend/listDefend.jsp</result>
+			<result name="add">/sxcloud/cloud/defend/addDefend.jsp</result>
+			<result name="save" type="redirect">defend_listDefend.do</result>
+			<result name="mod">/sxcloud/cloud/defend/editDefend.jsp</result>
+			<result name="del" type="redirect">defend_listDefend.do</result>
+			<result name="listHis">/sxcloud/cloud/defend/listHisDefend.jsp</result>
+		</action>
+	</package>
+</struts>

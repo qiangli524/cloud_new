@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- ~ Copyright (c) 2007, Your Corporation. All Rights Reserved. -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="HadoopApplication">
+	<typeAlias alias="HadoopApplicationObj" type="domain.mapreduce.application.HadoopApplicationObj" />
+	<sql id="paginationEnd">
+		<![CDATA[
+                     limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="queryApplicationListByObjBase">
+	SELECT
+		t.id,
+		t.`user` user,
+		t.`name` name,
+		t.queue,
+		DATE_FORMAT(t.start_time, '%Y-%m-%d %H:%i:%s') start_time,
+		DATE_FORMAT(t.finish_time, '%Y-%m-%d %H:%i:%s') finish_time,
+		t.state,
+		t.final_status,
+		t.progress,
+		t.tracking_ui,
+		t.cluster_id,
+		t.host_id,
+		t.app_id
+	FROM
+		tb_hadoop_application t
+	LEFT JOIN tb_hadoop_cluster_info b ON  t.cluster_id = b.cluster_id
+	<dynamic prepend="WHERE">
+		<isNotNull property="cluster_id" prepend="and">
+			<isNotEmpty property="cluster_id">
+				t.cluster_id= (SELECT DISTINCT c.CLUSTER_ID from tb_hadoop_cluster_info  c ,tb_hadoop_resource_tree r
+				 WHERE c.ID = r.UUID and r.id=#cluster_id#)
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="name" prepend="and">
+			<isNotEmpty property="name">
+				t.name LIKE CONCAT('%',#name#,'%')
+			</isNotEmpty>
+		</isNotNull>
+		<isNotNull property="app_id" prepend="and">
+			<isNotEmpty property="app_id">
+				t.app_id = #app_id#
+			</isNotEmpty>
+		</isNotNull>
+		<isNotEmpty property="user" prepend="and">
+			t.user = #user#
+		</isNotEmpty>
+		<isNotEmpty property="state" prepend="and">
+			t.state = #state#
+		</isNotEmpty>
+		<isNotEmpty property="final_status" prepend="and">
+			t.final_status = #final_status#
+		</isNotEmpty>
+	</dynamic>
+	ORDER BY t.name
+	</sql>
+	<select id="queryApplicationListByObjCount" parameterClass="HadoopApplicationObj" resultClass="int">
+		select count(ID)  from (
+		<include refid="queryApplicationListByObjBase" />
+		 ) virtual_table
+	 </select>
+	<!-- 查询应用列表 -->
+	<select id="queryApplicationListByObj" parameterClass="HadoopApplicationObj" resultClass="HadoopApplicationObj">
+		<include refid ="queryApplicationListByObjBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+</sqlMap>

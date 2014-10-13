@@ -1,0 +1,92 @@
+/*
+ * @Filename: form.css
+ * @Description: form style
+ * @Version: 1.0.0
+ * @Author: yangpl
+ * @Update: yangpl
+*/
+.ued-input, .ued-textarea, .ued-file, .ued-select{
+	border:1px solid #cbcbcb;
+	border-radius:3px;
+}
+.ued-input{
+	padding:3px 5px 4px 5px;
+}
+.ued-textarea{
+	padding:5px;
+}
+.ued-file{
+	height:30px;
+	line-height:30px;
+}
+
+/*webkit 选择框*/
+.ued-file[type="file"]{
+   -webkit-appearance: none;
+   text-align: left;
+   -webkit-rtl-ordering:left;
+	background:#fff;
+}
+.ued-file[type="file"]::-webkit-file-upload-button{
+   -webkit-appearance: none;
+   float: left;
+   border: 1px solid #cbcbcb;
+   background: #f4f4f4 url(images/add.gif) 5px  center no-repeat;
+   width:80px;
+   height:32px;
+   font-size:12px;
+   padding-left:10px;
+   margin:-1px  0 0 -1px;
+   line-height:30px;
+   color:#666
+}
+
+
+textarea:focus,
+select:focus,
+input[type="text"]:focus,
+input[type="file"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus,
+input:focus{
+  border:1px solid #74b9ef;
+  outline: 0;
+  outline: thin dotted \9;
+  /* IE6-9 */
+
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 5px rgba(82, 168, 236, 0.6);
+     -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 5px rgba(82, 168, 236, 0.6);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 5px rgba(82, 168, 236, 0.6);
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  margin:  0 0 4px 0;
+  margin-top: 1px \9;
+  *margin-top: 0;
+  line-height: normal;
+}
+
+select {
+  height: 24px;
+  *margin-top: 4px;
+  /* For IE7, add top margin to align select with labels */
+  line-height:20px;
+}
+select[multiple],
+select[size] {
+  height: auto;
+}
+

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="switch">
+	<typeAlias alias="switch" type="com.sitech.basd.resource.domain.switchBoard.SwitchObj"/>
+	<typeAlias alias="switchPerformance" type="com.sitech.basd.resource.domain.switchBoard.SwitchPerformanceObj"/>
+	<typeAlias alias="vlan" type="com.sitech.basd.resource.domain.switchBoard.VlanObj"/>
+	<sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                          )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	<sql id="queryForListBase">
+		SELECT
+			s.id,
+			s.switch_name,
+			s.switch_type,
+			s.switch_ip,
+			s.switch_status,
+			s.switch_vision,
+			s.switch_des,
+			s.switch_oem,
+			s.insert_time,
+		 	s.update_time
+		FROM tb_resource_switch s
+		<dynamic prepend="where">
+			<isNotNull property="switch_name" prepend="and">
+				s.switch_name like '%'||#switch_name#||'%'
+			</isNotNull>
+			<isNotNull property="switch_status">
+				<isGreaterThan prepend="and" property="switch_status" compareValue="-1">
+					s.switch_status=#switch_status#
+				</isGreaterThan>
+			</isNotNull>
+			<isNotNull property="id" prepend="and">
+				s.id= #id#
+			</isNotNull>
+		</dynamic>
+	</sql>
+	
+    <!-- 查询所有交换机-->
+	<select id="querySwitchList" parameterClass="switch" resultClass="switch">
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationStart" />
+		</isGreaterThan>
+		<include refid="queryForListBase" />
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<!-- 增加一条交换机记录 -->
+	 <insert id="insertSwitch" parameterClass="switch">
+	 	insert into tb_resource_switch
+        (id,switch_name,switch_type,switch_ip,switch_status,switch_vision,switch_des,switch_oem,insert_time,update_time) 
+		values(#id#,#switch_name#,#switch_type#,#switch_ip#,#switch_status#,#switch_vision#,#switch_des#,#switch_oem#,#insert_time#,#update_time#)
+	 </insert>
+	<!-- 更新一条交换机记录 -->
+	 <update id="updateSwitch" parameterClass="switch">
+	 	UPDATE tb_resource_switch 
+	 	<dynamic prepend="set">
+	 		<isNotEmpty prepend="," property="switch_name">
+	 			switch_name=#switch_name#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="switch_ip">
+	 			switch_ip=#switch_ip#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="switch_status">
+	 			switch_status=#switch_status#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="switch_vision">
+	 			switch_vision=#switch_vision#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="switch_des">
+	 			switch_des=#switch_des#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="switch_type">
+	 			switch_type=#switch_type#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="switch_oem">
+	 			switch_oem=#switch_oem#
+	 		</isNotEmpty>
+	 		<isNotEmpty prepend="," property="update_time">
+	 			update_time=#update_time#
+	 		</isNotEmpty>
+	 	</dynamic>
+        where id=#id#
+	 </update>
+	 <!-- 删除一条交换机记录 -->
+	 <delete id="deleteSwitch" parameterClass="switch">
+	 	delete from tb_resource_switch where id = #id#
+	 </delete>
+	<!-- 统计交换机记录条数 -->
+	<select id="queryForCount" parameterClass="switch" resultClass="int">
+		select count(id)  from (
+		<include refid="queryForListBase" />
+		 ) virtual_table
+	 </select>
+</sqlMap>

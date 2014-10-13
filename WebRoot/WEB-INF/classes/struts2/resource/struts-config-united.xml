@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="united"
+			 extends="global_package">
+		<!-- 统一树 -->
+		<action name="united_*" class="unitedTreeAction" method="{1}">
+			<result name="list">/resource/united/listUnitedTree.jsp</result>
+			<result name="tree" type="json">
+				<param name="root">resultList</param>
+			</result>
+			<result name="tabs">/resource/united/tabs.jsp</result>
+			<result name="dataCenter">/resource/united/addDataCenter.jsp</result>
+			<result name="results" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="syncCluster" type="json">
+				<param name="root">result</param>
+			</result>
+			<result name="storage" type="json">
+				<param name="root">storageList</param>
+			</result>
+			<result name="adjustState" type="json">
+				<param name="root">adjusteState</param>
+			</result>
+			<result name="querynode" type="json">
+				<param name="root">resultList</param>
+			</result>
+			
+			<result name="expandNode" type="json">
+				<param name="root">resultList</param>
+			</result>
+			
+			<result name="subdomain" type="json">
+				<param name="root">resultList</param>
+			</result>
+			
+			<result name="cluster">/resource/united/addCluster.jsp</result>
+			<result name="data">/resource/united/addCluster.jsp</result>
+			<result name="host">/resource/united/addHost.jsp</result>
+			<result name="edit_cluster">/resource/united/editCluster.jsp</result>
+			<result name="dataStore">/resource/united/addDataStore.jsp</result>
+			<!-- 一级菜单摘要 -->
+			<result name="indexAbstract">/resource/united/tab/showUnitTreeArea.jsp</result>
+			
+			<!-- 虚拟机相关 -->
+			<result name="addVM">/resource/united/addVM.jsp</result>
+			<result name="cloneVM">/resource/united/cloneVMByVM.jsp</result>
+			<result name="goCreateSnapshotVM">/resource/united/snapShot.jsp</result>
+			<result name="snapshotList">/resource/united/snapShotManage.jsp</result>
+			<result name="console">/resource/united/openconsole.jsp</result>
+			<result name="goeditpage">/resource/united/editVM.jsp</result>
+			<result name="gomigrateVMPage">/resource/united/migrateVM.jsp</result>
+			<result name="gorelocateVMPage">/resource/united/relocateVM.jsp</result>
+			<result name="chooseTemMan">/resource/united/listTemMan.jsp</result>	
+			<result name="selectHost">/resource/united/listHostFormigrate.jsp</result>
+			<result name="selectIpByVlan">/resource/united/listIP.jsp</result>
+			<result name="unAllocatedHost">/resource/united/listUnAllocatedHost.jsp</result>
+			<result name="unAllocatedHostSC">/resource/united/listUnAllocatedHostSC.jsp</result>
+			<!-- 安徽移动根节点添加地域-->
+			<result name="addArea">/resource/united/addArea.jsp</result>
+			
+			<!-- 导入Vof模板 -->
+			<result name="importOvf">/resource/united/importOvf.jsp</result>
+			
+			<!--控制台 -->
+			<result name="xenvmconsole">/resource/united/vmConsole.jsp</result>	
+		</action>
+		<!-- 数据比对 -->
+		<action name="unitedData_*" class="dataCompareAction" method="{1}">
+			<result name="dataResult" type="json">
+				<param name="root">result</param>
+			</result>
+		</action>
+		
+		<!-- tabs页相关 -->
+		<action name="unitedTab_*" class="unitedTabAction" method="{1}">
+			<result name="clusterAbstract">/resource/united/tab/clusterAbstract.jsp</result>
+			<result name="hostInfo">/resource/united/tab/hostAbstract.jsp</result>
+			<result name="vmInfo">/resource/united/tab/vmAbstract.jsp</result>
+			<result name="hostStorage">/resource/united/tab/dataStore.jsp</result>
+			
+			<!-- 任务与事件 -->
+			<result name="listTask">/resource/united/tab/listTask.jsp</result>
+			<result name="listEvent">/resource/united/tab/listEvent.jsp</result>
+			<result name="netWork">/resource/united/tab/listVMNetWork.jsp</result>
+			<result name="portgroup">/resource/united/tab/listHostNetWork.jsp</result>
+			<result name="listLogs">/resource/united/tab/listLogs.jsp</result>
+		</action>
+		
+		<!-- 统一树首页 -->
+		<action name="resourcestatistics_*" class="showUnitedRegionAction" method="{1}">
+			<result name="showfirstpage">/resource/united/tab/showUnitedTreeArea.jsp</result>
+			<result name="showResourceTotal">/chongqing/showResourceTotal.jsp</result>
+			<result name="datacenterpage">/resource/united/tab/showDataCenterPage.jsp</result>
+			<result name="clusterpage">/resource/united/tab/showClusterPage.jsp</result>
+			<result name="hostpage">/resource/united/tab/showHostPage.jsp</result>
+			<result name="showNetPage">/resource/united/tab/showNetPage.jsp</result>
+			<result name="showDomainPage">/resource/united/tab/showDomainPage.jsp</result>
+			<result name="showSubDomainPage">/resource/united/tab/showSubDomainPage.jsp</result>
+			<result name="showSubDomainPageForVlan">/resource/united/tab/showDomainPageForVlan.jsp</result>
+			<result name="showVlanPage">/resource/united/tab/listIP.jsp</result>
+			<result name="showVlan">/resource/united/tab/listIpForTree.jsp</result>
+			<result name="showStorePage">/resource/united/tab/listStore.jsp</result>
+			<result name="showStoreCenterPie">/resource/united/tab/storePie.jsp</result>
+			<result name="viewHost">/resource/united/tab/showSeriousHost.jsp</result>
+			<result name="showSeriousHost">/resource/united/tab/listSeriousHost.jsp</result>
+			<result name="viewVM">/resource/united/tab/showSeriousVM.jsp</result>
+			<result name="showSeriousVM">/resource/united/tab/showSeriousVM.jsp</result>
+			<result name="showUnVirtual">/resource/united/tab/showUnVirtual.jsp</result>
+			<!-- <result name="showdatacenterpage">/resource/united/tab/datacenterAbstract.jsp</result>
+			<result name="showclusterpage">/resource/united/tab/clusterAbstract.jsp</result> -->
+			<result name="store_device">/resource/united/storage/listStoreDevice.jsp</result>
+			<result name="NasFile">/ah/nas/nasAbstract.jsp</result>
+			<result name="regionpage">/resource/united/tab/showRegionPage.jsp</result>
+			<result name="showHostDetail">/resource/united/tab/showHostDetailSC.jsp</result>
+			<result name="listcluster">/resource/united/tab/listCluster.jsp</result>
+		</action>
+		
+		<!-- 联通测试用例新增 -->
+		<action name="unitedOper_*" class="unitedOperateAction" method="{1}">
+			<result name="add">/resource/united/addnakedVM.jsp</result>
+			<result name="modify">/resource/united/editVMProperties.jsp</result>
+			<result name="vswitch">/resource/united/tab/listVirtualSwitch.jsp</result>
+			<result name="storage">/resource/united/tab/adjustStorage.jsp</result>
+			<result name="operateSystem">/resource/united/tab/operateSystem.jsp</result>
+			<result name="addHardware">/resource/united/tab/addHardware.jsp</result>
+			<!-- 硬件(xen) -->
+			<result name="listVmVdis">/resource/united/vmVdis.jsp</result>
+		</action>
+		
+		<!-- 新的资源概述 (分别展示超级用户的资源和各个项目的资源)-->
+		<action name="unitedOutline_*" class="unitedOutlineAction" method="{1}">
+			<result name="allResource">/resource/united/allResource.jsp</result>
+			<result name="ahResource">/ah/reports/departresource/ahResource.jsp</result>
+			<result name="departResource">/resource/united/departResource.jsp</result>
+			<result name="showVm">/resource/united/departshowVm.jsp</result> 
+			<result name="showVmAll">/resource/united/departShowVmAll.jsp</result> 
+		</action>
+		
+		<!-- 安徽移动网络相关（满足安徽移动本地需求） -->
+		<action name="unitedNetwork_*" class="unitedNetworkAction" method="{1}">
+			<result name="addDomain">/resource/united/network/addDomain.jsp</result>
+			<result name="addVlan">/resource/united/network/addVlan.jsp</result>
+		</action>	
+		<!-- 安徽移动存储相关（满足安徽移动本地需求） -->
+		<action name="unitedDevice_*" class="unitedDeviceAction" method="{1}">
+			<result name="addStorageDevice">/resource/united/storage/addStorageDevice.jsp</result>
+			<result name="addHostDevice">/resource/united/unallocated/editHost.jsp</result>
+		</action>	
+		<!-- 首页展示 -->
+		<action name="resourceOutline_*" class="resourceOutlineAction" method="{1}">
+			<result name="showResource">/temp/pub-page/outline.jsp</result>
+			<result name="showNewResource">/ah/reports/departresource/ahResourceDepart.jsp</result>
+			<result name="showNewResourceDetail">/ah/reports/departresource/ahResourceDepartDetail.jsp</result>
+			<result name="newResourceBusi">/ah/reports/departresource/ahResourceBusi.jsp</result>
+			<result name="goToCalcTopPage">/resource/united/topN.jsp</result>
+			<result name="listHostTopN">/resource/united/listTopHost.jsp</result>
+			<result name="listHostTopNDetail">/resource/united/listTopHostDetail.jsp</result>
+			<result name="listBusiCalcResUsage">/resource/united/listTopVM.jsp</result>
+			<result name="listVmTopNDetail">/resource/united/listTopVMDetail.jsp</result>
+			<result name="vmconfiginfo">/resource/united/vmConfigInfo.jsp</result>
+			<result name="gotobusitopn">/resource/united/busiTopN.jsp</result>
+			<result name="gotobusidetailtopn">/resource/united/busiDetailTopN.jsp</result>
+			<result name="computerResourcePie">/resource/united/newresource/storePie.jsp</result>
+			<result name="unitedIp">/resource/united/UnitedIP.jsp</result>
+			<result name="new_resource_tab">/resource/united/newresource/tabs.jsp</result>
+ 			<result name="storeSanAndNas">resource/united/newresource/storeSanAndNas.jsp</result>
+		</action>
+		
+		<!-- 北京电信增加vmware vswitch交换机信息-->
+		<action name="networkvs_*" class="networkAction" method="{1}">
+			<result>/resource/united/network/{1}.jsp</result>
+			<result>/resource/united/network/{1}.jsp</result>
+		</action>
+		
+		
+		<!-- 北京电信增加physical vlan物理vlan信息-->
+		<action name="physicalVlan_*" class="physicalVlanAction" method="{1}">
+			<result name="list">/resource/united/physicalVlan/vlanList.jsp</result>
+			<result name="mod">/resource/united/physicalVlan/vlanEdit.jsp</result>
+			<result name="add">/resource/united/physicalVlan/vlanAdd.jsp</result>
+			<result name="save" type="json"></result>
+			<result name="del" type="json"></result>
+		</action>
+		
+		<!-- Nas相关 -->
+		<action name="nasManage_*" class="nasManageAction" method="{1}">
+			<result name="showNasFileSys">/ah/nas/NasFileSysList.jsp</result>
+			<result name="showMount">/ah/nas/NasFileMount.jsp</result>
+		</action>
+		
+		<!-- 虚拟机和存储相关 -->
+		<action name="VmDatastoreRelation_*" class="vmDatastoreRelationAction" method="{1}">
+		     <result name="vmListForDatastore">/yicloud/datastore/vmListForDatastore.jsp</result>
+		     <result name="datastoreListForVm">/yicloud/showVm/datastoreForVm.jsp</result>
+		
+		</action>
+	</package>
+</struts>

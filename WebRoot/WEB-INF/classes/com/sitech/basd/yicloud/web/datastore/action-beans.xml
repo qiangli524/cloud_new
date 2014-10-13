@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="dataStoreAction" class="com.sitech.basd.yicloud.web.datastore.action.DataStoreAction"
+		singleton="false" >
+		<!--每个request请求产生新实例[wangjian 样例]-->
+		<property name="dataStoreService">
+			<ref bean="dataStoreService" />
+		</property>
+		<property name="vmManagerService">
+			<ref bean="vmManagerService" />
+		</property>
+		<property name="hostInfoService">
+			<ref bean="hostInfoService" />
+		</property>
+		<property name="xenStoreService">
+			<ref bean="xenStoreService" />
+		</property>
+		<property name="storeDeviceService">
+			<ref bean="storeDeviceService" />
+		</property>
+	</bean>
+
+</beans>

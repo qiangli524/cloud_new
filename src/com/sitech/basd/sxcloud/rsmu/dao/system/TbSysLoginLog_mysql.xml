@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!--
+		~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+	-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+	<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbSysLoginLog">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="TbSysLoginLogObj"
+		type="com.sitech.basd.sxcloud.rsmu.domain.system.TbSysLoginLogObj" />
+	 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                 	 limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	<sql id="tableColumnsNoKey">
+		USERID,ACCOUNT,IP,HOSTNAME,DATE_FORMAT(LOGINTIME,'%Y-%m-%d %H:%i:%S') LOGINTIME ,DATE_FORMAT(LOGOUTTIME,'%Y-%m-%d %H:%i:%S') LOGOUTTIME ,RESULT,REMARK,domain
+    </sql>
+	<sql id="tableColumns">
+		ID,
+		<include refid="tableColumnsNoKey" />
+	</sql>
+	<sql id="queryForListByObjBase">
+		select
+		<include refid="tableColumns" />
+		from
+		TB_SYS_LOGINLOG
+		<dynamic prepend="WHERE">
+			<!--  DATE_FORMAT(LOGINTIME,'%Y') > 2012 -->
+			<isNotEmpty property="ACCOUNT" prepend="AND">
+				ACCOUNT like CONCAT('%',#ACCOUNT#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="IP" prepend="AND">
+				IP like CONCAT('%',#IP#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="HOSTNAME" prepend="AND">
+				HOSTNAME like CONCAT('%',#HOSTNAME#,'%')
+               </isNotEmpty>
+			<isNotEmpty property="start_logintime" prepend="AND">
+				<isNotEmpty property="end_logintime">
+					LOGINTIME BETWEEN
+					DATE_FORMAT(#start_logintime#,'%Y-%m-%d %H:%i:%S') AND DATE_FORMAT(#end_logintime#,'%Y-%m-%d %H:%i:%S')
+               </isNotEmpty>
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+		  ORDER BY LOGINTIME DESC
+	</sql>
+	<select id="queryForListByObj" parameterClass="TbSysLoginLogObj"
+		resultClass="TbSysLoginLogObj"> 
+		<include refid="queryForListByObjBase" />
+        <isGreaterThan property="PAGESIZE" compareValue="0">
+        <include refid="paginationEnd"/> 
+        </isGreaterThan>
+	</select>
+	 <select id="queryForListByObjForCount" parameterClass="TbSysLoginLogObj" resultClass="int">
+	 <!-- 
+      select count(ID) from (
+        <include refid="queryForListByObjBase"/>
+       ) virtual_table
+     -->
+     select count(ID) from TB_SYS_LOGINLOG
+		<dynamic prepend="WHERE">
+			<!-- DATE_FORMAT(LOGINTIME,'%Y') > 2012 -->
+			<isNotEmpty property="ACCOUNT" prepend="AND">
+				ACCOUNT like CONCAT('%',#ACCOUNT#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="IP" prepend="AND">
+				IP like CONCAT('%',#IP#,'%')
+               </isNotEmpty>
+               <isNotEmpty property="HOSTNAME" prepend="AND">
+				HOSTNAME like CONCAT('%',#HOSTNAME#,'%')
+               </isNotEmpty>
+			<isNotEmpty property="start_logintime" prepend="AND">
+				<isNotEmpty property="end_logintime">
+					LOGINTIME BETWEEN
+					DATE_FORMAT(#start_logintime#,'%Y-%m-%d %H:%i:%S') AND DATE_FORMAT(#end_logintime#,'%Y-%m-%d %H:%i:%S')
+               </isNotEmpty>
+			</isNotEmpty>
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+    </select>
+	<insert id="insertByObj" parameterClass="TbSysLoginLogObj">
+		insert into
+		TB_SYS_LOGINLOG (
+		USERID,ACCOUNT,IP,HOSTNAME,RESULT,REMARK,LOGINTIME,domain
+		)
+		values
+		(
+		#USERID#,
+		#ACCOUNT#,
+		#IP#,
+		#HOSTNAME#,
+		#RESULT#,
+		#REMARK#,
+		DATE_FORMAT(now(),'%Y-%m-%d %H:%i:%S'),
+		#domain#
+		)
+	    <selectKey resultClass="int" keyProperty="ID">
+	       		SELECT @@IDENTITY AS ID
+		</selectKey>
+	</insert>
+	<update id="updateByObj" parameterClass="TbSysLoginLogObj">
+	<!-- 
+		update `TB_SYS_LOGINLOG` SET LOGINTIME=LOGINTIME,LOGOUTTIME=DATE_FORMAT(sysdate(),'%Y-%m-%d %H:%i:%S') where ID=#ID#
+    -->
+    update `TB_SYS_LOGINLOG` SET LOGOUTTIME=DATE_FORMAT(sysdate(),'%Y-%m-%d %H:%i:%S') where ID=#ID#
+    </update>
+</sqlMap>

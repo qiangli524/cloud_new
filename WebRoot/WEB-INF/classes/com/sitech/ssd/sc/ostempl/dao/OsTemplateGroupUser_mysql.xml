@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="OsTemplateGroupUser">
+
+	<typeAlias alias="_OsTemplateGroupUser" type="com.sitech.ssd.sc.ostempl.domain.OsTemplateGroupUser" />
+
+	<sql id="partTableColumns">
+		template_id,group_id,user_id,flag,mask
+	</sql>
+
+	<sql id="allTableColumns">
+		id,
+		<include refid="partTableColumns" />
+	</sql>
+
+	<insert id="insertOsTemplateGroupUser" parameterClass="_OsTemplateGroupUser">
+		insert into tb_os_template_group_user(
+		<include refid="partTableColumns" />
+		)
+		values(#template_id#,#group_id#,#user_id#,#flag#,#mask#)
+	</insert>
+	
+	<insert id="copyOsTemplateGroupUser" parameterClass="_OsTemplateGroupUser">
+		insert into tb_os_template_group_user(<include refid="partTableColumns" />)
+		select (SELECT id FROM tb_os_template WHERE templ_name = #id#) <include refid="partTableColumns" />
+		from tb_os_template_group_user where template_id = #template_id#
+	</insert>	
+
+	<delete id="deleteOsTemplateGroupUser" parameterClass="_OsTemplateGroupUser">
+		delete from tb_os_template_group_user
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+
+	<update id="updateOsTemplateGroupUser" parameterClass="_OsTemplateGroupUser">
+		UPDATE tb_os_template_group_user
+		SET template_id = #template_id#,
+			group_id = #group_id#,
+			user_id = #user_id#,
+			flag = #flag#,
+			mask = #mask#
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<!-- 
+	<select id="selectOsTemplateGroupUserList" parameterClass="_OsTemplateGroupUser"
+		resultClass="_OsTemplateGroupUser">
+		SELECT <include refid="allTableColumns" /> FROM tb_os_template_group_user 
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>			
+			<isNotEmpty property="group_id" prepend="and">
+				group_id LIKE CONCAT('%',#group_id#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id LIKE CONCAT('%',#user_id#,'%')
+			</isNotEmpty>
+			<isNotEmpty property="flag" prepend="and">
+				flag LIKE CONCAT('%',#flag#,'%')
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	 -->
+	 
+	<select id="selectOsTemplateGroupUserList" parameterClass="_OsTemplateGroupUser"
+		resultClass="_OsTemplateGroupUser">
+		SELECT gu.id,gu.template_id,g.group_name group_id,u.user_name user_id,gu.flag,gu.mask
+		  FROM tb_os_template_group_user gu,
+		       tb_os_template_group g,
+		       tb_os_template_user u
+		 WHERE gu.group_id = g.id AND gu.user_id = u.id		 
+		<isNotEmpty property="id" prepend="and">
+			gu.id = #id#
+		</isNotEmpty>
+		<isNotEmpty property="template_id" prepend="and">
+			gu.template_id = #template_id#
+		</isNotEmpty>			
+		<isNotEmpty property="group_id" prepend="and">
+			g.group_name LIKE CONCAT('%',#group_id#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="user_id" prepend="and">
+			u.user_name LIKE CONCAT('%',#user_id#,'%')
+		</isNotEmpty>
+		<isNotEmpty property="flag" prepend="and">
+			gu.flag LIKE CONCAT('%',#flag#,'%')
+		</isNotEmpty>
+	</select>	 
+	
+
+
+	<select id="selectOsTemplateGroupUser" parameterClass="_OsTemplateGroupUser"
+		resultClass="_OsTemplateGroupUser">
+ 		SELECT <include refid="allTableColumns" /> FROM tb_os_template_group_user
+		<dynamic prepend="where">
+			<isNotEmpty property="id" prepend="and">
+				id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="template_id" prepend="and">
+				template_id = #template_id#
+			</isNotEmpty>			
+			<isNotEmpty property="group_id" prepend="and">
+				group_id = #group_id#
+			</isNotEmpty>
+			<isNotEmpty property="user_id" prepend="and">
+				user_id = #user_id#
+			</isNotEmpty>
+		</dynamic> 		
+	</select>
+</sqlMap>

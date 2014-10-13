@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="boss"
+			 extends="global_package">
+			 <!-- boss应用进程注册 -->
+			 <action name="bossProcedure_*" class="bossProcedureAction" method="{1}">
+				 <result name="list">/ah/boss/procedure/listProcedureList.jsp </result>
+				 <result name="add">/ah/boss/procedure/addProcedure.jsp</result>
+				 <result name="results" type="json">
+					<param name="root">result</param>
+				 </result>
+			 </action>
+			 <!-- boss进程监控 -->
+			 <action name="bossProcessMonitor_*" class="bossProcessMonitorAction" method="{1}">
+			 	<result name="list">/ah/boss/monitor/listProcessMonitorList.jsp</result>
+			 	<result name="check">/ah/boss/monitor/checkOperPage.jsp</result>
+			 	<result name="tabs">/ah/boss/monitor/monitorTabs.jsp</result>
+			 </action>
+			 <!-- boss进程启停树 -->
+			 <action name="bossTreeAction_*" class="bossTreeAction" method="{1}">
+			 	<result name="list">/ah/boss/monitor/tree/listBossTree.jsp</result>
+			 	<result name="tabs">/ah/boss/monitor/tree/tabs.jsp</result>
+			 	<result name="tree" type="json">
+					<param name="root">BossTreeObjList</param>
+				</result>
+			 </action>
+			 <!-- boss业务监控 -->
+			  <action name="bossBusiAction_*" class="bossBusiMonitorAction" method="{1}">
+			  	<!-- 端口收发量 -->
+			  	<result name="portTabs">/ah/boss/busiMonitor/portData/portTabs.jsp</result>
+			 	<result name="portList">/ah/boss/busiMonitor/portData/listBusiMonitorPortList.jsp</result>
+			 	<result name="portDesc">/ah/boss/busiMonitor/portData/listProcessPortDataDesc.jsp</result>
+			 	<result name="hosiPortList">/ah/boss/busiMonitor/portData/listBusiMonitorPortHosiList.jsp</result>
+			 	<result name="hosiPortDescList">/ah/boss/busiMonitor/portData/listPortDescHosiList.jsp</result>
+			 	<!-- 话务量 -->
+			 	<result name="hwTabs">/ah/boss/busiMonitor/huaWuData/hwTabs.jsp</result>
+			 	<result name="hwList">/ah/boss/busiMonitor/huaWuData/listBusiMonitorHWList.jsp</result>
+			 	<result name="hwDesc">/ah/boss/busiMonitor/huaWuData/listProcessHWDataDesc.jsp</result>
+			 	<result name="hosiHWList">/ah/boss/busiMonitor/huaWuData/listBusiMonitorHWHosiList.jsp</result>
+			 	<result name="hosiHWDescList">/ah/boss/busiMonitor/huaWuData/listHWDescHosiList.jsp</result>
+			 	<!-- 流量查询 -->
+			 	<result name="fluxTabs">/ah/boss/busiMonitor/fluxData/fluxTabs.jsp</result>
+			 	<!-- 提醒服务 -->
+			 	<result name="remindTabs">/ah/boss/busiMonitor/remindData/remindTabs.jsp</result>
+			 	<!-- 错误日志监控 -->
+			 	<result name="listErrorLog">/ah/boss/busiMonitor/errorLogData/listErrorLog.jsp</result>
+			 	<result name="errorLogDesc">/ah/boss/busiMonitor/errorLogData/listErrorLogDataDesc.jsp</result>
+			 	<!-- 文件目录积压 -->
+			 	<result name="listDirDesc">/ah/boss/busiMonitor/dirData/listDirData.jsp</result>
+			 	<result name="listMonitorDir">/ah/boss/busiMonitor/dirData/listDirFileMonitor.jsp</result>
+			 	<!-- 进程监控 -->
+			 	<result name="list">/ah/boss/busiMonitor/processData/tree/processMonitorTree.jsp</result>
+			 	<result name="processTabs">/ah/boss/busiMonitor/processData/tree/processTabs.jsp</result>
+			 	<result name="tree" type="json">
+					<param name="root">BossTreeObjList</param>
+				</result>
+			 </action>
+	</package>
+</struts>

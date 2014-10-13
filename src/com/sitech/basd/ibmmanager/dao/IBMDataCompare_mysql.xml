@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="IBMDataCompare">
+<typeAlias alias="HMCObj" type="com.sitech.basd.ibmmanager.domain.HMCObj"/>  
+<typeAlias alias="PowObj" type="com.sitech.basd.ibmmanager.domain.PowObj"/>  
+<typeAlias alias="LparObj" type="com.sitech.basd.ibmmanager.domain.LparObj"/>  
+	<!-- 获取tree中IBM的数据  用于与hmc,power.lpar表进行比对-->
+	<select id="getIBMUniqueEntity" resultClass="java.lang.String">
+		select CONCAT('IBM','@',t.uuid,'@',
+              CASE
+                WHEN t.type = 1 THEN 'HMC'
+                WHEN t.type = 2 THEN 'Power'
+                WHEN t.type = 3 THEN 'Lpar'
+              END) unique_mark
+ 		 from TB_IBM_HMC_TREE t
+			 where t.vtype = '0'
+	</select>
+	<!-- 获取HMC数据 -->
+	<select id="getHMCData" resultClass="HMCObj">
+		select t.id hmcCode, t.name hmcName from sx_hmc t
+	</select>
+	<!-- 获取power数据 -->
+	<select id="getPowerData" resultClass="PowObj">
+		select t.hmcid               hmcCode,
+		       t.machineserialnumber powerCode,
+		       t.sysname             powerName
+		  from sx_power t
+	</select>
+	<!-- 获取逻辑分区 数据-->
+	<select id="getLparData" resultClass="LparObj">
+		select t.machineserialnumber powerCode,
+		       t.lpar_id             lparCode,
+		       t.lpar_name           lparName
+		  from sx_logical_partition t
+	</select>
+	<!-- 获取所有的uuid 判断节点是否有子节点 -->
+	<select id="getAllParentNode" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select t.uuid from TB_IBM_HMC_TREE t where t.type = #type#
+	</select>
+</sqlMap>

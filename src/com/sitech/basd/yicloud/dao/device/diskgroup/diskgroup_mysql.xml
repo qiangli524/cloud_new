@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="diskGroup">
+
+	<typeAlias alias="diskGroupObj" type="com.sitech.basd.yicloud.domain.device.diskgroup.DiskGroupObj" />
+	
+	<sql id="paginationEnd">
+                 <![CDATA[
+                   limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<sql id="baseCloumns">
+		a.uuid,a.name,a.raidLevel,a.maxSeriesFreeCapacity,a.storeDeviceId
+	</sql>
+	
+	<sql id="whereClause">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="uuid">
+				a.uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="name">
+				a.name like CONCAT('%',#name#,'%') 
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="raidLevel">
+				a.raidLevel = #raidLevel#
+			</isNotEmpty>
+			<isGreaterThan compareValue="0" property="compare" prepend="and">
+				<![CDATA[
+					a.maxSeriesFreeCapacity >= #maxSeriesFreeCapacity#
+				]]>
+			</isGreaterThan>
+			<isLessThan compareValue="0" property="compare" prepend="and">
+				<![CDATA[
+					a.maxSeriesFreeCapacity <= #maxSeriesFreeCapacity#
+				]]>
+			</isLessThan>
+			<isNotEmpty prepend="and" property="storeDeviceId">
+				a.storeDeviceId = #storeDeviceId#
+			</isNotEmpty>
+		</dynamic>
+	</sql>
+	
+	<select id="queryForListByObj" parameterClass="diskGroupObj" resultClass="diskGroupObj">
+		select
+		<include refid="baseCloumns"/>,b.name deviceName,IFNULL(c.lun_num,0) lun_num,IFNULL(d.disk_num,0) disk_num
+		from tb_disk_group a
+		left join tb_store_device b
+		on a.storeDeviceId = b.id
+		left join (
+			select count(uuid) lun_num,diskGroupId from tb_store_lun GROUP BY diskGroupId 
+		) c
+		on c.diskGroupId = a.uuid
+		left join (
+			select count(disk_id) disk_num,diskgroup_id from tb_disk_info  GROUP BY  diskgroup_id
+		) d
+		on d.diskgroup_id = a.uuid
+		<include refid="whereClause"/>
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryForCountByObj" parameterClass="diskGroupObj" resultClass="int">
+		select count(uuid) from tb_disk_group a
+		<include refid="whereClause"/>
+	</select>
+	
+	<insert id="insertByObj" parameterClass="diskGroupObj">
+		insert into tb_disk_group(
+			uuid,name,raidLevel,maxSeriesFreeCapacity,storeDeviceId
+		) values(
+			#uuid#,#name#,#raidLevel#,#maxSeriesFreeCapacity#,#storeDeviceId#
+		)
+	</insert>
+	
+	<update id="updateByObj" parameterClass="diskGroupObj">
+		update tb_disk_group 
+		<dynamic prepend="set">
+			<isNotEmpty prepend="," property="uuid">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="name">
+				name = #name#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="raidLevel">
+				raidLevel = #raidLevel#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="maxSeriesFreeCapacity">
+				maxSeriesFreeCapacity = #maxSeriesFreeCapacity#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="storeDeviceId">
+				storeDeviceId = #storeDeviceId#
+			</isNotEmpty>
+		</dynamic>
+		where uuid = #uuid#
+	</update>
+	
+	<delete id="deleteByObj" parameterClass="diskGroupObj">
+		delete from tb_disk_group 
+		<dynamic prepend="where">
+			<isNotEmpty property="uuid" prepend="and">
+				uuid = #uuid#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="uuidList">
+				uuid in
+				<iterate close=")" conjunction="," open="(" property="uuidList">
+					#uuidList[]#
+				</iterate>
+			</isNotEmpty>
+		</dynamic>
+	</delete>
+	
+</sqlMap>

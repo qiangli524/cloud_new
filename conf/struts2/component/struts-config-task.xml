@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+ <package name="task" extends="global_package">
+		<action name="treetask_*" class="treeTaskAction" method="{1}">
+			<result name="listtask">/component/tree/task/listTask.jsp</result>
+			<result name="addtask">/component/tree/task/addTask.jsp</result>
+			<result name="filelist">/component/tree/task/filelist.jsp</result>
+			<result name="listdeployexample">/component/tree/task/selectMember.jsp</result>
+			<result name="select">/component/tree/task/selectTask.jsp</result>
+			<result name="log">/component/tree/task/showLog.jsp</result>
+			<result name="taskReport">/component/tree/task/showTaskReport.jsp</result>
+		</action>
+ </package>
+
+</struts>

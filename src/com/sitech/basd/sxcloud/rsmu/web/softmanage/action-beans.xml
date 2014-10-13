@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <!-- com.sitech.basd.rsmu.web.hostmanage.action.BusiHostAction -->   
+   <bean id="baseAppAction" class="com.sitech.basd.sxcloud.rsmu.web.softmanage.action.AppAction" singleton="false" >
+        <property name="operationService">
+            <ref bean="operationService"/>
+	    </property> 
+	    <property name="appService">
+	            <ref bean="appService"/>
+	    </property>
+	    <property name="appPortService">
+	            <ref bean="appPortService"/>
+	    </property>
+	    <property name="taskService">
+	            <ref bean="taskService"/>
+	    </property>
+	    <property name="appHisService">
+	    	<ref bean="appHisService"/>
+	    </property>
+	     <property name="bizSystemService">
+            <ref bean="bizSystemService"/>
+        </property>
+        <property name="busiHostService">
+            <ref bean="busiHostService"/>
+        </property>
+         <property name="busiHostConfigService">
+            <ref bean="busiHostConfigService"/>
+        </property> 
+         <property name="tbBusiSysTreeService">
+            <ref bean="tbBusiSysTreeService"/>
+        </property> 
+         <property name="userService">
+            <ref bean="userService"/>
+        </property> 
+         <property name="sysAppConfigService">
+            <ref bean="sysAppConfigService"/>
+        </property> 
+         <property name="deployExampleService">
+            <ref bean="deployExampleService"/>
+        </property> 
+    </bean> 
+    
+    <bean id="baseAppPortAction" class="com.sitech.basd.sxcloud.rsmu.web.softmanage.action.AppPortAction" singleton="false" >
+        <property name="operationService">
+            <ref bean="operationService"/>
+	    </property> 
+	    <property name="appPortService">
+	            <ref bean="appPortService"/>
+	    </property>
+    </bean> 
+  	<bean id="softwareInfoHisAction"  class="com.sitech.basd.sxcloud.rsmu.web.softmanage.action.SoftwareInfoHisAction" singleton="false">
+  	  <property name="operationService">
+            <ref bean="operationService"/>
+ 	   </property>     
+ 	   <property name="softwareInfohisService">
+            <ref bean="softwareInfohisService"/>
+ 	   </property>
+	</bean>
+</beans>
+

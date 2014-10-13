@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="BusiManagerTree">
+	<!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+	<typeAlias alias="BusiManagerTree" type="com.sitech.basd.busimanager.domain.busitree.BusiManagerTree" />
+ 	<typeAlias alias="VMHostObj" type="com.sitech.basd.sxcloud.cloud.domain.vmhost.VMHostObj"/>
+	<typeAlias alias="data" type="com.sitech.basd.fusioncharts.vo.Data"/>
+	<typeAlias alias="TopTargetObj" type="com.sitech.basd.resource.domain.top.TopTargetObj"/>
+	
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# , #PAGESIZE#
+                 ]]>
+	</sql>
+
+	<select id="queryForTree" parameterClass="BusiManagerTree" resultClass="BusiManagerTree">
+		SELECT
+		  DISTINCT
+			t.id,
+			t.NAME,
+			t.number,
+			t.type,
+			t.parent_id,
+			t.connect_id,
+			t.DESC,
+			t.entity_id,
+			t.insertdate,
+			t.oem,
+			t.user_id,
+		    t1.VH_STAT as state
+		FROM
+			tb_busi_system_tree t
+		LEFT JOIN tb_cloud2_vmhost_info t1 ON t.entity_id = t1.VH_UUID
+		AND t.connect_id = t1.CONNECT_ID
+		<dynamic prepend="where">
+			<isNotEmpty property="parent_id" prepend="and">
+				t.parent_id=#parent_id#
+			</isNotEmpty>
+		    <isGreaterThan property="type" compareValue="-1" prepend="and">
+				t.type =#type#
+			</isGreaterThan>
+			<isNotEmpty property="id" prepend="and">
+				t.id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="number" prepend="and">
+				t.number=#number#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				t.name like CONCAT('%',#name#,'%')	
+			</isNotEmpty>
+			<isNotEmpty property="entity_id" prepend="and">
+				t.entity_id=#entity_id#	
+			</isNotEmpty>
+			<isNotEmpty property="connect_id" prepend="and">
+				t.connect_id=#connect_id#	
+			</isNotEmpty>
+			<isNotNull property="user_id" prepend="and">
+				<isNotEmpty property="user_id">
+					t.user_id=#user_id#
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>	
+		</dynamic>
+		order by t.insertdate asc
+	</select>
+	
+		<!-- 查询不同级别告警记录数 -->
+	<select id="getTypeNum" parameterClass="BusiManagerTree" resultClass="java.util.HashMap">
+		SELECT 
+			a.type,count(a.type) typecount
+		FROM
+			tb_busi_system_tree a
+		<dynamic prepend="where">
+			<isNotEmpty property="parent_id" prepend="and">
+				parent_id=#parent_id#
+			</isNotEmpty>
+		    <isGreaterThan property="type" compareValue="-1" prepend="and">
+				type =#type#
+			</isGreaterThan>
+			<isNotEmpty property="id" prepend="and">
+				id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="number" prepend="and">
+				number=#number#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				name=#name#	
+			</isNotEmpty>
+			<isNotEmpty property="entity_id" prepend="and">
+				entity_id=#entity_id#	
+			</isNotEmpty>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+        group by a.type
+		order by a.type asc
+	</select>
+	<insert id="insertForTree" parameterClass="BusiManagerTree">
+		insert into tb_busi_system_tree(id,name,number,type,parent_id,connect_id,`desc`,entity_id,insertdate,oem,user_id,domain)
+		values(#id#,#name#,#number#,#type#,#parent_id#,#connect_id#,#desc#,#entity_id#,now(),#oem#,#user_id#,#domain#)
+	</insert>
+	<update id="updateForTree" parameterClass="BusiManagerTree">
+		update tb_busi_system_tree t
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="name">
+				<isNotEmpty property="name">
+					t.name=#name#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="desc">
+				<isNotEmpty property="desc">
+					t.desc = #desc#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="number">
+				<isNotEmpty property="number">
+					t.number=#number#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="oem">
+				<isNotEmpty property="oem">
+					t.oem=#oem#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="," property="user_id">
+				<isNotEmpty property="user_id">
+					t.user_id=#user_id#
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+		where id=#id#
+	</update>
+	<delete id="deleteForTree">
+		delete from tb_busi_system_tree
+		<dynamic prepend="where">
+			<isNotNull prepend="and" property="id">
+				<isNotEmpty property="id">
+					id = #id#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull prepend="and" property="number">
+				<isNotEmpty property="number">
+				number=#number#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="entity_id" prepend="and">
+				<isNotEmpty property="entity_id">
+					entity_id=#entity_id#	
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="connect_id" prepend="and">
+				<isNotEmpty property="connect_id">
+					connect_id=#connect_id#	
+				</isNotEmpty>
+			</isNotNull>
+		</dynamic>
+	</delete>
+	<sql id="queryForVmListBase">
+	SELECT
+		VH_ID,VH_NAME,VH_MEM,VH_CPU,VH_STORAGE,VH_SYSTEM,VH_IP,VH_STAT,VH_DESC,
+		VH_TYPE,VH_UUID,ID,CONNECT_ID connectId
+	FROM
+		tb_cloud2_vmhost_info i
+	WHERE
+		CONCAT(i.CONNECT_ID, i.VH_UUID) NOT IN (
+			SELECT
+				CONCAT(t.connect_id, t.entity_id)
+			FROM
+				tb_busi_system_tree t
+			WHERE
+				t.type = 3
+	     )
+		     <isNotNull property="VH_NAME" prepend="and">
+		     	<isNotEmpty property="VH_NAME">
+					VH_NAME like  CONCAT('%',#VH_NAME#,'%')
+				</isNotEmpty>
+		     </isNotNull>
+			<isNotNull property="VH_TYPE" prepend="and">
+				<isNotEmpty property="VH_TYPE">
+					VH_TYPE = #VH_TYPE#
+				</isNotEmpty>
+			</isNotNull>
+			<isNotNull property="VH_IP" prepend="and">
+				<isNotEmpty property="VH_IP">
+	    			VH_IP like CONCAT('%',#VH_IP#,'%')
+	    		</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+	</sql>
+	<select id="queryForVmList" parameterClass="VMHostObj" resultClass="VMHostObj">
+		<include refid="queryForVmListBase"/>
+		ORDER BY VH_NAME DESC
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+				<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	<select id="queryForVmCount"
+		parameterClass="VMHostObj" resultClass="int">
+		select count(ID) from (
+		<include refid="queryForVmListBase" />
+		) virtual_table
+	  </select>
+	  
+	<select id="queryAllStatisticsCount"  parameterClass="BusiManagerTree" resultClass="BusiManagerTree">
+		select t.name name,t.id id,t1.name name1,t1.id id1,t2.name name2,t2.id id2,t3.name name3,t3.id id3,t3.type type3 ,t4.name name4 ,t4.id id4
+		from
+		tb_busi_system_tree t left join tb_busi_system_tree t1 
+		on t.id=t1.parent_id 
+		left join  tb_busi_system_tree t2 
+		on t1.id=t2.parent_id 
+		left join  tb_busi_system_tree t3
+		on t2.id=t3.parent_id
+		left join  tb_busi_system_tree t4
+		on t3.id=t4.parent_id
+		<dynamic prepend="where">
+			<isNotEmpty property="id"  prepend="and">
+				t.id = #id#
+			</isNotEmpty>
+			<isNotEmpty property="id1"  prepend="and">
+				t1.id = #id1#
+			</isNotEmpty>
+			<isNotEmpty property="id2"  prepend="and">
+				t2.id = #id2#
+			</isNotEmpty>
+			<isNotEmpty property="id3"  prepend="and">
+				t3.id = #id3#
+			</isNotEmpty>
+			<isNotEmpty property="id4"  prepend="and">
+				t4.id = #id4#
+			</isNotEmpty>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+		</dynamic>
+	</select>
+	<!-- FusionCharts 虚拟机cpu统计-->
+	<!-- 业务系统级别的查询（不带承载业务的） -->
+	<select id="queryForCpu" parameterClass="java.util.HashMap" resultClass="data">
+		<!-- SELECT
+				IFNULL(t.cpu_usage,'0.0') `value`,
+				h.vh_name `label`
+				FROM
+				tb_virtual_global_info t,
+				tb_cloud2_vmhost_info h,
+				tb_busi_system_tree s
+			where
+				s.connect_id = h.CONNECT_ID AND
+				s.CONNECT_ID = t.connect_uuid AND
+				s.entity_id = h.VH_UUID AND
+				s.entity_id = t.vm_uuid AND
+				s.parent_id = #parent_id# -->
+			SELECT
+				IFNULL(a.cpu_usage,'0.0') `value`,
+				b.vh_name `label`
+			from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			where c.parent_id= #parent_id#
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	c.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+			a.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务子系统级别的查询（带承载业务的） -->
+	<select id="queryForCpu2" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				IFNULL(a.cpu_usage,'0.0') `value`,
+				b.vh_name `label`
+			from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			where d.parent_id= #parent_id#
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	d.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+			a.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统级别的查询（不带承载业务的） -->
+	<select id="queryForMem" parameterClass="java.util.HashMap" resultClass="data">
+		SELECT
+				IFNULL(a.mem_usage,'0.0') `value`,
+				b.vh_name `label`
+			from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			where c.parent_id= #parent_id#
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               c.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.mem_usage desc
+		    LIMIT 0,#top_num#
+	</select>
+	<!-- 业务子系统级别的查询（带承载业务的） -->
+	<select id="queryForMem2" parameterClass="java.util.HashMap" resultClass="data">
+		SELECT
+				IFNULL(a.mem_usage,'0.0') `value`,
+				b.vh_name `label`
+			from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			where d.parent_id= #parent_id#
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	d.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.mem_usage desc
+		    LIMIT 0,#top_num#
+	</select>
+	<select id="queryForStore" parameterClass="java.util.HashMap" resultClass="data">
+		SELECT
+				IFNULL(t.store_usage,'0.0') `value`,
+				h.vh_name `label`
+				FROM
+				tb_virtual_global_info t,
+				tb_cloud2_vmhost_info h,
+				tb_busi_system_tree s
+			where
+				s.connect_id = h.CONNECT_ID AND
+				s.CONNECT_ID = t.connect_uuid AND
+				s.entity_id = h.VH_UUID AND
+				s.entity_id = t.vm_uuid AND
+				s.parent_id = #parent_id#
+				<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	s.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				t.store_usage desc
+		    LIMIT 0,#top_num#
+	</select>
+	<!-- 查询按照CPU进行排序的列表 -->
+	<!-- 业务子系统下cpu查询列表（不带承载业务） -->
+	<select id="queryCPUList" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+			SELECT
+				b.VH_NAME name,
+				ifnull(b.VH_IP,'--') as ip,
+				ifnull(a.cpu_usage,0) as  cpu_usage,
+				ifnull(a.mem_usage,0) as mem_usage,
+				ifnull(a.store_usage,0) as  store_usage
+		   from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			where c.parent_id= #parent_id#
+			]]>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	c.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务子系统下cpu查询列表（带承载业务） -->
+	<select id="queryCPUList2" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+			SELECT
+				b.VH_NAME name,
+				ifnull(b.VH_IP,'--') as ip,
+				ifnull(a.cpu_usage,0) as  cpu_usage,
+				ifnull(a.mem_usage,0) as mem_usage,
+				ifnull(a.store_usage,0) as  store_usage
+		   from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			where d.parent_id= #parent_id#
+			]]>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	d.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 查询按照Mem进行排序的列表 -->
+	<!-- 业务子系统下的mem列表（不带承载业务） -->
+	<select id="queryMemList" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+			SELECT
+				b.VH_NAME name,
+				ifnull(b.VH_IP,'--') as ip,
+				ifnull(a.cpu_usage,0) as  cpu_usage,
+				ifnull(a.mem_usage,0) as mem_usage,
+				ifnull(a.store_usage,0) as  store_usage
+		   from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			where c.parent_id= #parent_id#
+			]]>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	c.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务子系统下的mem列表（带承载业务） -->
+	<select id="queryMemList2" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+			SELECT
+				b.VH_NAME name,
+				ifnull(b.VH_IP,'--') as ip,
+				ifnull(a.cpu_usage,0) as  cpu_usage,
+				ifnull(a.mem_usage,0) as mem_usage,
+				ifnull(a.store_usage,0) as  store_usage
+		   from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			where d.parent_id= #parent_id#
+			]]>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	d.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统 -->  
+	<!-- 业务系统级别的查询（不带承载业务的） -->
+	<select id="queryForSysCpu" parameterClass="java.util.HashMap" resultClass="data">
+		<!-- SELECT
+				t.cpu_usage `value`,
+				h.vh_name `label`
+				FROM
+				tb_virtual_global_info t,
+				tb_cloud2_vmhost_info h,
+				tb_busi_system_tree s,
+                tb_busi_system_tree s1
+			where
+				s.connect_id = h.CONNECT_ID AND
+				s.CONNECT_ID = t.connect_uuid AND
+				s.entity_id = h.VH_UUID AND
+				s.entity_id = t.vm_uuid AND
+				s.parent_id = s1.id  And
+                s1.parent_id=#parent_id#
+			ORDER BY
+				t.cpu_usage desc -->
+			SELECT
+				IFNULL(a.cpu_usage,'0.0') `value`,
+				d.vh_name `label`
+			FROM
+				tb_virtual_global_info a
+				LEFT JOIN tb_busi_system_tree b ON b.entity_id = a.vm_uuid
+				LEFT JOIN tb_busi_system_tree c ON b.parent_id = c.id
+				LEFT JOIN tb_cloud2_vmhost_info d ON d.vh_uuid = b.entity_id
+				AND d.connect_id = b.connect_id
+			WHERE
+				c.parent_id = #parent_id#
+				<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	c.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.cpu_usage DESC
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统级别的查询（带承载业务的） -->
+	<select id="queryForCpu1" parameterClass="java.util.HashMap" resultClass="data">
+			SELECT
+				IFNULL(a.cpu_usage,'0.0') `value`,
+				b.vh_name `label`
+			from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			LEFT JOIN tb_busi_system_tree e ON e.id = d.parent_id 
+			where e.parent_id= #parent_id#
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	e.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+			a.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统级别的查询（不带承载业务的） -->
+	<select id="queryForSysMem" parameterClass="java.util.HashMap" resultClass="data">
+		<!-- SELECT
+				t.mem_usage `value`,
+				h.vh_name `label`
+				FROM
+				tb_virtual_global_info t,
+				tb_cloud2_vmhost_info h,
+				tb_busi_system_tree s,
+                tb_busi_system_tree s1
+			where
+				s.connect_id = h.CONNECT_ID AND
+				s.CONNECT_ID = t.connect_uuid AND
+				s.entity_id = h.VH_UUID AND
+				s.entity_id = t.vm_uuid AND
+				s.parent_id = s1.id  And
+                s1.parent_id=#parent_id#
+			ORDER BY
+				t.mem_usage desc -->
+			SELECT
+				IFNULL(a.mem_usage,'0.0') `value`,
+				d.vh_name `label`
+			FROM
+				tb_virtual_global_info a
+				LEFT JOIN tb_busi_system_tree b ON b.entity_id = a.vm_uuid
+				LEFT JOIN tb_busi_system_tree c ON b.parent_id = c.id
+				LEFT JOIN tb_cloud2_vmhost_info d ON d.vh_uuid = b.entity_id
+				AND d.connect_id = b.connect_id
+			WHERE
+				c.parent_id = #parent_id#
+				<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	c.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.mem_usage DESC
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统级别的查询（带承载业务的） -->
+	<select id="queryForMem1" parameterClass="java.util.HashMap" resultClass="data">
+		SELECT
+				IFNULL(a.mem_usage,'0.0') `value`,
+				b.vh_name `label`
+			from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			LEFT JOIN tb_busi_system_tree e ON e.id = d.parent_id 
+			where e.parent_id= #parent_id#
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	e.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>
+			ORDER BY
+				a.mem_usage desc
+		    LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统下的cpu列表（不带承载业务） -->
+	<select id="querySysCPUList" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+                SELECT
+					d.VH_NAME NAME,
+					ifnull(d.VH_IP, '--') AS ip,
+					ifnull(a.cpu_usage, 0) AS cpu_usage,
+					ifnull(a.mem_usage, 0) AS mem_usage,
+					ifnull(a.store_usage, 0) AS store_usage
+				FROM
+					tb_virtual_global_info a
+					LEFT JOIN tb_busi_system_tree b ON b.entity_id = a.vm_uuid
+					LEFT JOIN tb_busi_system_tree c ON b.parent_id = c.id
+					LEFT JOIN tb_cloud2_vmhost_info d ON d.vh_uuid = b.entity_id
+					AND d.connect_id = b.connect_id
+				WHERE
+					c.parent_id = #parent_id#
+					]]>
+					<!-- 分域管理 -->
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	c.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+				ORDER BY
+				a.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统下cpu查询列表（带承载业务） -->
+	<select id="queryCPUList1" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+			SELECT
+				b.VH_NAME name,
+				ifnull(b.VH_IP,'--') as ip,
+				ifnull(a.cpu_usage,0) as  cpu_usage,
+				ifnull(a.mem_usage,0) as mem_usage,
+				ifnull(a.store_usage,0) as  store_usage
+		   from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			LEFT JOIN tb_busi_system_tree e ON e.id = d.parent_id 
+			where e.parent_id= #parent_id#
+			]]>
+			<!-- 分域管理 -->
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	e.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+			ORDER BY
+				a.cpu_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统下的mem列表（不带承载业务） -->
+	<select id="querySysMemList" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+			 SELECT
+					d.VH_NAME NAME,
+					ifnull(d.VH_IP, '--') AS ip,
+					ifnull(a.cpu_usage, 0) AS cpu_usage,
+					ifnull(a.mem_usage, 0) AS mem_usage,
+					ifnull(a.store_usage, 0) AS store_usage
+				FROM
+					tb_virtual_global_info a
+					LEFT JOIN tb_busi_system_tree b ON b.entity_id = a.vm_uuid
+					LEFT JOIN tb_busi_system_tree c ON b.parent_id = c.id
+					LEFT JOIN tb_cloud2_vmhost_info d ON d.vh_uuid = b.entity_id
+					AND d.connect_id = b.connect_id
+				WHERE
+					c.parent_id = #parent_id#
+					]]>
+					<!-- 分域管理 -->
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	c.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+				ORDER BY
+				a.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 业务系统下的mem列表（带承载业务） -->
+	<select id="queryMemList1" parameterClass="java.util.HashMap" resultClass="TopTargetObj">
+		<![CDATA[
+			SELECT
+				b.VH_NAME name,
+				ifnull(b.VH_IP,'--') as ip,
+				ifnull(a.cpu_usage,0) as  cpu_usage,
+				ifnull(a.mem_usage,0) as mem_usage,
+				ifnull(a.store_usage,0) as  store_usage
+		   from tb_virtual_global_info a
+			LEFT JOIN tb_cloud2_vmhost_info b ON b.vh_uuid = a.vm_uuid AND b.CONNECT_ID	= a.connect_uuid
+			LEFT JOIN tb_busi_system_tree c ON c.entity_id = a.vm_uuid AND c.connect_id = a.connect_uuid
+			LEFT JOIN tb_busi_system_tree d ON d.id = c.parent_id
+			LEFT JOIN tb_busi_system_tree e ON e.id = d.parent_id 
+			where e.parent_id= #parent_id#
+			]]>
+			<!-- 分域管理 -->
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               e.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+			ORDER BY
+				a.mem_usage desc
+			LIMIT 0,#top_num#
+	</select>
+	<!-- 查询虚拟机要展开的节点集合（不带承载业务） -->
+	<select id="getExpandNodesForVm" parameterClass="BusiManagerTree" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',h.id,',',cl.id,',',dc.id)
+		FROM
+			tb_busi_system_tree v,
+			tb_busi_system_tree h,
+			tb_busi_system_tree cl,
+			tb_busi_system_tree dc
+		WHERE
+			v.parent_id = h.id
+			AND h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND v.name = #name#
+			AND v.type= #type#
+			<!-- 分域管理 -->
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	v.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+	</select>
+	<!-- 查询虚拟机要展开的节点集合（带承载业务） -->
+	<select id="getExpandNodesForVm1" parameterClass="BusiManagerTree" resultClass="java.lang.String">
+		SELECT
+			CONCAT(v.id,',',b.id,',',h.id,',',cl.id,',',dc.id)
+		FROM
+			tb_busi_system_tree v,
+			tb_busi_system_tree b,
+			tb_busi_system_tree h,
+			tb_busi_system_tree cl,
+			tb_busi_system_tree dc
+		WHERE
+			v.parent_id = b.id
+			AND b.parent_id = h.id
+			AND h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND v.name = #name#
+			AND v.type= #type#
+			<!-- 分域管理 -->
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	v.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+	</select>
+	<!-- 查询业务要展开的节点集合 -->
+	<select id="getExpandNodesForbusi" parameterClass="BusiManagerTree" resultClass="java.lang.String">
+		SELECT
+			CONCAT(h.id,',',cl.id,',',dc.id)
+		FROM
+			tb_busi_system_tree h,
+			tb_busi_system_tree cl,
+			tb_busi_system_tree dc
+		WHERE
+			h.parent_id = cl.id
+			AND cl.parent_id = dc.id
+			AND h.name = #name#
+			AND h.type= #type#
+			<!-- 分域管理 -->
+					<isNotEmpty property="domain">
+		               	  <isNotEqual compareValue="null" property="domain">
+				             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+				               	h.domain =#domain#	
+				             </isNotEqual>
+			             </isNotEqual>
+		           </isNotEmpty>
+	</select>
+	
+		<select id="getBusiTreeList" parameterClass="java.util.HashMap" resultClass="BusiManagerTree">
+		select t.id,
+			t.NAME,
+			t.number,
+			t.type,
+			t.parent_id,
+			t.connect_id,
+			t.desc,
+			t.entity_id,
+			t.insertdate,
+			t.oem,
+			t.user_id
+	   from tb_busi_system_tree t 
+	   where 1=1
+		<isEqual property="type" compareValue="2" prepend="AND">            	
+			t.id=#id#
+	    </isEqual>
+	    <isNotEqual property="type" compareValue="2" prepend="AND">
+	   		t.parent_id = #id# 
+	    </isNotEqual>
+	</select>
+	<select id="getVmhostList" parameterClass="java.util.HashMap" resultClass="java.util.HashMap">
+		SELECT
+			#businame# as businame,
+			t1.VH_NAME as 'VH_NAME', t1.VH_IP as 'VH_IP',
+			case WHEN t1.VH_TYPE = '1' then 'VMWARE'
+			WHEN t1.VH_TYPE = '3' then 'XEN'
+			END as  'VH_TYPE', t1.VH_SYSTEM as 'VH_SYSTEM',
+			t1.VH_CPU as 'VH_CPU',SUBSTRING(t1.VH_MEM/1024,1,LOCATE('.',t1.VH_MEM/1024)+2) as 'VH_MEM', 
+			case when t1.VH_STAT = '0' then '已关闭'
+			when t1.VH_STAT= '1' then '正在运行'
+			when t1.VH_STAT = '2' then '挂起'
+			end  as 'VH_STAT'
+		FROM
+			tb_busi_system_tree t
+			inner JOIN tb_cloud2_vmhost_info t1 ON t.entity_id = t1.VH_UUID
+			AND t.connect_id = t1.CONNECT_ID
+			WHERE t.parent_id =#id#
+		    and t.type=3 
+			ORDER BY t.insertdate ASC
+	</select>
+	
+	<select id="queryForList" parameterClass="BusiManagerTree" resultClass="BusiManagerTree">
+		SELECT
+		  DISTINCT
+			t.id,
+			t.NAME,
+			t.number,
+			t.type,
+			t.parent_id,
+			t.connect_id,
+			t.DESC,
+			t.entity_id,
+			t.insertdate,
+			t.oem,
+			t.user_id,
+		    t1.VH_STAT as state,
+			tt.name as name1
+		FROM
+			tb_busi_system_tree t
+		LEFT JOIN tb_busi_system_tree tt on t.parent_id=tt.id	
+		LEFT JOIN tb_cloud2_vmhost_info t1 ON t.entity_id = t1.VH_UUID
+		AND t.connect_id = t1.CONNECT_ID
+		WHERE t.type!='3'
+			<isNotEmpty property="parent_id" prepend="and">
+				t.parent_id=#parent_id#
+			</isNotEmpty>
+		    <isGreaterThan property="type" compareValue="-1" prepend="and">
+				t.type =#type#
+			</isGreaterThan>
+			<isNotEmpty property="id" prepend="and">
+				t.id=#id#
+			</isNotEmpty>
+			<isNotEmpty property="number" prepend="and">
+				t.number=#number#
+			</isNotEmpty>
+			<isNotEmpty property="name" prepend="and">
+				t.name like CONCAT('%',#name#,'%')	
+			</isNotEmpty>
+			<isNotEmpty property="entity_id" prepend="and">
+				t.entity_id=#entity_id#	
+			</isNotEmpty>
+			<isNotEmpty property="connect_id" prepend="and">
+				t.connect_id=#connect_id#	
+			</isNotEmpty>
+			<isNotNull property="user_id" prepend="and">
+				<isNotEmpty property="user_id">
+					t.user_id=#user_id#
+				</isNotEmpty>
+			</isNotNull>
+			<!-- 分域管理 -->
+			<isNotEmpty property="domain">
+               	  <isNotEqual compareValue="null" property="domain">
+		             <isNotEqual compareValue="domain.type.all" property="domain"  prepend="and">
+		               	t.domain =#domain#	
+		             </isNotEqual>
+	             </isNotEqual>
+           </isNotEmpty>	
+		order by t.insertdate asc
+	</select>
+</sqlMap>

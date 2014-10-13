@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="appmess"
+			 extends="global_package">
+		<action name="appmess_*"
+				class="appMessageAction" method="{1}">
+			<result name="listAppMess">/sxcloud/cloud/appmessage/listAppMessage.jsp</result>
+			<result name="addAppMess">/sxcloud/cloud/appmessage/editAppMessage.jsp</result>
+			<result name="saveAppMess" type="redirect">appmess_listAppMessage.do</result>
+			<result name="modAppMess">/sxcloud/cloud/appmessage/editAppMessage.jsp</result>
+			<result name="delAppMess" type="redirect">appmess_listAppMessage.do</result>
+		</action>
+	</package>
+</struts>

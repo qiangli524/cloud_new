@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="huaweiVM">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="huaweiVmObj" type="com.sitech.ssd.gx.domain.huaweivm.HuaweiVmObj"/>
+    <sql id="paginationStart">
+		<![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+		<![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+	
+	<sql id="huaweiVMColumns">
+    	ID,CODE,NAME,MEMINMB,CPUNUM,STORAGEINMB,IP,NETWORK,STATE,DESCRIPTION,NICNUM,to_char(INSERTTIME,'yyyy-mm-dd hh24:mi:ss') INSERTTIME,DCCODE,CLUSTERCODE,HOSTCODE,URI,OSTYPE,OSVERSION,TEMPLATE
+    </sql>
+    
+    <select id="queryForListByObj" parameterClass="huaweiVmObj" resultClass="huaweiVmObj">
+    	SELECT <include refid="huaweiVMColumns"/>
+    	FROM TB_HUAWEI_VM_INFO 
+    	<dynamic prepend="WHERE">
+    		<isNotNull property="code">
+    			<isNotEmpty property="code" prepend="AND">
+    				CODE = #code# 
+    			</isNotEmpty>
+    		</isNotNull>
+    		<isNotNull property="id">
+    			<isNotEmpty property="id" prepend="AND">
+    				ID = #id# 
+    			</isNotEmpty>
+    		</isNotNull>
+    	</dynamic>
+    </select>
+    
+    <insert id="insertByObj" parameterClass="huaweiVmObj">
+	 	INSERT INTO TB_HUAWEI_VM_INFO(
+		ID,CODE,NAME,MEMINMB,CPUNUM,STORAGEINMB,IP,NETWORK,STATE,DESCRIPTION,NICNUM,INSERTTIME,DCCODE,CLUSTERCODE,HOSTCODE,URI,OSTYPE,OSVERSION,TEMPLATE) 
+		VALUES(#id#,#code#,#name#,#memInMb#,#cpuNum#,#storageInMb#,#ip#,#network#,#state#,#desc#,#nicNum#,to_date(#insertTime#,'yyyy-mm-dd hh24:mi:ss'),#dcCode#,#clusterCode#,#hostCode#,#uri#,#osType#,#osVersion#,#template#)
+    </insert>
+	  
+</sqlMap>

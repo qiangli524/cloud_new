@@ -1,0 +1,26 @@
+.table_select{
+    border: 1px solid #eee;
+    width: 500px;
+    font-size: 14px;
+	text-align: left;
+}
+.table_select th{
+    background: #eee;
+    padding: 2px 6px;
+}
+.table_select td{
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+    padding: 2px 6px;
+}
+
+.table_select .odd td{
+	font-size: 14px;
+    background: #eee;
+}
+.table_select nobr{
+    overflow: hidden;
+}
+nobr {
+white-space: nowrap;
+}

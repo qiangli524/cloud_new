@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.appdeloyworkflow.action.AppDeployWorkFlowAction -->
+	<bean id="appWorkFlowAction" class="com.sitech.basd.sxcloud.workflow.web.appworkflow.action.AppDeployWorkFlowAction"
+		singleton="false">
+		<property name="appWorkFlowService">
+			<ref bean="appWorkFlowService" />
+		</property> 
+		<property name="workflowEngineService">
+			<ref bean="workflowEngineService" />
+		</property> 
+		<property name="userInfoService">
+			<ref bean="userInfoService" />
+		</property> 
+		<property name="templetService">
+			<ref bean="templetService" />
+		</property> 
+		<property name="appService">
+			<ref bean="appService" />
+		</property> 
+		<property name="busiHostService">
+			<ref bean="busiHostService" />
+		</property> 
+		<property name="deployExampleService">
+			<ref bean="deployExampleService" />
+		</property>
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

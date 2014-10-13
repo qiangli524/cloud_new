@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.model.action.ModelAction -->
+	<bean id="templetAction" class="com.sitech.basd.sxcloud.cloud.web.templet.action.TempletAction"
+		singleton="false"><!--每个request请求产生新实例[duangh 样例]-->
+		<property name="templetService">
+			<ref bean="templetService" />
+		</property>
+	</bean>
+</beans>
+
+

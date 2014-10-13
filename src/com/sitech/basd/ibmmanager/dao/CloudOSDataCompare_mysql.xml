@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="CloudOSDataCompare">
+<typeAlias alias="ClusterObjOS" type="com.sitech.basd.ibmmanager.domain.ClusterObj"/>  
+<typeAlias alias="HostObjOS" type="com.sitech.basd.ibmmanager.domain.HostObj"/>  
+<typeAlias alias="VMObjOS" type="com.sitech.basd.ibmmanager.domain.VMObj"/>  
+	<!-- 获取tree中X86的数据  用于与Cluster,host,vm进行比对-->
+	<select id="getCloudUniqueEntity" resultClass="java.lang.String">
+		select CONCAT('X86','@',t.uuid, '@',CASE
+	             WHEN t.type = 4 THEN 'Cluster'
+	             WHEN t.type = 5 THEN 'Host'
+	             WHEN t.type = 6 THEN 'VM'
+	           END) unique_mark
+	      from TB_IBM_HMC_TREE t
+	     where t.vtype = '1'
+	</select>
+	
+	<!-- 获取集群表中的集群标识和名字 -->
+	<select id="getClusterData" resultClass="ClusterObjOS">
+		select t.id clusterCode,t.name clusterName from TB_CLOUD_CLUSTER_INFO t 
+	</select>
+	
+	<!-- 获取主机表中的主机标识和名字 -->
+	<select id="getHostData" resultClass="HostObjOS">
+		select t.cq_id clusterCode, t.eq_id hostCode, t.eq_name hostName
+  			   from TB_CLOUD2_HOST_INFO t
+	</select>
+	<!-- 获取虚拟机表中的虚拟机标识和名字    -->
+	<select id="getVMData" resultClass="VMObjOS">
+		select t.eq_id hostCode, t.vh_id vmCode, t.vh_name vmName
+  				from TB_CLOUD2_VMHOST_INFO t
+	</select>
+</sqlMap>

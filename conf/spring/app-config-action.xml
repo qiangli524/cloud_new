@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+						http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+						http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+						http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd"
+	default-autowire="byName">
+	<!-- cloud工程原Action-配置文件 -->
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/rsmu/web/system/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/rsmu/web/hostmanage/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/rsmu/web/system/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/rsmu/web/softmanage/action-beans.xml" />
+
+	<import resource="classpath:com/sitech/basd/yicloud/web/ipinfo/action-beans.xml" />
+
+	<import resource="classpath:com/sitech/basd/yicloud/web/device/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/interfaces/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/connect/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/dictionary/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/business/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/database/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/storage/action-beans.xml" />
+
+	<import resource="classpath:com/sitech/basd/yicloud/web/ip/action-beans.xml" />
+
+
+	<import resource="classpath:com/sitech/basd/yicloud/web/ipinfo/action-beans.xml" />
+
+	<import resource="classpath:com/sitech/basd/yicloud/web/deploy/action-beans.xml" />
+
+
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/templet/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/ajax/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/workflow/web/appworkflow/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/cubinetmanage/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/resource/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/workflow/web/resworkflow/action-beans.xml" />
+	<!-- yicloud -->
+	<import resource="classpath:com/sitech/basd/yicloud/web/vmman/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/defend/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/eventmanage/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/monitor/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/globalconfig/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/virtual/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/ip/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/net/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/rsmu/web/deploy/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/appmessage/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/reporthost/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/reportvirtual/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/reportapp/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/leader/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/feedback/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/fileManager/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/rsmu/web/cloudschedu/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/loadBalancing/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/bizsystem/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/middleware/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/opersystem/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/rsmu/web/upgrade/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/datastore/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/entitytree/action-beans.xml" />
+	<import resource="classpath:com/sitech/basd/yicloud/web/kvm/action-beans.xml" />
+
+	<!-- Vmware -->
+	<import resource="classpath:com/sitech/basd/yicloud/web/vmware/action-beans.xml" />
+	<!-- healthy -->
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/healthy/action-beans.xml" />
+	<import resource="classpath:com/sitech/basd/yicloud/web/graph/graph-beans.xml" />
+	<!-- businesscentertree -->
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/busicenter/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/temconfig/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/snapshot/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/datacenter/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/cluster/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/portgroup/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/templetcenter/action-beans.xml" />
+	<import resource="classpath:com/sitech/basd/yicloud/web/showVm/action-beans.xml" />
+
+	<!-- xen相关 -->
+	<import resource="classpath:com/sitech/basd/yicloud/web/xen/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/xentree/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/xensyndata/action-beans.xml" />
+
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/vmsyndata/action-beans.xml" />
+	
+	<!-- 调度策略 -->
+	<import
+		resource="classpath:com/sitech/basd/yicloud/web/scheduler/action-beans.xml" />
+
+	<!-- cloud3 配置 -->
+	<import resource="classpath:com/sitech/basd/cloud3/web/monitor/action-beans.xml" />
+	<!-- CIC首页云管理平台新首页 -->
+	<import resource="classpath:com/sitech/basd/cloud3/web/newui/action-beans.xml" />
+
+	<!-- IBM管理 -->
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/image/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/project/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/vusermanage/action-beans.xml" />
+	<!-- 首页资源显示页面 -->
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/showresource/action-beans.xml" />
+	<!-- HighCharts报表 -->
+	<import resource="classpath:com/sitech/basd/cloud3/web/charts/action-beans.xml" />
+	<!-- 物理资源 机房信息 -->
+	<import
+		resource="classpath:com/sitech/basd/cloud3/web/machineroom/action-beans.xml" />
+	<!-- 应用部署树 -->
+	<import resource="classpath:com/sitech/basd/cloud3/web/app/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/backup/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/condevice/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/condition/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/configure/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/ledger/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/performance/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/version/action-beans.xml" />
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/updatepwd/action-beans.xml" />
+	<!-- vmware物理网卡和虚拟网卡 -->
+	<import resource="classpath:com/sitech/basd/yicloud/web/nic/action-beans.xml" />
+	
+
+	<import
+		resource="classpath:com/sitech/basd/envmanager/web/scriptmanage/action-beans.xml" />
+
+	<!-- 导出配置 -->
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/exportconfig/action-beans.xml" />
+		
+	<import
+		resource="classpath:com/sitech/basd/sxcloud/cloud/web/showview/action-beans.xml" />
+</beans>
+

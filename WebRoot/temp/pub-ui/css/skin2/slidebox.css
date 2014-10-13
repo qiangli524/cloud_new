@@ -1,0 +1,45 @@
+/*
+ * @Filename: slidebox.css
+ * @Description: slidebox style
+ * @Version: 1.0.0
+ * @Author: wangchen
+ * @Update: wangchen
+*/
+.ued-slidebox{
+    border: 1px solid #d1d1d1;
+    height: auto;
+    width: 500px;
+    position: relative;
+}
+.ued-slidebox ul{
+	height: auto;
+}
+.ued-slidebox ul li{
+	list-style: none;
+	margin:10px;
+	width: 160px;
+	height: 160px;
+}
+.ued-slidebox ul li img{
+	cursor: pointer;
+}
+.ued-slide-control{
+    height: 32px;
+    line-height: 32px;
+    margin-top: -16px;
+    opacity: 0.5;
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 32px;
+    z-index: 100;
+}
+.ued-slide-control:hover{
+	text-decoration: none;
+}
+.left{
+	left: 1px;
+}
+.right{
+	right:1px;
+}

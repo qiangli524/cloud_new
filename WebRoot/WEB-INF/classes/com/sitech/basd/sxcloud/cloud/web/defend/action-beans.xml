@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.cloud.web.defend.action.DefendAction -->
+	<bean id="defendAction" class="com.sitech.basd.sxcloud.cloud.web.defend.action.DefendAction"
+		singleton="false">
+		<property name="operationService">
+			<ref bean="operationService" />
+		</property>
+		<property name="defendService">
+			<ref bean="defendService" />
+		</property> 
+		<property name="busiHostService">
+			<ref bean="busiHostService" />
+		</property> 
+	</bean>
+</beans>
+
+
+
+
+
+	
+
+
+

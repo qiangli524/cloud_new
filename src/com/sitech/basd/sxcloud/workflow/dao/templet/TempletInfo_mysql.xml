@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="TempletInfo">
+
+	<typeAlias alias="TempletInfoObj" type="com.sitech.basd.sxcloud.workflow.domain.templet.TempletInfoObj" />
+ 
+	<sql id="paginationEnd">
+                 <![CDATA[
+                  limit #FIRSTROWNUM# ,#PAGESIZE#
+                 ]]>
+	</sql>
+	
+	<insert id="saveTempletInfo" parameterClass="TempletInfoObj">
+		<selectKey resultClass="java.lang.String" keyProperty="TEM_ID" >
+        	SELECT @@IDENTITY  AS  TEM_ID 
+    	</selectKey>
+    	INSERT INTO TB_ASLM_FLOW_TEM_INFO(TEM_ID,TEM_NAME,TEM_DESC,TYPE_NAME,NEED_NUMBERS,KV1,KV2,KV3,KV4,KV5,KV6,KV7,KV8,KV9,KV10,KV11,TYPE)
+    	VALUES(#TEM_ID#,#TEM_NAME#,#TEM_DESC#,#TYPE_NAME#,#NEED_NUMBERS#,#KV1#,#KV2#,#KV3#,#KV4#,#KV5#,#KV6#,#KV7#,#KV8#,#KV9#,#KV10#,#KV11#,#TYPE#)		
+	</insert>
+	<delete id="deleteTempletInfo" parameterClass="java.lang.String">
+	    	delete from TB_ASLM_FLOW_TEM_INFO where NEED_NUMBERS=#NEED_NUMBERS#
+	    </delete>
+	 <select id="queryResourceListInfo" parameterClass="java.lang.String" resultClass="TempletInfoObj">
+	  select TYPE_NAME,TYPE from TB_CLOUD2_TEMPLAT_TYPE_CONFIG where TYPE=#TYPE#
+	 </select>
+	 
+	 <sql id="queryTempletListSql">
+		SELECT TEM_ID
+			,TEM_NAME
+			,TEM_DESC
+			,NEED_NUMBERS
+			,TYPE_NAME
+			,KV1
+			,KV2
+			,KV3
+			,KV4
+			,KV5
+			,KV6
+			,KV7
+			,KV8
+			,KV9
+			,KV10
+			,KV11
+			,TYPE
+		FROM TB_ASLM_FLOW_TEM_INFO 
+        <dynamic prepend="where">
+               <isNotEmpty property="NEED_NUMBERS" prepend="AND">
+                	NEED_NUMBERS = #NEED_NUMBERS#
+               </isNotEmpty>
+        </dynamic> 
+	</sql>
+	<select id="queryTempletList"  parameterClass="TempletInfoObj" resultClass="TempletInfoObj">
+			<include refid="queryTempletListSql"/>
+			  order by TEM_ID
+		<isGreaterThan property="PAGESIZE" compareValue="0">
+			<include refid="paginationEnd" />
+		</isGreaterThan>
+	</select>
+	
+	<select id="queryTempletForCount" parameterClass="TempletInfoObj" resultClass="int">
+       select count(1) from (
+        <include refid="queryTempletListSql"/>
+       ) virtual_table
+    </select>
+	
+</sqlMap>

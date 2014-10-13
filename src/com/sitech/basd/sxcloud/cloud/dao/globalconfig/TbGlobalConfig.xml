@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright (c) 2007, Your Corporation. All Rights Reserved.
+  -->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+        "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 名称空间,一般取对象前缀,可用于限定范围 -->
+<sqlMap namespace="TbGlobalConfig">
+    <!-- 三个参数分别为别名/应用名称(如uap.moams等)/对象名称,一般别名就取对象类名 -->
+    <typeAlias alias="TbGlobalConfigObj" type="com.sitech.basd.sxcloud.cloud.domain.globalconfig.TbGlobalConfigObj"/>
+    <sql id="paginationStart">
+                 <![CDATA[
+                          select * from (select virtual_table.*, rownum rownum_ from (
+                 ]]>
+	</sql>
+	<sql id="paginationEnd">
+                 <![CDATA[
+                         )virtual_table where rownum<=#FIRSTROWNUM#+#PAGESIZE# ) where rownum_>#FIRSTROWNUM#
+                 ]]>
+	</sql>
+
+     <sql id="queryByObjBase">
+        select ID,KEY,VALUE,CFG_DESC
+        from
+        TB_CLOUD2_GLOBAL_CONFIG
+         <dynamic prepend="where">
+         		<isNotEmpty property="ID" prepend="and">
+                ID =#ID#
+               </isNotEmpty>
+               <isNotEmpty property="KEY" prepend="and">
+                KEY like '%'||#KEY#||'%'
+               </isNotEmpty>
+               <isNotEmpty property="CFG_DESC" prepend="and">
+                cfg_desc like '%'||#CFG_DESC#||'%'
+               </isNotEmpty>
+         </dynamic>
+         			order by ID asc
+     </sql>
+     <!-- parameterClass为查询参数,resultClass为结果对象类型,cacheModel定义了此操作应用的cache模式,即上面定义的缓存模式 -->
+	 <select id="queryForListByObj" parameterClass="TbGlobalConfigObj" resultClass="TbGlobalConfigObj">
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationStart"/>
+	        </isGreaterThan>
+	        <include refid="queryByObjBase"/>
+	        <isGreaterThan property="PAGESIZE" compareValue="0">
+	        <include refid="paginationEnd"/> 
+	        </isGreaterThan>
+	  </select>
+	  <select id="queryByObjForCount" parameterClass="TbGlobalConfigObj" resultClass="int">
+	      select count(ID) from (
+	        <include refid="queryByObjBase"/>
+	       ) virtual_table
+	  </select>
+
+	  <insert id="insertByObj" parameterClass="TbGlobalConfigObj">
+	  		insert into TB_CLOUD2_GLOBAL_CONFIG(
+	  		ID,KEY,VALUE,CFG_DESC
+	  		)
+	  		values(#ID#,#KEY#,#VALUE#,#CFG_DESC#)
+	  </insert>
+	  <update id="updateByObj" parameterClass="TbGlobalConfigObj">
+	    update TB_CLOUD2_GLOBAL_CONFIG set KEY=#KEY#,VALUE=#VALUE#,CFG_DESC=#CFG_DESC# where ID=#ID#
+	  </update>
+	  <delete id="deleteByObj" parameterClass="TbGlobalConfigObj">
+	    delete from TB_CLOUD2_GLOBAL_CONFIG where ID=#ID#
+	  </delete>
+	  <select id="queryForObjByObj" parameterClass="TbGlobalConfigObj" resultClass="TbGlobalConfigObj">
+	      select ID,KEY,VALUE,CFG_DESC
+        from
+        TB_CLOUD2_GLOBAL_CONFIG
+        where KEY = #KEY#
+	  </select>
+	   <!-- 验证名字是否重复 -->
+	    <select id="validateNameByEdit" parameterClass="TbGlobalConfigObj" resultClass="java.lang.Integer">
+	    	select count(*) from TB_CLOUD2_GLOBAL_CONFIG 
+	    	<dynamic prepend="where">
+	    		 <isNotEmpty property="KEY" prepend="and">
+	    			`KEY` = #KEY#
+	    		</isNotEmpty>
+	    		<isNotEmpty property="ID" prepend="and">
+	    			ID != #ID#
+	    		</isNotEmpty>
+	    	</dynamic>
+	    </select>
+</sqlMap>

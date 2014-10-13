@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+    "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<!-- com.sitech.basd.rsmu.web.softmanage.action.AppAction -->
+	<bean id="upgradeAlarmAction"
+		class="com.sitech.basd.sxcloud.rsmu.web.upgrade.action.UpgradeAlarmAction"
+		singleton="false" >
+		<property name="upgradeAlarmService">
+			<ref bean="upgradeAlarmService" />
+		</property>
+	</bean>
+
+	<bean id="upgradeExampleAction"
+		class="com.sitech.basd.sxcloud.rsmu.web.upgrade.action.UpgradeExampleAction"
+		singleton="false" >
+		<property name="upgradeExampleService">
+			<ref bean="upgradeExampleService" />
+		</property>
+		<property name="upgradeStrategyService">
+			<ref bean="upgradeStrategyService" />
+		</property>
+		<property name="busiHostService">
+			<ref bean="busiHostService" />
+		</property>
+		<property name="appService">
+            <ref bean="appService"/>
+        </property>
+	</bean>
+    
+    
+    <bean id="upgradeExampleResumeAction"
+		class="com.sitech.basd.sxcloud.rsmu.web.upgrade.action.UpgradeExampleResumeAction"
+		singleton="false" >
+		<property name="upgradeExampleResumeService">
+			<ref bean="upgradeExampleResumeService" />
+		</property>
+		<property name="appService">
+            <ref bean="appService"/>
+        </property>
+	</bean>
+    
+    
+	<bean id="upgradeStrategyAction"
+		class="com.sitech.basd.sxcloud.rsmu.web.upgrade.action.UpgradeStrategyAction"
+		singleton="false">
+		<property name="upgradeStrategyService">
+			<ref bean="upgradeStrategyService" />
+		</property>
+		<property name="busiHostService">
+			<ref bean="busiHostService" />
+		</property>
+	</bean>
+	
+</beans>
+

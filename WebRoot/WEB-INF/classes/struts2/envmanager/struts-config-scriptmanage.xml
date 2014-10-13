@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<package name="scriptmanage"
+			 extends="global_package">
+		<action name="scriptmanage_*"
+				class="scriptmanageAction" method="{1}">
+			<result name="list">/envmanager/scriptmanage/listScriptmanage.jsp</result>
+			<result name="add">/envmanager/scriptmanage/editScriptmanage.jsp</result>
+			<result name="save"  type="redirect">scriptmanage_queryScriptmanageList.do</result>
+			<result name="update" >/envmanager/scriptmanage/editScriptmanage.jsp</result>
+			<result name="del" type="redirect">scriptmanage_queryScriptmanageList.do</result>
+			<result name="backup" type="redirect">scriptmanage_queryScriptmanageList.do</result>
+			<result name="jump" >/envmanager/scriptmanage/jumpList.jsp</result>
+			
+			
+		</action>
+			
+	</package>
+</struts>

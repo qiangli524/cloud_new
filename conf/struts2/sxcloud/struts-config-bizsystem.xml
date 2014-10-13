@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<struts>
+	<package name="bizsystem"
+			 extends="global_package">
+		<action name="bizsystem_*"
+				class="bizSystemAction" method="{1}">
+			<result name="listBizSystem">/sxcloud/cloud/bizsystem/listBizSystem.jsp</result>
+			<result name="addBizSystem">/sxcloud/cloud/bizsystem/editBizSystem.jsp</result>
+			<result name="saveBizSystem" type="redirect">bizsystem_busiSystemInfo.do</result>
+			<result name="modBizSystem">/sxcloud/cloud/bizsystem/editBizSystem.jsp</result>
+			<result name="delBizSystem" type="redirect">bizsystem_busiSystemInfo.do</result>
+			<result name="list">/sxcloud/cloud/bizsystem/listBizSystemDetail.jsp</result>
+			<result name="app_list">/sxcloud/softmanage/listAppForList.jsp</result>
+			<result name="example_list">/sxcloud/cloud/bizsystem/listDeployExampleForList.jsp</result>
+			<result name="busiSystemInfo">/sxcloud/cloud/bizsystem/businessSystem.jsp</result>
+		</action>
+	</package>
+</struts>
